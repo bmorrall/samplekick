@@ -91,4 +91,26 @@ describe("samplekick CLI", () => {
       await rm(tmpDir, { recursive: true });
     }
   });
+
+  it("outputs junk entries when --allow-junk is passed", async () => {
+    const zipped = zipSync({
+      "Drums/kick.wav": strToU8("kick-data"),
+      "__MACOSX/Drums/._kick.wav": strToU8("junk"),
+    });
+
+    const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
+    const zipPath = join(tmpDir, "test-pack.zip");
+    const outputDir = join(tmpDir, "output");
+
+    try {
+      await writeFile(zipPath, zipped);
+
+      execSync(`node ${CLI_PATH} "${zipPath}" --allow-junk -o "${outputDir}"`);
+
+      expect(await readFile(join(outputDir, "Drums/kick.wav"), "utf8")).toBe("kick-data");
+      expect(await readFile(join(outputDir, "__MACOSX/Drums/._kick.wav"), "utf8")).toBe("junk");
+    } finally {
+      await rm(tmpDir, { recursive: true });
+    }
+  });
 });

@@ -15,6 +15,7 @@ Arguments:
 Options:
   -o, --output <path>     Directory to export samples into
                           (omit to dump the registry config as JSON to stdout)
+      --allow-junk        Keep junk entries (e.g. __MACOSX, hidden files)
   -h, --help              Show this help message
 `;
 
@@ -22,6 +23,7 @@ const { values, positionals } = parseArgs({
   args: process.argv.slice(CLI_ARG_START),
   options: {
     output: { type: "string", short: "o" },
+    "allow-junk": { type: "boolean" },
     help: { type: "boolean", short: "h" },
   },
   allowPositionals: true,
@@ -47,7 +49,9 @@ const dataSource = await ZipDataSource.fromBlob(blob);
 
 const registry = new Registry(basename(zipPath));
 registry.load(dataSource);
-registry.applyTransform(SkipJunkTransformer);
+if (values["allow-junk"] !== true) {
+  registry.applyTransform(SkipJunkTransformer);
+}
 registry.setPathStrategy(SourcePathStrategy);
 
 if (values.output === undefined) {
