@@ -94,6 +94,58 @@ describe("samplekick CLI", () => {
     }
   });
 
+  it("writes registry config as JSON to a file when --write is passed", async () => {
+    const zipped = zipSync({
+      "Drums/kick.wav": strToU8("kick-data"),
+      "Loops/bass.wav": strToU8("bass-data"),
+    });
+
+    const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
+    const zipPath = join(tmpDir, "test-pack.zip");
+    const configPath = join(tmpDir, "config.json");
+
+    try {
+      await writeFile(zipPath, zipped);
+
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--write", configPath], { encoding: "utf8" });
+      expect(result.status).toBe(0);
+      expect(JSON.parse(result.stdout)).toBeInstanceOf(Array);
+
+      const parsed: unknown = JSON.parse(await readFile(configPath, "utf8"));
+      expect(parsed).toBeInstanceOf(Array);
+      expect(parsed).toContainEqual(expect.objectContaining({ path: "Drums/kick.wav" }));
+      expect(parsed).toContainEqual(expect.objectContaining({ path: "Loops/bass.wav" }));
+    } finally {
+      await rm(tmpDir, { recursive: true });
+    }
+  });
+
+  it("writes registry config to a file and exports samples when both -w and -o are passed", async () => {
+    const zipped = zipSync({
+      "Drums/kick.wav": strToU8("kick-data"),
+    });
+
+    const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
+    const zipPath = join(tmpDir, "test-pack.zip");
+    const configPath = join(tmpDir, "config.json");
+    const outputDir = join(tmpDir, "output");
+
+    try {
+      await writeFile(zipPath, zipped);
+
+      const result = spawnSync("node", [CLI_PATH, zipPath, "-w", configPath, "-o", outputDir], { encoding: "utf8" });
+      expect(result.status).toBe(0);
+
+      const parsed: unknown = JSON.parse(await readFile(configPath, "utf8"));
+      expect(parsed).toBeInstanceOf(Array);
+      expect(parsed).toContainEqual(expect.objectContaining({ path: "Drums/kick.wav" }));
+
+      expect(await readFile(join(outputDir, "Drums/kick.wav"), "utf8")).toBe("kick-data");
+    } finally {
+      await rm(tmpDir, { recursive: true });
+    }
+  });
+
   it("processes a zip file and outputs files to the target directory", async () => {
     const zipped = zipSync({
       "Drums/kick.wav": strToU8("kick-data"),
