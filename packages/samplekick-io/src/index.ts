@@ -4,7 +4,7 @@ export {
   JsonConfigReader,
 } from "./configuration";
 export { ZipDataSource } from "./io";
-export { DefaultPackageNameTransformer, SP404Mk2NameTransformer } from "./transformers";
+export { DefaultPackageNameTransformer, SkipJunkTransformer, SP404Mk2NameTransformer } from "./transformers";
 export { SourcePathStrategy } from "./path_strategies/source_path_strategy";
 export { OrganisedPathStrategy } from "./path_strategies/organised_path_strategy";
 export type {

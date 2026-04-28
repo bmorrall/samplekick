@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { Registry } from "../../src/registry";
-import { SP404Mk2NameTransformer, DefaultPackageNameTransformer } from "../../src";
+import { SP404Mk2NameTransformer, DefaultPackageNameTransformer, SkipJunkTransformer } from "../../src";
 import { loadRegistry, createFileEntry } from "../support";
 
 describe("Registry transforms", () => {
@@ -47,6 +47,30 @@ describe("Registry transforms", () => {
         "├── Invalid_Char_.mp3",
         "├── ThisIsAVeryLongNameThatShouldBeTruncatedBecauseItIsWayTooLongToFitTheLimitOf.wav",
         "└── Valid_Name_OK!.aif",
+        "",
+      ].join("\n"),
+    );
+  });
+
+  it("applies SkipJunkTransformer to mark __MACOSX and hidden entries as skipped", () => {
+    const entries = [
+      createFileEntry({ path: "__MACOSX/file1.wav" }),
+      createFileEntry({ path: ".DS_Store" }),
+      createFileEntry({ path: "sub1/file1.wav" }),
+      createFileEntry({ path: "sub1/.hidden" }),
+    ];
+    const registry = new Registry("root");
+    loadRegistry(registry, entries);
+    registry.applyTransform(SkipJunkTransformer);
+    expect(registry.toString()).toBe(
+      [
+        "root",
+        "├── __MACOSX [skipped]",
+        "│   └── file1.wav [skipped]",
+        "├── .DS_Store [skipped]",
+        "└── sub1",
+        "    ├── file1.wav",
+        "    └── .hidden [skipped]",
         "",
       ].join("\n"),
     );
