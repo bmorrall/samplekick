@@ -1,5 +1,7 @@
 #!/usr/bin/env node
+import { createWriteStream } from "node:fs";
 import { readFile } from "node:fs/promises";
+import { finished } from "node:stream/promises";
 import { basename, resolve } from "node:path";
 import { parseArgs } from "node:util";
 import { JsonConfigWriter, Registry, SkipJunkTransformer, SourcePathStrategy, ZipDataSource } from "samplekick-io";
@@ -13,8 +15,9 @@ Arguments:
   <zip-file>              Path to the input ZIP file
 
 Options:
-  -o, --output <path>     Directory to export samples into
-                          (omit to dump the pack config as JSON to stdout)
+  -o, --output <path>     Export samples to a directory
+                          (omit to dump JSON config to stdout)
+  -w, --write <path>      Write the pack config as JSON to a file
       --allow-junk        Keep junk entries (e.g. __MACOSX, hidden files)
       --debug             Print pack string representation to stdout
                           without writing any files
@@ -25,6 +28,7 @@ const { values, positionals } = parseArgs({
   args: process.argv.slice(CLI_ARG_START),
   options: {
     output: { type: "string", short: "o" },
+    write: { type: "string", short: "w" },
     "allow-junk": { type: "boolean" },
     debug: { type: "boolean" },
     help: { type: "boolean", short: "h" },
@@ -60,6 +64,14 @@ registry.setPathStrategy(SourcePathStrategy);
 if (values.debug === true) {
   console.log(registry.toString());
   process.exit(0);
+}
+
+if (values.write !== undefined) {
+  const writePath = resolve(values.write);
+  const fileStream = createWriteStream(writePath);
+  new JsonConfigWriter(fileStream).writeConfig(registry);
+  fileStream.end();
+  await finished(fileStream);
 }
 
 if (values.output === undefined) {
