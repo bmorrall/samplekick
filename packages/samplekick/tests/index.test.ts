@@ -4,6 +4,7 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { zipSync, strToU8 } from "fflate";
 import { beforeAll, describe, expect, it } from "vitest";
+import packageJson from "../package.json" with { type: "json" };
 const CLI_PATH = resolve(import.meta.dirname, "../dist/index.mjs");
 
 describe("samplekick CLI", () => {
@@ -17,6 +18,7 @@ describe("samplekick CLI", () => {
     it("prints help and exits with code 0 when no arguments are supplied", () => {
       const result = spawnSync("node", [CLI_PATH], { encoding: "utf8" });
       expect(result.status).toBe(0);
+      expect(result.stdout).toContain(`samplekick/${packageJson.version}`);
       expect(result.stdout).toContain("Usage:");
     });
 
@@ -29,13 +31,27 @@ describe("samplekick CLI", () => {
     it("prints help and exits with code 0 when --help is passed", () => {
       const result = spawnSync("node", [CLI_PATH, "--help"], { encoding: "utf8" });
       expect(result.status).toBe(0);
+      expect(result.stdout).toContain(`samplekick/${packageJson.version}`);
       expect(result.stdout).toContain("Usage:");
     });
 
     it("prints help and exits with code 0 when -h is passed", () => {
       const result = spawnSync("node", [CLI_PATH, "-h"], { encoding: "utf8" });
       expect(result.status).toBe(0);
+      expect(result.stdout).toContain(`samplekick/${packageJson.version}`);
       expect(result.stdout).toContain("Usage:");
+    });
+
+    it("prints version and exits with code 0 when --version is passed", () => {
+      const result = spawnSync("node", [CLI_PATH, "--version"], { encoding: "utf8" });
+      expect(result.status).toBe(0);
+      expect(result.stdout.trim()).toBe(packageJson.version);
+    });
+
+    it("prints version and exits with code 0 when -v is passed", () => {
+      const result = spawnSync("node", [CLI_PATH, "-v"], { encoding: "utf8" });
+      expect(result.status).toBe(0);
+      expect(result.stdout.trim()).toBe(packageJson.version);
     });
   });
 
