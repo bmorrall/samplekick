@@ -13,6 +13,9 @@
   "bugs": {
     "url": "https://github.com/bmorrall/samplekick/issues"
   },
+  "engines": {
+    "node": ">=20"
+  },
   "exports": {
     ".": "./dist/index.mjs",
     "./package.json": "./package.json"
