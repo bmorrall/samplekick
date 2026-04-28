@@ -1,10 +1,11 @@
 #!/usr/bin/env node
-import { createWriteStream } from "node:fs";
+import { createWriteStream, readFileSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { finished } from "node:stream/promises";
 import { basename, resolve } from "node:path";
+import { Readable } from "node:stream";
 import { parseArgs } from "node:util";
-import { JsonConfigWriter, Registry, SkipJunkTransformer, SourcePathStrategy, ZipDataSource } from "samplekick-io";
+import { JsonConfigReader, JsonConfigWriter, Registry, SkipJunkTransformer, SourcePathStrategy, ZipDataSource } from "samplekick-io";
 import packageJson from "../package.json" with { type: "json" };
 
 const CLI_ARG_START = 2;
@@ -20,6 +21,7 @@ Arguments:
 Options:
   -o, --output <path>     Export samples to a directory
                           (omit to dump JSON config to stdout)
+  -c, --config <path>     Load a JSON config file to apply to the pack
   -w, --write <path>      Write the pack config as JSON to a file
       --allow-junk        Keep junk entries (e.g. __MACOSX, hidden files)
       --debug             Print pack string representation to stdout
@@ -31,6 +33,7 @@ Options:
 const { values, positionals } = parseArgs({
   args: process.argv.slice(CLI_ARG_START),
   options: {
+    config: { type: "string", short: "c" },
     output: { type: "string", short: "o" },
     write: { type: "string", short: "w" },
     "allow-junk": { type: "boolean" },
@@ -68,6 +71,10 @@ const registry = new Registry(basename(zipPath));
 registry.load(dataSource);
 if (values["allow-junk"] !== true) {
   registry.applyTransform(SkipJunkTransformer);
+}
+if (values.config !== undefined) {
+  const configContent = readFileSync(resolve(values.config), "utf8");
+  registry.loadConfig(new JsonConfigReader(Readable.from([configContent])));
 }
 registry.setPathStrategy(SourcePathStrategy);
 
