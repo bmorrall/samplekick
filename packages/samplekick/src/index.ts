@@ -16,6 +16,8 @@ Options:
   -o, --output <path>     Directory to export samples into
                           (omit to dump the registry config as JSON to stdout)
       --allow-junk        Keep junk entries (e.g. __MACOSX, hidden files)
+      --debug             Print registry string representation to stdout
+                          without writing any files
   -h, --help              Show this help message
 `;
 
@@ -24,6 +26,7 @@ const { values, positionals } = parseArgs({
   options: {
     output: { type: "string", short: "o" },
     "allow-junk": { type: "boolean" },
+    debug: { type: "boolean" },
     help: { type: "boolean", short: "h" },
   },
   allowPositionals: true,
@@ -53,6 +56,11 @@ if (values["allow-junk"] !== true) {
   registry.applyTransform(SkipJunkTransformer);
 }
 registry.setPathStrategy(SourcePathStrategy);
+
+if (values.debug === true) {
+  console.log(registry.toString());
+  process.exit(0);
+}
 
 if (values.output === undefined) {
   new JsonConfigWriter(process.stdout).writeConfig(registry);
