@@ -41,7 +41,7 @@ pnpm run check
    pnpm run release
    ```
 
-   This will prompt you for the new version of each package, update `package.json`, commit, tag, and push.
+   This will prompt you for the new version, update `package.json` in all packages, commit, tag, and push.
 
 3. **Publish to npm:**
 
