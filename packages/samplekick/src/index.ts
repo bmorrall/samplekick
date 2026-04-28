@@ -14,9 +14,9 @@ Arguments:
 
 Options:
   -o, --output <path>     Directory to export samples into
-                          (omit to dump the registry config as JSON to stdout)
+                          (omit to dump the pack config as JSON to stdout)
       --allow-junk        Keep junk entries (e.g. __MACOSX, hidden files)
-      --debug             Print registry string representation to stdout
+      --debug             Print pack string representation to stdout
                           without writing any files
   -h, --help              Show this help message
 `;
