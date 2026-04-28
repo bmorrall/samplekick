@@ -5,6 +5,9 @@
   "description": "Monorepo for the samplekick project.",
   "author": "Ben Morrall <bemo56@gmail.com>",
   "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "build": "pnpm -r build",
     "test": "pnpm -r test",
