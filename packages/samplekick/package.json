@@ -28,7 +28,7 @@
     "prepublishOnly": "pnpm run build"
   },
   "devDependencies": {
-    "@shortercode/webzip": "^1.1.1-0",
+    "fflate": "^0.8.2",
     "tsdown": "^0.21.7",
     "vitest": "^4.1.2"
   },

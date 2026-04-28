@@ -1,4 +1,4 @@
-import { ZipArchive } from "@shortercode/webzip";
+import { zipSync, strToU8 } from "fflate";
 import { mkdir, writeFile } from "node:fs/promises";
 import { describe, expect, it, vi } from "vitest";
 import { ZipDataSource } from "../../../src";
@@ -12,13 +12,11 @@ vi.mock("node:fs/promises", () => ({
 const buildDataSource = async (
   files: Record<string, string>,
 ): Promise<ZipDataSource> => {
-  const archive = new ZipArchive();
-  await Promise.all(
-    Object.entries(files).map(
-      async ([path, content]) => await archive.set(path, content),
-    ),
+  const entries = Object.fromEntries(
+    Object.entries(files).map(([path, content]) => [path, strToU8(content)]),
   );
-  return await ZipDataSource.fromBlob(archive.to_blob());
+  const zipped = zipSync(entries);
+  return await ZipDataSource.fromBlob(new Blob([Buffer.from(zipped)]));
 };
 
 const collectConfigEntries = (dataSource: ZipDataSource): FileEntry[] => {
@@ -42,10 +40,11 @@ describe("ZipDataSource", () => {
   });
 
   it("skips folder entries", async () => {
-    const archive = new ZipArchive();
-    archive.set_folder("my-folder");
-    await archive.set("my-folder/track.wav", "data");
-    const dataSource = await ZipDataSource.fromBlob(archive.to_blob());
+    const zipped = zipSync({
+      "my-folder/": new Uint8Array(0),
+      "my-folder/track.wav": strToU8("data"),
+    });
+    const dataSource = await ZipDataSource.fromBlob(new Blob([Buffer.from(zipped)]));
 
     const paths = collectConfigEntries(dataSource).map((e) => e.getPath());
 
