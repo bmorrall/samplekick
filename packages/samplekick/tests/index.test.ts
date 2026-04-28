@@ -188,6 +188,64 @@ describe("samplekick CLI", () => {
     }
   });
 
+  it("applies config from a JSON file when --config is passed", async () => {
+    const zipped = zipSync({
+      "Drums/kick.wav": strToU8("kick-data"),
+      "Loops/bass.wav": strToU8("bass-data"),
+    });
+
+    const config = JSON.stringify([
+      { path: "Drums/kick.wav", name: "My Kick.wav" },
+      { path: "Loops/bass.wav", isSkipped: true },
+    ]);
+
+    const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
+    const zipPath = join(tmpDir, "test-pack.zip");
+    const configPath = join(tmpDir, "config.json");
+    const outputDir = join(tmpDir, "output");
+
+    try {
+      await writeFile(zipPath, zipped);
+      await writeFile(configPath, config);
+
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--config", configPath, "-o", outputDir], { encoding: "utf8" });
+      expect(result.status).toBe(0);
+
+      expect(await readFile(join(outputDir, "Drums/My Kick.wav"), "utf8")).toBe("kick-data");
+      await expect(stat(join(outputDir, "Drums/kick.wav"))).rejects.toThrow();
+      await expect(stat(join(outputDir, "Loops/bass.wav"))).rejects.toThrow();
+    } finally {
+      await rm(tmpDir, { recursive: true });
+    }
+  });
+
+  it("applies config from a JSON file when -c is passed", async () => {
+    const zipped = zipSync({
+      "Drums/kick.wav": strToU8("kick-data"),
+    });
+
+    const config = JSON.stringify([
+      { path: "Drums/kick.wav", packageName: "Percussion" },
+    ]);
+
+    const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
+    const zipPath = join(tmpDir, "test-pack.zip");
+    const configPath = join(tmpDir, "config.json");
+
+    try {
+      await writeFile(zipPath, zipped);
+      await writeFile(configPath, config);
+
+      const result = spawnSync("node", [CLI_PATH, zipPath, "-c", configPath], { encoding: "utf8" });
+      expect(result.status).toBe(0);
+
+      const parsed: unknown = JSON.parse(result.stdout);
+      expect(parsed).toContainEqual(expect.objectContaining({ path: "Drums/kick.wav", packageName: "Percussion" }));
+    } finally {
+      await rm(tmpDir, { recursive: true });
+    }
+  });
+
   it("outputs junk entries when --allow-junk is passed", async () => {
     const zipped = zipSync({
       "Drums/kick.wav": strToU8("kick-data"),
