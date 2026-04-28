@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { createWriteStream, readFileSync } from "node:fs";
+import { createWriteStream } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { finished } from "node:stream/promises";
 import { basename, resolve } from "node:path";
@@ -63,9 +63,21 @@ const [inputPath] = positionals;
 
 const zipPath = resolve(inputPath);
 
-const buffer = await readFile(zipPath);
+const buffer = await readFile(zipPath).catch((err: unknown) => {
+  if (typeof err === "object" && err !== null && "code" in err && err.code === "ENOENT") {
+    console.error(`Error: file not found: ${zipPath}`);
+    process.exit(1);
+  }
+  throw err;
+});
 const blob = new Blob([buffer]);
-const dataSource = await ZipDataSource.fromBlob(blob);
+const dataSource = await ZipDataSource.fromBlob(blob).catch((err: unknown) => {
+  if (err instanceof Error && err.message.includes("not zip file")) {
+    console.error(`Error: not a valid zip file: ${zipPath}`);
+    process.exit(1);
+  }
+  throw err;
+});
 
 const registry = new Registry(basename(zipPath));
 registry.load(dataSource);
@@ -73,8 +85,23 @@ if (values["allow-junk"] !== true) {
   registry.applyTransform(SkipJunkTransformer);
 }
 if (values.config !== undefined) {
-  const configContent = readFileSync(resolve(values.config), "utf8");
-  registry.loadConfig(new JsonConfigReader(Readable.from([configContent])));
+  const configPath = resolve(values.config);
+  const configContent = await readFile(configPath, "utf8").catch((err: unknown) => {
+    if (typeof err === "object" && err !== null && "code" in err && err.code === "ENOENT") {
+      console.error(`Error: config file not found: ${configPath}`);
+      process.exit(1);
+    }
+    throw err;
+  });
+  try {
+    registry.loadConfig(new JsonConfigReader(Readable.from([configContent])));
+  } catch (err: unknown) {
+    if (err instanceof SyntaxError) {
+      console.error(`Error: config file is not valid JSON: ${configPath}`);
+      process.exit(1);
+    }
+    throw err;
+  }
 }
 registry.setPathStrategy(SourcePathStrategy);
 
@@ -88,7 +115,10 @@ if (values.write !== undefined) {
   const fileStream = createWriteStream(writePath);
   new JsonConfigWriter(fileStream).writeConfig(registry);
   fileStream.end();
-  await finished(fileStream);
+  await finished(fileStream).catch((err: unknown) => {
+    console.error(`Error: could not write to ${writePath}: ${err instanceof Error ? err.message : String(err)}`);
+    process.exit(1);
+  });
 }
 
 if (values.output === undefined) {
@@ -97,5 +127,8 @@ if (values.output === undefined) {
 }
 
 const destPath = resolve(values.output);
-await registry.exportToDirectory(destPath);
+await registry.exportToDirectory(destPath).catch((err: unknown) => {
+  console.error(`Error: could not export to ${destPath}: ${err instanceof Error ? err.message : String(err)}`);
+  process.exit(1);
+});
 console.log(`Exported to ${destPath}`);
