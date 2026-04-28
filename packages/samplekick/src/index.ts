@@ -5,10 +5,13 @@ import { finished } from "node:stream/promises";
 import { basename, resolve } from "node:path";
 import { parseArgs } from "node:util";
 import { JsonConfigWriter, Registry, SkipJunkTransformer, SourcePathStrategy, ZipDataSource } from "samplekick-io";
+import packageJson from "../package.json" with { type: "json" };
 
 const CLI_ARG_START = 2;
 
 const HELP_TEXT = `\
+samplekick/${packageJson.version}
+
 Usage: samplekick <zip-file> [-o <output-dir>]
 
 Arguments:
@@ -21,6 +24,7 @@ Options:
       --allow-junk        Keep junk entries (e.g. __MACOSX, hidden files)
       --debug             Print pack string representation to stdout
                           without writing any files
+  -v, --version           Show version number
   -h, --help              Show this help message
 `;
 
@@ -31,10 +35,16 @@ const { values, positionals } = parseArgs({
     write: { type: "string", short: "w" },
     "allow-junk": { type: "boolean" },
     debug: { type: "boolean" },
+    version: { type: "boolean", short: "v" },
     help: { type: "boolean", short: "h" },
   },
   allowPositionals: true,
 });
+
+if (values.version === true) {
+  console.log(packageJson.version);
+  process.exit(0);
+}
 
 if (values.help === true || process.argv.slice(CLI_ARG_START).length === 0) {
   console.log(HELP_TEXT);
