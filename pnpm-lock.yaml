@@ -33,6 +33,9 @@ importers:
         specifier: workspace:*
         version: link:../samplekick-io
     devDependencies:
+      bumpp:
+        specifier: ^11.0.1
+        version: 11.0.1
       fflate:
         specifier: ^0.8.2
         version: 0.8.2

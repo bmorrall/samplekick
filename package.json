@@ -16,7 +16,8 @@
     "lint:fix": "eslint . --fix",
     "typecheck": "pnpm -r typecheck",
     "check": "pnpm run lint && pnpm run typecheck && pnpm run test",
-    "check:all": "pnpm run check && pnpm run coverage"
+    "check:all": "pnpm run check && pnpm run coverage",
+    "release": "pnpm -r --if-present run release"
   },
   "devDependencies": {
     "@types/node": "^25.5.0",
