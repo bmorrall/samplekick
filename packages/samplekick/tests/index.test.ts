@@ -39,6 +39,34 @@ describe("samplekick CLI", () => {
     });
   });
 
+  it("prints registry tree to stdout and exits with code 0 when --debug is passed", async () => {
+    const zipped = zipSync({
+      "Drums/kick.wav": strToU8("kick-data"),
+      "Loops/bass.wav": strToU8("bass-data"),
+    });
+
+    const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
+    const zipPath = join(tmpDir, "test-pack.zip");
+
+    try {
+      await writeFile(zipPath, zipped);
+
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--debug"], { encoding: "utf8" });
+      expect(result.status).toBe(0);
+
+      const expected = [
+        "test-pack.zip",
+        "├── Drums",
+        "│   └── kick.wav",
+        "└── Loops",
+        "    └── bass.wav",
+      ].join("\n");
+      expect(result.stdout.trim()).toBe(expected);
+    } finally {
+      await rm(tmpDir, { recursive: true });
+    }
+  });
+
   it("dumps registry config as JSON to stdout when --output is omitted", async () => {
     const zipped = zipSync({
       "Drums/kick.wav": strToU8("kick-data"),
