@@ -1,0 +1,151 @@
+import { describe, it, expect } from "vitest";
+import { EntryNode } from "../../../src/registry/entry_node";
+import { createFileEntry } from "../../support";
+
+const buildTree = (): EntryNode => {
+  const root = EntryNode.fromEntry(createFileEntry({ path: "", name: "root" }));
+  const a = root.addNode(createFileEntry({ path: "a" }));
+  a.addNode(createFileEntry({ path: "a/b" }));
+  a.addNode(createFileEntry({ path: "a/c" }));
+  const d = root.addNode(createFileEntry({ path: "d" }));
+  d.addNode(createFileEntry({ path: "d/e" }));
+  return root;
+};
+
+describe("EntryNode.toString", () => {
+  describe("tree structure", () => {
+    it("prints a single node with no children", () => {
+      const root = EntryNode.fromEntry(createFileEntry({ path: "", name: "root" }));
+      expect(root.toString()).toBe("root\n");
+    });
+
+    it("prints a flat list of children", () => {
+      const root = EntryNode.fromEntry(createFileEntry({ path: "", name: "root" }));
+      root.addNode(createFileEntry({ path: "a" }));
+      root.addNode(createFileEntry({ path: "b" }));
+      expect(root.toString()).toBe(["root", "├── a", "└── b", ""].join("\n"));
+    });
+
+    it("prints a nested tree with correct connectors", () => {
+      const root = buildTree();
+      expect(root.toString()).toBe(
+        [
+          "root",
+          "├── a",
+          "│   ├── b",
+          "│   └── c",
+          "└── d",
+          "    └── e",
+          "",
+        ].join("\n"),
+      );
+    });
+  });
+
+  describe("pkg and type tags", () => {
+    it("shows inherited pkg and type on the root node", () => {
+      const root = EntryNode.fromEntry(createFileEntry({ path: "", name: "root" }));
+      root.setPackageName("my-pack");
+      root.setSampleType("Loops");
+      expect(root.toString()).toBe("root [pkg:my-pack, type:Loops]\n");
+    });
+
+    it("shows own pkg and type on a child node", () => {
+      const root = EntryNode.fromEntry(createFileEntry({ path: "", name: "root" }));
+      const child = root.addNode(createFileEntry({ path: "a" }));
+      child.setPackageName("child-pack");
+      child.setSampleType("Hits");
+      expect(root.toString()).toBe(
+        ["root", "└── a [pkg:child-pack, type:Hits]", ""].join("\n"),
+      );
+    });
+
+    it("does not show inherited pkg and type on child nodes", () => {
+      const root = EntryNode.fromEntry(createFileEntry({ path: "", name: "root" }));
+      root.setPackageName("my-pack");
+      root.setSampleType("Loops");
+      root.addNode(createFileEntry({ path: "a" }));
+      expect(root.toString()).toBe(
+        ["root [pkg:my-pack, type:Loops]", "└── a", ""].join("\n"),
+      );
+    });
+  });
+
+  describe("keepStructure connectors", () => {
+    it("uses thick connectors for a non-last child with keepStructure", () => {
+      const root = EntryNode.fromEntry(createFileEntry({ path: "", name: "root" }));
+      const a = root.addNode(createFileEntry({ path: "a" }));
+      a.setKeepStructure(true);
+      root.addNode(createFileEntry({ path: "b" }));
+      expect(root.toString()).toBe(["root", "┣━━ a", "└── b", ""].join("\n"));
+    });
+
+    it("uses thick connectors for a last child with keepStructure", () => {
+      const root = EntryNode.fromEntry(createFileEntry({ path: "", name: "root" }));
+      root.addNode(createFileEntry({ path: "a" }));
+      const b = root.addNode(createFileEntry({ path: "b" }));
+      b.setKeepStructure(true);
+      expect(root.toString()).toBe(["root", "├── a", "┗━━ b", ""].join("\n"));
+    });
+
+    it("uses thick vertical bar for descendants of a keepStructure node", () => {
+      const root = EntryNode.fromEntry(createFileEntry({ path: "", name: "root" }));
+      const a = root.addNode(createFileEntry({ path: "a" }));
+      a.setKeepStructure(true);
+      a.addNode(createFileEntry({ path: "a/b" }));
+      a.addNode(createFileEntry({ path: "a/c" }));
+      root.addNode(createFileEntry({ path: "d" }));
+      expect(root.toString()).toBe(
+        ["root", "┣━━ a", "┃   ├── b", "┃   └── c", "└── d", ""].join("\n"),
+      );
+    });
+
+    it("does not use thick connectors for a node with keepStructure inherited but not own", () => {
+      const root = EntryNode.fromEntry(createFileEntry({ path: "", name: "root" }));
+      const a = root.addNode(createFileEntry({ path: "a" }));
+      a.setKeepStructure(true);
+      const b = a.addNode(createFileEntry({ path: "a/b" }));
+      b.addNode(createFileEntry({ path: "a/b/c" }));
+      expect(root.toString()).toBe(
+        ["root", "┗━━ a", "    └── b", "        └── c", ""].join("\n"),
+      );
+    });
+  });
+
+  describe("skipped tag", () => {
+    it("appends [skipped] to an entry with isSkipped true", () => {
+      const root = EntryNode.fromEntry(createFileEntry({ path: "", name: "root" }));
+      const child = root.addNode(createFileEntry({ path: "a" }));
+      child.setSkipped(true);
+      expect(root.toString()).toBe(["root", "└── a [skipped]", ""].join("\n"));
+    });
+
+    it("does not append [skipped] when isSkipped is false", () => {
+      const root = EntryNode.fromEntry(createFileEntry({ path: "", name: "root" }));
+      const child = root.addNode(createFileEntry({ path: "a" }));
+      child.setSkipped(false);
+      expect(root.toString()).toBe(["root", "└── a", ""].join("\n"));
+    });
+
+    it("shows [skipped] on child nodes that inherit skipped from a parent", () => {
+      const root = EntryNode.fromEntry(createFileEntry({ path: "", name: "root" }));
+      const parent = root.addNode(createFileEntry({ path: "a" }));
+      parent.setSkipped(true);
+      parent.addNode(createFileEntry({ path: "a/b" }));
+      expect(root.toString()).toBe(
+        ["root", "└── a [skipped]", "    └── b [skipped]", ""].join("\n"),
+      );
+    });
+
+    it("combines skipped with pkg and type tags", () => {
+      const root = EntryNode.fromEntry(createFileEntry({ path: "", name: "root" }));
+      const child = root.addNode(createFileEntry({ path: "a" }));
+      child.setPackageName("my-pack");
+      child.setSampleType("Loops");
+      child.setSkipped(true);
+      expect(root.toString()).toBe(
+        ["root", "└── a [pkg:my-pack, type:Loops, skipped]", ""].join("\n"),
+      );
+    });
+  });
+});

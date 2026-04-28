@@ -1,0 +1,47 @@
+{
+  "name": "samplepack-io",
+  "type": "module",
+  "version": "0.0.0",
+  "description": "Processes and normalises music sample packs from zip archives.",
+  "author": "Ben Morrall <bemo56@gmail.com>",
+  "license": "MIT",
+  "homepage": "https://github.com/bmorrall/samplepack#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bmorrall/samplepack.git"
+  },
+  "bugs": {
+    "url": "https://github.com/bmorrall/samplepack/issues"
+  },
+  "exports": {
+    ".": "./dist/index.mjs",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:unit": "vitest run --project unit",
+    "test:integration": "vitest run --project integration",
+    "coverage": "vitest run --coverage",
+    "typecheck": "tsc --noEmit",
+    "check": "pnpm run typecheck && pnpm run test",
+    "check:all": "pnpm run check && pnpm run coverage",
+    "release": "bumpp",
+    "prepublishOnly": "pnpm run build"
+  },
+  "devDependencies": {
+    "@typescript/native-preview": "7.0.0-dev.20260328.1",
+    "@vitest/coverage-v8": "^4.1.5",
+    "bumpp": "^11.0.1",
+    "tsdown": "^0.21.7",
+    "vitest": "^4.1.2"
+  },
+  "dependencies": {
+    "@shortercode/webzip": "^1.1.1-0"
+  }
+}

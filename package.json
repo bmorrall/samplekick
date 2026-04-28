@@ -1,0 +1,25 @@
+{
+  "name": "samplepack",
+  "private": true,
+  "type": "module",
+  "description": "Monorepo for the samplepack project.",
+  "author": "Ben Morrall <bemo56@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "coverage": "pnpm -r --if-present run coverage",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "typecheck": "pnpm -r typecheck",
+    "check": "pnpm run lint && pnpm run typecheck && pnpm run test",
+    "check:all": "pnpm run check && pnpm run coverage"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "eslint": "^9.39.4",
+    "eslint-config-love": "^153.0.0",
+    "typescript": "^6.0.0",
+    "typescript-eslint": "^8.59.0"
+  }
+}
