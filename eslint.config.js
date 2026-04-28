@@ -24,7 +24,7 @@ export default [
     },
   },
   {
-    files: ["packages/samplepack/src/**/*.ts"],
+    files: ["packages/samplekick/src/**/*.ts"],
     rules: {
       "no-console": "off",
     },

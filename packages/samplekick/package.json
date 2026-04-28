@@ -1,20 +1,20 @@
 {
-  "name": "samplepack",
+  "name": "samplekick",
   "type": "module",
   "version": "0.0.0",
   "description": "CLI for processing and normalising music sample packs.",
   "author": "Ben Morrall <bemo56@gmail.com>",
   "license": "MIT",
-  "homepage": "https://github.com/bmorrall/samplepack#readme",
+  "homepage": "https://github.com/bmorrall/samplekick#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bmorrall/samplepack.git"
+    "url": "git+https://github.com/bmorrall/samplekick.git"
   },
   "bugs": {
-    "url": "https://github.com/bmorrall/samplepack/issues"
+    "url": "https://github.com/bmorrall/samplekick/issues"
   },
   "bin": {
-    "samplepack": "./dist/index.mjs"
+    "samplekick": "./dist/index.mjs"
   },
   "files": [
     "dist"
@@ -33,6 +33,6 @@
     "vitest": "^4.1.2"
   },
   "dependencies": {
-    "samplepack-io": "workspace:*"
+    "samplekick-io": "workspace:*"
   }
 }

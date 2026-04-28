@@ -1,6 +1,6 @@
-# samplepack-io
+# samplekick-io
 
-Processes and normalises music sample packs from zip archives. Core library for the [samplepack](https://github.com/bmorrall/samplepack) project.
+Processes and normalises music sample packs from zip archives. Core library for the [samplekick](https://github.com/bmorrall/samplekick) project.
 
 ## Development
 

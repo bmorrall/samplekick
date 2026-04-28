@@ -24,11 +24,11 @@ importers:
         specifier: ^8.59.0
         version: 8.59.1(eslint@9.39.4(jiti@2.6.1))(typescript@6.0.3)
 
-  packages/samplepack:
+  packages/samplekick:
     dependencies:
-      samplepack-io:
+      samplekick-io:
         specifier: workspace:*
-        version: link:../samplepack-io
+        version: link:../samplekick-io
     devDependencies:
       '@shortercode/webzip':
         specifier: ^1.1.1-0
@@ -40,7 +40,7 @@ importers:
         specifier: ^4.1.2
         version: 4.1.5(@types/node@25.6.0)(@vitest/coverage-v8@4.1.5)(vite@8.0.10(@types/node@25.6.0)(jiti@2.6.1)(yaml@2.8.3))
 
-  packages/samplepack-io:
+  packages/samplekick-io:
     dependencies:
       '@shortercode/webzip':
         specifier: ^1.1.1-0

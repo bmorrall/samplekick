@@ -58,7 +58,7 @@ describe("ZIP I/O", () => {
     registry.setPackageName("jazz-pack");
     registry.setSampleType("loops");
 
-    const tmpDir = await mkdtemp(join(tmpdir(), "samplepack-io-"));
+    const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-io-"));
     try {
       await registry.exportToDirectory(tmpDir);
       expect(

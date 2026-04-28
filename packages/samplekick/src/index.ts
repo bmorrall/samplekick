@@ -2,12 +2,12 @@
 import { readFile } from "node:fs/promises";
 import { basename, resolve } from "node:path";
 import { parseArgs } from "node:util";
-import { JsonConfigWriter, Registry, SourcePathStrategy, ZipDataSource } from "samplepack-io";
+import { JsonConfigWriter, Registry, SourcePathStrategy, ZipDataSource } from "samplekick-io";
 
 const CLI_ARG_START = 2;
 
 const HELP_TEXT = `\
-Usage: samplepack <zip-file> [-o <output-dir>]
+Usage: samplekick <zip-file> [-o <output-dir>]
 
 Arguments:
   <zip-file>              Path to the input ZIP file

@@ -1,17 +1,17 @@
 {
-  "name": "samplepack-io",
+  "name": "samplekick-io",
   "type": "module",
   "version": "0.1.0",
   "description": "Processes and normalises music sample packs from zip archives.",
   "author": "Ben Morrall <bemo56@gmail.com>",
   "license": "MIT",
-  "homepage": "https://github.com/bmorrall/samplepack#readme",
+  "homepage": "https://github.com/bmorrall/samplekick#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bmorrall/samplepack.git"
+    "url": "git+https://github.com/bmorrall/samplekick.git"
   },
   "bugs": {
-    "url": "https://github.com/bmorrall/samplepack/issues"
+    "url": "https://github.com/bmorrall/samplekick/issues"
   },
   "exports": {
     ".": "./dist/index.mjs",

@@ -6,7 +6,7 @@ import { ZipArchive } from "@shortercode/webzip";
 import { beforeAll, describe, expect, it } from "vitest";
 const CLI_PATH = resolve(import.meta.dirname, "../dist/index.mjs");
 
-describe("samplepack CLI", () => {
+describe("samplekick CLI", () => {
   beforeAll(() => {
     execSync("pnpm build", {
       cwd: resolve(import.meta.dirname, ".."),
@@ -44,7 +44,7 @@ describe("samplepack CLI", () => {
     await archive.set("Drums/kick.wav", "kick-data");
     await archive.set("Loops/bass.wav", "bass-data");
 
-    const tmpDir = await mkdtemp(join(tmpdir(), "samplepack-cli-"));
+    const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
     const zipPath = join(tmpDir, "test-pack.zip");
 
     try {
@@ -70,7 +70,7 @@ describe("samplepack CLI", () => {
     await archive.set("Drums/snare.wav", "snare-data");
     await archive.set("Loops/bass.wav", "bass-data");
 
-    const tmpDir = await mkdtemp(join(tmpdir(), "samplepack-cli-"));
+    const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
     const zipPath = join(tmpDir, "test-pack.zip");
     const outputDir = join(tmpDir, "output");
 
