@@ -17,6 +17,9 @@ importers:
       eslint-config-love:
         specifier: ^153.0.0
         version: 153.0.0(@typescript-eslint/parser@8.59.1(eslint@9.39.4(jiti@2.6.1))(typescript@6.0.3))(eslint@9.39.4(jiti@2.6.1))(typescript@6.0.3)
+      fflate:
+        specifier: ^0.8.2
+        version: 0.8.2
       typescript:
         specifier: ^6.0.0
         version: 6.0.3
@@ -30,9 +33,9 @@ importers:
         specifier: workspace:*
         version: link:../samplekick-io
     devDependencies:
-      '@shortercode/webzip':
-        specifier: ^1.1.1-0
-        version: 1.1.1-0
+      fflate:
+        specifier: ^0.8.2
+        version: 0.8.2
       tsdown:
         specifier: ^0.21.7
         version: 0.21.10(@typescript/native-preview@7.0.0-dev.20260328.1)(typescript@6.0.3)
@@ -42,9 +45,9 @@ importers:
 
   packages/samplekick-io:
     dependencies:
-      '@shortercode/webzip':
-        specifier: ^1.1.1-0
-        version: 1.1.1-0
+      unzipit:
+        specifier: ^2.0.1
+        version: 2.0.1
     devDependencies:
       '@typescript/native-preview':
         specifier: 7.0.0-dev.20260328.1
@@ -55,6 +58,9 @@ importers:
       bumpp:
         specifier: ^11.0.1
         version: 11.0.1
+      fflate:
+        specifier: ^0.8.2
+        version: 0.8.2
       tsdown:
         specifier: ^0.21.7
         version: 0.21.10(@typescript/native-preview@7.0.0-dev.20260328.1)(typescript@6.0.3)
@@ -304,9 +310,6 @@ packages:
 
   '@rtsao/scc@1.1.0':
     resolution: {integrity: sha512-zt6OdqaDoOnJ1ZYsCYGt9YmWzDXl4vQdKTyJev62gFhRGKdx7mcT54V9KIjg+d2wi9EXsPvAPKe7i7WjfVWB8g==}
-
-  '@shortercode/webzip@1.1.1-0':
-    resolution: {integrity: sha512-c+9LbU7MTqWDXS73Pf7vEm5AyFFfbuuHiMgqmApwkwD5BrlELKaSqKjofG4Gqd3c/NgF8fO0iR5NbPdE26jF2Q==}
 
   '@standard-schema/spec@1.1.0':
     resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
@@ -849,6 +852,9 @@ packages:
     peerDependenciesMeta:
       picomatch:
         optional: true
+
+  fflate@0.8.2:
+    resolution: {integrity: sha512-cPJU47OaAoCbg0pBvzsgpTPhmhqI5eJjh/JIu8tPj5q+T7iLvW/JAYUqmE7KOB4R1ZyEhzBaIQpQpardBF5z8A==}
 
   file-entry-cache@8.0.0:
     resolution: {integrity: sha512-XXTUwCvisa5oacNGRP9SfNtYBNAMi+RPwBFmblZEF7N7swHYQS6/Zfk7SRwx4D5j3CH211YNRco1DEMNVfZCnQ==}
@@ -1622,6 +1628,10 @@ packages:
       synckit:
         optional: true
 
+  unzipit@2.0.1:
+    resolution: {integrity: sha512-o+2dK2LsJCNL99OafsvPGM/z7NpkxOvV+UFE69h7cw+h31tArfX5yP/bPhaBempz6H5swGRdN8m3BSFtz/83Gw==}
+    engines: {node: '>=18'}
+
   uri-js@4.4.1:
     resolution: {integrity: sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==}
 
@@ -1950,8 +1960,6 @@ snapshots:
   '@rolldown/pluginutils@1.0.0-rc.17': {}
 
   '@rtsao/scc@1.1.0': {}
-
-  '@shortercode/webzip@1.1.1-0': {}
 
   '@standard-schema/spec@1.1.0': {}
 
@@ -2649,6 +2657,8 @@ snapshots:
   fdir@6.5.0(picomatch@4.0.4):
     optionalDependencies:
       picomatch: 4.0.4
+
+  fflate@0.8.2: {}
 
   file-entry-cache@8.0.0:
     dependencies:
@@ -3459,6 +3469,8 @@ snapshots:
   unrun@0.2.37:
     dependencies:
       rolldown: 1.0.0-rc.17
+
+  unzipit@2.0.1: {}
 
   uri-js@4.4.1:
     dependencies:

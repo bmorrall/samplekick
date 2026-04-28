@@ -1,19 +1,25 @@
-import { ZipArchive } from "@shortercode/webzip";
+import { zipSync, strToU8 } from "fflate";
 import { mkdtemp, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { Registry, ZipDataSource, OrganisedPathStrategy } from "../../../src";
 
+const makeZipBlob = (files: Record<string, string>): Blob => {
+  const entries = Object.fromEntries(
+    Object.entries(files).map(([path, content]) => [path, strToU8(content)]),
+  );
+  return new Blob([Buffer.from(zipSync(entries))]);
+};
+
 describe("ZIP I/O", () => {
   it("loads zip file entries into the registry through the FileSource interface", async () => {
-    const archive = new ZipArchive();
-    archive.set_folder("jazz");
-    await archive.set("jazz/bebop/track01.wav", "track01");
-    await archive.set("jazz/bebop/track02.wav", "track02");
-    await archive.set("rock/track01.wav", "track01");
-
-    const blob = archive.to_blob();
+    const blob = makeZipBlob({
+      "jazz/": "",
+      "jazz/bebop/track01.wav": "track01",
+      "jazz/bebop/track02.wav": "track02",
+      "rock/track01.wav": "track01",
+    });
     const dataSource = await ZipDataSource.fromBlob(blob);
     const registry = new Registry("library");
 
@@ -32,10 +38,9 @@ describe("ZIP I/O", () => {
   });
 
   it("zip entries expose no metadata by default", async () => {
-    const archive = new ZipArchive();
-    await archive.set("a/b.wav", "data");
-
-    const dataSource = await ZipDataSource.fromBlob(archive.to_blob());
+    const dataSource = await ZipDataSource.fromBlob(
+      makeZipBlob({ "a/b.wav": "data" }),
+    );
     const registry = new Registry("library");
     registry.load(dataSource);
 
@@ -47,11 +52,12 @@ describe("ZIP I/O", () => {
   });
 
   it("exports all entries to a directory via exportToDirectory", async () => {
-    const archive = new ZipArchive();
-    await archive.set("jazz/bebop/track01.wav", "track01-data");
-    await archive.set("jazz/bebop/track02.wav", "track02-data");
-
-    const dataSource = await ZipDataSource.fromBlob(archive.to_blob());
+    const dataSource = await ZipDataSource.fromBlob(
+      makeZipBlob({
+        "jazz/bebop/track01.wav": "track01-data",
+        "jazz/bebop/track02.wav": "track02-data",
+      }),
+    );
     const registry = new Registry("library");
     registry.load(dataSource);
     registry.setPathStrategy(OrganisedPathStrategy);

@@ -19,6 +19,7 @@
     "@types/node": "^25.5.0",
     "eslint": "^9.39.4",
     "eslint-config-love": "^153.0.0",
+    "fflate": "^0.8.2",
     "typescript": "^6.0.0",
     "typescript-eslint": "^8.59.0"
   }

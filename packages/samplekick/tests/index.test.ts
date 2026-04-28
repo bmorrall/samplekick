@@ -2,7 +2,7 @@ import { execSync, spawnSync } from "node:child_process";
 import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
-import { ZipArchive } from "@shortercode/webzip";
+import { zipSync, strToU8 } from "fflate";
 import { beforeAll, describe, expect, it } from "vitest";
 const CLI_PATH = resolve(import.meta.dirname, "../dist/index.mjs");
 
@@ -40,16 +40,16 @@ describe("samplekick CLI", () => {
   });
 
   it("dumps registry config as JSON to stdout when --output is omitted", async () => {
-    const archive = new ZipArchive();
-    await archive.set("Drums/kick.wav", "kick-data");
-    await archive.set("Loops/bass.wav", "bass-data");
+    const zipped = zipSync({
+      "Drums/kick.wav": strToU8("kick-data"),
+      "Loops/bass.wav": strToU8("bass-data"),
+    });
 
     const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
     const zipPath = join(tmpDir, "test-pack.zip");
 
     try {
-      const buffer = Buffer.from(await archive.to_blob().arrayBuffer());
-      await writeFile(zipPath, buffer);
+      await writeFile(zipPath, zipped);
 
       const result = spawnSync("node", [CLI_PATH, zipPath], { encoding: "utf8" });
       expect(result.status).toBe(0);
@@ -65,18 +65,18 @@ describe("samplekick CLI", () => {
   });
 
   it("processes a zip file and outputs files to the target directory", async () => {
-    const archive = new ZipArchive();
-    await archive.set("Drums/kick.wav", "kick-data");
-    await archive.set("Drums/snare.wav", "snare-data");
-    await archive.set("Loops/bass.wav", "bass-data");
+    const zipped = zipSync({
+      "Drums/kick.wav": strToU8("kick-data"),
+      "Drums/snare.wav": strToU8("snare-data"),
+      "Loops/bass.wav": strToU8("bass-data"),
+    });
 
     const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
     const zipPath = join(tmpDir, "test-pack.zip");
     const outputDir = join(tmpDir, "output");
 
     try {
-      const buffer = Buffer.from(await archive.to_blob().arrayBuffer());
-      await writeFile(zipPath, buffer);
+      await writeFile(zipPath, zipped);
 
       execSync(`node ${CLI_PATH} "${zipPath}" -o "${outputDir}"`);
 

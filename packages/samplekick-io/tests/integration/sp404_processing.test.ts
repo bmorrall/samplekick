@@ -1,4 +1,4 @@
-import { ZipArchive } from "@shortercode/webzip";
+import { zipSync, strToU8 } from "fflate";
 import { describe, expect, it } from "vitest";
 import {
   OrganisedPathStrategy,
@@ -14,14 +14,15 @@ describe("SP404 Mk2 end-to-end sample processing", () => {
   it("loads a zip, sanitizes names, applies manual edits, and produces the expected structure", async () => {
     // Build a zip archive with SP404-unfriendly names:
     // accented characters, dashes, and multiple dots
-    const archive = new ZipArchive();
-    await archive.set("Drüms/kick-01 (main).wav", "data");
-    await archive.set("Drüms/snâre.01.wav", "data");
-    await archive.set("Léad Loops/synth-pad.wav", "data");
-    await archive.set("Backing Loops/bass-line.wav", "data");
+    const zipped = zipSync({
+      "Drüms/kick-01 (main).wav": strToU8("data"),
+      "Drüms/snâre.01.wav": strToU8("data"),
+      "Léad Loops/synth-pad.wav": strToU8("data"),
+      "Backing Loops/bass-line.wav": strToU8("data"),
+    });
 
     // Load into registry via ZipDataSource
-    const dataSource = await ZipDataSource.fromBlob(archive.to_blob());
+    const dataSource = await ZipDataSource.fromBlob(new Blob([Buffer.from(zipped)]));
     const registry = new Registry("SP404 Påck.zip");
     registry.setPathStrategy(OrganisedPathStrategy);
     registry.load(dataSource);
