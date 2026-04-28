@@ -22,6 +22,10 @@ describe("index exports", () => {
     expect(api.SP404Mk2NameTransformer).toBeDefined();
   });
 
+  test("exports SkipJunkTransformer", () => {
+    expect(api.SkipJunkTransformer).toBeDefined();
+  });
+
   test("exports ZipDataSource", () => {
     expect(api.ZipDataSource).toBeDefined();
   });
@@ -41,6 +45,7 @@ describe("index exports", () => {
       "JsonConfigReader",
       "ZipDataSource",
       "DefaultPackageNameTransformer",
+      "SkipJunkTransformer",
       "SP404Mk2NameTransformer",
       "SourcePathStrategy",
       "OrganisedPathStrategy",

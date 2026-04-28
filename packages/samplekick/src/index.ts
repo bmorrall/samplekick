@@ -2,7 +2,7 @@
 import { readFile } from "node:fs/promises";
 import { basename, resolve } from "node:path";
 import { parseArgs } from "node:util";
-import { JsonConfigWriter, Registry, SourcePathStrategy, ZipDataSource } from "samplekick-io";
+import { JsonConfigWriter, Registry, SkipJunkTransformer, SourcePathStrategy, ZipDataSource } from "samplekick-io";
 
 const CLI_ARG_START = 2;
 
@@ -47,6 +47,7 @@ const dataSource = await ZipDataSource.fromBlob(blob);
 
 const registry = new Registry(basename(zipPath));
 registry.load(dataSource);
+registry.applyTransform(SkipJunkTransformer);
 registry.setPathStrategy(SourcePathStrategy);
 
 if (values.output === undefined) {
