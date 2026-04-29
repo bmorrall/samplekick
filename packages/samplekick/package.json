@@ -38,6 +38,7 @@
     "vitest": "^4.1.2"
   },
   "dependencies": {
+    "chalk": "^5.4.1",
     "samplekick-io": "workspace:*"
   }
 }
