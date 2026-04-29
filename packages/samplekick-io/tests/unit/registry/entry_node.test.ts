@@ -411,9 +411,12 @@ describe("EntryNode", () => {
       root.addNode(EntryNode.blankEntry("a"));
       root.addNode(EntryNode.blankEntry("b"));
       expect(root.toString()).toBe(
-        "root\n" +
-        "├── a\n" +
-        "└── b\n"
+        [
+          "root",
+          "├── a",
+          "└── b",
+          "",
+        ].join("\n"),
       );
     });
 
@@ -439,8 +442,11 @@ describe("EntryNode", () => {
       const child = root.addNode(EntryNode.blankEntry("child"));
       child.addNode(EntryNode.blankEntry("child/grandchild"));
       expect(child.toString()).toBe(
-        "child [pkg:my-pkg, type:typeA]\n" +
-        "└── grandchild\n",
+        [
+          "child [pkg:my-pkg, type:typeA]",
+          "└── grandchild",
+          "",
+        ].join("\n"),
       );
     });
   });
