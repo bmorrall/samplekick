@@ -22,4 +22,5 @@ export type {
   TransformEntry,
   TransformSource,
   DevicePreset,
+  ExportOptions,
 } from "./types";

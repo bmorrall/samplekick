@@ -77,6 +77,13 @@ export interface DevicePreset {
   transforms: readonly Transform[];
 }
 
+// Export
+
+export interface ExportOptions {
+  onBeforeWrite?: (entry: ConfigEntry, destRelPath: string) => void;
+  onAfterWrite?: (entry: ConfigEntry, destRelPath: string, error?: Error) => void;
+}
+
 // Path Strategy
 
 export interface PathStrategy {

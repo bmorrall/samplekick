@@ -14,6 +14,7 @@ import type {
   TransformEntry,
   TransformSource,
   ValidationResult,
+  ExportOptions,
 } from "./types";
 
 const buildRootNodeFromFileSource = (fileSource: FileSource): EntryNode => {
@@ -245,7 +246,7 @@ export class Registry implements FileSource, ConfigSource {
     return this.pathStrategy.destinationPathFor(node);
   }
 
-  async exportToDirectory(dirPath: string): Promise<void> {
+  async exportToDirectory(dirPath: string, options?: ExportOptions): Promise<void> {
     const promises: Array<Promise<void>> = [];
     this.rootNode.eachLeafNode((node) => {
       const destRelPath = this.destinationPathFor(node.getPath());
@@ -253,7 +254,18 @@ export class Registry implements FileSource, ConfigSource {
         /* v8 ignore next */
         return;
       }
-      promises.push(node.copyToPath(join(dirPath, destRelPath)));
+      const write = async (): Promise<void> => {
+        options?.onBeforeWrite?.(node, destRelPath);
+        try {
+          await node.copyToPath(join(dirPath, destRelPath));
+          options?.onAfterWrite?.(node, destRelPath);
+        } catch (err) {
+          const error = err instanceof Error ? err : new Error(String(err));
+          options?.onAfterWrite?.(node, destRelPath, error);
+          throw error;
+        }
+      };
+      promises.push(write());
     });
     await Promise.all(promises);
   }
