@@ -2,7 +2,7 @@
 import { createWriteStream } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { finished } from "node:stream/promises";
-import { basename, resolve } from "node:path";
+import { resolve } from "node:path";
 import { Readable } from "node:stream";
 import { parseArgs } from "node:util";
 import { JsonConfigReader, JsonConfigWriter, Registry, SkipJunkTransformer, SourcePathStrategy, ZipDataSource, SP404Mk2Preset } from "samplekick-io";
@@ -104,15 +104,11 @@ const [inputPath] = positionals;
 
 const zipPath = resolve(inputPath);
 
-const buffer = await readFile(zipPath).catch((err: unknown) => {
+const dataSource = await ZipDataSource.fromFile(zipPath).catch((err: unknown) => {
   if (typeof err === "object" && err !== null && "code" in err && err.code === "ENOENT") {
     console.error(`Error: file not found: ${zipPath}`);
     process.exit(1);
   }
-  throw err;
-});
-const blob = new Blob([buffer]);
-const dataSource = await ZipDataSource.fromBlob(blob).catch((err: unknown) => {
   if (err instanceof Error && err.message.includes("not zip file")) {
     console.error(`Error: not a valid zip file: ${zipPath}`);
     process.exit(1);
@@ -120,7 +116,7 @@ const dataSource = await ZipDataSource.fromBlob(blob).catch((err: unknown) => {
   throw err;
 });
 
-const registry = new Registry(basename(zipPath), dataSource);
+const registry = new Registry(dataSource);
 if (values["allow-junk"] !== true) {
   registry.applyTransform(SkipJunkTransformer);
 }

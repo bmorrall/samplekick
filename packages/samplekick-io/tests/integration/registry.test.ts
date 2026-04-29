@@ -6,12 +6,13 @@ import { createFileEntry, createRegistry } from "../support";
 describe("Registry load", () => {
   it("raises an error for duplicate entry paths", () => {
     const fileSource: FileSource = {
+      getName: () => "library",
       eachFileEntry: (fn) => {
         fn(createFileEntry({ path: "jazz/track01" }));
         fn(createFileEntry({ path: "jazz/track01" }));
       },
     };
-    expect(() => new Registry("library", fileSource)).toThrow(
+    expect(() => new Registry(fileSource)).toThrow(
       'Node already exists at path "jazz/track01"',
     );
   });
@@ -23,11 +24,12 @@ describe("Registry load", () => {
       createFileEntry({ path: "rock/track01" }),
     ];
     const fileSource: FileSource = {
+      getName: () => "library",
       eachFileEntry: (fn) => {
         entries.forEach(fn);
       },
     };
-    const registry = new Registry("library", fileSource);
+    const registry = new Registry(fileSource);
     const paths: string[] = [];
     registry.eachFileEntry((e) => {
       void paths.push(e.getPath());
@@ -41,12 +43,13 @@ describe("Registry load", () => {
 
   it("allows metadata to be set on entries after loading", () => {
     const fileSource: FileSource = {
+      getName: () => "library",
       eachFileEntry: (fn) => {
         fn(createFileEntry({ path: "jazz/bebop/track01" }));
         fn(createFileEntry({ path: "jazz/swing/track01" }));
       },
     };
-    const registry = new Registry("library", fileSource);
+    const registry = new Registry(fileSource);
     registry.setPackageName("jazz", "jazz-pack");
     registry.setSampleType("jazz", "Melodic Loops - Jazz");
 
@@ -117,7 +120,7 @@ describe("Registry eachFileEntry", () => {
       createFileEntry({ path: "rock/track01" }),
     ]);
 
-    const target = new Registry("target", source);
+    const target = new Registry(source);
 
     const fileEntries: FileEntry[] = [];
     target.eachFileEntry((e) => {
@@ -178,7 +181,7 @@ describe("Registry eachConfigEntry", () => {
     source.setPackageName("rock/track01", "rock-pack");
     source.setSampleType("rock/track01", "Melodic Loops - Rock");
 
-    const target = new Registry("target", source);
+    const target = new Registry(source);
     target.loadConfig(source);
 
     const targetEntries: ConfigEntry[] = [];
@@ -214,7 +217,8 @@ describe("Registry", () => {
   });
 
   it("child package name overrides parent", () => {
-    const registry = new Registry("library", {
+    const registry = new Registry({
+      getName: () => "library",
       eachFileEntry: (fn) => {
         fn(createFileEntry({ path: "jazz/bebop/track01" }));
         fn(createFileEntry({ path: "jazz/swing/track01" }));

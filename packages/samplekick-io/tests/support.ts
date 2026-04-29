@@ -1,4 +1,5 @@
 import { vi } from "vitest";
+import { zipSync, strToU8 } from "fflate";
 import type {
   ConfigSource,
   FileSource,
@@ -8,7 +9,7 @@ import type {
   TransformEntry,
   TransformSource,
 } from "../src";
-import { Registry } from "../src";
+import { Registry, ZipDataSource } from "../src";
 import { getPathName } from "../src/path_utils";
 
 // Entries
@@ -282,7 +283,8 @@ export const createFileNodeHierarchy = (
 
 // File Source
 
-export const createFileSource = (entries: FileEntry[]): FileSource => ({
+export const createFileSource = (name: string, entries: FileEntry[]): FileSource => ({
+  getName: () => name,
   eachFileEntry: (fn: (entry: FileEntry) => void) => {
     entries.forEach(fn);
   },
@@ -298,9 +300,21 @@ export const collectFileEntries = (fileSource: FileSource): FileEntry[] => {
   return entries;
 }
 
+// Zip Data Source
+
+export const createZipDataSource = async (name: string, files: Record<string, string>): Promise<ZipDataSource> => {
+  const entries = Object.fromEntries(
+    Object.entries(files).map(([path, content]) => [path, strToU8(content)]),
+  );
+  return await ZipDataSource.fromBlob(new Blob([Buffer.from(zipSync(entries))]), name);
+};
+
+export const createZipRegistry = async (name: string, files: Record<string, string>): Promise<Registry> =>
+  new Registry(await createZipDataSource(name, files));
+
 // Registry
 
 export const createRegistry = (
   name: string,
   files: FileEntry[],
-): Registry => new Registry(name, createFileSource(files));
+): Registry => new Registry(createFileSource(name, files));

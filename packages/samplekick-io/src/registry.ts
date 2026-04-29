@@ -16,8 +16,8 @@ import type {
   ValidationResult,
 } from "./types";
 
-const buildRootNodeFromFileSource = (fileName: string, fileSource: FileSource): EntryNode => {
-  const rootNode = EntryNode.buildRootNode(fileName);
+const buildRootNodeFromFileSource = (fileSource: FileSource): EntryNode => {
+  const rootNode = EntryNode.buildRootNode(fileSource.getName());
   fileSource.eachFileEntry((entry) => {
     if (entry.getPath() === "") {
       throw new Error("Entry path must not be empty");
@@ -62,12 +62,16 @@ export class Registry implements FileSource, ConfigSource {
   private pathStrategy: PathStrategy = SourcePathStrategy;
   private readonly validator: SimpleValidator;
 
-  constructor(fileName: string, fileSource: FileSource) {
-    this.rootNode = buildRootNodeFromFileSource(fileName, fileSource);
+  constructor(fileSource: FileSource) {
+    this.rootNode = buildRootNodeFromFileSource(fileSource);
     this.validator = new SimpleValidator();
   }
 
   // FileSource methods
+
+  getName(): string {
+    return this.rootNode.getName();
+  }
 
   eachFileEntry(fn: (entry: FileEntry) => void): void {
     this.rootNode.eachLeafNode(fn);

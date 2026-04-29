@@ -26,6 +26,7 @@ export interface FileEntry {
 }
 
 export interface FileSource {
+  getName: () => string;
   eachFileEntry: (fn: (entry: FileEntry) => void) => void;
 }
 
