@@ -336,7 +336,7 @@ describe("samplekick CLI", () => {
       expect(await readFile(join(outputDir, "Drums/kick.wav"), "utf8")).toBe("kick-data");
 
       expect(result.stdout).toContain("Drums/kick.wav");
-      expect(result.stdout).toContain(`Exported to ${outputDir}`);
+      expect(result.stdout).toContain(`Exported 1 file to ${outputDir}`);
     } finally {
       await rm(tmpDir, { recursive: true });
     }

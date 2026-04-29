@@ -4,6 +4,7 @@ import type { ExportReporter } from "./export_reporter";
 
 export class SimpleExportReporter implements ExportReporter {
   private readonly output: Writable;
+  private totalCount = 0;
   private errorCount = 0;
 
   constructor(output: Writable = process.stdout) {
@@ -15,6 +16,7 @@ export class SimpleExportReporter implements ExportReporter {
   }
 
   onAfterWrite(_entry: ConfigEntry, destRelPath: string, error?: Error): void {
+    this.totalCount += 1;
     if (error === undefined) {
       this.output.write(`${destRelPath}\n`);
     } else {
@@ -24,11 +26,13 @@ export class SimpleExportReporter implements ExportReporter {
   }
 
   onComplete(dirPath: string): void {
+    const filePlural = this.totalCount === 1 ? "file" : "files";
+    const totalPart = `${this.totalCount} ${filePlural}`;
     if (this.errorCount > 0) {
-      const plural = this.errorCount === 1 ? "error" : "errors";
-      this.output.write(`Exported to ${dirPath} (${this.errorCount} ${plural})\n`);
+      const errPlural = this.errorCount === 1 ? "error" : "errors";
+      this.output.write(`Exported ${totalPart} to ${dirPath} (${this.errorCount} ${errPlural})\n`);
     } else {
-      this.output.write(`Exported to ${dirPath}\n`);
+      this.output.write(`Exported ${totalPart} to ${dirPath}\n`);
     }
   }
 }
