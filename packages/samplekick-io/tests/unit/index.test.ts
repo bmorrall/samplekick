@@ -49,6 +49,7 @@ describe("index exports", () => {
       "SP404Mk2NameTransformer",
       "SourcePathStrategy",
       "OrganisedPathStrategy",
+      "SP404Mk2Preset",
     ]);
   });
 });

@@ -5,12 +5,36 @@ import { finished } from "node:stream/promises";
 import { basename, resolve } from "node:path";
 import { Readable } from "node:stream";
 import { parseArgs } from "node:util";
-import { JsonConfigReader, JsonConfigWriter, Registry, SkipJunkTransformer, SourcePathStrategy, ZipDataSource } from "samplekick-io";
+import { JsonConfigReader, JsonConfigWriter, Registry, SkipJunkTransformer, SourcePathStrategy, ZipDataSource, SP404Mk2Preset } from "samplekick-io";
+import type { DevicePreset } from "samplekick-io";
 import packageJson from "../package.json" with { type: "json" };
 
 const CLI_ARG_START = 2;
+const DEVICE_ALIAS_PAD_WIDTH = 24;
 
-const HELP_TEXT = `\
+const DEVICE_PRESETS: Record<string, DevicePreset> = {
+  sp404mk2: SP404Mk2Preset,
+  sp404: SP404Mk2Preset,
+  "404": SP404Mk2Preset,
+};
+
+const buildHelpText = (): string => {
+  const seen = new Set<DevicePreset>();
+  const deviceLines: string[] = [];
+  for (const preset of Object.values(DEVICE_PRESETS)) {
+    if (!seen.has(preset)) seen.add(preset);
+  }
+  const sorted = [...seen].sort((a, b) => a.displayName.localeCompare(b.displayName));
+  for (const preset of sorted) {
+    const aliases = Object.entries(DEVICE_PRESETS)
+      .filter(([, p]) => p === preset)
+      .map(([key]) => key)
+      .sort((a, b) => b.length - a.length)
+      .join(", ");
+    deviceLines.push(`  ${aliases.padEnd(DEVICE_ALIAS_PAD_WIDTH)}${preset.displayName}`);
+  }
+
+  return `\
 samplekick/${packageJson.version}
 
 Usage: samplekick <zip-file> [-o <output-dir>]
@@ -23,18 +47,24 @@ Options:
                           (omit to dump JSON config to stdout)
   -c, --config <path>     Load a JSON config file to apply to the pack
   -w, --write <path>      Write the pack config as JSON to a file
+  -d, --device <name>     Apply a device preset
       --allow-junk        Keep junk entries (e.g. __MACOSX, hidden files)
       --debug             Print pack string representation to stdout
                           without writing any files
       --verbose           Show inherited tags on all nodes in debug output
   -v, --version           Show version number
   -h, --help              Show this help message
+
+Devices:
+${deviceLines.join("\n")}
 `;
+};
 
 const { values, positionals } = parseArgs({
   args: process.argv.slice(CLI_ARG_START),
   options: {
     config: { type: "string", short: "c" },
+    device: { type: "string", short: "d" },
     output: { type: "string", short: "o" },
     write: { type: "string", short: "w" },
     "allow-junk": { type: "boolean" },
@@ -52,13 +82,22 @@ if (values.version === true) {
 }
 
 if (values.help === true || process.argv.slice(CLI_ARG_START).length === 0) {
-  console.log(HELP_TEXT);
+  console.log(buildHelpText());
   process.exit(0);
 }
 
 if (positionals.length === 0) {
   console.error("Error: missing required argument <zip-file>\n");
-  console.error(HELP_TEXT);
+  console.error(buildHelpText());
+  process.exit(1);
+}
+
+const devicePreset =
+  values.device === undefined ? undefined : DEVICE_PRESETS[values.device];
+if (values.device !== undefined && devicePreset === undefined) {
+  console.error(
+    `Error: unknown device "${values.device}". Valid devices: ${Object.keys(DEVICE_PRESETS).join(", ")}`,
+  );
   process.exit(1);
 }
 const [inputPath] = positionals;
@@ -84,6 +123,11 @@ const dataSource = await ZipDataSource.fromBlob(blob).catch((err: unknown) => {
 const registry = new Registry(basename(zipPath), dataSource);
 if (values["allow-junk"] !== true) {
   registry.applyTransform(SkipJunkTransformer);
+}
+if (devicePreset !== undefined) {
+  for (const transform of devicePreset.transforms) {
+    registry.applyTransform(transform);
+  }
 }
 if (values.config !== undefined) {
   const configPath = resolve(values.config);
