@@ -138,6 +138,16 @@ describe("PrettyExportReporter", () => {
   });
 
   describe("onComplete", () => {
+    it("writes 'Exported to <dirPath>' on its own line after entries", () => {
+      const { reporter, getOutput } = createReporter();
+      reporter.onBeforeWrite(createEntry("a.wav"), "a.wav");
+      reporter.onAfterWrite(createEntry("a.wav"), "a.wav");
+      reporter.onComplete("/output/dir");
+      // The \r before onComplete ensures we're at col 0; message must start after a \r or \n
+      const raw = getOutput();
+      expect(raw).toMatch(/[\r\n]Exported to \/output\/dir/v);
+    });
+
     it("writes 'Exported to <dirPath>' when there are no errors", () => {
       const { reporter, getOutput } = createReporter();
       reporter.onComplete("/output/dir");

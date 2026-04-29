@@ -37,8 +37,8 @@ export class PrettyExportReporter implements ExportReporter {
       this.output.write(updatedLine);
       this.lines[lineIndex] = updatedLine;
 
-      // Move cursor back down to the blank row below all content
-      this.output.write(`\x1B[${linesBelow + 1}B`);
+      // Move cursor back down to the blank row below all content, reset to col 0
+      this.output.write(`\x1B[${linesBelow + 1}B\r`);
     } else {
       this.errorCount += 1;
 
