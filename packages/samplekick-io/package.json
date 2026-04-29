@@ -1,7 +1,7 @@
 {
   "name": "samplekick-io",
   "type": "module",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Processes and normalises music sample packs from zip archives.",
   "author": "Ben Morrall <bemo56@gmail.com>",
   "license": "MIT",
