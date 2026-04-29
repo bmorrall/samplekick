@@ -33,7 +33,20 @@ describe("Registry.toString", () => {
     );
   });
 
-  it("renders tags on nodes that have them", () => {
+  it("renders tags on nodes whose name has changed", () => {
+    const registry = createRegistry("library", [createFileEntry({ path: "jazz/track01" })]);
+    registry.setName("jazz", "Jazz Loops");
+    registry.setPackageName("jazz", "jazz-pack");
+    registry.setSampleType("jazz", "Melodic Loops - Jazz");
+
+    expect(registry.toString()).toBe(
+      "library\n" +
+        "└── Jazz Loops [pkg:jazz-pack, type:Melodic Loops - Jazz, orig:jazz]\n" +
+        "    └── track01\n",
+    );
+  });
+
+  it("renders pkg/type tags even when name has not changed", () => {
     const registry = createRegistry("library", [createFileEntry({ path: "jazz/track01" })]);
     registry.setPackageName("jazz", "jazz-pack");
     registry.setSampleType("jazz", "Melodic Loops - Jazz");

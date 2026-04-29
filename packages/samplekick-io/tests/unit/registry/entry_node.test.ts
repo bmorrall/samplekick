@@ -400,10 +400,10 @@ describe("EntryNode", () => {
     });
 
     it("renders the renamed node name", () => {
-      const node = EntryNode.blankEntry("root");
-      node.setName("renamed-root");
+      const node = EntryNode.blankEntry("node");
+      node.setName("renamed-node");
 
-      expect(node.toString()).toBe("renamed-root\n");
+      expect(node.toString()).toBe("renamed-node [orig:node]\n");
     });
 
     it("renders a node with children", () => {
