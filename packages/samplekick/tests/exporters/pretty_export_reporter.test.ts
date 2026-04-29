@@ -31,11 +31,12 @@ const createReporter = (): { reporter: PrettyExportReporter; getOutput: () => st
 
 describe("PrettyExportReporter", () => {
   describe("onBeforeWrite", () => {
-    it("writes source path, arrow and grey destination path", () => {
+    it("writes source path on one line and arrow with grey destination on the next", () => {
       const { reporter, getOutput } = createReporter();
       reporter.onBeforeWrite(createEntry("drums/kick.wav"), "loops/my-pack/kick.wav");
       const stripped = stripAnsi(getOutput());
-      expect(stripped).toContain("drums/kick.wav → loops/my-pack/kick.wav");
+      expect(stripped).toContain("drums/kick.wav");
+      expect(stripped).toContain("  → loops/my-pack/kick.wav");
     });
 
     it("applies grey color to the destination path", () => {
@@ -55,7 +56,7 @@ describe("PrettyExportReporter", () => {
       const raw = getOutput();
       // green is ANSI code 32
       expect(raw).toContain("\x1B[32m");
-      expect(stripAnsi(raw)).toContain("kick.wav → kick.wav");
+      expect(stripAnsi(raw)).toContain("  → kick.wav");
     });
 
     it("emits cursor-up and cursor-down when there are lines below", () => {
@@ -68,10 +69,9 @@ describe("PrettyExportReporter", () => {
       reporter.onAfterWrite(createEntry("a.wav"), "a.wav");
       const raw = getOutput();
 
-      // Should move up 3 rows (linesBelow=2, +1)
-      expect(raw).toContain("\x1B[3A");
-      // Should move back down 3 rows
-      expect(raw).toContain("\x1B[3B");
+      // Each entry is 2 lines; a_arrow is at index 1, linesBelow=4, so cursor moves 5 rows
+      expect(raw).toContain("\x1B[5A");
+      expect(raw).toContain("\x1B[5B");
     });
 
     it("emits cursor-up of 1 when the entry is the last line", () => {
@@ -95,17 +95,17 @@ describe("PrettyExportReporter", () => {
       const raw = getOutput();
       // red is ANSI code 31
       expect(raw).toContain("\x1B[31m");
-      expect(stripAnsi(raw)).toContain("kick.wav → kick.wav");
+      expect(stripAnsi(raw)).toContain("  → disk full");
     });
 
-    it("writes an indented error message below the file line", () => {
+    it("shows error message on the arrow line instead of destination path", () => {
       const { reporter, getOutput } = createReporter();
       reporter.onBeforeWrite(createEntry("kick.wav"), "kick.wav");
       reporter.onAfterWrite(createEntry("kick.wav"), "kick.wav", new Error("disk full"));
-      expect(stripAnsi(getOutput())).toContain("  disk full");
+      expect(stripAnsi(getOutput())).toContain("  → disk full");
     });
 
-    it("rewrites lines below the error entry and shifts their indices", () => {
+    it("completes a later entry correctly after a prior entry errored", () => {
       const { reporter, getOutput } = createReporter();
       reporter.onBeforeWrite(createEntry("a.wav"), "a.wav");
       reporter.onBeforeWrite(createEntry("b.wav"), "b.wav");
@@ -113,17 +113,14 @@ describe("PrettyExportReporter", () => {
 
       reporter.onAfterWrite(createEntry("a.wav"), "a.wav", new Error("fail"));
 
-      // After the error on a.wav, c.wav should have lineIndex=3 (shifted by 1 for error detail)
-      // Completing c.wav should therefore emit cursor-up of 4 (linesBelow=0 for c.wav... wait)
-      // Lines after error: [a_red, detail, b_pending, c_pending]
-      // c.wav is now at index 3, linesBelow=0, so cursor-up should be 1
+      // c_arrow is at index 5, linesBelow=0, so cursor-up should be 1
       reporter.onAfterWrite(createEntry("c.wav"), "c.wav");
       const raw = getOutput();
       expect(raw).toContain("\x1B[1A");
-      expect(stripAnsi(raw)).toContain("c.wav → c.wav");
+      expect(stripAnsi(raw)).toContain("  → c.wav");
     });
 
-    it("re-renders all pending lines below the error so they remain visible", () => {
+    it("pending lines below remain visible in the output after an error", () => {
       const { reporter, getOutput } = createReporter();
       reporter.onBeforeWrite(createEntry("a.wav"), "a.wav");
       reporter.onBeforeWrite(createEntry("b.wav"), "b.wav");
@@ -132,8 +129,10 @@ describe("PrettyExportReporter", () => {
       reporter.onAfterWrite(createEntry("a.wav"), "a.wav", new Error("fail"));
 
       const stripped = stripAnsi(getOutput());
-      expect(stripped).toContain("b.wav → b.wav");
-      expect(stripped).toContain("c.wav → c.wav");
+      expect(stripped).toContain("b.wav");
+      expect(stripped).toContain("  → b.wav");
+      expect(stripped).toContain("c.wav");
+      expect(stripped).toContain("  → c.wav");
     });
   });
 
