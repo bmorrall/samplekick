@@ -41,7 +41,7 @@ describe("Registry.toString", () => {
 
     expect(registry.toString()).toBe(
       "library\n" +
-        "└── Jazz Loops [pkg:jazz-pack, type:Melodic Loops - Jazz, orig:jazz]\n" +
+        "└── Jazz Loops* [pkg:jazz-pack, type:Melodic Loops - Jazz]\n" +
         "    └── track01\n",
     );
   });
