@@ -6,9 +6,10 @@ import { createFileEntry, createFileSource } from "../support";
 describe("Registry constructor", () => {
   it("calls eachFileEntry on the FileSource", () => {
     const fileSource: FileSource = {
+      getName: () => "root",
       eachFileEntry: vi.fn<FileSource["eachFileEntry"]>(),
     };
-    const _registry = new Registry("root", fileSource);
+    const _registry = new Registry(fileSource);
     expect(fileSource.eachFileEntry).toHaveBeenCalledOnce();
     expect(_registry).toBeDefined();
   });
@@ -18,7 +19,7 @@ describe("Registry constructor", () => {
       createFileEntry({ path: "a/b" }),
       createFileEntry({ path: "a/c" }),
     ];
-    const registry = new Registry("root", createFileSource(entries));
+    const registry = new Registry(createFileSource("root", entries));
     const paths: string[] = [];
     registry.eachFileEntry((e) => {
       void paths.push(e.getPath());
@@ -27,7 +28,7 @@ describe("Registry constructor", () => {
   });
 
   it("keeps a loaded entry addressable by path when its name differs from the path leaf", () => {
-    const registry = new Registry("root", createFileSource([
+    const registry = new Registry(createFileSource("root", [
       createFileEntry({ path: "a/b", name: "Renamed B" }),
     ]));
 
@@ -36,19 +37,20 @@ describe("Registry constructor", () => {
 
   it("throws when two entries share the same path", () => {
     const fileSource: FileSource = {
+      getName: () => "root",
       eachFileEntry: (fn) => {
         fn(createFileEntry({ path: "a/b", name: "Original B" }));
         fn(createFileEntry({ path: "a/b", name: "renamed-b" }));
       },
     };
-    expect(() => new Registry("root", fileSource)).toThrow('Node already exists at path "a/b"');
+    expect(() => new Registry(fileSource)).toThrow('Node already exists at path "a/b"');
   });
 
   it("throws an error when the file source provides an entry with an empty path", () => {
-    const fileSource = createFileSource([
+    const fileSource = createFileSource("root", [
       createFileEntry({ path: "" }),
     ]);
-    expect(() => new Registry("root", fileSource)).toThrow(
+    expect(() => new Registry(fileSource)).toThrow(
       "Entry path must not be empty",
     );
   });

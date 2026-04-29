@@ -12,7 +12,7 @@ describe("Registry.exportToDirectory", () => {
   it("calls copyToPath on each leaf node with the destination path", async () => {
     const entryA = createCopyableEntry("a.wav");
     const entryB = createCopyableEntry("b.wav");
-    const registry = new Registry("root", createFileSource([entryA, entryB]));
+    const registry = new Registry(createFileSource("root", [entryA, entryB]));
     registry.setPathStrategy(OrganisedPathStrategy);
     registry.setPackageName("my-pack");
     registry.setSampleType("loops");
@@ -29,7 +29,7 @@ describe("Registry.exportToDirectory", () => {
 
   it("skips entries where pathStrategy returns undefined", async () => {
     const entry = createCopyableEntry("a.wav");
-    const registry = new Registry("root", createFileSource([entry]));
+    const registry = new Registry(createFileSource("root", [entry]));
     // no packageName or sampleType → OrganisedPathStrategy returns undefined, SourcePathStrategy returns the name
     // use a custom strategy that always returns undefined
     registry.setPathStrategy({ destinationPathFor: () => undefined });
@@ -41,7 +41,7 @@ describe("Registry.exportToDirectory", () => {
 
   it("skips entries where isSkipped is true", async () => {
     const entry = createCopyableEntry("a.wav");
-    const registry = new Registry("root", createFileSource([entry]));
+    const registry = new Registry(createFileSource("root", [entry]));
     registry.setPathStrategy(OrganisedPathStrategy);
     registry.setSkipped("a.wav", true);
     registry.setPackageName("my-pack");
@@ -55,7 +55,7 @@ describe("Registry.exportToDirectory", () => {
   it("exports entries from nested directories", async () => {
     const entryA = createCopyableEntry("pack/drums/kick.wav");
     const entryB = createCopyableEntry("pack/drums/snare.wav");
-    const registry = new Registry("root", createFileSource([entryA, entryB]));
+    const registry = new Registry(createFileSource("root", [entryA, entryB]));
     registry.setPathStrategy(OrganisedPathStrategy);
     registry.setPackageName("my-pack");
     registry.setSampleType("drums");

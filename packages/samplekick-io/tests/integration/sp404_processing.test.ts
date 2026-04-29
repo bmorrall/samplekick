@@ -1,11 +1,9 @@
-import { zipSync, strToU8 } from "fflate";
 import { describe, expect, it } from "vitest";
 import {
   OrganisedPathStrategy,
-  Registry,
-  ZipDataSource,
 } from "../../src";
 import { SP404Mk2NameTransformer, DefaultPackageNameTransformer } from "../../src/transformers";
+import { createZipRegistry } from "../support";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -14,16 +12,12 @@ describe("SP404 Mk2 end-to-end sample processing", () => {
   it("loads a zip, sanitizes names, applies manual edits, and produces the expected structure", async () => {
     // Build a zip archive with SP404-unfriendly names:
     // accented characters, dashes, and multiple dots
-    const zipped = zipSync({
-      "Drüms/kick-01 (main).wav": strToU8("data"),
-      "Drüms/snâre.01.wav": strToU8("data"),
-      "Léad Loops/synth-pad.wav": strToU8("data"),
-      "Backing Loops/bass-line.wav": strToU8("data"),
+    const registry = await createZipRegistry("SP404 Påck.zip", {
+      "Drüms/kick-01 (main).wav": "data",
+      "Drüms/snâre.01.wav": "data",
+      "Léad Loops/synth-pad.wav": "data",
+      "Backing Loops/bass-line.wav": "data",
     });
-
-    // Load into registry via ZipDataSource
-    const dataSource = await ZipDataSource.fromBlob(new Blob([Buffer.from(zipped)]));
-    const registry = new Registry("SP404 Påck.zip", dataSource);
     registry.setPathStrategy(OrganisedPathStrategy);
 
     // Sanitize all node names for SP404 Mk2 compatibility:

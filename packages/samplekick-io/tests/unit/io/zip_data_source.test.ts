@@ -1,23 +1,12 @@
-import { zipSync, strToU8 } from "fflate";
 import { mkdir, writeFile } from "node:fs/promises";
 import { describe, expect, it, vi } from "vitest";
-import { ZipDataSource } from "../../../src";
-import type { FileEntry } from "../../../src";
+import type { FileEntry, ZipDataSource } from "../../../src";
+import { createZipDataSource } from "../../support";
 
 vi.mock("node:fs/promises", () => ({
   mkdir: vi.fn<() => Promise<void>>().mockResolvedValue(undefined),
   writeFile: vi.fn<() => Promise<void>>().mockResolvedValue(undefined),
 }));
-
-const buildDataSource = async (
-  files: Record<string, string>,
-): Promise<ZipDataSource> => {
-  const entries = Object.fromEntries(
-    Object.entries(files).map(([path, content]) => [path, strToU8(content)]),
-  );
-  const zipped = zipSync(entries);
-  return await ZipDataSource.fromBlob(new Blob([Buffer.from(zipped)]));
-};
 
 const collectConfigEntries = (dataSource: ZipDataSource): FileEntry[] => {
   const entries: FileEntry[] = [];
@@ -29,7 +18,7 @@ const collectConfigEntries = (dataSource: ZipDataSource): FileEntry[] => {
 
 describe("ZipDataSource", () => {
   it("yields one entry per file in the archive", async () => {
-    const dataSource = await buildDataSource({
+    const dataSource = await createZipDataSource("example.zip", {
       "a/b.wav": "data",
       "c.wav": "data2",
     });
@@ -40,11 +29,10 @@ describe("ZipDataSource", () => {
   });
 
   it("skips folder entries", async () => {
-    const zipped = zipSync({
-      "my-folder/": new Uint8Array(0),
-      "my-folder/track.wav": strToU8("data"),
+    const dataSource = await createZipDataSource("example.zip", {
+      "my-folder/": "",
+      "my-folder/track.wav": "data",
     });
-    const dataSource = await ZipDataSource.fromBlob(new Blob([Buffer.from(zipped)]));
 
     const paths = collectConfigEntries(dataSource).map((e) => e.getPath());
 
@@ -52,7 +40,7 @@ describe("ZipDataSource", () => {
   });
 
   it("uses the path basename as the entry name", async () => {
-    const dataSource = await buildDataSource({
+    const dataSource = await createZipDataSource("example.zip", {
       "jazz/bebop/track01.wav": "data",
     });
 
@@ -63,7 +51,7 @@ describe("ZipDataSource", () => {
 
   describe("copyToPath", () => {
     it("creates the destination directory and writes the file", async () => {
-      const dataSource = await buildDataSource({
+      const dataSource = await createZipDataSource("example.zip", {
         "samples/kick.wav": "kick-data",
       });
       const [entry] = collectConfigEntries(dataSource);
@@ -78,7 +66,7 @@ describe("ZipDataSource", () => {
     });
 
     it("creates nested directories for deeply nested destination paths", async () => {
-      const dataSource = await buildDataSource({ "a.wav": "data" });
+      const dataSource = await createZipDataSource("example.zip", { "a.wav": "data" });
       const [entry] = collectConfigEntries(dataSource);
 
       await entry.copyToPath("/deep/nested/dir/a.wav");

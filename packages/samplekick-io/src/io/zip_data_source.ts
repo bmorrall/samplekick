@@ -1,5 +1,5 @@
-import { mkdir, writeFile } from "node:fs/promises";
-import { dirname } from "node:path";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { basename, dirname } from "node:path";
 import { unzip } from "unzipit";
 import type { ZipEntry } from "unzipit";
 import type { FileSource, FileEntry } from "../types";
@@ -20,14 +20,26 @@ const createFileEntryForZip = (
 
 export class ZipDataSource implements FileSource {
   private readonly entries: Map<string, ZipEntry>;
+  private readonly name: string;
 
-  constructor(entries: Map<string, ZipEntry>) {
+  constructor(entries: Map<string, ZipEntry>, name: string) {
     this.entries = entries;
+    this.name = name;
   }
 
-  static async fromBlob(blob: Blob): Promise<ZipDataSource> {
+  static async fromBlob(blob: Blob, name: string): Promise<ZipDataSource> {
     const { entries } = await unzip(blob);
-    return new ZipDataSource(new Map(Object.entries(entries)));
+    return new ZipDataSource(new Map(Object.entries(entries)), name);
+  }
+
+  static async fromFile(filePath: string): Promise<ZipDataSource> {
+    const buffer = await readFile(filePath);
+    const blob = new Blob([buffer]);
+    return await ZipDataSource.fromBlob(blob, basename(filePath));
+  }
+
+  getName(): string {
+    return this.name;
   }
 
   eachFileEntry(fn: (entry: FileEntry) => void): void {
