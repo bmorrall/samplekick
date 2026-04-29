@@ -170,20 +170,25 @@ describe("samplekick CLI", () => {
       "Drums/kick.wav": strToU8("kick-data"),
       "Loops/bass.wav": strToU8("bass-data"),
     });
+    const config = JSON.stringify([
+      { path: "Drums/kick.wav", name: "kick_01.wav" },
+    ]);
 
     const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
     const zipPath = join(tmpDir, "test-pack.zip");
+    const configPath = join(tmpDir, "config.json");
 
     try {
       await writeFile(zipPath, zipped);
+      await writeFile(configPath, config);
 
-      const result = spawnSync("node", [CLI_PATH, zipPath, "--debug"], { encoding: "utf8" });
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--config", configPath, "--debug"], { encoding: "utf8" });
       expect(result.status).toBe(0);
 
       const expected = [
         "test-pack.zip",
         "├── Drums",
-        "│   └── kick.wav",
+        "│   └── kick_01.wav [renamed]",
         "└── Loops",
         "    └── bass.wav",
       ].join("\n");
@@ -221,7 +226,7 @@ describe("samplekick CLI", () => {
       const expected = [
         "test-pack.zip",
         "├── Drums [pkg:my-pack, type:Percussion]",
-        "│   └── kick_01.wav [pkg:my-pack, type:Percussion, orig:kick.wav]",
+        "│   └── kick_01.wav [renamed, pkg:my-pack, type:Percussion, orig:kick.wav]",
         "└── Loops",
         "    └── bass.wav",
       ].join("\n");

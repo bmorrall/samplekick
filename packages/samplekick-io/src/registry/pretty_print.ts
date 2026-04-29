@@ -12,8 +12,7 @@ function printNode(
 ): string {
   const children = node.getChildNodes();
   const tagStr = formatTags(node, showInherited, verbose);
-  const isRenamed = !node.isRootNode() && node.getOwnName() !== undefined && node.getOwnName() !== node.getEntryName();
-  const displayName = node.getName() + (!verbose && isRenamed ? "*" : "");
+  const displayName = node.getName();
   let output = `${prefix}${displayName}${tagStr}\n`;
 
   const lastIndex = children.length - 1;
@@ -38,6 +37,10 @@ function printNode(
   return output;
 }
 
+function isNodeRenamed(node: EntryNode): boolean {
+  return !node.isRootNode() && node.getOwnName() !== undefined && node.getOwnName() !== node.getEntryName();
+}
+
 function formatTags(node: EntryNode, showInherited: boolean, verbose: boolean): string {
   const tags: string[] = [];
   const packageName = showInherited
@@ -46,14 +49,13 @@ function formatTags(node: EntryNode, showInherited: boolean, verbose: boolean): 
   const sampleType = showInherited
     ? node.getSampleType()
     : node.getOwnSampleType();
+  const isRenamed = isNodeRenamed(node);
+  if (isRenamed) tags.push("renamed");
   if (packageName !== undefined) tags.push(`pkg:${packageName}`);
   if (sampleType !== undefined) tags.push(`type:${sampleType}`);
   if (node.isSkipped() === true) tags.push("skipped");
-  if (verbose) {
-    const entryName = node.getEntryName();
-    if (!node.isRootNode() && node.getOwnName() !== undefined && node.getOwnName() !== entryName) {
-      tags.push(`orig:${entryName}`);
-    }
+  if (verbose && isRenamed) {
+    tags.push(`orig:${node.getEntryName()}`);
   }
   return tags.length > 0 ? ` [${tags.join(", ")}]` : "";
 }

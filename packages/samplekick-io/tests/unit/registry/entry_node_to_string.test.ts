@@ -213,20 +213,20 @@ describe("EntryNode.toString", () => {
   });
 
   describe("orig tag", () => {
-    it("shows * suffix on a child node when its name differs from the entry name", () => {
+    it("shows [renamed] tag on a child node when its name differs from the entry name", () => {
       const root = EntryNode.fromEntry(createFileEntry({ path: "", name: "root" }));
       const child = root.addNode(createFileEntry({ path: "original.wav" }));
       child.setName("renamed.wav");
       expect(root.toString()).toBe(
         [
           "root",
-          "└── renamed.wav*",
+          "└── renamed.wav [renamed]",
           "",
         ].join("\n"),
       );
     });
 
-    it("does not show * suffix when the name matches the entry name", () => {
+    it("does not show [renamed] tag when the name matches the entry name", () => {
       const root = EntryNode.fromEntry(createFileEntry({ path: "", name: "root" }));
       const child = root.addNode(createFileEntry({ path: "original.wav" }));
       child.setName("original.wav");
@@ -239,7 +239,7 @@ describe("EntryNode.toString", () => {
       );
     });
 
-    it("does not show * suffix on the root node", () => {
+    it("does not show [renamed] tag on the root node", () => {
       const root = EntryNode.fromEntry(createFileEntry({ path: "", name: "original" }));
       root.setName("renamed");
       expect(root.toString()).toBe("renamed\n");
@@ -297,7 +297,7 @@ describe("EntryNode.toString", () => {
       expect(root.toString(true)).toBe(
         [
           "root",
-          "└── renamed.wav [orig:original.wav]",
+          "└── renamed.wav [renamed, orig:original.wav]",
           "",
         ].join("\n"),
       );

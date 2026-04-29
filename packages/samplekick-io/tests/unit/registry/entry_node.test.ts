@@ -403,7 +403,7 @@ describe("EntryNode", () => {
       const node = EntryNode.blankEntry("node");
       node.setName("renamed-node");
 
-      expect(node.toString()).toBe("renamed-node*\n");
+      expect(node.toString()).toBe("renamed-node [renamed]\n");
     });
 
     it("renders a node with children", () => {
