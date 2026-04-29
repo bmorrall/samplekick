@@ -1,13 +1,14 @@
 import type { EntryNode } from "./entry_node";
 
-export function prettyPrint(node: EntryNode): string {
-  return printNode(node, "", true);
+export function prettyPrint(node: EntryNode, verbose = false): string {
+  return printNode(node, "", true, verbose);
 }
 
 function printNode(
   node: EntryNode,
   prefix: string,
   showInherited: boolean,
+  verbose: boolean,
 ): string {
   const children = node.getChildNodes();
   const tagStr = formatTags(node, showInherited);
@@ -30,7 +31,7 @@ function printNode(
       : isLast
         ? "└── "
         : "├── ";
-    output += printNode(child, `${childPrefix}${connector}`, false);
+    output += printNode(child, `${childPrefix}${connector}`, verbose, verbose);
   }
 
   return output;

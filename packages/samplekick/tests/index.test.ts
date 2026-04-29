@@ -193,6 +193,44 @@ describe("samplekick CLI", () => {
     }
   });
 
+  it("prints registry tree with inherited tags when --debug --verbose is passed", async () => {
+    const zipped = zipSync({
+      "Drums/kick.wav": strToU8("kick-data"),
+      "Loops/bass.wav": strToU8("bass-data"),
+    });
+    const config = JSON.stringify([
+      { path: "Drums", packageName: "my-pack", sampleType: "Percussion" },
+      { path: "Drums/kick.wav", name: "kick_01.wav" },
+    ]);
+
+    const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
+    const zipPath = join(tmpDir, "test-pack.zip");
+    const configPath = join(tmpDir, "config.json");
+
+    try {
+      await writeFile(zipPath, zipped);
+      await writeFile(configPath, config);
+
+      const result = spawnSync(
+        "node",
+        [CLI_PATH, zipPath, "--config", configPath, "--debug", "--verbose"],
+        { encoding: "utf8" },
+      );
+      expect(result.status).toBe(0);
+
+      const expected = [
+        "test-pack.zip",
+        "├── Drums [pkg:my-pack, type:Percussion]",
+        "│   └── kick_01.wav [pkg:my-pack, type:Percussion, orig:kick.wav]",
+        "└── Loops",
+        "    └── bass.wav",
+      ].join("\n");
+      expect(result.stdout.trim()).toBe(expected);
+    } finally {
+      await rm(tmpDir, { recursive: true });
+    }
+  });
+
   it("dumps registry config as JSON to stdout when --output is omitted", async () => {
     const zipped = zipSync({
       "Drums/kick.wav": strToU8("kick-data"),

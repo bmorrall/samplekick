@@ -245,4 +245,49 @@ describe("EntryNode.toString", () => {
       expect(root.toString()).toBe("renamed\n");
     });
   });
+
+  describe("verbose mode", () => {
+    it("shows inherited pkg and type on child nodes when verbose is true", () => {
+      const root = EntryNode.fromEntry(createFileEntry({ path: "", name: "root" }));
+      root.setPackageName("my-pack");
+      root.setSampleType("Loops");
+      root.addNode(createFileEntry({ path: "a" }));
+      expect(root.toString(true)).toBe(
+        [
+          "root [pkg:my-pack, type:Loops]",
+          "└── a [pkg:my-pack, type:Loops]",
+          "",
+        ].join("\n"),
+      );
+    });
+
+    it("shows own pkg and type over inherited values when verbose is true", () => {
+      const root = EntryNode.fromEntry(createFileEntry({ path: "", name: "root" }));
+      root.setPackageName("parent-pack");
+      root.setSampleType("Loops");
+      const child = root.addNode(createFileEntry({ path: "a" }));
+      child.setPackageName("child-pack");
+      expect(root.toString(true)).toBe(
+        [
+          "root [pkg:parent-pack, type:Loops]",
+          "└── a [pkg:child-pack, type:Loops]",
+          "",
+        ].join("\n"),
+      );
+    });
+
+    it("does not show inherited tags on child nodes when verbose is false", () => {
+      const root = EntryNode.fromEntry(createFileEntry({ path: "", name: "root" }));
+      root.setPackageName("my-pack");
+      root.setSampleType("Loops");
+      root.addNode(createFileEntry({ path: "a" }));
+      expect(root.toString(false)).toBe(
+        [
+          "root [pkg:my-pack, type:Loops]",
+          "└── a",
+          "",
+        ].join("\n"),
+      );
+    });
+  });
 });

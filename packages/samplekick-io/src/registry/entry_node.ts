@@ -247,7 +247,7 @@ export class EntryNode implements ConfigEntry, FileEntry, FileNode, TransformEnt
 
   // Debug Helpers
 
-  toString(): string {
-    return prettyPrint(this);
+  toString(verbose = false): string {
+    return prettyPrint(this, verbose);
   }
 }
