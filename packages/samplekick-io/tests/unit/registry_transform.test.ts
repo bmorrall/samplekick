@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { Registry } from "../../src";
 import type { Transform, TransformEntry, TransformSource } from "../../src";
-import { createFileEntry, loadRegistry } from "../support";
+import { createFileEntry, createRegistry } from "../support";
 
 const collectVisitedPaths =
   (visitedPaths: string[]): Transform =>
@@ -43,8 +42,7 @@ const renameAndSkipAtPath =
 
 describe("Registry applyTransform", () => {
   it("provides correct name, path, parent and children via entry methods", () => {
-    const registry = new Registry("root");
-    loadRegistry(registry, [
+    const registry = createRegistry("root", [
       createFileEntry({ path: "a/b" }),
       createFileEntry({ path: "a/c" }),
       createFileEntry({ path: "d" }),
@@ -81,8 +79,7 @@ describe("Registry applyTransform", () => {
   });
 
   it("vistis the root node", () => {
-    const registry = new Registry("root");
-    loadRegistry(registry, []);
+    const registry = createRegistry("root", []);
 
     const visitedPaths: string[] = [];
 
@@ -92,8 +89,7 @@ describe("Registry applyTransform", () => {
   });
 
   it("visits each node in a three-segment path", () => {
-    const registry = new Registry("root");
-    loadRegistry(registry, [createFileEntry({ path: "a/b/c" })]);
+    const registry = createRegistry("root", [createFileEntry({ path: "a/b/c" })]);
 
     const visitedPaths: string[] = [];
 
@@ -103,8 +99,7 @@ describe("Registry applyTransform", () => {
   });
 
   it("applies the transform to the root and every descendant node", () => {
-    const registry = new Registry("root");
-    loadRegistry(registry, [
+    const registry = createRegistry("root", [
       createFileEntry({ path: "a/b" }),
       createFileEntry({ path: "a/c" }),
       createFileEntry({ path: "d/e" }),
@@ -123,8 +118,7 @@ describe("Registry applyTransform", () => {
   });
 
   it("allows ancestor changes to affect descendants during traversal", () => {
-    const registry = new Registry("root");
-    loadRegistry(registry, [
+    const registry = createRegistry("root", [
       createFileEntry({ path: "a/b" }),
       createFileEntry({ path: "a/c" }),
     ]);
@@ -136,8 +130,7 @@ describe("Registry applyTransform", () => {
   });
 
   it("allows selective mutation of individual entries", () => {
-    const registry = new Registry("root");
-    loadRegistry(registry, [
+    const registry = createRegistry("root", [
       createFileEntry({ path: "a/b" }),
       createFileEntry({ path: "a/c" }),
     ]);

@@ -21,9 +21,7 @@ describe("ZIP I/O", () => {
       "rock/track01.wav": "track01",
     });
     const dataSource = await ZipDataSource.fromBlob(blob);
-    const registry = new Registry("library");
-
-    registry.load(dataSource);
+    const registry = new Registry("library", dataSource);
 
     const paths: string[] = [];
     registry.eachFileEntry((entry) => {
@@ -41,8 +39,7 @@ describe("ZIP I/O", () => {
     const dataSource = await ZipDataSource.fromBlob(
       makeZipBlob({ "a/b.wav": "data" }),
     );
-    const registry = new Registry("library");
-    registry.load(dataSource);
+    const registry = new Registry("library", dataSource);
 
     const entry = registry.getEntry("a/b.wav");
     expect(entry?.getPackageName()).toBeUndefined();
@@ -58,8 +55,7 @@ describe("ZIP I/O", () => {
         "jazz/bebop/track02.wav": "track02-data",
       }),
     );
-    const registry = new Registry("library");
-    registry.load(dataSource);
+    const registry = new Registry("library", dataSource);
     registry.setPathStrategy(OrganisedPathStrategy);
     registry.setPackageName("jazz-pack");
     registry.setSampleType("loops");

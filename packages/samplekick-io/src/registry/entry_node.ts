@@ -158,7 +158,7 @@ export class EntryNode implements ConfigEntry, FileEntry, FileNode, TransformEnt
     const pathName = getPathName(entry.getPath());
     const existing = this.nodeLookup.get(pathName);
     if (existing !== undefined) {
-      return existing;
+      throw new Error(`Node already exists at path "${entry.getPath()}"`);
     }
 
     const node = new EntryNode(entry.getPath(), entry, this);

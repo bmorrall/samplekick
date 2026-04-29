@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { Registry, OrganisedPathStrategy } from "../../src";
 import type { FileEntry } from "../../src";
-import { createFileEntry, loadRegistry } from "../support";
+import { createFileEntry, createFileSource } from "../support";
 
 const createCopyableEntry = (path: string): FileEntry => ({
   ...createFileEntry({ path }),
@@ -10,11 +10,10 @@ const createCopyableEntry = (path: string): FileEntry => ({
 
 describe("Registry.exportToDirectory", () => {
   it("calls copyToPath on each leaf node with the destination path", async () => {
-    const registry = new Registry("root");
-    registry.setPathStrategy(OrganisedPathStrategy);
     const entryA = createCopyableEntry("a.wav");
     const entryB = createCopyableEntry("b.wav");
-    loadRegistry(registry, [entryA, entryB]);
+    const registry = new Registry("root", createFileSource([entryA, entryB]));
+    registry.setPathStrategy(OrganisedPathStrategy);
     registry.setPackageName("my-pack");
     registry.setSampleType("loops");
 
@@ -29,9 +28,8 @@ describe("Registry.exportToDirectory", () => {
   });
 
   it("skips entries where pathStrategy returns undefined", async () => {
-    const registry = new Registry("root");
     const entry = createCopyableEntry("a.wav");
-    loadRegistry(registry, [entry]);
+    const registry = new Registry("root", createFileSource([entry]));
     // no packageName or sampleType → OrganisedPathStrategy returns undefined, SourcePathStrategy returns the name
     // use a custom strategy that always returns undefined
     registry.setPathStrategy({ destinationPathFor: () => undefined });
@@ -42,10 +40,9 @@ describe("Registry.exportToDirectory", () => {
   });
 
   it("skips entries where isSkipped is true", async () => {
-    const registry = new Registry("root");
-    registry.setPathStrategy(OrganisedPathStrategy);
     const entry = createCopyableEntry("a.wav");
-    loadRegistry(registry, [entry]);
+    const registry = new Registry("root", createFileSource([entry]));
+    registry.setPathStrategy(OrganisedPathStrategy);
     registry.setSkipped("a.wav", true);
     registry.setPackageName("my-pack");
     registry.setSampleType("loops");
@@ -56,11 +53,10 @@ describe("Registry.exportToDirectory", () => {
   });
 
   it("exports entries from nested directories", async () => {
-    const registry = new Registry("root");
-    registry.setPathStrategy(OrganisedPathStrategy);
     const entryA = createCopyableEntry("pack/drums/kick.wav");
     const entryB = createCopyableEntry("pack/drums/snare.wav");
-    loadRegistry(registry, [entryA, entryB]);
+    const registry = new Registry("root", createFileSource([entryA, entryB]));
+    registry.setPathStrategy(OrganisedPathStrategy);
     registry.setPackageName("my-pack");
     registry.setSampleType("drums");
 

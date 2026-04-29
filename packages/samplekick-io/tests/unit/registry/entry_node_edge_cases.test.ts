@@ -29,13 +29,11 @@ describe("EntryNode edge cases", () => {
     );
   });
 
-  it("addNode returns existing child if present", () => {
+  it("addNode throws if a node already exists at that path", () => {
     const parent = new EntryNode("foo");
-    // The entry path must be 'bar' for parent 'foo'
     const entry = createFileEntry({ path: "bar" });
-    const child1 = parent.addNode(entry);
-    const child2 = parent.addNode(entry);
-    expect(child1).toBe(child2);
+    parent.addNode(entry);
+    expect(() => parent.addNode(entry)).toThrow('Node already exists at path "bar"');
   });
 
   it("addBlankNode returns existing child if present", () => {

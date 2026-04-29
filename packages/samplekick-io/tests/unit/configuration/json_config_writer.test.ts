@@ -1,7 +1,7 @@
 import { PassThrough } from "node:stream";
 import { describe, expect, it } from "vitest";
-import { JsonConfigWriter, Registry } from "../../../src";
-import { createConfigSource, createConfigEntry } from "../../support";
+import { JsonConfigWriter } from "../../../src";
+import { createConfigSource, createConfigEntry, createRegistry } from "../../support";
 import type { ConfigSource } from "../../../src";
 
 const captureOutput = (
@@ -91,7 +91,7 @@ describe("JsonConfigWriter", () => {
   it("serializes the root node for a registry even without overrides", () => {
     const stream = new PassThrough({ encoding: "utf8" });
     const writer = new JsonConfigWriter(stream);
-    const registry = new Registry("library");
+    const registry = createRegistry("library", []);
 
     const output = captureOutput(writer, registry, stream);
 
@@ -106,7 +106,7 @@ describe("JsonConfigWriter", () => {
   it("serializes root node changes when present on a registry", () => {
     const stream = new PassThrough({ encoding: "utf8" });
     const writer = new JsonConfigWriter(stream);
-    const registry = new Registry("library");
+    const registry = createRegistry("library", []);
     registry.setName("Renamed Library");
     registry.setPackageName("library-pack");
 
