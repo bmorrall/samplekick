@@ -267,7 +267,13 @@ export class Registry implements FileSource, ConfigSource {
       };
       promises.push(write());
     });
-    await Promise.all(promises);
+    const results = await Promise.allSettled(promises);
+    const errors = results
+      .filter((r): r is PromiseRejectedResult => r.status === "rejected")
+      .map((r) => (r.reason instanceof Error ? r.reason : new Error(String(r.reason))));
+    if (errors.length > 0) {
+      throw new AggregateError(errors, "One or more entries failed to export");
+    }
   }
 
   // Entry lookup methods

@@ -52,6 +52,21 @@ describe("Registry.exportToDirectory", () => {
     expect(entry.copyToPath).not.toHaveBeenCalled();
   });
 
+  it("continues processing all entries when one throws, then throws AggregateError", async () => {
+    const entryA = createCopyableEntry("a.wav");
+    const entryB = createCopyableEntry("b.wav");
+    const entryC = createCopyableEntry("c.wav");
+    const error = new Error("copy failed");
+    vi.mocked(entryB.copyToPath).mockRejectedValue(error);
+    const registry = new Registry(createFileSource("root", [entryA, entryB, entryC]));
+
+    await expect(registry.exportToDirectory("/output")).rejects.toThrow(AggregateError);
+
+    expect(entryA.copyToPath).toHaveBeenCalled();
+    expect(entryB.copyToPath).toHaveBeenCalled();
+    expect(entryC.copyToPath).toHaveBeenCalled();
+  });
+
   it("exports entries from nested directories", async () => {
     const entryA = createCopyableEntry("pack/drums/kick.wav");
     const entryB = createCopyableEntry("pack/drums/snare.wav");
