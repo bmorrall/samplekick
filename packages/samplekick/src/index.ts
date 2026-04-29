@@ -7,6 +7,8 @@ import { Readable } from "node:stream";
 import { parseArgs } from "node:util";
 import { JsonConfigReader, JsonConfigWriter, Registry, SkipJunkTransformer, SourcePathStrategy, ZipDataSource, SP404Mk2Preset } from "samplekick-io";
 import type { DevicePreset } from "samplekick-io";
+import { SimpleExportReporter } from "./exporters";
+import type { ExportReporter } from "./exporters";
 import packageJson from "../package.json" with { type: "json" };
 
 const CLI_ARG_START = 2;
@@ -168,8 +170,9 @@ if (values.output === undefined) {
 }
 
 const destPath = resolve(values.output);
-await registry.exportToDirectory(destPath).catch((err: unknown) => {
+const reporter: ExportReporter = new SimpleExportReporter();
+await registry.exportToDirectory(destPath, reporter).catch((err: unknown) => {
   console.error(`Error: could not export to ${destPath}: ${err instanceof Error ? err.message : String(err)}`);
   process.exit(1);
 });
-console.log(`Exported to ${destPath}`);
+reporter.onComplete(destPath);
