@@ -45,6 +45,7 @@ describe("samplekick CLI", () => {
           "Options:",
           "  -o, --output <path>     Export samples to a directory",
           "                          (omit to dump JSON config to stdout)",
+          "  -a, --analyse           Identify initial tags from the zip file",
           "  -c, --config <path>     Load a JSON config file to apply to the pack",
           "  -w, --write <path>      Write the pack config as JSON to a file",
           "  -d, --device <name>     Apply a device preset",

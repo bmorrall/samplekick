@@ -5,7 +5,7 @@ import { finished } from "node:stream/promises";
 import { resolve } from "node:path";
 import { Readable } from "node:stream";
 import { parseArgs } from "node:util";
-import { JsonConfigReader, JsonConfigWriter, Registry, SkipJunkTransformer, SourcePathStrategy, ZipDataSource, SP404Mk2Preset } from "samplekick-io";
+import { DefaultPackageNameTransformer, JsonConfigReader, JsonConfigWriter, Registry, SkipJunkTransformer, SourcePathStrategy, ZipDataSource, SP404Mk2Preset } from "samplekick-io";
 import type { DevicePreset } from "samplekick-io";
 import { SimpleExportReporter, PrettyExportReporter } from "./exporters";
 import chalk from "chalk";
@@ -48,6 +48,7 @@ Arguments:
 Options:
   -o, --output <path>     Export samples to a directory
                           (omit to dump JSON config to stdout)
+  -a, --analyse           Identify initial tags from the zip file
   -c, --config <path>     Load a JSON config file to apply to the pack
   -w, --write <path>      Write the pack config as JSON to a file
   -d, --device <name>     Apply a device preset
@@ -71,6 +72,7 @@ const { values, positionals } = parseArgs({
     output: { type: "string", short: "o" },
     write: { type: "string", short: "w" },
     "allow-junk": { type: "boolean" },
+    analyse: { type: "boolean", short: "a" },
     debug: { type: "boolean" },
     verbose: { type: "boolean" },
     version: { type: "boolean", short: "v" },
@@ -127,6 +129,9 @@ if (devicePreset !== undefined) {
   for (const transform of devicePreset.transforms) {
     registry.applyTransform(transform);
   }
+}
+if (values.analyse === true) {
+  registry.applyTransform(DefaultPackageNameTransformer);
 }
 if (values.config !== undefined) {
   const configPath = resolve(values.config);
