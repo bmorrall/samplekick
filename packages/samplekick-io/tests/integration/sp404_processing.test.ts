@@ -23,9 +23,8 @@ describe("SP404 Mk2 end-to-end sample processing", () => {
 
     // Load into registry via ZipDataSource
     const dataSource = await ZipDataSource.fromBlob(new Blob([Buffer.from(zipped)]));
-    const registry = new Registry("SP404 Påck.zip");
+    const registry = new Registry("SP404 Påck.zip", dataSource);
     registry.setPathStrategy(OrganisedPathStrategy);
-    registry.load(dataSource);
 
     // Sanitize all node names for SP404 Mk2 compatibility:
     //   Drüms              → Drums

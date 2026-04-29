@@ -3,9 +3,8 @@ import { describe, it, expect } from "vitest";
 import {
   JsonConfigReader,
   JsonConfigWriter,
-  Registry,
 } from "../../../src";
-import { collectConfigEntries, createFileEntry, loadRegistry } from "../../support";
+import { collectConfigEntries, createFileEntry, createRegistry } from "../../support";
 
 const collectOutput = (fn: (stream: PassThrough) => void): string => {
   const stream = new PassThrough({ encoding: "utf8" });
@@ -35,8 +34,7 @@ describe("JSON I/O", () => {
   });
 
   it("writes all leaf entries plus mutated folder nodes", () => {
-    const registry = new Registry("library");
-    loadRegistry(registry, [
+    const registry = createRegistry("library", [
       createFileEntry({ path: "jazz/bebop/track01" }),
       createFileEntry({ path: "jazz/bebop/track02" }),
       createFileEntry({ path: "rock/track01" }),
@@ -61,8 +59,7 @@ describe("JSON I/O", () => {
   });
 
   it("writes path, packageName, sampleType, isSkipped, and isKeepStructure for each entry", () => {
-    const registry = new Registry("library");
-    loadRegistry(registry, [createFileEntry({ path: "jazz/bebop/track01" })]);
+    const registry = createRegistry("library", [createFileEntry({ path: "jazz/bebop/track01" })]);
     registry.setPackageName("jazz", "jazz-pack");
     registry.setSampleType("jazz/bebop", "Melodic Loops - Bebop");
 
@@ -108,8 +105,7 @@ describe("JSON I/O", () => {
   });
 
   it("reflects inherited tags on entries", () => {
-    const registry = new Registry("library");
-    loadRegistry(registry, [
+    const registry = createRegistry("library", [
       createFileEntry({ path: "jazz/bebop/track01" }),
       createFileEntry({ path: "jazz/swing/track01" }),
     ]);
@@ -158,8 +154,7 @@ describe("JSON I/O", () => {
   });
 
   it("reflects isSkipped and isKeepStructure when set", () => {
-    const registry = new Registry("library");
-    loadRegistry(registry, [createFileEntry({ path: "jazz/track01" })]);
+    const registry = createRegistry("library", [createFileEntry({ path: "jazz/track01" })]);
     registry.setSkipped("jazz", true);
     registry.setKeepStructure("jazz", true);
 
@@ -177,8 +172,7 @@ describe("JSON I/O", () => {
   });
 
   it("round-trips renamed entries through JSON", () => {
-    const registry = new Registry("library");
-    loadRegistry(registry, [createFileEntry({ path: "jazz/bebop/track01" })]);
+    const registry = createRegistry("library", [createFileEntry({ path: "jazz/bebop/track01" })]);
     registry.setName("jazz/bebop/track01", "Alt Track 01");
 
     const output = collectOutput((stream) => {
@@ -186,8 +180,7 @@ describe("JSON I/O", () => {
       writer.writeConfig(registry);
     });
 
-    const restoredRegistry = new Registry("library");
-    loadRegistry(restoredRegistry, [
+    const restoredRegistry = createRegistry("library", [
       createFileEntry({ path: "jazz/bebop/track01" }),
     ]);
     restoredRegistry.loadConfig(
@@ -200,7 +193,7 @@ describe("JSON I/O", () => {
   });
 
   it("round-trips root node changes through JSON", () => {
-    const registry = new Registry("library");
+    const registry = createRegistry("library", []);
     registry.setName("Renamed Library");
     registry.setPackageName("library-pack");
 
@@ -209,27 +202,28 @@ describe("JSON I/O", () => {
       writer.writeConfig(registry);
     });
 
-    const restoredRegistry = new Registry("library");
-    restoredRegistry.loadConfig(
+    const restoredEmptyRegistry = createRegistry("library", []);
+    restoredEmptyRegistry.loadConfig(
       new JsonConfigReader(Readable.from([output])),
     );
-
-    expect(restoredRegistry.toString()).toBe(
+    expect(restoredEmptyRegistry.toString()).toBe(
       "Renamed Library [pkg:library-pack]\n",
     );
-    loadRegistry(restoredRegistry, [createFileEntry({ path: "jazz/track01" })]);
-    expect(restoredRegistry.getEntry("jazz/track01")?.getPackageName()).toBe(
+
+    const restoredRegistryWithFiles = createRegistry("library", [createFileEntry({ path: "jazz/track01" })]);
+    restoredRegistryWithFiles.loadConfig(
+      new JsonConfigReader(Readable.from([output])),
+    );
+    expect(restoredRegistryWithFiles.getEntry("jazz/track01")?.getPackageName()).toBe(
       "library-pack",
     );
   });
 
   it("each writeConfig call writes a separate JSON array to the stream", () => {
-    const registry1 = new Registry("library1");
-    loadRegistry(registry1, [createFileEntry({ path: "jazz/track01" })]);
+    const registry1 = createRegistry("library1", [createFileEntry({ path: "jazz/track01" })]);
     registry1.setPackageName("jazz/track01", "jazz-pack");
 
-    const registry2 = new Registry("library2");
-    loadRegistry(registry2, [createFileEntry({ path: "rock/track01" })]);
+    const registry2 = createRegistry("library2", [createFileEntry({ path: "rock/track01" })]);
     registry2.setPackageName("rock/track01", "rock-pack");
 
     const output = collectOutput((stream) => {

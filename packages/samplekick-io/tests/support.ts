@@ -8,6 +8,7 @@ import type {
   TransformEntry,
   TransformSource,
 } from "../src";
+import { Registry } from "../src";
 import { getPathName } from "../src/path_utils";
 
 // Entries
@@ -299,9 +300,7 @@ export const collectFileEntries = (fileSource: FileSource): FileEntry[] => {
 
 // Registry
 
-export const loadRegistry = (
-  registry: { load: (fileSource: FileSource) => void },
+export const createRegistry = (
+  name: string,
   files: FileEntry[],
-): void => {
-  registry.load(createFileSource(files));
-};
+): Registry => new Registry(name, createFileSource(files));

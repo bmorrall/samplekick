@@ -16,6 +16,26 @@ import type {
   ValidationResult,
 } from "./types";
 
+const buildRootNodeFromFileSource = (fileName: string, fileSource: FileSource): EntryNode => {
+  const rootNode = EntryNode.buildRootNode(fileName);
+  fileSource.eachFileEntry((entry) => {
+    if (entry.getPath() === "") {
+      throw new Error("Entry path must not be empty");
+    }
+    let currentNode: EntryNode = rootNode;
+    const [, ...parentPartsReversed] = [...splitPath(entry.getPath())].reverse();
+    let currentPath = "";
+    for (const part of parentPartsReversed.reverse()) {
+      currentPath = currentPath === "" ? part : `${currentPath}/${part}`;
+      let nextNode = currentNode.getNode(part);
+      nextNode ??= currentNode.addBlankNode(part, currentPath);
+      currentNode = nextNode;
+    }
+    currentNode.addNode(entry);
+  });
+  return rootNode;
+};
+
 const applyEntryConfig = (node: EntryNode, entry: ConfigEntry): void => {
   const name = entry.getName();
   const packageName = entry.getPackageName();
@@ -42,8 +62,8 @@ export class Registry implements FileSource, ConfigSource {
   private pathStrategy: PathStrategy = SourcePathStrategy;
   private readonly validator: SimpleValidator;
 
-  constructor(fileName: string) {
-    this.rootNode = EntryNode.buildRootNode(fileName);
+  constructor(fileName: string, fileSource: FileSource) {
+    this.rootNode = buildRootNodeFromFileSource(fileName, fileSource);
     this.validator = new SimpleValidator();
   }
 
@@ -57,22 +77,7 @@ export class Registry implements FileSource, ConfigSource {
     this.rootNode.eachMutatedEntry(fn);
   }
 
-  // Loading methods
-
-  load(fileSource: FileSource): void {
-    fileSource.eachFileEntry((entry) => {
-      if (entry.getPath() === "") {
-        throw new Error("Entry path must not be empty");
-      }
-
-      const existingNode = this.findEntryNode(entry.getPath());
-      if (existingNode === undefined) {
-        this.addEntryNode(entry);
-        return;
-      }
-      existingNode.replaceEntry(entry);
-    });
-  }
+  // Config methods
 
   loadConfig(configSource: ConfigSource): void {
     configSource.eachConfigEntry((entry) => {
@@ -261,24 +266,6 @@ export class Registry implements FileSource, ConfigSource {
       currentNode = nextNode;
     }
     return currentNode;
-  }
-
-  private addEntryNode(entry: FileEntry): void {
-    let currentNode: EntryNode = this.rootNode;
-    const [, ...parentPartsReversed] = [
-      ...splitPath(entry.getPath()),
-    ].reverse();
-    let currentPath = "";
-    for (const part of parentPartsReversed.reverse()) {
-      currentPath = currentPath === "" ? part : `${currentPath}/${part}`;
-      let nextNode = currentNode.getNode(part);
-      if (nextNode === undefined) {
-        const created = currentNode.addBlankNode(part, currentPath);
-        nextNode = created;
-      }
-      currentNode = nextNode;
-    }
-    currentNode.addNode(entry);
   }
 
   // Validation methods

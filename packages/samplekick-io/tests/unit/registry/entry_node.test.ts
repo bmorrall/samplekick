@@ -332,11 +332,11 @@ describe("EntryNode", () => {
       expect(child.getName()).toBe("child");
     });
 
-    it("returns existing node if name already exists", () => {
+    it("throws if a node already exists at that path", () => {
       const root = EntryNode.blankEntry("root");
-      const child1 = root.addNode(EntryNode.blankEntry("child"));
-      const child2 = root.addNode(EntryNode.blankEntry("child"));
-      expect(child1).toBe(child2);
+      root.addNode(EntryNode.blankEntry("child"));
+      const duplicate = (): void => { root.addNode(EntryNode.blankEntry("child")); };
+      expect(duplicate).toThrow('Node already exists at path "child"');
     });
 
     it("sets the parent node correctly", () => {

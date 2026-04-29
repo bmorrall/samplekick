@@ -1,11 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { Registry } from "../../src";
-import { createFileEntry, loadRegistry } from "../support";
+import { createFileEntry, createRegistry } from "../support";
 
 describe("Registry.toString", () => {
   it("renders a simple tree", () => {
-    const registry = new Registry("library");
-    loadRegistry(registry, [
+    const registry = createRegistry("library", [
       createFileEntry({ path: "jazz" }),
       createFileEntry({ path: "rock" }),
     ]);
@@ -18,8 +16,7 @@ describe("Registry.toString", () => {
   });
 
   it("renders a nested tree with correct connectors", () => {
-    const registry = new Registry("library");
-    loadRegistry(registry, [
+    const registry = createRegistry("library", [
       createFileEntry({ path: "jazz/bebop/track01" }),
       createFileEntry({ path: "jazz/bebop/track02" }),
       createFileEntry({ path: "jazz/swing/track01" }),
@@ -37,8 +34,7 @@ describe("Registry.toString", () => {
   });
 
   it("renders tags on nodes that have them", () => {
-    const registry = new Registry("library");
-    loadRegistry(registry, [createFileEntry({ path: "jazz/track01" })]);
+    const registry = createRegistry("library", [createFileEntry({ path: "jazz/track01" })]);
     registry.setPackageName("jazz", "jazz-pack");
     registry.setSampleType("jazz", "Melodic Loops - Jazz");
 

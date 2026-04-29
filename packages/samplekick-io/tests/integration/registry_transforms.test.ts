@@ -1,18 +1,15 @@
 import { describe, it, expect } from "vitest";
-import { Registry } from "../../src/registry";
 import { SP404Mk2NameTransformer, DefaultPackageNameTransformer, SkipJunkTransformer } from "../../src";
-import { loadRegistry, createFileEntry } from "../support";
+import { createRegistry, createFileEntry } from "../support";
 
 describe("Registry transforms", () => {
   it("applies DefaultPackageNameTransformer to set package name on root node", () => {
-    const entries = [
+    const registry = createRegistry("MyProject.zip", [
       createFileEntry({ path: "sub1/file1.wav" }),
       createFileEntry({ path: "sub1/file2.wav" }),
       createFileEntry({ path: "sub2/file3.wav" }),
       createFileEntry({ path: "file4.wav" }),
-    ];
-    const registry = new Registry("MyProject.zip");
-    loadRegistry(registry, entries);
+    ]);
     registry.applyTransform(DefaultPackageNameTransformer);
     expect(registry.toString()).toBe(
       [
@@ -29,16 +26,14 @@ describe("Registry transforms", () => {
   });
 
   it("applies SP404Mk2NameTransformer to entry names as expected", () => {
-    const entries = [
+    const registry = createRegistry("root", [
       createFileEntry({ path: "NáméWithÁccents.wav" }),
       createFileEntry({ path: "Invalid*Char?.mp3" }),
       createFileEntry({
         path: "ThisIsAVeryLongNameThatShouldBeTruncatedBecauseItIsWayTooLongToFitTheLimitOfEightyCharacters.wav",
       }),
       createFileEntry({ path: "Valid_Name-OK!.aif" }),
-    ];
-    const registry = new Registry("root");
-    loadRegistry(registry, entries);
+    ]);
     registry.applyTransform(SP404Mk2NameTransformer);
     expect(registry.toString()).toBe(
       [
@@ -53,14 +48,12 @@ describe("Registry transforms", () => {
   });
 
   it("applies SkipJunkTransformer to mark __MACOSX and hidden entries as skipped", () => {
-    const entries = [
+    const registry = createRegistry("root", [
       createFileEntry({ path: "__MACOSX/file1.wav" }),
       createFileEntry({ path: ".DS_Store" }),
       createFileEntry({ path: "sub1/file1.wav" }),
       createFileEntry({ path: "sub1/.hidden" }),
-    ];
-    const registry = new Registry("root");
-    loadRegistry(registry, entries);
+    ]);
     registry.applyTransform(SkipJunkTransformer);
     expect(registry.toString()).toBe(
       [

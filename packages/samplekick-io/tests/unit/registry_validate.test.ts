@@ -1,11 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { Registry } from "../../src";
-import { createFileEntry, loadRegistry } from "../support";
+import { createFileEntry, createRegistry } from "../support";
 
 describe("Registry.validate", () => {
   it("validate returns valid when all leaf nodes have packageName and sampleType", () => {
-    const registry = new Registry("library");
-    loadRegistry(registry, [
+    const registry = createRegistry("library", [
       createFileEntry({ path: "jazz/bebop/track01" }),
       createFileEntry({ path: "jazz/swing/track01" }),
     ]);
@@ -18,8 +16,7 @@ describe("Registry.validate", () => {
   });
 
   it("validate returns errors for leaf nodes missing tags", () => {
-    const registry = new Registry("library");
-    loadRegistry(registry, [
+    const registry = createRegistry("library", [
       createFileEntry({ path: "jazz/bebop/track01" }),
       createFileEntry({ path: "jazz/swing/track01" }),
     ]);
@@ -34,8 +31,7 @@ describe("Registry.validate", () => {
   });
 
   it("validateEntry returns valid for a subtree with all tags set", () => {
-    const registry = new Registry("library");
-    loadRegistry(registry, [createFileEntry({ path: "jazz/bebop/track01" })]);
+    const registry = createRegistry("library", [createFileEntry({ path: "jazz/bebop/track01" })]);
     registry.setPackageName("jazz", "jazz-pack");
     registry.setSampleType("jazz", "Melodic Loops - Jazz");
 
@@ -44,8 +40,7 @@ describe("Registry.validate", () => {
   });
 
   it("validateEntry scopes validation to the given path", () => {
-    const registry = new Registry("library");
-    loadRegistry(registry, [
+    const registry = createRegistry("library", [
       createFileEntry({ path: "jazz/bebop/track01" }),
       createFileEntry({ path: "rock/track01" }),
     ]);
@@ -58,7 +53,7 @@ describe("Registry.validate", () => {
   });
 
   it("validateEntry returns valid with no errors when the path does not exist", () => {
-    const registry = new Registry("library");
+    const registry = createRegistry("library", []);
 
     const result = registry.validateEntry("jazz");
 

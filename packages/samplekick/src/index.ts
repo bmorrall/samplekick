@@ -79,8 +79,7 @@ const dataSource = await ZipDataSource.fromBlob(blob).catch((err: unknown) => {
   throw err;
 });
 
-const registry = new Registry(basename(zipPath));
-registry.load(dataSource);
+const registry = new Registry(basename(zipPath), dataSource);
 if (values["allow-junk"] !== true) {
   registry.applyTransform(SkipJunkTransformer);
 }
