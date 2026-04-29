@@ -144,14 +144,14 @@ describe("PrettyExportReporter", () => {
       reporter.onComplete("/output/dir");
       // The \r before onComplete ensures we're at col 0; message must start after a \r or \n
       const raw = getOutput();
-      expect(raw).toMatch(/[\r\n]Exported to \/output\/dir/v);
-      expect(stripAnsi(raw)).toContain("Exported to /output/dir");
+      expect(raw).toMatch(/[\r\n]Exported 1 file to \/output\/dir/v);
+      expect(stripAnsi(raw)).toContain("Exported 1 file to /output/dir");
     });
 
     it("writes 'Exported to <dirPath>' when there are no errors", () => {
       const { reporter, getOutput } = createReporter();
       reporter.onComplete("/output/dir");
-      expect(stripAnsi(getOutput())).toContain("Exported to /output/dir");
+      expect(stripAnsi(getOutput())).toContain("Exported 0 files to /output/dir");
     });
 
     it("includes singular error count in red when there is 1 error", () => {

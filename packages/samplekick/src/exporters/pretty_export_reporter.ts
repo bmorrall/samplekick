@@ -58,7 +58,7 @@ export class PrettyExportReporter implements ExportReporter {
       const errPlural = this.errorCount === 1 ? "error" : "errors";
       this.output.write(`Exported ${totalPart} to ${dirPath} ${this.chalk.red(`(${this.errorCount} ${errPlural})`)}\n`);
     } else {
-      this.output.write(`Exported to ${dirPath}\n`);
+      this.output.write(`Exported ${totalPart} to ${dirPath}\n`);
     }
   }
 }
