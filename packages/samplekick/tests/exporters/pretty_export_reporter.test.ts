@@ -145,6 +145,7 @@ describe("PrettyExportReporter", () => {
       // The \r before onComplete ensures we're at col 0; message must start after a \r or \n
       const raw = getOutput();
       expect(raw).toMatch(/[\r\n]Exported to \/output\/dir/v);
+      expect(stripAnsi(raw)).toContain("Exported to /output/dir");
     });
 
     it("writes 'Exported to <dirPath>' when there are no errors", () => {
@@ -159,7 +160,7 @@ describe("PrettyExportReporter", () => {
       reporter.onAfterWrite(createEntry("a.wav"), "a.wav", new Error("fail"));
       reporter.onComplete("/output/dir");
       const raw = getOutput();
-      expect(stripAnsi(raw)).toContain("(1 error)");
+      expect(stripAnsi(raw)).toContain("Exported 1 file to /output/dir (1 error)");
       expect(raw).toContain("\x1B[31m");
     });
 
@@ -170,7 +171,7 @@ describe("PrettyExportReporter", () => {
       reporter.onAfterWrite(createEntry("a.wav"), "a.wav", new Error("fail"));
       reporter.onAfterWrite(createEntry("b.wav"), "b.wav", new Error("fail"));
       reporter.onComplete("/output/dir");
-      expect(stripAnsi(getOutput())).toContain("(2 errors)");
+      expect(stripAnsi(getOutput())).toContain("Exported 2 files to /output/dir (2 errors)");
     });
   });
 });

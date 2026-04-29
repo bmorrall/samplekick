@@ -40,14 +40,14 @@ describe("SimpleExportReporter", () => {
     it("writes 'Exported to <dirPath>' when there are no errors", () => {
       const { reporter, getOutput } = createReporter();
       reporter.onComplete("/output/dir");
-      expect(getOutput()).toBe("Exported to /output/dir\n");
+      expect(getOutput()).toBe("Exported 0 files to /output/dir\n");
     });
 
     it("includes singular error count when there is 1 error", () => {
       const { reporter, getOutput } = createReporter();
       reporter.onAfterWrite(createEntry("a.wav"), "a.wav", new Error("fail"));
       reporter.onComplete("/output/dir");
-      expect(getOutput()).toContain("Exported to /output/dir (1 error)\n");
+      expect(getOutput()).toContain("Exported 1 file to /output/dir (1 error)\n");
     });
 
     it("includes plural error count when there are multiple errors", () => {
@@ -55,7 +55,7 @@ describe("SimpleExportReporter", () => {
       reporter.onAfterWrite(createEntry("a.wav"), "a.wav", new Error("fail"));
       reporter.onAfterWrite(createEntry("b.wav"), "b.wav", new Error("fail"));
       reporter.onComplete("/output/dir");
-      expect(getOutput()).toContain("Exported to /output/dir (2 errors)\n");
+      expect(getOutput()).toContain("Exported 2 files to /output/dir (2 errors)\n");
     });
   });
 });

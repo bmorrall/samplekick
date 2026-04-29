@@ -9,6 +9,7 @@ export class PrettyExportReporter implements ExportReporter {
   private readonly chalk: ChalkInstance;
   private readonly lines: string[] = [];
   private readonly lineMap = new Map<string, number>(); // sourcePath → line index
+  private totalCount = 0;
   private errorCount = 0;
 
   constructor(output: Writable = process.stdout, chalkInstance: ChalkInstance = chalk) {
@@ -25,6 +26,7 @@ export class PrettyExportReporter implements ExportReporter {
   }
 
   onAfterWrite(entry: ConfigEntry, destRelPath: string, error?: Error): void {
+    this.totalCount += 1;
     const lineIndex = this.lineMap.get(entry.getPath());
     /* v8 ignore next */
     if (lineIndex === undefined) return;
@@ -50,9 +52,11 @@ export class PrettyExportReporter implements ExportReporter {
   }
 
   onComplete(dirPath: string): void {
+    const filePlural = this.totalCount === 1 ? "file" : "files";
+    const totalPart = `${this.totalCount} ${filePlural}`;
     if (this.errorCount > 0) {
-      const plural = this.errorCount === 1 ? "error" : "errors";
-      this.output.write(`Exported to ${dirPath} ${this.chalk.red(`(${this.errorCount} ${plural})`)}\n`);
+      const errPlural = this.errorCount === 1 ? "error" : "errors";
+      this.output.write(`Exported ${totalPart} to ${dirPath} ${this.chalk.red(`(${this.errorCount} ${errPlural})`)}\n`);
     } else {
       this.output.write(`Exported to ${dirPath}\n`);
     }
