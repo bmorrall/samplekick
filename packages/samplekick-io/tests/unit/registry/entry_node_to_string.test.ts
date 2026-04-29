@@ -23,7 +23,14 @@ describe("EntryNode.toString", () => {
       const root = EntryNode.fromEntry(createFileEntry({ path: "", name: "root" }));
       root.addNode(createFileEntry({ path: "a" }));
       root.addNode(createFileEntry({ path: "b" }));
-      expect(root.toString()).toBe(["root", "├── a", "└── b", ""].join("\n"));
+      expect(root.toString()).toBe(
+        [
+          "root",
+          "├── a",
+          "└── b",
+          "",
+        ].join("\n"),
+      );
     });
 
     it("prints a nested tree with correct connectors", () => {
@@ -56,7 +63,11 @@ describe("EntryNode.toString", () => {
       child.setPackageName("child-pack");
       child.setSampleType("Hits");
       expect(root.toString()).toBe(
-        ["root", "└── a [pkg:child-pack, type:Hits]", ""].join("\n"),
+        [
+          "root",
+          "└── a [pkg:child-pack, type:Hits]",
+          "",
+        ].join("\n"),
       );
     });
 
@@ -66,7 +77,11 @@ describe("EntryNode.toString", () => {
       root.setSampleType("Loops");
       root.addNode(createFileEntry({ path: "a" }));
       expect(root.toString()).toBe(
-        ["root [pkg:my-pack, type:Loops]", "└── a", ""].join("\n"),
+        [
+          "root [pkg:my-pack, type:Loops]",
+          "└── a",
+          "",
+        ].join("\n"),
       );
     });
   });
@@ -77,7 +92,14 @@ describe("EntryNode.toString", () => {
       const a = root.addNode(createFileEntry({ path: "a" }));
       a.setKeepStructure(true);
       root.addNode(createFileEntry({ path: "b" }));
-      expect(root.toString()).toBe(["root", "┣━━ a", "└── b", ""].join("\n"));
+      expect(root.toString()).toBe(
+        [
+          "root",
+          "┣━━ a",
+          "└── b",
+          "",
+        ].join("\n"),
+      );
     });
 
     it("uses thick connectors for a last child with keepStructure", () => {
@@ -85,7 +107,14 @@ describe("EntryNode.toString", () => {
       root.addNode(createFileEntry({ path: "a" }));
       const b = root.addNode(createFileEntry({ path: "b" }));
       b.setKeepStructure(true);
-      expect(root.toString()).toBe(["root", "├── a", "┗━━ b", ""].join("\n"));
+      expect(root.toString()).toBe(
+        [
+          "root",
+          "├── a",
+          "┗━━ b",
+          "",
+        ].join("\n"),
+      );
     });
 
     it("uses thick vertical bar for descendants of a keepStructure node", () => {
@@ -96,7 +125,14 @@ describe("EntryNode.toString", () => {
       a.addNode(createFileEntry({ path: "a/c" }));
       root.addNode(createFileEntry({ path: "d" }));
       expect(root.toString()).toBe(
-        ["root", "┣━━ a", "┃   ├── b", "┃   └── c", "└── d", ""].join("\n"),
+        [
+          "root",
+          "┣━━ a",
+          "┃   ├── b",
+          "┃   └── c",
+          "└── d",
+          "",
+        ].join("\n"),
       );
     });
 
@@ -107,7 +143,13 @@ describe("EntryNode.toString", () => {
       const b = a.addNode(createFileEntry({ path: "a/b" }));
       b.addNode(createFileEntry({ path: "a/b/c" }));
       expect(root.toString()).toBe(
-        ["root", "┗━━ a", "    └── b", "        └── c", ""].join("\n"),
+        [
+          "root",
+          "┗━━ a",
+          "    └── b",
+          "        └── c",
+          "",
+        ].join("\n"),
       );
     });
   });
@@ -117,14 +159,26 @@ describe("EntryNode.toString", () => {
       const root = EntryNode.fromEntry(createFileEntry({ path: "", name: "root" }));
       const child = root.addNode(createFileEntry({ path: "a" }));
       child.setSkipped(true);
-      expect(root.toString()).toBe(["root", "└── a [skipped]", ""].join("\n"));
+      expect(root.toString()).toBe(
+        [
+          "root",
+          "└── a [skipped]",
+          "",
+        ].join("\n"),
+      );
     });
 
     it("does not append [skipped] when isSkipped is false", () => {
       const root = EntryNode.fromEntry(createFileEntry({ path: "", name: "root" }));
       const child = root.addNode(createFileEntry({ path: "a" }));
       child.setSkipped(false);
-      expect(root.toString()).toBe(["root", "└── a", ""].join("\n"));
+      expect(root.toString()).toBe(
+        [
+          "root",
+          "└── a",
+          "",
+        ].join("\n"),
+      );
     });
 
     it("shows [skipped] on child nodes that inherit skipped from a parent", () => {
@@ -133,7 +187,12 @@ describe("EntryNode.toString", () => {
       parent.setSkipped(true);
       parent.addNode(createFileEntry({ path: "a/b" }));
       expect(root.toString()).toBe(
-        ["root", "└── a [skipped]", "    └── b [skipped]", ""].join("\n"),
+        [
+          "root",
+          "└── a [skipped]",
+          "    └── b [skipped]",
+          "",
+        ].join("\n"),
       );
     });
 
@@ -144,7 +203,103 @@ describe("EntryNode.toString", () => {
       child.setSampleType("Loops");
       child.setSkipped(true);
       expect(root.toString()).toBe(
-        ["root", "└── a [pkg:my-pack, type:Loops, skipped]", ""].join("\n"),
+        [
+          "root",
+          "└── a [pkg:my-pack, type:Loops, skipped]",
+          "",
+        ].join("\n"),
+      );
+    });
+  });
+
+  describe("orig tag", () => {
+    it("shows [renamed] tag on a child node when its name differs from the entry name", () => {
+      const root = EntryNode.fromEntry(createFileEntry({ path: "", name: "root" }));
+      const child = root.addNode(createFileEntry({ path: "original.wav" }));
+      child.setName("renamed.wav");
+      expect(root.toString()).toBe(
+        [
+          "root",
+          "└── renamed.wav [renamed]",
+          "",
+        ].join("\n"),
+      );
+    });
+
+    it("does not show [renamed] tag when the name matches the entry name", () => {
+      const root = EntryNode.fromEntry(createFileEntry({ path: "", name: "root" }));
+      const child = root.addNode(createFileEntry({ path: "original.wav" }));
+      child.setName("original.wav");
+      expect(root.toString()).toBe(
+        [
+          "root",
+          "└── original.wav",
+          "",
+        ].join("\n"),
+      );
+    });
+
+    it("does not show [renamed] tag on the root node", () => {
+      const root = EntryNode.fromEntry(createFileEntry({ path: "", name: "original" }));
+      root.setName("renamed");
+      expect(root.toString()).toBe("renamed\n");
+    });
+  });
+
+  describe("verbose mode", () => {
+    it("shows inherited pkg and type on child nodes when verbose is true", () => {
+      const root = EntryNode.fromEntry(createFileEntry({ path: "", name: "root" }));
+      root.setPackageName("my-pack");
+      root.setSampleType("Loops");
+      root.addNode(createFileEntry({ path: "a" }));
+      expect(root.toString(true)).toBe(
+        [
+          "root [pkg:my-pack, type:Loops]",
+          "└── a [pkg:my-pack, type:Loops]",
+          "",
+        ].join("\n"),
+      );
+    });
+
+    it("shows own pkg and type over inherited values when verbose is true", () => {
+      const root = EntryNode.fromEntry(createFileEntry({ path: "", name: "root" }));
+      root.setPackageName("parent-pack");
+      root.setSampleType("Loops");
+      const child = root.addNode(createFileEntry({ path: "a" }));
+      child.setPackageName("child-pack");
+      expect(root.toString(true)).toBe(
+        [
+          "root [pkg:parent-pack, type:Loops]",
+          "└── a [pkg:child-pack, type:Loops]",
+          "",
+        ].join("\n"),
+      );
+    });
+
+    it("does not show inherited tags on child nodes when verbose is false", () => {
+      const root = EntryNode.fromEntry(createFileEntry({ path: "", name: "root" }));
+      root.setPackageName("my-pack");
+      root.setSampleType("Loops");
+      root.addNode(createFileEntry({ path: "a" }));
+      expect(root.toString(false)).toBe(
+        [
+          "root [pkg:my-pack, type:Loops]",
+          "└── a",
+          "",
+        ].join("\n"),
+      );
+    });
+
+    it("shows orig tag on a renamed child node when verbose is true", () => {
+      const root = EntryNode.fromEntry(createFileEntry({ path: "", name: "root" }));
+      const child = root.addNode(createFileEntry({ path: "original.wav" }));
+      child.setName("renamed.wav");
+      expect(root.toString(true)).toBe(
+        [
+          "root",
+          "└── renamed.wav [renamed, orig:original.wav]",
+          "",
+        ].join("\n"),
       );
     });
   });

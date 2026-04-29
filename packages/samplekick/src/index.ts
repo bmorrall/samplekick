@@ -26,6 +26,7 @@ Options:
       --allow-junk        Keep junk entries (e.g. __MACOSX, hidden files)
       --debug             Print pack string representation to stdout
                           without writing any files
+      --verbose           Show inherited tags on all nodes in debug output
   -v, --version           Show version number
   -h, --help              Show this help message
 `;
@@ -38,6 +39,7 @@ const { values, positionals } = parseArgs({
     write: { type: "string", short: "w" },
     "allow-junk": { type: "boolean" },
     debug: { type: "boolean" },
+    verbose: { type: "boolean" },
     version: { type: "boolean", short: "v" },
     help: { type: "boolean", short: "h" },
   },
@@ -105,7 +107,7 @@ if (values.config !== undefined) {
 registry.setPathStrategy(SourcePathStrategy);
 
 if (values.debug === true) {
-  console.log(registry.toString());
+  console.log(registry.toString(values.verbose === true));
   process.exit(0);
 }
 

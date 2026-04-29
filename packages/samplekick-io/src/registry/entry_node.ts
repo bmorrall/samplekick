@@ -74,6 +74,14 @@ export class EntryNode implements ConfigEntry, FileEntry, FileNode, TransformEnt
     return this.name ?? this.entry?.getName() ?? getPathName(this.path);
   }
 
+  getEntryName(): string {
+    return this.entry?.getName() ?? getPathName(this.path);
+  }
+
+  isRootNode(): boolean {
+    return this.path === "";
+  }
+
   getPath(): string {
     return this.path;
   }
@@ -239,7 +247,7 @@ export class EntryNode implements ConfigEntry, FileEntry, FileNode, TransformEnt
 
   // Debug Helpers
 
-  toString(): string {
-    return prettyPrint(this);
+  toString(verbose = false): string {
+    return prettyPrint(this, verbose);
   }
 }

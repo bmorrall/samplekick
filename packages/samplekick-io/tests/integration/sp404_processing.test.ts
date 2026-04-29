@@ -54,13 +54,13 @@ describe("SP404 Mk2 end-to-end sample processing", () => {
     expect(registry.toString()).toBe(
       [
         "SP404 Pack.zip [pkg:SP404 Pack, type:Melodic Loops]",
-        "┣━━ Drums [type:Drums & Percussion]",
-        "┃   ├── kick_01 (main).wav",
-        "┃   └── snare_alt.wav [skipped]",
-        "├── Lead Loops",
-        "│   └── synth_pad.wav",
+        "┣━━ Drums [renamed, type:Drums & Percussion]",
+        "┃   ├── kick_01 (main).wav [renamed]",
+        "┃   └── snare_alt.wav [renamed, skipped]",
+        "├── Lead Loops [renamed]",
+        "│   └── synth_pad.wav [renamed]",
         "└── Backing Loops",
-        "    └── bass_line.wav",
+        "    └── bass_line.wav [renamed]",
         "",
       ].join("\n"),
     );

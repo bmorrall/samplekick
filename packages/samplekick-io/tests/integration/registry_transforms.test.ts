@@ -38,10 +38,10 @@ describe("Registry transforms", () => {
     expect(registry.toString()).toBe(
       [
         "root",
-        "├── NameWithAccents.wav",
-        "├── Invalid_Char_.mp3",
-        "├── ThisIsAVeryLongNameThatShouldBeTruncatedBecauseItIsWayTooLongToFitTheLimitOf.wav",
-        "└── Valid_Name_OK!.aif",
+        "├── NameWithAccents.wav [renamed]",
+        "├── Invalid_Char_.mp3 [renamed]",
+        "├── ThisIsAVeryLongNameThatShouldBeTruncatedBecauseItIsWayTooLongToFitTheLimitOf.wav [renamed]",
+        "└── Valid_Name_OK!.aif [renamed]",
         "",
       ].join("\n"),
     );

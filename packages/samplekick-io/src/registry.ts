@@ -291,7 +291,7 @@ export class Registry implements FileSource, ConfigSource {
 
   // Debugging methods
 
-  toString(): string {
-    return prettyPrint(this.rootNode);
+  toString(verbose = false): string {
+    return prettyPrint(this.rootNode, verbose);
   }
 }
