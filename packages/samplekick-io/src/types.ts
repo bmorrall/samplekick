@@ -69,6 +69,13 @@ export interface ValidationResult {
   errors: ValidationError[];
 }
 
+// Device Preset
+
+export interface DevicePreset {
+  displayName: string;
+  transforms: readonly Transform[];
+}
+
 // Path Strategy
 
 export interface PathStrategy {
