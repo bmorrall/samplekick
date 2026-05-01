@@ -14,6 +14,14 @@ describe("Registry", () => {
     });
   });
 
+  describe("getFingerprint", () => {
+    it("returns the fingerprint from the file source", () => {
+      const registry = createRegistry("root", [], "test-fingerprint");
+
+      expect(registry.getFingerprint()).toBe("test-fingerprint");
+    });
+  });
+
   describe("setName", () => {
     it("sets the name for the entry at the given path", () => {
       const registry = createRegistry("root", [createFileEntry({ path: "a/b" })]);

@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { vi } from "vitest";
 import { zipSync, strToU8 } from "fflate";
 import type {
@@ -283,8 +284,12 @@ export const createFileNodeHierarchy = (
 
 // File Source
 
-export const createFileSource = (name: string, entries: FileEntry[]): FileSource => ({
+const fingerprintFromName = (name: string): string =>
+  createHash("sha256").update(name).digest("hex");
+
+export const createFileSource = (name: string, entries: FileEntry[], fingerprint: string = fingerprintFromName(name)): FileSource => ({
   getName: () => name,
+  getFingerprint: () => fingerprint,
   eachFileEntry: (fn: (entry: FileEntry) => void) => {
     entries.forEach(fn);
   },
@@ -317,4 +322,5 @@ export const createZipRegistry = async (name: string, files: Record<string, stri
 export const createRegistry = (
   name: string,
   files: FileEntry[],
-): Registry => new Registry(createFileSource(name, files));
+  fingerprint?: string,
+): Registry => new Registry(createFileSource(name, files, fingerprint));

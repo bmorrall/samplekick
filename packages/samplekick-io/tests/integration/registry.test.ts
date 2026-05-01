@@ -7,6 +7,7 @@ describe("Registry load", () => {
   it("raises an error for duplicate entry paths", () => {
     const fileSource: FileSource = {
       getName: () => "library",
+      getFingerprint: () => "",
       eachFileEntry: (fn) => {
         fn(createFileEntry({ path: "jazz/track01" }));
         fn(createFileEntry({ path: "jazz/track01" }));
@@ -25,6 +26,7 @@ describe("Registry load", () => {
     ];
     const fileSource: FileSource = {
       getName: () => "library",
+      getFingerprint: () => "",
       eachFileEntry: (fn) => {
         entries.forEach(fn);
       },
@@ -44,6 +46,7 @@ describe("Registry load", () => {
   it("allows metadata to be set on entries after loading", () => {
     const fileSource: FileSource = {
       getName: () => "library",
+      getFingerprint: () => "",
       eachFileEntry: (fn) => {
         fn(createFileEntry({ path: "jazz/bebop/track01" }));
         fn(createFileEntry({ path: "jazz/swing/track01" }));
@@ -219,6 +222,7 @@ describe("Registry", () => {
   it("child package name overrides parent", () => {
     const registry = new Registry({
       getName: () => "library",
+      getFingerprint: () => "",
       eachFileEntry: (fn) => {
         fn(createFileEntry({ path: "jazz/bebop/track01" }));
         fn(createFileEntry({ path: "jazz/swing/track01" }));

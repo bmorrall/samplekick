@@ -27,6 +27,7 @@ export interface FileEntry {
 
 export interface FileSource {
   getName: () => string;
+  getFingerprint: () => string;
   eachFileEntry: (fn: (entry: FileEntry) => void) => void;
 }
 

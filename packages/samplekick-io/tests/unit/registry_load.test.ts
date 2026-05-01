@@ -7,6 +7,7 @@ describe("Registry constructor", () => {
   it("calls eachFileEntry on the FileSource", () => {
     const fileSource: FileSource = {
       getName: () => "root",
+      getFingerprint: () => "",
       eachFileEntry: vi.fn<FileSource["eachFileEntry"]>(),
     };
     const _registry = new Registry(fileSource);
@@ -38,6 +39,7 @@ describe("Registry constructor", () => {
   it("throws when two entries share the same path", () => {
     const fileSource: FileSource = {
       getName: () => "root",
+      getFingerprint: () => "",
       eachFileEntry: (fn) => {
         fn(createFileEntry({ path: "a/b", name: "Original B" }));
         fn(createFileEntry({ path: "a/b", name: "renamed-b" }));
