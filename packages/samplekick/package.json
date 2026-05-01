@@ -1,7 +1,7 @@
 {
   "name": "samplekick",
   "type": "module",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "CLI for processing and normalising music sample packs.",
   "author": "Ben Morrall <bemo56@gmail.com>",
   "license": "MIT",
