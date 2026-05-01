@@ -15,6 +15,10 @@ export class PrettyExportReporter implements ExportReporter {
     this.chalk = chalkInstance;
   }
 
+  onDebug(message: string): void {
+    this.output.write(`${this.chalk.gray(message)}\n`);
+  }
+
   onBeforeWrite(entry: ConfigEntry, _destRelPath: string): void {
     this.output.write(`extracting ${entry.getName()}\n`);
   }
