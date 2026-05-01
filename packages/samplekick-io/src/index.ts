@@ -23,4 +23,5 @@ export type {
   TransformSource,
   DevicePreset,
   ExportOptions,
+  PostProcessor,
 } from "./types";
