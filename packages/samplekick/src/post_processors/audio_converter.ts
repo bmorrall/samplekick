@@ -13,18 +13,25 @@ const execFileAsync = promisify((
 });
 
 export type FfmpegRunner = (args: string[]) => Promise<void>;
+export type ConvertErrorHandler = (destPath: string, error: Error) => void;
 
 const defaultRunner: FfmpegRunner = async (args) => {
   await execFileAsync("ffmpeg", args);
+};
+
+const defaultErrorHandler: ConvertErrorHandler = (destPath, error) => {
+  process.stderr.write(`Warning: could not convert ${destPath}: ${error.message}\n`);
 };
 
 const AUDIO_EXTENSIONS = new Set([".wav", ".aiff", ".aif", ".mp3"]);
 
 export class AudioConverter implements PostProcessor {
   private readonly runFfmpeg: FfmpegRunner;
+  private readonly onError: ConvertErrorHandler;
 
-  constructor(runFfmpeg: FfmpegRunner = defaultRunner) {
+  constructor(runFfmpeg: FfmpegRunner = defaultRunner, onError: ConvertErrorHandler = defaultErrorHandler) {
     this.runFfmpeg = runFfmpeg;
+    this.onError = onError;
   }
 
   async processFile(destPath: string, _entry: ConfigEntry): Promise<void> {
@@ -44,7 +51,7 @@ export class AudioConverter implements PostProcessor {
       }
     } catch (err) {
       await rm(tempPath, { force: true });
-      throw err;
+      this.onError(destPath, err instanceof Error ? err : new Error(String(err)));
     }
   }
 }

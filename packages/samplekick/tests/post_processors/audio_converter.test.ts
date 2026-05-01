@@ -2,6 +2,7 @@ import { rename, rm, unlink } from "node:fs/promises";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ConfigEntry } from "samplekick-io";
 import { AudioConverter } from "../../src/post_processors/audio_converter";
+import type { ConvertErrorHandler } from "../../src/post_processors/audio_converter";
 
 vi.mock("node:fs/promises", () => ({
   rename: vi.fn().mockResolvedValue(undefined),
@@ -139,22 +140,30 @@ describe("AudioConverter", () => {
   describe("error handling", () => {
     it("cleans up the temp file when ffmpeg fails", async () => {
       const runFfmpeg = vi.fn().mockRejectedValue(new Error("ffmpeg not found"));
-      const converter = new AudioConverter(runFfmpeg);
+      const converter = new AudioConverter(runFfmpeg, vi.fn<ConvertErrorHandler>());
 
-      await expect(
-        converter.processFile("/output/drums/kick.wav", createEntry()),
-      ).rejects.toThrow("ffmpeg not found");
+      await converter.processFile("/output/drums/kick.wav", createEntry());
 
       expect(mockRm).toHaveBeenCalledWith("/output/drums/kick.wav.converting.wav", { force: true });
     });
 
-    it("rethrows the ffmpeg error after cleanup", async () => {
+    it("calls onError with the destPath and error when ffmpeg fails", async () => {
       const runFfmpeg = vi.fn().mockRejectedValue(new Error("exit code 1"));
-      const converter = new AudioConverter(runFfmpeg);
+      const onError = vi.fn<ConvertErrorHandler>();
+      const converter = new AudioConverter(runFfmpeg, onError);
+
+      await converter.processFile("/output/drums/kick.wav", createEntry());
+
+      expect(onError).toHaveBeenCalledWith("/output/drums/kick.wav", expect.any(Error));
+    });
+
+    it("does not throw when ffmpeg fails", async () => {
+      const runFfmpeg = vi.fn().mockRejectedValue(new Error("exit code 1"));
+      const converter = new AudioConverter(runFfmpeg, vi.fn<ConvertErrorHandler>());
 
       await expect(
         converter.processFile("/output/drums/kick.wav", createEntry()),
-      ).rejects.toThrow("exit code 1");
+      ).resolves.toBeUndefined();
     });
   });
 });
