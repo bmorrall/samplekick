@@ -7,8 +7,6 @@ import type { ExportReporter } from "./export_reporter";
 export class PrettyExportReporter implements ExportReporter {
   private readonly output: Writable;
   private readonly chalk: ChalkInstance;
-  private readonly lines: string[] = [];
-  private readonly lineMap = new Map<string, number>(); // sourcePath → line index
   private totalCount = 0;
   private errorCount = 0;
 
@@ -17,38 +15,18 @@ export class PrettyExportReporter implements ExportReporter {
     this.chalk = chalkInstance;
   }
 
-  onBeforeWrite(entry: ConfigEntry, destRelPath: string): void {
-    const sourceLine = entry.getPath();
-    const arrowLine = `  → ${this.chalk.gray(destRelPath)}`;
-    this.lines.push(sourceLine);
-    this.lineMap.set(entry.getPath(), this.lines.push(arrowLine) - 1);
-    this.output.write(`${sourceLine}\n${arrowLine}\n`);
+  onBeforeWrite(entry: ConfigEntry, _destRelPath: string): void {
+    this.output.write(`extracting ${entry.getName()}\n`);
   }
 
-  onAfterWrite(entry: ConfigEntry, destRelPath: string, error?: Error): void {
+  onAfterWrite(_entry: ConfigEntry, destRelPath: string, error?: Error): void {
     this.totalCount += 1;
-    const lineIndex = this.lineMap.get(entry.getPath());
-    /* v8 ignore next */
-    if (lineIndex === undefined) return;
-
-    const linesBelow = this.lines.length - lineIndex - 1;
-
-    // Move cursor up to arrow line and clear it
-    this.output.write(`\x1B[${linesBelow + 1}A\x1B[2K\r`);
-
     if (error === undefined) {
-      const updatedLine = `  → ${this.chalk.green(destRelPath)}`;
-      this.output.write(updatedLine);
-      this.lines[lineIndex] = updatedLine;
+      this.output.write(`${this.chalk.green("success:")} ${this.chalk.gray(destRelPath)}\n`);
     } else {
       this.errorCount += 1;
-      const updatedLine = `  → ${this.chalk.red(error.message)}`;
-      this.output.write(updatedLine);
-      this.lines[lineIndex] = updatedLine;
+      this.output.write(`${this.chalk.red(`failed: ${destRelPath}: ${error.message}`)}\n`);
     }
-
-    // Move cursor back down to the blank row below all content, reset to col 0
-    this.output.write(`\x1B[${linesBelow + 1}B\r`);
   }
 
   onComplete(dirPath: string): void {
