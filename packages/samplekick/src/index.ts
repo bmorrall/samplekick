@@ -5,7 +5,7 @@ import { finished } from "node:stream/promises";
 import { dirname, resolve } from "node:path";
 import { parseArgs } from "node:util";
 import { JsonConfigWriter, Registry, SkipJunkTransformer, SourcePathStrategy, ZipDataSource, SP404Mk2Preset } from "samplekick-io";
-import { loadConfig } from "./config_loader";
+import { loadConfig, openConfigInEditor } from "./config_loader";
 import type { DevicePreset } from "samplekick-io";
 import { SimpleExportReporter, PrettyExportReporter } from "./exporters";
 import { AudioConverter } from "./post_processors";
@@ -56,6 +56,7 @@ Options:
       --allow-junk        Keep junk entries (e.g. __MACOSX, hidden files)
       --debug             Print pack string representation to stdout
                           without writing any files
+      --edit              Open the auto-config file in $VISUAL/$EDITOR
       --verbose           Show inherited tags on all nodes in debug output
   -v, --version           Show version number
   -h, --help              Show this help message
@@ -75,6 +76,7 @@ const { values, positionals } = parseArgs({
     convert: { type: "boolean" },
     "allow-junk": { type: "boolean" },
     debug: { type: "boolean" },
+    edit: { type: "boolean" },
     verbose: { type: "boolean" },
     version: { type: "boolean", short: "v" },
     help: { type: "boolean", short: "h" },
@@ -156,6 +158,16 @@ if (autoConfigPath !== undefined) {
   await finished(autoConfigStream).catch((err: unknown) => {
     console.error(`Warning: could not save config to ${savePath}: ${err instanceof Error ? err.message : String(err)}`);
   });
+}
+
+if (values.edit === true) {
+  const editPath = values.config === undefined ? autoConfigPath : resolve(values.config);
+  if (editPath === undefined) {
+    console.error("Error: no config file to edit. Run an export first to create an auto-config, or specify one with --config.");
+    process.exit(1);
+  }
+  openConfigInEditor(editPath);
+  process.exit(0);
 }
 
 if (values.write !== undefined) {
