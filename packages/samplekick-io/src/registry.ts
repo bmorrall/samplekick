@@ -62,16 +62,22 @@ export class Registry implements FileSource, ConfigSource {
   private readonly rootNode: EntryNode;
   private pathStrategy: PathStrategy = SourcePathStrategy;
   private readonly validator: SimpleValidator;
+  private readonly fingerprint: string;
 
   constructor(fileSource: FileSource) {
     this.rootNode = buildRootNodeFromFileSource(fileSource);
     this.validator = new SimpleValidator();
+    this.fingerprint = fileSource.getFingerprint();
   }
 
   // FileSource methods
 
   getName(): string {
     return this.rootNode.getName();
+  }
+
+  getFingerprint(): string {
+    return this.fingerprint;
   }
 
   eachFileEntry(fn: (entry: FileEntry) => void): void {
