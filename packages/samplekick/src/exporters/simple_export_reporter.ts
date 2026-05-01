@@ -11,14 +11,14 @@ export class SimpleExportReporter implements ExportReporter {
     this.output = output;
   }
 
-  onBeforeWrite(_entry: ConfigEntry, _destRelPath: string): void {
-    // no-op by default; override or extend to add pre-write output
+  onBeforeWrite(entry: ConfigEntry, _destRelPath: string): void {
+    this.output.write(`extracting ${entry.getName()}\n`);
   }
 
   onAfterWrite(_entry: ConfigEntry, destRelPath: string, error?: Error): void {
     this.totalCount += 1;
     if (error === undefined) {
-      this.output.write(`${destRelPath}\n`);
+      this.output.write(`success: ${destRelPath}\n`);
     } else {
       this.errorCount += 1;
       this.output.write(`failed: ${destRelPath}: ${error.message}\n`);

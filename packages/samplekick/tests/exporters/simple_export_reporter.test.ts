@@ -22,11 +22,19 @@ const createReporter = (): { reporter: SimpleExportReporter; getOutput: () => st
 };
 
 describe("SimpleExportReporter", () => {
+  describe("onBeforeWrite", () => {
+    it("writes 'extracting {baseName}'", () => {
+      const { reporter, getOutput } = createReporter();
+      reporter.onBeforeWrite(createEntry("drums/kick.wav"), "loops/my-pack/kick.wav");
+      expect(getOutput()).toBe("extracting kick.wav\n");
+    });
+  });
+
   describe("onAfterWrite", () => {
     it("writes the destination path on success", () => {
       const { reporter, getOutput } = createReporter();
       reporter.onAfterWrite(createEntry("drums/kick.wav"), "loops/my-pack/kick.wav");
-      expect(getOutput()).toBe("loops/my-pack/kick.wav\n");
+      expect(getOutput()).toBe("success: loops/my-pack/kick.wav\n");
     });
 
     it("writes a failed message with the error on failure", () => {
