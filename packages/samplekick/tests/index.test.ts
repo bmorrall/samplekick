@@ -11,6 +11,7 @@ describe("samplekick CLI", () => {
   beforeAll(() => {
     execSync("pnpm build", {
       cwd: resolve(import.meta.dirname, ".."),
+      stdio: "inherit",
     });
   });
 
