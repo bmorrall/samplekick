@@ -2,7 +2,7 @@
 import { createWriteStream } from "node:fs";
 import { mkdir } from "node:fs/promises";
 import { finished } from "node:stream/promises";
-import { dirname, resolve } from "node:path";
+import { basename, dirname, resolve } from "node:path";
 import { parseArgs } from "node:util";
 import { JsonConfigWriter, Registry, SkipJunkTransformer, SourcePathStrategy, ZipDataSource, SP404Mk2Preset } from "samplekick-io";
 import { loadConfig, openConfigInEditor } from "./config_loader";
@@ -58,6 +58,7 @@ Options:
                           without writing any files
       --edit              Open the auto-config file in $VISUAL/$EDITOR
       --verbose           Show inherited tags on all nodes in debug output
+      --quiet             Only show errors (suppress per-file success lines)
   -v, --version           Show version number
   -h, --help              Show this help message
 
@@ -78,6 +79,7 @@ const { values, positionals } = parseArgs({
     debug: { type: "boolean" },
     edit: { type: "boolean" },
     verbose: { type: "boolean" },
+    quiet: { type: "boolean" },
     version: { type: "boolean", short: "v" },
     help: { type: "boolean", short: "h" },
   },
@@ -129,7 +131,9 @@ if (values["allow-junk"] !== true) {
   registry.applyTransform(SkipJunkTransformer);
 }
 
-const reporter: ExportReporter = chalk.level > 0 ? new PrettyExportReporter() : new SimpleExportReporter();
+const reporter: ExportReporter = chalk.level > 0
+  ? new PrettyExportReporter(process.stdout, chalk, values.quiet === true, basename(zipPath))
+  : new SimpleExportReporter(process.stdout, values.quiet === true, basename(zipPath));
 
 if (values.convert === true) {
   const debugLog = values.verbose === true ? reporter.onDebug.bind(reporter) : undefined;

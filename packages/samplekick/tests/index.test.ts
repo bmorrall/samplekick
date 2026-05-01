@@ -52,6 +52,7 @@ describe("samplekick CLI", () => {
           "                          without writing any files",
           "      --edit              Open the auto-config file in $VISUAL/$EDITOR",
           "      --verbose           Show inherited tags on all nodes in debug output",
+          "      --quiet             Only show errors (suppress per-file success lines)",
           "  -v, --version           Show version number",
           "  -h, --help              Show this help message",
           "",
