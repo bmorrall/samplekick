@@ -17,9 +17,10 @@ describe("samplekick CLI", () => {
   describe("argument validation", () => {
     it("prints help and exits with code 0 when no arguments are supplied", () => {
       const result = spawnSync("node", [CLI_PATH], { encoding: "utf8" });
-      expect(result.status).toBe(0);
+      expect(result.stderr).toBe("");
       expect(result.stdout).toContain(`samplekick/${packageJson.version}`);
       expect(result.stdout).toContain("Usage:");
+      expect(result.status).toBe(0);
     });
 
     it("exits with code 1 and prints an error when the zip-file argument is missing", () => {
