@@ -1,13 +1,24 @@
 import { readFile } from "node:fs/promises";
+import { homedir } from "node:os";
 import { join } from "node:path";
 import { Readable } from "node:stream";
-import appDirs from "appdirsjs";
 import { JsonConfigReader } from "samplekick-io";
 import type { Registry } from "samplekick-io";
 
+export const getDataDir = (appName: string): string => {
+  const home = homedir();
+  if (process.platform === "linux") {
+    return join(process.env.XDG_DATA_HOME ?? join(home, ".local", "share"), appName);
+  } else if (process.platform === "win32") {
+    return join(process.env.APPDATA ?? join(home, "AppData", "Roaming"), appName);
+  } else {
+    return join(home, "Library", "Application Support", appName);
+  }
+};
+
 export const loadConfig = async (registry: Registry, configPath: string | undefined): Promise<string | undefined> => {
   if (configPath === undefined) {
-    const dataDir = process.env.SAMPLEKICK_DATA_DIR ?? appDirs({ appName: "samplekick" }).data;
+    const dataDir = process.env.SAMPLEKICK_DATA_DIR ?? getDataDir("samplekick");
     const autoConfigPath = join(dataDir, `${registry.getFingerprint()}.json`);
     const content = await readFile(autoConfigPath, "utf8").catch((err: unknown) => {
       if (typeof err === "object" && err !== null && "code" in err && err.code === "ENOENT") {
