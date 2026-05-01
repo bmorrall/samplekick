@@ -38,6 +38,7 @@
     "vitest": "^4.1.2"
   },
   "dependencies": {
+    "appdirsjs": "^1.2.7",
     "chalk": "^5.4.1",
     "samplekick-io": "workspace:*"
   }

@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 import { createWriteStream } from "node:fs";
-import { readFile } from "node:fs/promises";
+import { mkdir } from "node:fs/promises";
 import { finished } from "node:stream/promises";
-import { resolve } from "node:path";
-import { Readable } from "node:stream";
+import { dirname, resolve } from "node:path";
 import { parseArgs } from "node:util";
-import { JsonConfigReader, JsonConfigWriter, Registry, SkipJunkTransformer, SourcePathStrategy, ZipDataSource, SP404Mk2Preset } from "samplekick-io";
+import { JsonConfigWriter, Registry, SkipJunkTransformer, SourcePathStrategy, ZipDataSource, SP404Mk2Preset } from "samplekick-io";
+import { loadConfig } from "./config_loader";
 import type { DevicePreset } from "samplekick-io";
 import { SimpleExportReporter, PrettyExportReporter } from "./exporters";
 import chalk from "chalk";
@@ -128,30 +128,23 @@ if (devicePreset !== undefined) {
     registry.applyTransform(transform);
   }
 }
-if (values.config !== undefined) {
-  const configPath = resolve(values.config);
-  const configContent = await readFile(configPath, "utf8").catch((err: unknown) => {
-    if (typeof err === "object" && err !== null && "code" in err && err.code === "ENOENT") {
-      console.error(`Error: config file not found: ${configPath}`);
-      process.exit(1);
-    }
-    throw err;
-  });
-  try {
-    registry.loadConfig(new JsonConfigReader(Readable.from([configContent])));
-  } catch (err: unknown) {
-    if (err instanceof SyntaxError) {
-      console.error(`Error: config file is not valid JSON: ${configPath}`);
-      process.exit(1);
-    }
-    throw err;
-  }
-}
+const autoConfigPath = await loadConfig(registry, values.config === undefined ? undefined : resolve(values.config));
 registry.setPathStrategy(SourcePathStrategy);
 
 if (values.debug === true) {
   console.log(registry.toString(values.verbose === true));
   process.exit(0);
+}
+
+if (autoConfigPath !== undefined) {
+  const savePath = autoConfigPath;
+  await mkdir(dirname(savePath), { recursive: true });
+  const autoConfigStream = createWriteStream(savePath);
+  new JsonConfigWriter(autoConfigStream).writeConfig(registry);
+  autoConfigStream.end();
+  await finished(autoConfigStream).catch((err: unknown) => {
+    console.error(`Warning: could not save config to ${savePath}: ${err instanceof Error ? err.message : String(err)}`);
+  });
 }
 
 if (values.write !== undefined) {
