@@ -1,10 +1,10 @@
+import { homedir, tmpdir } from "node:os";
 import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
-import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { zipSync, strToU8 } from "fflate";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { Registry, ZipDataSource } from "samplekick-io";
-import { loadConfig } from "../src/config_loader";
+import { getDataDir, loadConfig } from "../src/config_loader";
 
 const createRegistry = async (files: Record<string, string>): Promise<Registry> => {
   const entries = Object.fromEntries(Object.entries(files).map(([k, v]) => [k, strToU8(v)]));
@@ -117,5 +117,47 @@ describe("loadConfig", () => {
 
     await expect(loadConfig(registry, configPath)).rejects.toThrow("process.exit");
     expect(exitSpy).toHaveBeenCalledWith(1);
+  });
+});
+
+describe("getDataDir", () => {
+  const home = homedir();
+
+  it("returns XDG_DATA_HOME/<appName> on linux when XDG_DATA_HOME is set", () => {
+    vi.stubEnv("XDG_DATA_HOME", "/custom/data");
+    Object.defineProperty(process, "platform", { value: "linux", configurable: true });
+    expect(getDataDir("myapp")).toBe("/custom/data/myapp");
+    vi.unstubAllEnvs();
+    Object.defineProperty(process, "platform", { value: process.platform, configurable: true });
+  });
+
+  it("returns ~/.local/share/<appName> on linux when XDG_DATA_HOME is not set", () => {
+    vi.stubEnv("XDG_DATA_HOME", undefined);
+    Object.defineProperty(process, "platform", { value: "linux", configurable: true });
+    expect(getDataDir("myapp")).toBe(join(home, ".local", "share", "myapp"));
+    vi.unstubAllEnvs();
+    Object.defineProperty(process, "platform", { value: process.platform, configurable: true });
+  });
+
+  it("returns APPDATA/<appName> on win32 when APPDATA is set", () => {
+    vi.stubEnv("APPDATA", "C:\\Users\\User\\AppData\\Roaming");
+    Object.defineProperty(process, "platform", { value: "win32", configurable: true });
+    expect(getDataDir("myapp")).toBe(join("C:\\Users\\User\\AppData\\Roaming", "myapp"));
+    vi.unstubAllEnvs();
+    Object.defineProperty(process, "platform", { value: process.platform, configurable: true });
+  });
+
+  it("returns ~/AppData/Roaming/<appName> on win32 when APPDATA is not set", () => {
+    vi.stubEnv("APPDATA", undefined);
+    Object.defineProperty(process, "platform", { value: "win32", configurable: true });
+    expect(getDataDir("myapp")).toBe(join(home, "AppData", "Roaming", "myapp"));
+    vi.unstubAllEnvs();
+    Object.defineProperty(process, "platform", { value: process.platform, configurable: true });
+  });
+
+  it("returns ~/Library/Application Support/<appName> on macOS", () => {
+    Object.defineProperty(process, "platform", { value: "darwin", configurable: true });
+    expect(getDataDir("myapp")).toBe(join(home, "Library", "Application Support", "myapp"));
+    Object.defineProperty(process, "platform", { value: process.platform, configurable: true });
   });
 });
