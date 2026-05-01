@@ -49,7 +49,7 @@ export class AudioConverter implements PostProcessor {
     const outputPath = join(dir, `${base}.wav`);
     const tempPath = `${destPath}.converting.wav`;
 
-    this.onDebug?.(`Converting ${destPath} to 48 kHz WAV`);
+    this.onDebug?.(`Converting ${basename(destPath)} to 16-bit 48 kHz WAV`);
     try {
       await this.runFfmpeg(["-i", destPath, "-ar", "48000", "-sample_fmt", "s16", "-y", tempPath]);
       await rename(tempPath, outputPath);
