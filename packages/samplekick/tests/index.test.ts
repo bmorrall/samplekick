@@ -46,6 +46,7 @@ describe("samplekick CLI", () => {
           "  -c, --config <path>     Load a JSON config file to apply to the pack",
           "  -w, --write <path>      Write the pack config as JSON to a file",
           "  -d, --device <name>     Apply a device preset",
+          "      --convert           Convert audio files to 16-bit (WAV/AIFF only)",
           "      --allow-junk        Keep junk entries (e.g. __MACOSX, hidden files)",
           "      --debug             Print pack string representation to stdout",
           "                          without writing any files",

@@ -83,6 +83,7 @@ export interface DevicePreset {
 export interface ExportOptions {
   onBeforeWrite?: (entry: ConfigEntry, destRelPath: string) => void;
   onAfterWrite?: (entry: ConfigEntry, destRelPath: string, error?: Error) => void;
+  writeEntry?: (entry: FileEntry, destPath: string) => Promise<void>;
 }
 
 // Path Strategy

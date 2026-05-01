@@ -2,12 +2,13 @@
 import { createWriteStream } from "node:fs";
 import { mkdir } from "node:fs/promises";
 import { finished } from "node:stream/promises";
-import { dirname, resolve } from "node:path";
+import { dirname, extname, resolve } from "node:path";
 import { parseArgs } from "node:util";
 import { JsonConfigWriter, Registry, SkipJunkTransformer, SourcePathStrategy, ZipDataSource, SP404Mk2Preset } from "samplekick-io";
 import { loadConfig } from "./config_loader";
-import type { DevicePreset } from "samplekick-io";
+import type { DevicePreset, FileEntry } from "samplekick-io";
 import { SimpleExportReporter, PrettyExportReporter } from "./exporters";
+import { CONVERTIBLE_EXTENSIONS, convertToSixteenBit } from "./audio_converter";
 import chalk from "chalk";
 import type { ExportReporter } from "./exporters";
 import packageJson from "../package.json" with { type: "json" };
@@ -51,6 +52,7 @@ Options:
   -c, --config <path>     Load a JSON config file to apply to the pack
   -w, --write <path>      Write the pack config as JSON to a file
   -d, --device <name>     Apply a device preset
+      --convert           Convert audio files to 16-bit (WAV/AIFF only)
       --allow-junk        Keep junk entries (e.g. __MACOSX, hidden files)
       --debug             Print pack string representation to stdout
                           without writing any files
@@ -70,6 +72,7 @@ const { values, positionals } = parseArgs({
     device: { type: "string", short: "d" },
     output: { type: "string", short: "o" },
     write: { type: "string", short: "w" },
+    convert: { type: "boolean" },
     "allow-junk": { type: "boolean" },
     debug: { type: "boolean" },
     verbose: { type: "boolean" },
@@ -165,6 +168,16 @@ if (values.output === undefined) {
 
 const destPath = resolve(values.output);
 const reporter: ExportReporter = chalk.level > 0 ? new PrettyExportReporter() : new SimpleExportReporter();
+
+if (values.convert === true) {
+  reporter.writeEntry = async (entry: FileEntry, dest: string) => {
+    await entry.copyToPath(dest);
+    if (CONVERTIBLE_EXTENSIONS.has(extname(dest).toLowerCase())) {
+      await convertToSixteenBit(dest);
+    }
+  };
+}
+
 await registry.exportToDirectory(destPath, reporter).catch((err: unknown) => {
   console.error(`Error: could not export to ${destPath}: ${err instanceof Error ? err.message : String(err)}`);
   process.exit(1);

@@ -40,6 +40,8 @@
   "dependencies": {
     "appdirsjs": "^1.2.7",
     "chalk": "^5.4.1",
+    "execa": "^9.6.1",
+    "node-av": "^5.2.3",
     "samplekick-io": "workspace:*"
   }
 }

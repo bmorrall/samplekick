@@ -260,10 +260,11 @@ export class Registry implements FileSource, ConfigSource {
         /* v8 ignore next */
         return;
       }
+      const writer = options?.writeEntry ?? (async (e: FileEntry, p: string) => { await e.copyToPath(p); });
       const write = async (): Promise<void> => {
         options?.onBeforeWrite?.(node, destRelPath);
         try {
-          await node.copyToPath(join(dirPath, destRelPath));
+          await writer(node, join(dirPath, destRelPath));
           options?.onAfterWrite?.(node, destRelPath);
         } catch (err) {
           const error = err instanceof Error ? err : new Error(String(err));

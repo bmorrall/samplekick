@@ -1,9 +1,22 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
+import { createRequire } from "node:module";
 import { Readable } from "node:stream";
-import appDirs from "appdirsjs";
+
 import { JsonConfigReader } from "samplekick-io";
 import type { Registry } from "samplekick-io";
+import type appDirsType from "appdirsjs";
+
+// CJS interop: appdirsjs is a CJS package that exports { default: fn }.
+// Using createRequire avoids the ESM default-import interop issue at runtime.
+const _require = createRequire(import.meta.url);
+const _appDirsModule: unknown = _require("appdirsjs");
+const isAppDirsModule = (m: unknown): m is { default: typeof appDirsType } =>
+  typeof m === "object" && m !== null && "default" in m && typeof m.default === "function";
+if (!isAppDirsModule(_appDirsModule)) {
+  throw new Error("appdirsjs: unexpected module format");
+}
+const { default: appDirs } = _appDirsModule;
 
 export const loadConfig = async (registry: Registry, configPath: string | undefined): Promise<string | undefined> => {
   if (configPath === undefined) {
