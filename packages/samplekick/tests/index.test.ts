@@ -18,21 +18,26 @@ describe("samplekick CLI", () => {
   describe("argument validation", () => {
     it("prints help and exits with code 0 when no arguments are supplied", () => {
       const result = spawnSync("node", [CLI_PATH], { encoding: "utf8" });
+
       expect(result.stderr).toBe("");
       expect(result.stdout).toContain(`samplekick/${packageJson.version}`);
       expect(result.stdout).toContain("Usage:");
+
       expect(result.status).toBe(0);
     });
 
     it("exits with code 1 and prints an error when the zip-file argument is missing", () => {
       const result = spawnSync("node", [CLI_PATH, "-o", "/tmp/out"], { encoding: "utf8" });
-      expect(result.status).toBe(1);
+
       expect(result.stderr).toContain("<zip-file>");
+
+      expect(result.status).toBe(1);
     });
 
     it("prints help and exits with code 0 when --help is passed", () => {
       const result = spawnSync("node", [CLI_PATH, "--help"], { encoding: "utf8" });
-      expect(result.status).toBe(0);
+
+      expect(result.stderr).toBe("");
       expect(result.stdout.trim()).toBe(
         [
           `samplekick/${packageJson.version}`,
@@ -59,25 +64,36 @@ describe("samplekick CLI", () => {
           "  sp404mk2, sp404, 404    Roland SP-404MKII",
         ].join("\n"),
       );
+
+      expect(result.status).toBe(0);
     });
 
     it("prints help and exits with code 0 when -h is passed", () => {
       const result = spawnSync("node", [CLI_PATH, "-h"], { encoding: "utf8" });
-      expect(result.status).toBe(0);
+
+      expect(result.stderr).toBe("");
       expect(result.stdout).toContain(`samplekick/${packageJson.version}`);
       expect(result.stdout).toContain("Usage:");
+
+      expect(result.status).toBe(0);
     });
 
     it("prints version and exits with code 0 when --version is passed", () => {
       const result = spawnSync("node", [CLI_PATH, "--version"], { encoding: "utf8" });
-      expect(result.status).toBe(0);
+
+      expect(result.stderr).toBe("");
       expect(result.stdout.trim()).toBe(packageJson.version);
+
+      expect(result.status).toBe(0);
     });
 
     it("prints version and exits with code 0 when -v is passed", () => {
       const result = spawnSync("node", [CLI_PATH, "-v"], { encoding: "utf8" });
-      expect(result.status).toBe(0);
+
+      expect(result.stderr).toBe("");
       expect(result.stdout.trim()).toBe(packageJson.version);
+
+      expect(result.status).toBe(0);
     });
   });
 
@@ -88,9 +104,11 @@ describe("samplekick CLI", () => {
 
       try {
         const result = spawnSync("node", [CLI_PATH, zipPath], { encoding: "utf8" });
-        expect(result.status).toBe(1);
+
         expect(result.stderr).toContain("Error: file not found");
         expect(result.stderr).toContain("nonexistent.zip");
+
+        expect(result.status).toBe(1);
       } finally {
         await rm(tmpDir, { recursive: true });
       }
@@ -104,9 +122,11 @@ describe("samplekick CLI", () => {
         await writeFile(zipPath, "not a zip file");
 
         const result = spawnSync("node", [CLI_PATH, zipPath], { encoding: "utf8" });
-        expect(result.status).toBe(1);
+
         expect(result.stderr).toContain("Error: not a valid zip file");
         expect(result.stderr).toContain("invalid.zip");
+
+        expect(result.status).toBe(1);
       } finally {
         await rm(tmpDir, { recursive: true });
       }
@@ -125,9 +145,11 @@ describe("samplekick CLI", () => {
           [CLI_PATH, zipPath, "--config", join(tmpDir, "nonexistent.json")],
           { encoding: "utf8" },
         );
-        expect(result.status).toBe(1);
+
         expect(result.stderr).toContain("Error: config file not found");
         expect(result.stderr).toContain("nonexistent.json");
+
+        expect(result.status).toBe(1);
       } finally {
         await rm(tmpDir, { recursive: true });
       }
@@ -144,9 +166,11 @@ describe("samplekick CLI", () => {
         await writeFile(configPath, "not valid json");
 
         const result = spawnSync("node", [CLI_PATH, zipPath, "--config", configPath], { encoding: "utf8" });
-        expect(result.status).toBe(1);
+
         expect(result.stderr).toContain("Error: config file is not valid JSON");
         expect(result.stderr).toContain("config.json");
+
+        expect(result.status).toBe(1);
       } finally {
         await rm(tmpDir, { recursive: true });
       }
@@ -165,9 +189,11 @@ describe("samplekick CLI", () => {
           encoding: "utf8",
           env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
         });
-        expect(result.status).toBe(1);
+
         expect(result.stderr).toContain("Error: could not write to");
         expect(result.stderr).toContain("config.json");
+
+        expect(result.status).toBe(1);
       } finally {
         await rm(tmpDir, { recursive: true });
       }
@@ -188,9 +214,11 @@ describe("samplekick CLI", () => {
           encoding: "utf8",
           env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
         });
-        expect(result.status).toBe(1);
+
         expect(result.stderr).toContain("Error: could not export to");
         expect(result.stderr).toContain("output");
+
+        expect(result.status).toBe(1);
       } finally {
         await rm(tmpDir, { recursive: true });
       }
@@ -215,8 +243,8 @@ describe("samplekick CLI", () => {
       await writeFile(configPath, config);
 
       const result = spawnSync("node", [CLI_PATH, zipPath, "--config", configPath, "--debug"], { encoding: "utf8" });
-      expect(result.status).toBe(0);
 
+      expect(result.stderr).toBe("");
       const expected = [
         "test-pack.zip",
         "├── Drums",
@@ -225,6 +253,8 @@ describe("samplekick CLI", () => {
         "    └── bass.wav",
       ].join("\n");
       expect(result.stdout.trim()).toBe(expected);
+
+      expect(result.status).toBe(0);
     } finally {
       await rm(tmpDir, { recursive: true });
     }
@@ -253,8 +283,8 @@ describe("samplekick CLI", () => {
         [CLI_PATH, zipPath, "--config", configPath, "--debug", "--verbose"],
         { encoding: "utf8" },
       );
-      expect(result.status).toBe(0);
 
+      expect(result.stderr).toBe("");
       const expected = [
         "test-pack.zip",
         "├── Drums [pkg:my-pack, type:Percussion]",
@@ -263,6 +293,8 @@ describe("samplekick CLI", () => {
         "    └── bass.wav",
       ].join("\n");
       expect(result.stdout.trim()).toBe(expected);
+
+      expect(result.status).toBe(0);
     } finally {
       await rm(tmpDir, { recursive: true });
     }
@@ -285,14 +317,16 @@ describe("samplekick CLI", () => {
         encoding: "utf8",
         env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
       });
-      expect(result.status).toBe(0);
 
+      expect(result.stderr).toBe("");
       const parsed: unknown = JSON.parse(result.stdout);
       expect(parsed).toBeInstanceOf(Array);
       expect(parsed).toHaveLength(4);
       expect(parsed).toContainEqual(expect.objectContaining({ path: "Drums/kick.wav" }));
       expect(parsed).toContainEqual(expect.objectContaining({ path: "Loops/bass.wav" }));
       expect(parsed).toContainEqual(expect.objectContaining({ path: ".DS_Store", isSkipped: true }));
+
+      expect(result.status).toBe(0);
     } finally {
       await rm(tmpDir, { recursive: true });
     }
@@ -315,13 +349,16 @@ describe("samplekick CLI", () => {
         encoding: "utf8",
         env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
       });
-      expect(result.status).toBe(0);
+
+      expect(result.stderr).toBe("");
       expect(JSON.parse(result.stdout)).toBeInstanceOf(Array);
 
       const parsed: unknown = JSON.parse(await readFile(configPath, "utf8"));
       expect(parsed).toBeInstanceOf(Array);
       expect(parsed).toContainEqual(expect.objectContaining({ path: "Drums/kick.wav" }));
       expect(parsed).toContainEqual(expect.objectContaining({ path: "Loops/bass.wav" }));
+
+      expect(result.status).toBe(0);
     } finally {
       await rm(tmpDir, { recursive: true });
     }
@@ -344,8 +381,8 @@ describe("samplekick CLI", () => {
         encoding: "utf8",
         env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
       });
-      expect(result.status).toBe(0);
 
+      expect(result.stderr).toBe("");
       const parsed: unknown = JSON.parse(await readFile(configPath, "utf8"));
       expect(parsed).toBeInstanceOf(Array);
       expect(parsed).toContainEqual(expect.objectContaining({ path: "Drums/kick.wav" }));
@@ -354,6 +391,8 @@ describe("samplekick CLI", () => {
 
       expect(result.stdout).toContain("Drums/kick.wav");
       expect(result.stdout).toContain(`Exported 1 file to ${outputDir}`);
+
+      expect(result.status).toBe(0);
     } finally {
       await rm(tmpDir, { recursive: true });
     }
@@ -378,12 +417,14 @@ describe("samplekick CLI", () => {
         encoding: "utf8",
         env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
       });
-      expect(result.status).toBe(0);
 
+      expect(result.stderr).toBe("");
       expect(await readFile(join(outputDir, "Drums/kick.wav"), "utf8")).toBe("kick-data");
       expect(await readFile(join(outputDir, "Drums/snare.wav"), "utf8")).toBe("snare-data");
       expect(await readFile(join(outputDir, "Loops/bass.wav"), "utf8")).toBe("bass-data");
       await expect(stat(join(outputDir, "__MACOSX/Drums/._kick.wav"))).rejects.toThrow();
+
+      expect(result.status).toBe(0);
     } finally {
       await rm(tmpDir, { recursive: true });
     }
@@ -410,11 +451,13 @@ describe("samplekick CLI", () => {
       await writeFile(configPath, config);
 
       const result = spawnSync("node", [CLI_PATH, zipPath, "--config", configPath, "-o", outputDir], { encoding: "utf8" });
-      expect(result.status).toBe(0);
 
+      expect(result.stderr).toBe("");
       expect(await readFile(join(outputDir, "Drums/My Kick.wav"), "utf8")).toBe("kick-data");
       await expect(stat(join(outputDir, "Drums/kick.wav"))).rejects.toThrow();
       await expect(stat(join(outputDir, "Loops/bass.wav"))).rejects.toThrow();
+
+      expect(result.status).toBe(0);
     } finally {
       await rm(tmpDir, { recursive: true });
     }
@@ -438,10 +481,12 @@ describe("samplekick CLI", () => {
       await writeFile(configPath, config);
 
       const result = spawnSync("node", [CLI_PATH, zipPath, "-c", configPath], { encoding: "utf8" });
-      expect(result.status).toBe(0);
 
+      expect(result.stderr).toBe("");
       const parsed: unknown = JSON.parse(result.stdout);
       expect(parsed).toContainEqual(expect.objectContaining({ path: "Drums/kick.wav", packageName: "Percussion" }));
+
+      expect(result.status).toBe(0);
     } finally {
       await rm(tmpDir, { recursive: true });
     }
