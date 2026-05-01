@@ -8,6 +8,7 @@ import { JsonConfigWriter, Registry, SkipJunkTransformer, SourcePathStrategy, Zi
 import { loadConfig } from "./config_loader";
 import type { DevicePreset } from "samplekick-io";
 import { SimpleExportReporter, PrettyExportReporter } from "./exporters";
+import { AudioConverter } from "./post_processors";
 import chalk from "chalk";
 import type { ExportReporter } from "./exporters";
 import packageJson from "../package.json" with { type: "json" };
@@ -51,6 +52,7 @@ Options:
   -c, --config <path>     Load a JSON config file to apply to the pack
   -w, --write <path>      Write the pack config as JSON to a file
   -d, --device <name>     Apply a device preset
+      --convert           Convert audio files to 16-bit 48 kHz WAV
       --allow-junk        Keep junk entries (e.g. __MACOSX, hidden files)
       --debug             Print pack string representation to stdout
                           without writing any files
@@ -70,6 +72,7 @@ const { values, positionals } = parseArgs({
     device: { type: "string", short: "d" },
     output: { type: "string", short: "o" },
     write: { type: "string", short: "w" },
+    convert: { type: "boolean" },
     "allow-junk": { type: "boolean" },
     debug: { type: "boolean" },
     verbose: { type: "boolean" },
@@ -122,6 +125,9 @@ const dataSource = await ZipDataSource.fromFile(zipPath).catch((err: unknown) =>
 const registry = new Registry(dataSource);
 if (values["allow-junk"] !== true) {
   registry.applyTransform(SkipJunkTransformer);
+}
+if (values.convert === true) {
+  registry.addPostProcessor(new AudioConverter());
 }
 if (devicePreset !== undefined) {
   for (const transform of devicePreset.transforms) {
