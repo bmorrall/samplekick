@@ -1,20 +1,13 @@
-import { execSync, spawnSync } from "node:child_process";
+import { spawnSync } from "node:child_process";
 import { mkdtemp, readFile, rm, stat, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { zipSync, strToU8 } from "fflate";
-import { beforeAll, describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import packageJson from "../package.json" with { type: "json" };
 const CLI_PATH = resolve(import.meta.dirname, "../dist/index.mjs");
 
 describe("samplekick CLI", () => {
-  beforeAll(() => {
-    execSync("pnpm build", {
-      cwd: resolve(import.meta.dirname, ".."),
-      stdio: "inherit",
-    });
-  });
-
   describe("argument validation", () => {
     it("prints help and exits with code 0 when no arguments are supplied", () => {
       const result = spawnSync("node", [CLI_PATH], { encoding: "utf8" });

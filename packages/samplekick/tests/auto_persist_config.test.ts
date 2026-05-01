@@ -1,20 +1,13 @@
-import { execSync, spawnSync } from "node:child_process";
+import { spawnSync } from "node:child_process";
 import { mkdtemp, readFile, readdir, rm, stat, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { zipSync, strToU8 } from "fflate";
-import { beforeAll, describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 
 const CLI_PATH = resolve(import.meta.dirname, "../dist/index.mjs");
 
 describe("auto-persist config", () => {
-  beforeAll(() => {
-    execSync("pnpm build", {
-      cwd: resolve(import.meta.dirname, ".."),
-      stdio: "inherit",
-    });
-  });
-
   it("saves config to data dir on first run and loads it on subsequent runs", async () => {
     const zipped = zipSync({ "Drums/kick.wav": strToU8("kick-data") });
 
