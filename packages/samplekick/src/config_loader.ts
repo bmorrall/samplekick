@@ -1,4 +1,5 @@
 import { readFile } from "node:fs/promises";
+import { spawnSync } from "node:child_process";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { Readable } from "node:stream";
@@ -13,6 +14,19 @@ export const getDataDir = (appName: string): string => {
     return join(process.env.APPDATA ?? join(home, "AppData", "Roaming"), appName);
   } else {
     return join(home, "Library", "Application Support", appName);
+  }
+};
+
+export const openConfigInEditor = (configPath: string): void => {
+  const editor = process.env.VISUAL ?? process.env.EDITOR;
+  if (editor !== undefined) {
+    spawnSync(editor, [configPath], { stdio: "inherit" });
+  } else if (process.platform === "win32") {
+    spawnSync("cmd", ["/c", "start", "", configPath], { stdio: "inherit" });
+  } else if (process.platform === "linux") {
+    spawnSync("xdg-open", [configPath], { stdio: "inherit" });
+  } else {
+    spawnSync("open", ["-W", configPath], { stdio: "inherit" });
   }
 };
 

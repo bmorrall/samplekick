@@ -50,6 +50,7 @@ describe("samplekick CLI", () => {
           "      --allow-junk        Keep junk entries (e.g. __MACOSX, hidden files)",
           "      --debug             Print pack string representation to stdout",
           "                          without writing any files",
+          "      --edit              Open the auto-config file in $VISUAL/$EDITOR",
           "      --verbose           Show inherited tags on all nodes in debug output",
           "  -v, --version           Show version number",
           "  -h, --help              Show this help message",
