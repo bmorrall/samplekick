@@ -126,9 +126,14 @@ const registry = new Registry(dataSource);
 if (values["allow-junk"] !== true) {
   registry.applyTransform(SkipJunkTransformer);
 }
+
+const reporter: ExportReporter = chalk.level > 0 ? new PrettyExportReporter() : new SimpleExportReporter();
+
 if (values.convert === true) {
-  registry.addPostProcessor(new AudioConverter());
+  const debugLog = values.verbose === true ? reporter.onDebug.bind(reporter) : undefined;
+  registry.addPostProcessor(new AudioConverter(undefined, undefined, debugLog));
 }
+
 if (devicePreset !== undefined) {
   for (const transform of devicePreset.transforms) {
     registry.applyTransform(transform);
@@ -170,7 +175,6 @@ if (values.output === undefined) {
 }
 
 const destPath = resolve(values.output);
-const reporter: ExportReporter = chalk.level > 0 ? new PrettyExportReporter() : new SimpleExportReporter();
 
 if (values.verbose === true) {
   reporter.onDebug(`Using zip file: ${zipPath}`);

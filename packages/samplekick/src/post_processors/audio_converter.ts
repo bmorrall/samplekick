@@ -28,10 +28,16 @@ const AUDIO_EXTENSIONS = new Set([".wav", ".aiff", ".aif", ".mp3"]);
 export class AudioConverter implements PostProcessor {
   private readonly runFfmpeg: FfmpegRunner;
   private readonly onError: ConvertErrorHandler;
+  private readonly onDebug: ((message: string) => void) | undefined;
 
-  constructor(runFfmpeg: FfmpegRunner = defaultRunner, onError: ConvertErrorHandler = defaultErrorHandler) {
+  constructor(
+    runFfmpeg: FfmpegRunner = defaultRunner,
+    onError: ConvertErrorHandler = defaultErrorHandler,
+    onDebug?: (message: string) => void,
+  ) {
     this.runFfmpeg = runFfmpeg;
     this.onError = onError;
+    this.onDebug = onDebug;
   }
 
   async processFile(destPath: string, _entry: ConfigEntry): Promise<void> {
@@ -43,6 +49,7 @@ export class AudioConverter implements PostProcessor {
     const outputPath = join(dir, `${base}.wav`);
     const tempPath = `${destPath}.converting.wav`;
 
+    this.onDebug?.(`Converting ${destPath} to 48 kHz WAV`);
     try {
       await this.runFfmpeg(["-i", destPath, "-ar", "48000", "-sample_fmt", "s16", "-y", tempPath]);
       await rename(tempPath, outputPath);
