@@ -80,6 +80,10 @@ export interface DevicePreset {
 
 // Export
 
+export interface PostProcessor {
+  processFile: (destPath: string, entry: ConfigEntry) => Promise<void> | void;
+}
+
 export interface ExportOptions {
   onBeforeWrite?: (entry: ConfigEntry, destRelPath: string) => void;
   onAfterWrite?: (entry: ConfigEntry, destRelPath: string, error?: Error) => void;

@@ -15,6 +15,7 @@ import type {
   TransformSource,
   ValidationResult,
   ExportOptions,
+  PostProcessor,
 } from "./types";
 
 const buildRootNodeFromFileSource = (fileSource: FileSource): EntryNode => {
@@ -61,6 +62,7 @@ const applyEntryConfig = (node: EntryNode, entry: ConfigEntry): void => {
 export class Registry implements FileSource, ConfigSource {
   private readonly rootNode: EntryNode;
   private pathStrategy: PathStrategy = SourcePathStrategy;
+  private readonly postProcessors: PostProcessor[] = [];
   private readonly validator: SimpleValidator;
   private readonly fingerprint: string;
 
@@ -241,6 +243,12 @@ export class Registry implements FileSource, ConfigSource {
     this.pathStrategy = strategy;
   }
 
+  // Post-processor methods
+
+  addPostProcessor(processor: PostProcessor): void {
+    this.postProcessors.push(processor);
+  }
+
   /**
    * Returns the destination path for a given entry path, using the current path strategy.
    */
@@ -263,7 +271,12 @@ export class Registry implements FileSource, ConfigSource {
       const write = async (): Promise<void> => {
         options?.onBeforeWrite?.(node, destRelPath);
         try {
-          await node.copyToPath(join(dirPath, destRelPath));
+          const destPath = join(dirPath, destRelPath);
+          await node.copyToPath(destPath);
+          await this.postProcessors.reduce<Promise<void>>(
+            async (chain, processor) => { await chain; await processor.processFile(destPath, node); },
+            Promise.resolve(),
+          );
           options?.onAfterWrite?.(node, destRelPath);
         } catch (err) {
           const error = err instanceof Error ? err : new Error(String(err));
