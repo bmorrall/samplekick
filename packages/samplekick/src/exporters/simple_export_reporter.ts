@@ -11,6 +11,10 @@ export class SimpleExportReporter implements ExportReporter {
     this.output = output;
   }
 
+  onDebug(message: string): void {
+    this.output.write(`${message}\n`);
+  }
+
   onBeforeWrite(entry: ConfigEntry, _destRelPath: string): void {
     this.output.write(`extracting ${entry.getName()}\n`);
   }

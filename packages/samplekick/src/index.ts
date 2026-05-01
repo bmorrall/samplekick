@@ -171,6 +171,16 @@ if (values.output === undefined) {
 
 const destPath = resolve(values.output);
 const reporter: ExportReporter = chalk.level > 0 ? new PrettyExportReporter() : new SimpleExportReporter();
+
+if (values.verbose === true) {
+  reporter.onDebug(`Using zip file: ${zipPath}`);
+  if (values.config !== undefined) {
+    reporter.onDebug(`Using config: ${resolve(values.config)}`);
+  } else if (autoConfigPath !== undefined) {
+    reporter.onDebug(`Using auto-config: ${autoConfigPath}`);
+  }
+}
+
 await registry.exportToDirectory(destPath, reporter).catch((err: unknown) => {
   console.error(`Error: could not export to ${destPath}: ${err instanceof Error ? err.message : String(err)}`);
   process.exit(1);

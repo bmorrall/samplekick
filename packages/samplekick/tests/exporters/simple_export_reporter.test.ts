@@ -22,6 +22,14 @@ const createReporter = (): { reporter: SimpleExportReporter; getOutput: () => st
 };
 
 describe("SimpleExportReporter", () => {
+  describe("onDebug", () => {
+    it("writes the message on its own line", () => {
+      const { reporter, getOutput } = createReporter();
+      reporter.onDebug("Using zip file: /path/to/pack.zip");
+      expect(getOutput()).toBe("Using zip file: /path/to/pack.zip\n");
+    });
+  });
+
   describe("onBeforeWrite", () => {
     it("writes 'extracting {baseName}'", () => {
       const { reporter, getOutput } = createReporter();
