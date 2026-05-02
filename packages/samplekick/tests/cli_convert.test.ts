@@ -157,4 +157,55 @@ describe("--convert flag", () => {
       await rm(tmpDir, { recursive: true });
     }
   });
+
+  it("exits with code 1 and prints an error when ffmpeg is not found", async () => {
+    const zipped = zipSync({
+      "Drums/kick.wav": makeMinimalWav(),
+    });
+
+    const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
+    const zipPath = join(tmpDir, "test-pack.zip");
+    const outputDir = join(tmpDir, "output");
+
+    try {
+      await writeFile(zipPath, zipped);
+
+      const result = spawnSync(process.execPath, [CLI_PATH, zipPath, "--convert", "-o", outputDir], {
+        encoding: "utf8",
+        env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data"), PATH: tmpDir },
+      });
+
+      expect(result.stderr).toContain("ffmpeg not found");
+      expect(result.status).toBe(1);
+    } finally {
+      await rm(tmpDir, { recursive: true });
+    }
+  });
+
+  it("prints the ffmpeg version to stdout when --verbose is passed", async () => {
+    const zipped = zipSync({
+      "Drums/kick.wav": makeMinimalWav(),
+    });
+
+    const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
+    const zipPath = join(tmpDir, "test-pack.zip");
+    const outputDir = join(tmpDir, "output");
+
+    try {
+      await writeFile(zipPath, zipped);
+
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--convert", "--verbose", "-o", outputDir], {
+        encoding: "utf8",
+        env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
+      });
+
+      expect(result.stdout).toContain("Using ffmpeg: ffmpeg version");
+      const autoConfigIdx = result.stdout.indexOf("Using auto-config:");
+      const ffmpegIdx = result.stdout.indexOf("Using ffmpeg:");
+      expect(autoConfigIdx).toBeGreaterThan(-1);
+      expect(ffmpegIdx).toBeGreaterThan(autoConfigIdx);
+    } finally {
+      await rm(tmpDir, { recursive: true });
+    }
+  });
 });
