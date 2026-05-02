@@ -161,6 +161,18 @@ const autoConfigPath = await loadConfig(registry, configPath, dataDir).catch((er
 });
 registry.setPathStrategy(SourcePathStrategy);
 
+if (values.verbose === true) {
+  reporter.onInfo(`Reading: ${zipPath}`);
+  if (configPath !== undefined) {
+    reporter.onInfo(`Using config: ${configPath}`);
+  } else if (autoConfigPath !== undefined) {
+    reporter.onInfo(`Using auto-config: ${autoConfigPath}`);
+  }
+  if (ffmpegVersion !== undefined) {
+    reporter.onInfo(`Using ffmpeg: ${ffmpegVersion}`);
+  }
+}
+
 if (values.debug === true) {
   console.log(registry.toString(values.verbose === true));
   process.exit(0);
@@ -199,18 +211,6 @@ if (values.write !== undefined) {
 if (values.output === undefined) {
   new CsvConfigWriter(process.stdout).writeConfig(registry);
   process.exit(0);
-}
-
-if (values.verbose === true) {
-  reporter.onInfo(`Reading: ${zipPath}`);
-  if (configPath !== undefined) {
-    reporter.onInfo(`Using config: ${configPath}`);
-  } else if (autoConfigPath !== undefined) {
-    reporter.onInfo(`Using auto-config: ${autoConfigPath}`);
-  }
-  if (ffmpegVersion !== undefined) {
-    reporter.onInfo(`Using ffmpeg: ${ffmpegVersion}`);
-  }
 }
 
 const destPath = resolve(values.output);

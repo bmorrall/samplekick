@@ -264,6 +264,8 @@ describe("samplekick CLI", () => {
 
       expect(result.stderr).toBe("");
       const expected = [
+        `Reading: ${zipPath}`,
+        `Using config: ${configPath}`,
         "test-pack.zip",
         "├── Drums [pkg:my-pack, type:Percussion]",
         "│   └── kick_01.wav [renamed, pkg:my-pack, type:Percussion, orig:kick.wav]",
