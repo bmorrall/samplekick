@@ -45,8 +45,8 @@ const optionalString = (value: string): string | undefined =>
   value === "" ? undefined : value;
 
 const optionalBoolean = (value: string): boolean | undefined => {
-  if (value === "true") return true;
-  if (value === "false") return false;
+  if (value === "true" || value === "t" || value === "1") return true;
+  if (value === "false" || value === "f" || value === "0") return false;
   return undefined;
 };
 

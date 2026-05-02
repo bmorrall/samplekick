@@ -142,6 +142,34 @@ describe("CsvConfigReader", () => {
     expect(entry.isKeepStructure()).toBeUndefined();
   });
 
+  it("accepts t/f as boolean aliases", () => {
+    const reader = new CsvConfigReader(
+      Readable.from([
+        "path,name,packageName,sampleType,skipped,keep\njazz/track01,,,,t,f",
+      ]),
+    );
+
+    const entries = collectConfigEntries(reader);
+    const [entry] = entries;
+
+    expect(entry.isSkipped()).toBe(true);
+    expect(entry.isKeepStructure()).toBe(false);
+  });
+
+  it("accepts 1/0 as boolean aliases", () => {
+    const reader = new CsvConfigReader(
+      Readable.from([
+        "path,name,packageName,sampleType,skipped,keep\njazz/track01,,,,1,0",
+      ]),
+    );
+
+    const entries = collectConfigEntries(reader);
+    const [entry] = entries;
+
+    expect(entry.isSkipped()).toBe(true);
+    expect(entry.isKeepStructure()).toBe(false);
+  });
+
   it("throws when the stream yields a non-string chunk", () => {
     const reader = new CsvConfigReader(new NonStringReadable());
     const onEntry = vi.fn<(entry: ConfigEntry) => void>();
