@@ -40,6 +40,16 @@ const createTTYReporter = (): { reporter: PrettyExportReporter; getOutput: () =>
 };
 
 describe("PrettyExportReporter", () => {
+  describe("onInfo", () => {
+    it("writes the message dimmed without dot or indent", () => {
+      const { reporter, getOutput } = createReporter();
+      reporter.onInfo("Reading: /path/to/pack.zip");
+      const raw = getOutput();
+      expect(raw).toContain("\x1B[");
+      expect(stripAnsi(raw)).toBe("Reading: /path/to/pack.zip\n");
+    });
+  });
+
   describe("onDebug", () => {
     it("writes the message in grey", () => {
       const { reporter, getOutput } = createReporter();

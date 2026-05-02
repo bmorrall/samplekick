@@ -16,6 +16,10 @@ export class SimpleExportReporter implements ExportReporter {
     this.packName = packName;
   }
 
+  onInfo(message: string): void {
+    this.output.write(`${message}\n`);
+  }
+
   onDebug(message: string): void {
     this.output.write(`${message}\n`);
   }

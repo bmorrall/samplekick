@@ -40,6 +40,14 @@ const createPackReporter = (): { reporter: SimpleExportReporter; getOutput: () =
 };
 
 describe("SimpleExportReporter", () => {
+  describe("onInfo", () => {
+    it("writes the message on its own line", () => {
+      const { reporter, getOutput } = createReporter();
+      reporter.onInfo("Reading: /path/to/pack.zip");
+      expect(getOutput()).toBe("Reading: /path/to/pack.zip\n");
+    });
+  });
+
   describe("onDebug", () => {
     it("writes the message on its own line", () => {
       const { reporter, getOutput } = createReporter();

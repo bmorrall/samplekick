@@ -63,6 +63,15 @@ export class PrettyExportReporter implements ExportReporter {
     }
   }
 
+  onInfo(message: string): void {
+    if (this.isTTY && this.spinnerTimer !== undefined) {
+      this.output.write(`\x1b[2K\r${this.chalk.dim(message)}\n`);
+      this.drawSpinner();
+    } else {
+      this.output.write(`${this.chalk.dim(message)}\n`);
+    }
+  }
+
   onDebug(message: string): void {
     this.logLine(this.chalk.gray(`\u00b7 ${message}`));
   }

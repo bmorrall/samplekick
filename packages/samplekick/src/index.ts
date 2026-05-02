@@ -199,14 +199,14 @@ if (values.output === undefined) {
 const destPath = resolve(values.output);
 
 if (values.verbose === true) {
-  reporter.onDebug(`Reading: ${zipPath}`);
+  reporter.onInfo(`Reading: ${zipPath}`);
   if (values.config !== undefined) {
-    reporter.onDebug(`Using config: ${resolve(values.config)}`);
+    reporter.onInfo(`Using config: ${resolve(values.config)}`);
   } else if (autoConfigPath !== undefined) {
-    reporter.onDebug(`Using auto-config: ${autoConfigPath}`);
+    reporter.onInfo(`Using auto-config: ${autoConfigPath}`);
   }
   if (ffmpegVersion !== undefined) {
-    reporter.onDebug(`Using ffmpeg: ${ffmpegVersion}`);
+    reporter.onInfo(`Using ffmpeg: ${ffmpegVersion}`);
   }
 }
 
