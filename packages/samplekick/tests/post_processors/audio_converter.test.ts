@@ -138,14 +138,14 @@ describe("AudioConverter", () => {
   });
 
   describe("onDebug", () => {
-    it("calls onDebug before converting an audio file", async () => {
+    it("calls onDebug with 'Converting <filename> to 16-bit 48 kHz WAV'", async () => {
       const runFfmpeg = vi.fn().mockResolvedValue(undefined);
       const onDebug = vi.fn<(message: string) => void>();
       const converter = new AudioConverter(runFfmpeg, undefined, onDebug);
 
       await converter.processFile("/output/drums/kick.wav", createEntry());
 
-      expect(onDebug).toHaveBeenCalledWith("Converting /output/drums/kick.wav to 48 kHz WAV");
+      expect(onDebug).toHaveBeenCalledWith("Converting kick.wav to 16-bit 48 kHz WAV");
     });
 
     it("does not call onDebug for non-audio files", async () => {
