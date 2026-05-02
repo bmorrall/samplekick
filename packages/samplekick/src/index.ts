@@ -8,7 +8,7 @@ import { CsvConfigWriter, Registry, SkipJunkTransformer, SourcePathStrategy, Zip
 import { loadConfig, openConfigInEditor } from "./config_loader";
 import type { DevicePreset } from "samplekick-io";
 import { SimpleExportReporter, PrettyExportReporter } from "./exporters";
-import { AudioConverter } from "./post_processors";
+import { AudioConverter, getFfmpegVersion } from "./post_processors";
 import chalk from "chalk";
 import type { ExportReporter } from "./exporters";
 import packageJson from "../package.json" with { type: "json" };
@@ -136,6 +136,16 @@ const reporter: ExportReporter = chalk.level > 0
   : new SimpleExportReporter(process.stdout, values.quiet === true, basename(zipPath));
 
 if (values.convert === true) {
+  const ffmpegVersion = await getFfmpegVersion().catch((err: unknown) => {
+    if (typeof err === "object" && err !== null && "code" in err && err.code === "ENOENT") {
+      console.error("Error: ffmpeg not found. Please install ffmpeg to use --convert.");
+      process.exit(1);
+    }
+    throw err;
+  });
+  if (values.verbose === true) {
+    reporter.onDebug(`Using ffmpeg: ${ffmpegVersion}`);
+  }
   const debugLog = values.verbose === true ? reporter.onDebug.bind(reporter) : undefined;
   registry.addPostProcessor(new AudioConverter(undefined, undefined, debugLog));
 }

@@ -12,12 +12,27 @@ const execFileAsync = promisify((
   execFile(file, args, (err) => { callback(err); });
 });
 
+const execFileWithOutputAsync = promisify((
+  file: string,
+  args: string[],
+  callback: (err: Error | null, stdout: string) => void,
+): void => {
+  execFile(file, args, { encoding: "utf8" }, (err, stdout) => { callback(err, stdout); });
+});
+
 export type FfmpegRunner = (args: string[]) => Promise<void>;
+export type FfmpegVersionRunner = () => Promise<string>;
 export type ConvertErrorHandler = (destPath: string, error: Error) => void;
 
 const defaultRunner: FfmpegRunner = async (args) => {
   await execFileAsync("ffmpeg", args);
 };
+
+const defaultVersionRunner: FfmpegVersionRunner = async () =>
+  (await execFileWithOutputAsync("ffmpeg", ["-version"])).split("\n")[0].trim();
+
+export const getFfmpegVersion = async (runner: FfmpegVersionRunner = defaultVersionRunner): Promise<string> =>
+  await runner();
 
 const defaultErrorHandler: ConvertErrorHandler = (destPath, error) => {
   process.stderr.write(`Warning: could not convert ${destPath}: ${error.message}\n`);
