@@ -33,7 +33,10 @@ describe("auto-persist config", () => {
       const autoConfigPath = join(dataDir, files[0]);
 
       // Overwrite the auto-saved config with a custom rename
-      await writeFile(autoConfigPath, JSON.stringify([{ path: "Drums/kick.wav", name: "custom_kick.wav" }]));
+      await writeFile(autoConfigPath, [
+        "path,name,packageName,sampleType,skip,keepPath",
+        "Drums/kick.wav,custom_kick.wav,,,,",
+      ].join("\n"));
 
       // Second run: loads the modified auto-saved config
       const result2 = spawnSync("node", [CLI_PATH, zipPath, "-o", outputDir2], {
@@ -49,11 +52,14 @@ describe("auto-persist config", () => {
 
   it("does not auto-save when --config is passed", async () => {
     const zipped = zipSync({ "Drums/kick.wav": strToU8("kick-data") });
-    const config = JSON.stringify([{ path: "Drums/kick.wav", name: "explicit.wav" }]);
+    const config = [
+      "path,name,packageName,sampleType,skip,keepPath",
+      "Drums/kick.wav,explicit.wav,,,,",
+    ].join("\n");
 
     const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
     const zipPath = join(tmpDir, "test-pack.zip");
-    const configPath = join(tmpDir, "config.json");
+    const configPath = join(tmpDir, "config.csv");
     const dataDir = join(tmpDir, "data");
 
     try {

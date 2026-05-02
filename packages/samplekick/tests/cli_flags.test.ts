@@ -91,11 +91,14 @@ describe("samplekick CLI flags", () => {
         "Dr\u00fcms/kick.wav": strToU8("kick-data"),
       });
 
-      const config = JSON.stringify([{ path: "Dr\u00fcms/kick.wav", name: "custom.wav" }]);
+      const config = [
+        "path,name,packageName,sampleType,skip,keepPath",
+        "Dr\u00fcms/kick.wav,custom.wav,,,,",
+      ].join("\n");
 
       const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
       const zipPath = join(tmpDir, "test-pack.zip");
-      const configPath = join(tmpDir, "config.json");
+      const configPath = join(tmpDir, "config.csv");
       const outputDir = join(tmpDir, "output");
 
       try {

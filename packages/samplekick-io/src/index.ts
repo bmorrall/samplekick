@@ -2,6 +2,8 @@ export { Registry } from "./registry";
 export {
   JsonConfigWriter,
   JsonConfigReader,
+  CsvConfigWriter,
+  CsvConfigReader,
 } from "./configuration";
 export { ZipDataSource } from "./io";
 export { DefaultPackageNameTransformer, SkipJunkTransformer, SP404Mk2NameTransformer } from "./transformers";

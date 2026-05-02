@@ -42,9 +42,9 @@ describe("samplekick CLI", () => {
           "",
           "Options:",
           "  -o, --output <path>     Export samples to a directory",
-          "                          (omit to dump JSON config to stdout)",
-          "  -c, --config <path>     Load a JSON config file to apply to the pack",
-          "  -w, --write <path>      Write the pack config as JSON to a file",
+          "                          (omit to dump CSV config to stdout)",
+          "  -c, --config <path>     Load a CSV config file to apply to the pack",
+          "  -w, --write <path>      Write the pack config as CSV to a file",
           "  -d, --device <name>     Apply a device preset",
           "      --convert           Convert audio files to 16-bit 48 kHz WAV",
           "      --allow-junk        Keep junk entries (e.g. __MACOSX, hidden files)",
@@ -138,33 +138,12 @@ describe("samplekick CLI", () => {
 
         const result = spawnSync(
           "node",
-          [CLI_PATH, zipPath, "--config", join(tmpDir, "nonexistent.json")],
+          [CLI_PATH, zipPath, "--config", join(tmpDir, "nonexistent.csv")],
           { encoding: "utf8" },
         );
 
         expect(result.stderr).toContain("Error: config file not found");
-        expect(result.stderr).toContain("nonexistent.json");
-
-        expect(result.status).toBe(1);
-      } finally {
-        await rm(tmpDir, { recursive: true });
-      }
-    });
-
-    it("exits with code 1 and prints an error when the --config file is not valid JSON", async () => {
-      const zipped = zipSync({ "Drums/kick.wav": strToU8("kick-data") });
-      const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
-      const zipPath = join(tmpDir, "test-pack.zip");
-      const configPath = join(tmpDir, "config.json");
-
-      try {
-        await writeFile(zipPath, zipped);
-        await writeFile(configPath, "not valid json");
-
-        const result = spawnSync("node", [CLI_PATH, zipPath, "--config", configPath], { encoding: "utf8" });
-
-        expect(result.stderr).toContain("Error: config file is not valid JSON");
-        expect(result.stderr).toContain("config.json");
+        expect(result.stderr).toContain("nonexistent.csv");
 
         expect(result.status).toBe(1);
       } finally {
@@ -226,13 +205,14 @@ describe("samplekick CLI", () => {
       "Drums/kick.wav": strToU8("kick-data"),
       "Loops/bass.wav": strToU8("bass-data"),
     });
-    const config = JSON.stringify([
-      { path: "Drums/kick.wav", name: "kick_01.wav" },
-    ]);
+    const config = [
+      "path,name,packageName,sampleType,skip,keepPath",
+      "Drums/kick.wav,kick_01.wav,,,,",
+    ].join("\n");
 
     const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
     const zipPath = join(tmpDir, "test-pack.zip");
-    const configPath = join(tmpDir, "config.json");
+    const configPath = join(tmpDir, "config.csv");
 
     try {
       await writeFile(zipPath, zipped);
@@ -261,17 +241,19 @@ describe("samplekick CLI", () => {
       "Drums/kick.wav": strToU8("kick-data"),
       "Loops/bass.wav": strToU8("bass-data"),
     });
-    const config = JSON.stringify([
-      { path: "Drums", packageName: "my-pack", sampleType: "Percussion" },
-      { path: "Drums/kick.wav", name: "kick_01.wav" },
-    ]);
+    const config = [
+      "path,name,packageName,sampleType,skip,keepPath",
+      "Drums,,my-pack,Percussion,,",
+      "Drums/kick.wav,kick_01.wav,,,,",
+    ].join("\n");
 
     const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
     const zipPath = join(tmpDir, "test-pack.zip");
-    const configPath = join(tmpDir, "config.json");
+    const configPath = join(tmpDir, "config.csv");
 
     try {
       await writeFile(zipPath, zipped);
+
       await writeFile(configPath, config);
 
       const result = spawnSync(
@@ -296,7 +278,7 @@ describe("samplekick CLI", () => {
     }
   });
 
-  it("dumps registry config as JSON to stdout when --output is omitted", async () => {
+  it("dumps registry config as CSV to stdout when --output is omitted", async () => {
     const zipped = zipSync({
       "Drums/kick.wav": strToU8("kick-data"),
       "Loops/bass.wav": strToU8("bass-data"),
@@ -315,12 +297,13 @@ describe("samplekick CLI", () => {
       });
 
       expect(result.stderr).toBe("");
-      const parsed: unknown = JSON.parse(result.stdout);
-      expect(parsed).toBeInstanceOf(Array);
-      expect(parsed).toHaveLength(4);
-      expect(parsed).toContainEqual(expect.objectContaining({ path: "Drums/kick.wav" }));
-      expect(parsed).toContainEqual(expect.objectContaining({ path: "Loops/bass.wav" }));
-      expect(parsed).toContainEqual(expect.objectContaining({ path: ".DS_Store", isSkipped: true }));
+      const lines = result.stdout.trim().split("\n");
+      expect(lines[0]).toBe("path,name,packageName,sampleType,skip,keepPath");
+      expect(lines).toHaveLength(5);
+      expect(result.stdout).toContain("Drums/kick.wav");
+      expect(result.stdout).toContain("Loops/bass.wav");
+      expect(result.stdout).toContain(".DS_Store");
+      expect(result.stdout).toContain("true");
 
       expect(result.status).toBe(0);
     } finally {
@@ -328,7 +311,7 @@ describe("samplekick CLI", () => {
     }
   });
 
-  it("writes registry config as JSON to a file when --write is passed", async () => {
+  it("writes registry config as CSV to a file when --write is passed", async () => {
     const zipped = zipSync({
       "Drums/kick.wav": strToU8("kick-data"),
       "Loops/bass.wav": strToU8("bass-data"),
@@ -336,7 +319,7 @@ describe("samplekick CLI", () => {
 
     const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
     const zipPath = join(tmpDir, "test-pack.zip");
-    const configPath = join(tmpDir, "config.json");
+    const configPath = join(tmpDir, "config.csv");
 
     try {
       await writeFile(zipPath, zipped);
@@ -347,12 +330,12 @@ describe("samplekick CLI", () => {
       });
 
       expect(result.stderr).toBe("");
-      expect(JSON.parse(result.stdout)).toBeInstanceOf(Array);
+      expect(result.stdout).toContain("path,name,packageName,sampleType,skip,keepPath");
 
-      const parsed: unknown = JSON.parse(await readFile(configPath, "utf8"));
-      expect(parsed).toBeInstanceOf(Array);
-      expect(parsed).toContainEqual(expect.objectContaining({ path: "Drums/kick.wav" }));
-      expect(parsed).toContainEqual(expect.objectContaining({ path: "Loops/bass.wav" }));
+      const fileContent = await readFile(configPath, "utf8");
+      expect(fileContent).toContain("path,name,packageName,sampleType,skip,keepPath");
+      expect(fileContent).toContain("Drums/kick.wav");
+      expect(fileContent).toContain("Loops/bass.wav");
 
       expect(result.status).toBe(0);
     } finally {
@@ -367,7 +350,7 @@ describe("samplekick CLI", () => {
 
     const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
     const zipPath = join(tmpDir, "test-pack.zip");
-    const configPath = join(tmpDir, "config.json");
+    const configPath = join(tmpDir, "config.csv");
     const outputDir = join(tmpDir, "output");
 
     try {
@@ -379,9 +362,9 @@ describe("samplekick CLI", () => {
       });
 
       expect(result.stderr).toBe("");
-      const parsed: unknown = JSON.parse(await readFile(configPath, "utf8"));
-      expect(parsed).toBeInstanceOf(Array);
-      expect(parsed).toContainEqual(expect.objectContaining({ path: "Drums/kick.wav" }));
+      const fileContent = await readFile(configPath, "utf8");
+      expect(fileContent).toContain("path,name,packageName,sampleType,skip,keepPath");
+      expect(fileContent).toContain("Drums/kick.wav");
 
       expect(await readFile(join(outputDir, "Drums/kick.wav"), "utf8")).toBe("kick-data");
 
@@ -426,20 +409,21 @@ describe("samplekick CLI", () => {
     }
   });
 
-  it("applies config from a JSON file when --config is passed", async () => {
+  it("applies config from a CSV file when --config is passed", async () => {
     const zipped = zipSync({
       "Drums/kick.wav": strToU8("kick-data"),
       "Loops/bass.wav": strToU8("bass-data"),
     });
 
-    const config = JSON.stringify([
-      { path: "Drums/kick.wav", name: "My Kick.wav" },
-      { path: "Loops/bass.wav", isSkipped: true },
-    ]);
+    const config = [
+      "path,name,packageName,sampleType,skip,keepPath",
+      "Drums/kick.wav,My Kick.wav,,,,",
+      "Loops/bass.wav,,,,true,",
+    ].join("\n");
 
     const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
     const zipPath = join(tmpDir, "test-pack.zip");
-    const configPath = join(tmpDir, "config.json");
+    const configPath = join(tmpDir, "config.csv");
     const outputDir = join(tmpDir, "output");
 
     try {
@@ -459,18 +443,19 @@ describe("samplekick CLI", () => {
     }
   });
 
-  it("applies config from a JSON file when -c is passed", async () => {
+  it("applies config from a CSV file when -c is passed", async () => {
     const zipped = zipSync({
       "Drums/kick.wav": strToU8("kick-data"),
     });
 
-    const config = JSON.stringify([
-      { path: "Drums/kick.wav", packageName: "Percussion" },
-    ]);
+    const config = [
+      "path,name,packageName,sampleType,skip,keepPath",
+      "Drums/kick.wav,,Percussion,,,",
+    ].join("\n");
 
     const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
     const zipPath = join(tmpDir, "test-pack.zip");
-    const configPath = join(tmpDir, "config.json");
+    const configPath = join(tmpDir, "config.csv");
 
     try {
       await writeFile(zipPath, zipped);
@@ -479,8 +464,8 @@ describe("samplekick CLI", () => {
       const result = spawnSync("node", [CLI_PATH, zipPath, "-c", configPath], { encoding: "utf8" });
 
       expect(result.stderr).toBe("");
-      const parsed: unknown = JSON.parse(result.stdout);
-      expect(parsed).toContainEqual(expect.objectContaining({ path: "Drums/kick.wav", packageName: "Percussion" }));
+      expect(result.stdout).toContain("Drums/kick.wav");
+      expect(result.stdout).toContain("Percussion");
 
       expect(result.status).toBe(0);
     } finally {

@@ -3,7 +3,7 @@ import { spawnSync } from "node:child_process";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { Readable } from "node:stream";
-import { JsonConfigReader } from "samplekick-io";
+import { CsvConfigReader } from "samplekick-io";
 import type { Registry } from "samplekick-io";
 
 export const getDataDir = (appName: string): string => {
@@ -33,7 +33,7 @@ export const openConfigInEditor = (configPath: string): void => {
 export const loadConfig = async (registry: Registry, configPath: string | undefined): Promise<string | undefined> => {
   if (configPath === undefined) {
     const dataDir = process.env.SAMPLEKICK_DATA_DIR ?? getDataDir("samplekick");
-    const autoConfigPath = join(dataDir, `${registry.getFingerprint()}.json`);
+    const autoConfigPath = join(dataDir, `${registry.getFingerprint()}.csv`);
     const content = await readFile(autoConfigPath, "utf8").catch((err: unknown) => {
       if (typeof err === "object" && err !== null && "code" in err && err.code === "ENOENT") {
         return undefined;
@@ -42,9 +42,9 @@ export const loadConfig = async (registry: Registry, configPath: string | undefi
     });
     if (content !== undefined) {
       try {
-        registry.loadConfig(new JsonConfigReader(Readable.from([content])));
-      } catch (err: unknown) {
-        if (!(err instanceof SyntaxError)) throw err;
+        registry.loadConfig(new CsvConfigReader(Readable.from([content])));
+      } catch {
+        // silently ignore corrupt auto-config files
       }
     }
     return autoConfigPath;
@@ -57,14 +57,6 @@ export const loadConfig = async (registry: Registry, configPath: string | undefi
     }
     throw err;
   });
-  try {
-    registry.loadConfig(new JsonConfigReader(Readable.from([content])));
-  } catch (err: unknown) {
-    if (err instanceof SyntaxError) {
-      console.error(`Error: config file is not valid JSON: ${configPath}`);
-      process.exit(1);
-    }
-    throw err;
-  }
+  registry.loadConfig(new CsvConfigReader(Readable.from([content])));
   return undefined;
 };

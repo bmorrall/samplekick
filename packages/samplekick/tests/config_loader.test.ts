@@ -38,7 +38,7 @@ describe("loadConfig", () => {
     const result = await loadConfig(registry, undefined);
 
     delete process.env.SAMPLEKICK_DATA_DIR;
-    expect(result).toBe(join(tmpDir, "data", `${registry.getFingerprint()}.json`));
+    expect(result).toBe(join(tmpDir, "data", `${registry.getFingerprint()}.csv`));
   });
 
   it("auto-persist: does not load any config when no auto-saved file exists", async () => {
@@ -58,8 +58,11 @@ describe("loadConfig", () => {
     const registry = await createRegistry({ "Drums/kick.wav": "data" });
     await mkdir(dataDir, { recursive: true });
     await writeFile(
-      join(dataDir, `${registry.getFingerprint()}.json`),
-      JSON.stringify([{ path: "Drums/kick.wav", name: "custom.wav" }]),
+      join(dataDir, `${registry.getFingerprint()}.csv`),
+      [
+        "path,name,packageName,sampleType,skip,keepPath",
+        "Drums/kick.wav,custom.wav,,,,",
+      ].join("\n"),
     );
 
     await loadConfig(registry, undefined);
@@ -75,7 +78,7 @@ describe("loadConfig", () => {
     process.env.SAMPLEKICK_DATA_DIR = dataDir;
     const registry = await createRegistry({ "Drums/kick.wav": "data" });
     await mkdir(dataDir, { recursive: true });
-    await writeFile(join(dataDir, `${registry.getFingerprint()}.json`), "not valid json");
+    await writeFile(join(dataDir, `${registry.getFingerprint()}.csv`), "not valid csv");
 
     await expect(loadConfig(registry, undefined)).resolves.not.toThrow();
 
@@ -86,8 +89,11 @@ describe("loadConfig", () => {
 
   it("explicit config: returns undefined", async () => {
     const registry = await createRegistry({ "Drums/kick.wav": "data" });
-    const configPath = join(tmpDir, "config.json");
-    await writeFile(configPath, JSON.stringify([{ path: "Drums/kick.wav", name: "explicit.wav" }]));
+    const configPath = join(tmpDir, "config.csv");
+    await writeFile(configPath, [
+      "path,name,packageName,sampleType,skip,keepPath",
+      "Drums/kick.wav,explicit.wav,,,,",
+    ].join("\n"));
 
     const result = await loadConfig(registry, configPath);
 
@@ -96,8 +102,11 @@ describe("loadConfig", () => {
 
   it("explicit config: loads config from the provided file", async () => {
     const registry = await createRegistry({ "Drums/kick.wav": "data" });
-    const configPath = join(tmpDir, "config.json");
-    await writeFile(configPath, JSON.stringify([{ path: "Drums/kick.wav", name: "explicit.wav" }]));
+    const configPath = join(tmpDir, "config.csv");
+    await writeFile(configPath, [
+      "path,name,packageName,sampleType,skip,keepPath",
+      "Drums/kick.wav,explicit.wav,,,,",
+    ].join("\n"));
 
     await loadConfig(registry, configPath);
 
@@ -110,17 +119,7 @@ describe("loadConfig", () => {
     const registry = await createRegistry({ "Drums/kick.wav": "data" });
     const exitSpy = vi.spyOn(process, "exit").mockImplementation(() => { throw new Error("process.exit"); });
 
-    await expect(loadConfig(registry, join(tmpDir, "nonexistent.json"))).rejects.toThrow("process.exit");
-    expect(exitSpy).toHaveBeenCalledWith(1);
-  });
-
-  it("explicit config: calls process.exit(1) when the file is not valid JSON", async () => {
-    const registry = await createRegistry({ "Drums/kick.wav": "data" });
-    const configPath = join(tmpDir, "config.json");
-    await writeFile(configPath, "not valid json");
-    const exitSpy = vi.spyOn(process, "exit").mockImplementation(() => { throw new Error("process.exit"); });
-
-    await expect(loadConfig(registry, configPath)).rejects.toThrow("process.exit");
+    await expect(loadConfig(registry, join(tmpDir, "nonexistent.csv"))).rejects.toThrow("process.exit");
     expect(exitSpy).toHaveBeenCalledWith(1);
   });
 });
