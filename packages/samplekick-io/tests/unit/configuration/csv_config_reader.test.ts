@@ -27,7 +27,7 @@ describe("CsvConfigReader", () => {
     const reader = new CsvConfigReader(
       Readable.from([
         [
-          "path,name,packageName,sampleType,skipped,keep",
+          "path,name,packageName,sampleType,skip,keepPath",
           "jazz/bebop/track01,Alt Track 01,jazz-pack,Bebop,true,true",
           "rock/track01,,,,false,false",
         ].join("\n"),
@@ -54,7 +54,7 @@ describe("CsvConfigReader", () => {
 
   it("does not call the callback when there are no data rows", () => {
     const reader = new CsvConfigReader(
-      Readable.from(["path,name,packageName,sampleType,skipped,keep"]),
+      Readable.from(["path,name,packageName,sampleType,skip,keepPath"]),
     );
     const fn = vi.fn<(entry: ConfigEntry) => void>();
 
@@ -65,7 +65,12 @@ describe("CsvConfigReader", () => {
 
   it("accepts an entry that only contains a path", () => {
     const reader = new CsvConfigReader(
-      Readable.from(["path,name,packageName,sampleType,skipped,keep\njazz/track01,,,,,"]),
+      Readable.from([
+        [
+          "path,name,packageName,sampleType,skip,keepPath",
+          "jazz/track01,,,,,",
+        ].join("\n"),
+      ]),
     );
 
     const entries = collectConfigEntries(reader);
@@ -82,7 +87,12 @@ describe("CsvConfigReader", () => {
 
   it("uses the path basename as name when the name field is empty", () => {
     const reader = new CsvConfigReader(
-      Readable.from(["path,name,packageName,sampleType,skipped,keep\njazz/track01,,,,,"]),
+      Readable.from([
+        [
+          "path,name,packageName,sampleType,skip,keepPath",
+          "jazz/track01,,,,,",
+        ].join("\n"),
+      ]),
     );
 
     const entries = collectConfigEntries(reader);
@@ -93,7 +103,12 @@ describe("CsvConfigReader", () => {
 
   it("reads the name field when it differs from the path basename", () => {
     const reader = new CsvConfigReader(
-      Readable.from(["path,name,packageName,sampleType,skipped,keep\njazz/track01,Custom Name,,,,"]),
+      Readable.from([
+        [
+          "path,name,packageName,sampleType,skip,keepPath",
+          "jazz/track01,Custom Name,,,,",
+        ].join("\n"),
+      ]),
     );
 
     const entries = collectConfigEntries(reader);
@@ -105,7 +120,10 @@ describe("CsvConfigReader", () => {
   it("handles quoted fields containing commas", () => {
     const reader = new CsvConfigReader(
       Readable.from([
-        'path,name,packageName,sampleType,skipped,keep\njazz/track01,"Jazz, Bebop",,,,',
+        [
+          "path,name,packageName,sampleType,skip,keepPath",
+          'jazz/track01,"Jazz, Bebop",,,,',
+        ].join("\n"),
       ]),
     );
 
@@ -118,7 +136,10 @@ describe("CsvConfigReader", () => {
   it("handles quoted fields containing escaped double quotes", () => {
     const reader = new CsvConfigReader(
       Readable.from([
-        'path,name,packageName,sampleType,skipped,keep\njazz/track01,"Jazz ""Bebop"" Track",,,,',
+        [
+          "path,name,packageName,sampleType,skip,keepPath",
+          'jazz/track01,"Jazz ""Bebop"" Track",,,,',
+        ].join("\n"),
       ]),
     );
 
@@ -131,7 +152,10 @@ describe("CsvConfigReader", () => {
   it("ignores unrecognised boolean values for skipped and keep", () => {
     const reader = new CsvConfigReader(
       Readable.from([
-        "path,name,packageName,sampleType,skipped,keep\njazz/track01,,,,,yes",
+        [
+          "path,name,packageName,sampleType,skip,keepPath",
+          "jazz/track01,,,,,yes",
+        ].join("\n"),
       ]),
     );
 
@@ -145,7 +169,10 @@ describe("CsvConfigReader", () => {
   it("accepts t/f as boolean aliases", () => {
     const reader = new CsvConfigReader(
       Readable.from([
-        "path,name,packageName,sampleType,skipped,keep\njazz/track01,,,,t,f",
+        [
+          "path,name,packageName,sampleType,skip,keepPath",
+          "jazz/track01,,,,t,f",
+        ].join("\n"),
       ]),
     );
 
@@ -159,7 +186,10 @@ describe("CsvConfigReader", () => {
   it("accepts 1/0 as boolean aliases", () => {
     const reader = new CsvConfigReader(
       Readable.from([
-        "path,name,packageName,sampleType,skipped,keep\njazz/track01,,,,1,0",
+        [
+          "path,name,packageName,sampleType,skip,keepPath",
+          "jazz/track01,,,,1,0",
+        ].join("\n"),
       ]),
     );
 

@@ -4,7 +4,7 @@ import { mkdir } from "node:fs/promises";
 import { finished } from "node:stream/promises";
 import { basename, dirname, resolve } from "node:path";
 import { parseArgs } from "node:util";
-import { JsonConfigWriter, Registry, SkipJunkTransformer, SourcePathStrategy, ZipDataSource, SP404Mk2Preset } from "samplekick-io";
+import { CsvConfigWriter, Registry, SkipJunkTransformer, SourcePathStrategy, ZipDataSource, SP404Mk2Preset } from "samplekick-io";
 import { loadConfig, openConfigInEditor } from "./config_loader";
 import type { DevicePreset } from "samplekick-io";
 import { SimpleExportReporter, PrettyExportReporter } from "./exporters";
@@ -48,9 +48,9 @@ Arguments:
 
 Options:
   -o, --output <path>     Export samples to a directory
-                          (omit to dump JSON config to stdout)
-  -c, --config <path>     Load a JSON config file to apply to the pack
-  -w, --write <path>      Write the pack config as JSON to a file
+                          (omit to dump CSV config to stdout)
+  -c, --config <path>     Load a CSV config file to apply to the pack
+  -w, --write <path>      Write the pack config as CSV to a file
   -d, --device <name>     Apply a device preset
       --convert           Convert audio files to 16-bit 48 kHz WAV
       --allow-junk        Keep junk entries (e.g. __MACOSX, hidden files)
@@ -157,8 +157,7 @@ if (autoConfigPath !== undefined) {
   const savePath = autoConfigPath;
   await mkdir(dirname(savePath), { recursive: true });
   const autoConfigStream = createWriteStream(savePath);
-  new JsonConfigWriter(autoConfigStream).writeConfig(registry);
-  autoConfigStream.end();
+  new CsvConfigWriter(autoConfigStream).writeConfig(registry);
   await finished(autoConfigStream).catch((err: unknown) => {
     console.error(`Warning: could not save config to ${savePath}: ${err instanceof Error ? err.message : String(err)}`);
   });
@@ -177,8 +176,7 @@ if (values.edit === true) {
 if (values.write !== undefined) {
   const writePath = resolve(values.write);
   const fileStream = createWriteStream(writePath);
-  new JsonConfigWriter(fileStream).writeConfig(registry);
-  fileStream.end();
+  new CsvConfigWriter(fileStream).writeConfig(registry);
   await finished(fileStream).catch((err: unknown) => {
     console.error(`Error: could not write to ${writePath}: ${err instanceof Error ? err.message : String(err)}`);
     process.exit(1);
@@ -186,7 +184,7 @@ if (values.write !== undefined) {
 }
 
 if (values.output === undefined) {
-  new JsonConfigWriter(process.stdout).writeConfig(registry);
+  new CsvConfigWriter(process.stdout).writeConfig(registry);
   process.exit(0);
 }
 

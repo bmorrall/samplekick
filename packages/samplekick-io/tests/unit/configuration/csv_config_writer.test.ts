@@ -26,7 +26,7 @@ describe("CsvConfigWriter", () => {
     const writer = new CsvConfigWriter(stream);
 
     expect(captureOutput(writer, createConfigSource([]), stream)).toBe(
-      "path,name,packageName,sampleType,skipped,keep",
+      "path,name,packageName,sampleType,skip,keepPath",
     );
   });
 
@@ -51,7 +51,7 @@ describe("CsvConfigWriter", () => {
     const lines = output.split("\n");
 
     expect(lines).toHaveLength(3);
-    expect(lines[0]).toBe("path,name,packageName,sampleType,skipped,keep");
+    expect(lines[0]).toBe("path,name,packageName,sampleType,skip,keepPath");
     expect(lines[1]).toBe("jazz/bebop/track01,Alt Track 01,jazz-pack,Bebop,true,true");
     expect(lines[2]).toBe("rock/track01,,,,,");
   });
