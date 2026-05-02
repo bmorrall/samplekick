@@ -135,17 +135,15 @@ const reporter: ExportReporter = chalk.level > 0
   ? new PrettyExportReporter(process.stdout, chalk, values.quiet === true, basename(zipPath))
   : new SimpleExportReporter(process.stdout, values.quiet === true, basename(zipPath));
 
+let ffmpegVersion: string | undefined = undefined;
 if (values.convert === true) {
-  const ffmpegVersion = await getFfmpegVersion().catch((err: unknown) => {
+  ffmpegVersion = await getFfmpegVersion().catch((err: unknown) => {
     if (typeof err === "object" && err !== null && "code" in err && err.code === "ENOENT") {
       console.error("Error: ffmpeg not found. Please install ffmpeg to use --convert.");
       process.exit(1);
     }
     throw err;
   });
-  if (values.verbose === true) {
-    reporter.onDebug(`Using ffmpeg: ${ffmpegVersion}`);
-  }
   const debugLog = values.verbose === true ? reporter.onDebug.bind(reporter) : undefined;
   registry.addPostProcessor(new AudioConverter(undefined, undefined, debugLog));
 }
@@ -201,11 +199,14 @@ if (values.output === undefined) {
 const destPath = resolve(values.output);
 
 if (values.verbose === true) {
-  reporter.onDebug(`Using zip file: ${zipPath}`);
+  reporter.onDebug(`Reading: ${zipPath}`);
   if (values.config !== undefined) {
     reporter.onDebug(`Using config: ${resolve(values.config)}`);
   } else if (autoConfigPath !== undefined) {
     reporter.onDebug(`Using auto-config: ${autoConfigPath}`);
+  }
+  if (ffmpegVersion !== undefined) {
+    reporter.onDebug(`Using ffmpeg: ${ffmpegVersion}`);
   }
 }
 

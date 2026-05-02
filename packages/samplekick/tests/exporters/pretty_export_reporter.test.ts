@@ -43,10 +43,10 @@ describe("PrettyExportReporter", () => {
   describe("onDebug", () => {
     it("writes the message in grey", () => {
       const { reporter, getOutput } = createReporter();
-      reporter.onDebug("Using zip file: /path/to/pack.zip");
+      reporter.onDebug("Reading: /path/to/pack.zip");
       const raw = getOutput();
       expect(raw).toContain("\x1B[");
-      expect(stripAnsi(raw)).toBe("  · Using zip file: /path/to/pack.zip\n");
+      expect(stripAnsi(raw)).toBe("  · Reading: /path/to/pack.zip\n");
     });
   });
 

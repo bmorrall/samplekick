@@ -43,8 +43,8 @@ describe("SimpleExportReporter", () => {
   describe("onDebug", () => {
     it("writes the message on its own line", () => {
       const { reporter, getOutput } = createReporter();
-      reporter.onDebug("Using zip file: /path/to/pack.zip");
-      expect(getOutput()).toBe("Using zip file: /path/to/pack.zip\n");
+      reporter.onDebug("Reading: /path/to/pack.zip");
+      expect(getOutput()).toBe("Reading: /path/to/pack.zip\n");
     });
   });
 
