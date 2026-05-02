@@ -43,6 +43,8 @@ describe("index exports", () => {
       "Registry",
       "JsonConfigWriter",
       "JsonConfigReader",
+      "CsvConfigWriter",
+      "CsvConfigReader",
       "ZipDataSource",
       "DefaultPackageNameTransformer",
       "SkipJunkTransformer",
