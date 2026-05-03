@@ -178,17 +178,19 @@ if (values.analyse === true) {
   registry.applyTransform(AbletonProjectTransformer);
   registry.applyTransform(FLStudioProjectTransformer);
 }
-if (devicePreset !== undefined) {
-  for (const transform of devicePreset.transforms) {
-    registry.applyTransform(transform);
-  }
-}
 const dataDir = process.env.SAMPLEKICK_DATA_DIR ?? getDataDir("samplekick", process.platform, process.env);
 const configPath = values.config === undefined ? undefined : resolve(values.config);
 const autoConfigPath = await loadConfig(registry, configPath, dataDir).catch((err: unknown) => {
   console.error(err instanceof Error ? err.message : String(err));
   process.exit(1);
 });
+
+if (devicePreset !== undefined) {
+  for (const transform of devicePreset.transforms) {
+    registry.applyTransform(transform);
+  }
+}
+
 const pathStrategy = values["preserve-paths"] === true ? SourcePathStrategy : OrganisedPathStrategy;
 registry.setPathStrategy(pathStrategy);
 
