@@ -53,6 +53,7 @@ Arguments:
 Options:
   -o, --output <path>     Export samples to a directory
                           (omit to dump CSV config to stdout)
+  -a, --analyse           Analyse pack and save auto-config
   -d, --device <name>     Apply a device preset
   -c, --convert           Convert audio files to device format
       --allow-junk        Keep junk entries (e.g. __MACOSX, hidden files)
@@ -81,6 +82,7 @@ const { values, positionals } = parseArgs({
     output: { type: "string", short: "o" },
     "write-config": { type: "string" },
     convert: { type: "boolean", short: "c" },
+    analyse: { type: "boolean", short: "a" },
     "allow-junk": { type: "boolean" },
     "preserve-paths": { type: "boolean" },
     debug: { type: "boolean" },
@@ -201,7 +203,7 @@ if (values.debug === true) {
   process.exit(0);
 }
 
-if (autoConfigPath !== undefined) {
+if (values.analyse === true && autoConfigPath !== undefined) {
   const savePath = autoConfigPath;
   await mkdir(dirname(savePath), { recursive: true });
   const autoConfigStream = createWriteStream(savePath);

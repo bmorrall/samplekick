@@ -21,7 +21,7 @@ describe("auto-persist config", () => {
       await writeFile(zipPath, zipped);
 
       // First run: no config exists yet, auto-saves config to data dir
-      const result1 = spawnSync("node", [CLI_PATH, zipPath, "--preserve-paths", "-o", outputDir1], {
+      const result1 = spawnSync("node", [CLI_PATH, zipPath, "--analyse", "-o", outputDir1], {
         encoding: "utf8",
         env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
       });
@@ -45,6 +45,27 @@ describe("auto-persist config", () => {
       });
       expect(result2.status).toBe(0);
       expect(await readFile(join(outputDir2, "Drums/custom_kick.wav"), "utf8")).toBe("kick-data");
+    } finally {
+      await rm(tmpDir, { recursive: true });
+    }
+  });
+
+  it("does not auto-save when --analyse is not passed", async () => {
+    const zipped = zipSync({ "Drums/kick.wav": strToU8("kick-data") });
+
+    const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
+    const zipPath = join(tmpDir, "test-pack.zip");
+    const dataDir = join(tmpDir, "data");
+
+    try {
+      await writeFile(zipPath, zipped);
+
+      spawnSync("node", [CLI_PATH, zipPath], {
+        encoding: "utf8",
+        env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+      });
+
+      await expect(stat(dataDir)).rejects.toThrow();
     } finally {
       await rm(tmpDir, { recursive: true });
     }
