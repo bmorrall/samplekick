@@ -53,15 +53,16 @@ Arguments:
 Options:
   -o, --output <path>     Export samples to a directory
                           (omit to dump CSV config to stdout)
-  -c, --config <path>     Load a CSV config file to apply to the pack
-  -w, --write <path>      Write the pack config as CSV to a file
   -d, --device <name>     Apply a device preset
-      --convert           Convert audio files to device format
+  -c, --convert           Convert audio files to device format
       --allow-junk        Keep junk entries (e.g. __MACOSX, hidden files)
       --preserve-paths    Export to original source paths (skip organising)
       --debug             Print pack string representation to stdout
                           without writing any files
       --edit              Open the auto-config file in $VISUAL/$EDITOR
+      --config <path>     Load a CSV config file to apply to the pack
+      --write-config <path>
+                          Write the pack config as CSV to a file
       --verbose           Show inherited tags on all nodes in debug output
       --quiet             Only show errors (suppress per-file success lines)
   -v, --version           Show version number
@@ -75,11 +76,11 @@ ${deviceLines.join("\n")}
 const { values, positionals } = parseArgs({
   args: process.argv.slice(CLI_ARG_START),
   options: {
-    config: { type: "string", short: "c" },
+    config: { type: "string" },
     device: { type: "string", short: "d" },
     output: { type: "string", short: "o" },
-    write: { type: "string", short: "w" },
-    convert: { type: "boolean" },
+    "write-config": { type: "string" },
+    convert: { type: "boolean", short: "c" },
     "allow-junk": { type: "boolean" },
     "preserve-paths": { type: "boolean" },
     debug: { type: "boolean" },
@@ -220,8 +221,8 @@ if (values.edit === true) {
   process.exit(0);
 }
 
-if (values.write !== undefined) {
-  const writePath = resolve(values.write);
+if (values["write-config"] !== undefined) {
+  const writePath = resolve(values["write-config"]);
   const fileStream = createWriteStream(writePath);
   new CsvConfigWriter(fileStream).writeConfig(registry);
   await finished(fileStream).catch((err: unknown) => {

@@ -191,4 +191,31 @@ describe("--convert flag", () => {
       await rm(tmpDir, { recursive: true });
     }
   });
+
+  it("accepts -c as a shorthand for --convert", async () => {
+    const zipped = zipSync({
+      "Drums/kick.wav": makeMinimalWav(),
+    });
+
+    const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
+    const zipPath = join(tmpDir, "test-pack.zip");
+    const outputDir = join(tmpDir, "output");
+
+    try {
+      await writeFile(zipPath, zipped);
+
+      const result = spawnSync("node", [CLI_PATH, zipPath, "-c", "-d", "sp404mk2", "--preserve-paths", "-o", outputDir], {
+        encoding: "utf8",
+        env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
+      });
+
+      expect(result.stderr).toBe("");
+      expect(result.status).toBe(0);
+
+      const outStat = await stat(join(outputDir, "Drums/kick.wav"));
+      expect(outStat.isFile()).toBe(true);
+    } finally {
+      await rm(tmpDir, { recursive: true });
+    }
+  });
 });

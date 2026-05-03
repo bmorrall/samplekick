@@ -65,7 +65,7 @@ describe("samplekick CLI error handling", () => {
     }
   });
 
-  it("exits with code 1 and prints an error when the --write path is not writable", async () => {
+  it("exits with code 1 and prints an error when the --write-config path is not writable", async () => {
     const zipped = zipSync({ "Drums/kick.wav": strToU8("kick-data") });
     const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
     const zipPath = join(tmpDir, "test-pack.zip");
@@ -74,7 +74,7 @@ describe("samplekick CLI error handling", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync("node", [CLI_PATH, zipPath, "--write", writePath], {
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--write-config", writePath], {
         encoding: "utf8",
         env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
       });
