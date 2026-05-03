@@ -36,7 +36,7 @@ describe("SP-404MKII device preset", () => {
       const autoConfig = await readFile(join(dataDir, autoConfigFile), "utf8");
       expect(autoConfig).toBe([
         "path,name,packageName,sampleType,skip,keepPath",
-        ",test_pack.zip,test_pack,,,",
+        ",test-pack.zip,test-pack,,,",
         "Drums,,,,,",
         "Drums/kick.wav,,,,,",
         "Loops,,,,,",
@@ -46,7 +46,7 @@ describe("SP-404MKII device preset", () => {
       // Set packageName on the root node, sampleType on each folder node, and override sampleType on the bass leaf
       await writeFile(join(dataDir, autoConfigFile), [
         "path,name,packageName,sampleType,skip,keepPath",
-        ",test_pack.zip,my-pack,,,",
+        ",test-pack.zip,my-pack,,,",
         "Drums,,,Percussion,,",
         "Drums/kick.wav,,,,,",
         "Loops,,,Loops,,",
@@ -63,12 +63,12 @@ describe("SP-404MKII device preset", () => {
       expect(result.stderr).toBe("");
       expect(result.status).toBe(0);
 
-      const kickBuf = await readFile(join(outputDir, "Percussion/my_pack/kick.wav"));
+      const kickBuf = await readFile(join(outputDir, "Percussion/my-pack/kick.wav"));
       expect(kickBuf.subarray(0, 4).toString("ascii")).toBe("RIFF");
       expect(kickBuf.readUInt32LE(24)).toBe(48000); // sample rate
       expect(kickBuf.readUInt16LE(34)).toBe(16);    // bits per sample
 
-      const bassBuf = await readFile(join(outputDir, "Loops _ Bass/my_pack/bass.wav"));
+      const bassBuf = await readFile(join(outputDir, "Loops - Bass/my-pack/bass.wav"));
       expect(bassBuf.subarray(0, 4).toString("ascii")).toBe("RIFF");
       expect(bassBuf.readUInt32LE(24)).toBe(48000);
       expect(bassBuf.readUInt16LE(34)).toBe(16);
@@ -135,7 +135,7 @@ describe("SP-404MKII device preset", () => {
       const autoConfig = await readFile(join(dataDir, autoConfigFile), "utf8");
       expect(autoConfig).toBe([
         "path,name,packageName,sampleType,skip,keepPath",
-        ",test_pack.zip,test_pack,,,",
+        ",test-pack.zip,test-pack,,,",
         "Dr\u00fcms,Drums,,,,",
         "Dr\u00fcms/sn\u00e2re.wav,snare.wav,,,,",
       ].join("\n"));
@@ -143,7 +143,7 @@ describe("SP-404MKII device preset", () => {
       // Carry the auto-detected packageName forward; only add sampleType
       await writeFile(join(dataDir, autoConfigFile), [
         "path,name,packageName,sampleType,skip,keepPath",
-        ",test_pack.zip,test_pack,,,",
+        ",test-pack.zip,test-pack,,,",
         "Dr\u00fcms,,,Percussion,,",
       ].join("\n"));
 
@@ -156,7 +156,7 @@ describe("SP-404MKII device preset", () => {
 
       expect(result.stderr).toBe("");
       expect(result.status).toBe(0);
-      expect(await readFile(join(outputDir, "Percussion/test_pack/snare.wav"), "utf8")).toBe("snare-data");
+      expect(await readFile(join(outputDir, "Percussion/test-pack/snare.wav"), "utf8")).toBe("snare-data");
     } finally {
       await rm(tmpDir, { recursive: true });
     }

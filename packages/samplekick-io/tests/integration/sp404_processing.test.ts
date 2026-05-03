@@ -22,12 +22,12 @@ describe("SP404 Mk2 end-to-end sample processing", () => {
 
     // Sanitize all node names for SP404 Mk2 compatibility:
     //   Drüms              → Drums
-    //   kick-01 (main).wav → kick_01 (main).wav
+    //   kick-01 (main).wav → kick-01 (main).wav  (hyphen preserved)
     //   snâre.01.wav       → snare_01.wav
     //   Léad Loops         → Lead Loops
     //   Backing Loops      → Backing Loops  (unchanged — space and letters are valid)
-    //   synth-pad.wav      → synth_pad.wav
-    //   bass-line.wav      → bass_line.wav
+    //   synth-pad.wav      → synth-pad.wav  (hyphen preserved)
+    //   bass-line.wav      → bass-line.wav  (hyphen preserved)
     registry.applyTransform(SP404Mk2NameTransformer);
 
     // Set default package name based on root zip name (minus extension)
@@ -49,12 +49,12 @@ describe("SP404 Mk2 end-to-end sample processing", () => {
       [
         "SP404 Pack.zip [pkg:SP404 Pack, type:Melodic Loops]",
         "┣━━ Drums [renamed, type:Drums & Percussion]",
-        "┃   ├── kick_01 (main).wav [renamed]",
+        "┃   ├── kick-01 (main).wav",
         "┃   └── snare_alt.wav [renamed, skipped]",
         "├── Lead Loops [renamed]",
-        "│   └── synth_pad.wav [renamed]",
+        "│   └── synth-pad.wav",
         "└── Backing Loops",
-        "    └── bass_line.wav [renamed]",
+        "    └── bass-line.wav",
         "",
       ].join("\n"),
     );
@@ -83,9 +83,9 @@ describe("SP404 Mk2 end-to-end sample processing", () => {
       );
       relExportedFiles.sort();
       const expectedFiles = [
-        "Drums & Percussion/SP404 Pack/Drums/kick_01 (main).wav",
-        "Melodic Loops/SP404 Pack/synth_pad.wav",
-        "Melodic Loops/SP404 Pack/bass_line.wav",
+        "Drums & Percussion/SP404 Pack/Drums/kick-01 (main).wav",
+        "Melodic Loops/SP404 Pack/synth-pad.wav",
+        "Melodic Loops/SP404 Pack/bass-line.wav",
       ];
       expectedFiles.sort();
       expect(relExportedFiles).toEqual(expectedFiles);

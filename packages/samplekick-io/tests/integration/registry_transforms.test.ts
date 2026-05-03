@@ -41,7 +41,7 @@ describe("Registry transforms", () => {
         "├── NameWithAccents.wav [renamed]",
         "├── Invalid_Char_.mp3 [renamed]",
         "├── ThisIsAVeryLongNameThatShouldBeTruncatedBecauseItIsWayTooLongToFitTheLimitOf.wav [renamed]",
-        "└── Valid_Name_OK!.aif [renamed]",
+        "└── Valid_Name-OK!.aif",
         "",
       ].join("\n"),
     );
