@@ -140,9 +140,6 @@ const dataSource = await ZipDataSource.fromFile(zipPath).catch((err: unknown) =>
 });
 
 const registry = new Registry(dataSource);
-if (values["allow-junk"] !== true) {
-  registry.applyTransform(SkipJunkTransformer);
-}
 
 const reporter: ExportReporter = chalk.level > 0
   ? new PrettyExportReporter(process.stdout, chalk, { quiet: values.quiet === true, packName: basename(zipPath), organised: values["preserve-paths"] !== true })
@@ -170,6 +167,11 @@ if (values.convert === true) {
     targetBitDepth: devicePreset.targetBitDepth,
     targetSampleRate: devicePreset.targetSampleRate,
   }));
+}
+
+if (values["allow-junk"] !== true) {
+  // Junk transforms: mark OS metadata and hidden files as skipped
+  registry.applyTransform(SkipJunkTransformer);
 }
 
 if (values.analyse === true) {
