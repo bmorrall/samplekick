@@ -143,7 +143,7 @@ if (values["allow-junk"] !== true) {
 }
 
 const reporter: ExportReporter = chalk.level > 0
-  ? new PrettyExportReporter(process.stdout, chalk, values.quiet === true, basename(zipPath))
+  ? new PrettyExportReporter(process.stdout, chalk, { quiet: values.quiet === true, packName: basename(zipPath), organised: values["preserve-paths"] !== true })
   : new SimpleExportReporter(process.stdout, values.quiet === true, basename(zipPath));
 
 // Debug messages (e.g. skipped entries) are suppressed unless --verbose is passed
