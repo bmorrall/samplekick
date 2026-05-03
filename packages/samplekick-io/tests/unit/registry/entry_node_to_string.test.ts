@@ -181,7 +181,7 @@ describe("EntryNode.toString", () => {
       );
     });
 
-    it("shows [skipped] on child nodes that inherit skipped from a parent", () => {
+    it("shows ... instead of children when a directory is skipped", () => {
       const root = EntryNode.fromEntry(createFileEntry({ path: "", name: "root" }));
       const parent = root.addNode(createFileEntry({ path: "a" }));
       parent.setSkipped(true);
@@ -190,7 +190,7 @@ describe("EntryNode.toString", () => {
         [
           "root",
           "└── a [skipped]",
-          "    └── b [skipped]",
+          "    └── ...",
           "",
         ].join("\n"),
       );

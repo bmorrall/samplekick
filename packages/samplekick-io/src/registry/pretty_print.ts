@@ -15,6 +15,16 @@ function printNode(
   const displayName = node.getName();
   let output = `${prefix}${displayName}${tagStr}\n`;
 
+  if (node.isSkipped() === true && children.length > 0) {
+    const childPrefix = prefix
+      .replace(/├── /gv, "│   ")
+      .replace(/└── /gv, "    ")
+      .replace(/┣━━ /gv, "┃   ")
+      .replace(/┗━━ /gv, "    ");
+    output += `${childPrefix}└── ...\n`;
+    return output;
+  }
+
   const lastIndex = children.length - 1;
   for (const [i, child] of children.entries()) {
     const isLast = i === lastIndex;

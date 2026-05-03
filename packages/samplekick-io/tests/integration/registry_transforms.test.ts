@@ -81,7 +81,7 @@ describe("Registry transforms", () => {
       [
         "root",
         "├── __MACOSX [skipped]",
-        "│   └── file1.wav [skipped]",
+        "│   └── ...",
         "├── .DS_Store [skipped]",
         "└── sub1",
         "    ├── file1.wav",
