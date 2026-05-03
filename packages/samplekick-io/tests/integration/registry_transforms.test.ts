@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { SP404Mk2NameTransformer, DefaultPackageNameTransformer, SkipJunkTransformer, KnownFileTypeTransformer, AbletonProjectTransformer } from "../../src";
+import { SP404Mk2NameTransformer, DefaultPackageNameTransformer, SkipJunkTransformer, KnownFileTypeTransformer, AbletonProjectTransformer, FLStudioProjectTransformer } from "../../src";
 import { createRegistry, createFileEntry } from "../support";
 
 describe("Registry transforms", () => {
@@ -104,6 +104,26 @@ describe("Registry transforms", () => {
         "┃   ├── My Project.als",
         "┃   └── Samples",
         "┃       └── kick.wav",
+        "└── samples",
+        "    └── kick.wav",
+        "",
+      ].join("\n"),
+    );
+  });
+
+  it("applies FLStudioProjectTransformer to tag FL Studio project folders", () => {
+    const registry = createRegistry("root", [
+      createFileEntry({ path: "My Beat/My Beat.flp" }),
+      createFileEntry({ path: "My Beat/kick.wav" }),
+      createFileEntry({ path: "samples/kick.wav" }),
+    ]);
+    registry.applyTransform(FLStudioProjectTransformer);
+    expect(registry.toString()).toBe(
+      [
+        "root",
+        "┣━━ My Beat [type:FL Studio Projects]",
+        "┃   ├── My Beat.flp",
+        "┃   └── kick.wav",
         "└── samples",
         "    └── kick.wav",
         "",

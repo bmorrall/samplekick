@@ -22,6 +22,10 @@ describe("index exports", () => {
     expect(api.AbletonProjectTransformer).toBeDefined();
   });
 
+  test("exports FLStudioProjectTransformer", () => {
+    expect(api.FLStudioProjectTransformer).toBeDefined();
+  });
+
   test("exports KnownFileTypeTransformer", () => {
     expect(api.KnownFileTypeTransformer).toBeDefined();
   });
@@ -56,6 +60,7 @@ describe("index exports", () => {
       "ZipDataSource",
       "AbletonProjectTransformer",
       "DefaultPackageNameTransformer",
+      "FLStudioProjectTransformer",
       "KnownFileTypeTransformer",
       "SkipJunkTransformer",
       "SP404Mk2NameTransformer",
