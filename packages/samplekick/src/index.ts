@@ -4,7 +4,7 @@ import { mkdir } from "node:fs/promises";
 import { finished } from "node:stream/promises";
 import { basename, dirname, resolve } from "node:path";
 import { parseArgs } from "node:util";
-import { CsvConfigWriter, OrganisedPathStrategy, Registry, SkipJunkTransformer, SourcePathStrategy, ZipDataSource, SP404Mk2Preset, formatSampleRate, formatBitDepth } from "samplekick-io";
+import { CsvConfigWriter, DefaultPackageNameTransformer, OrganisedPathStrategy, Registry, SkipJunkTransformer, SourcePathStrategy, ZipDataSource, SP404Mk2Preset, formatSampleRate, formatBitDepth } from "samplekick-io";
 import { loadConfig, openConfigInEditor, getDataDir } from "./config_loader";
 import type { DevicePreset } from "samplekick-io";
 import { SimpleExportReporter, PrettyExportReporter } from "./exporters";
@@ -172,6 +172,9 @@ if (values.convert === true) {
   }));
 }
 
+if (values.analyse === true) {
+  registry.applyTransform(DefaultPackageNameTransformer);
+}
 if (devicePreset !== undefined) {
   for (const transform of devicePreset.transforms) {
     registry.applyTransform(transform);

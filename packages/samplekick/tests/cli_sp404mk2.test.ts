@@ -36,7 +36,7 @@ describe("SP-404MKII device preset", () => {
       const autoConfig = await readFile(join(dataDir, autoConfigFile), "utf8");
       expect(autoConfig).toBe([
         "path,name,packageName,sampleType,skip,keepPath",
-        ",test_pack.zip,,,,",
+        ",test_pack.zip,test-pack,,,",
         "Drums,,,,,",
         "Drums/kick.wav,,,,,",
         "Loops,,,,,",
@@ -103,7 +103,7 @@ describe("SP-404MKII device preset", () => {
       const autoConfig = await readFile(join(dataDir, autoConfigFile), "utf8");
       expect(autoConfig).toBe([
         "path,name,packageName,sampleType,skip,keepPath",
-        ",test_pack.zip,,,,",
+        ",test_pack.zip,test-pack,,,",
         "Dr\u00fcms,Drums,,,,",
         "Dr\u00fcms/sn\u00e2re.wav,snare.wav,,,,",
       ].join("\n"));
