@@ -4,7 +4,7 @@ import { mkdir } from "node:fs/promises";
 import { finished } from "node:stream/promises";
 import { basename, dirname, resolve } from "node:path";
 import { parseArgs } from "node:util";
-import { CsvConfigWriter, Registry, SkipJunkTransformer, SourcePathStrategy, ZipDataSource, SP404Mk2Preset, formatSampleRate, formatBitDepth } from "samplekick-io";
+import { CsvConfigWriter, OrganisedPathStrategy, Registry, SkipJunkTransformer, SourcePathStrategy, ZipDataSource, SP404Mk2Preset, formatSampleRate, formatBitDepth } from "samplekick-io";
 import { loadConfig, openConfigInEditor, getDataDir } from "./config_loader";
 import type { DevicePreset } from "samplekick-io";
 import { SimpleExportReporter, PrettyExportReporter } from "./exporters";
@@ -58,6 +58,7 @@ Options:
   -d, --device <name>     Apply a device preset
       --convert           Convert audio files to device format
       --allow-junk        Keep junk entries (e.g. __MACOSX, hidden files)
+      --preserve-paths    Export to original source paths (skip organising)
       --debug             Print pack string representation to stdout
                           without writing any files
       --edit              Open the auto-config file in $VISUAL/$EDITOR
@@ -80,6 +81,7 @@ const { values, positionals } = parseArgs({
     write: { type: "string", short: "w" },
     convert: { type: "boolean" },
     "allow-junk": { type: "boolean" },
+    "preserve-paths": { type: "boolean" },
     debug: { type: "boolean" },
     edit: { type: "boolean" },
     verbose: { type: "boolean" },
@@ -178,7 +180,8 @@ const autoConfigPath = await loadConfig(registry, configPath, dataDir).catch((er
   console.error(err instanceof Error ? err.message : String(err));
   process.exit(1);
 });
-registry.setPathStrategy(SourcePathStrategy);
+const pathStrategy = values["preserve-paths"] === true ? SourcePathStrategy : OrganisedPathStrategy;
+registry.setPathStrategy(pathStrategy);
 
 if (values.verbose === true) {
   reporter.onInfo(`Reading: ${zipPath}`);

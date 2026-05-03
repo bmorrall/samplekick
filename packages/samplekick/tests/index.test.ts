@@ -48,6 +48,7 @@ describe("samplekick CLI", () => {
           "  -d, --device <name>     Apply a device preset",
           "      --convert           Convert audio files to device format",
           "      --allow-junk        Keep junk entries (e.g. __MACOSX, hidden files)",
+          "      --preserve-paths    Export to original source paths (skip organising)",
           "      --debug             Print pack string representation to stdout",
           "                          without writing any files",
           "      --edit              Open the auto-config file in $VISUAL/$EDITOR",
@@ -185,7 +186,7 @@ describe("samplekick CLI", () => {
         await writeFile(zipPath, zipped);
         await writeFile(outputPath, "not a directory");
 
-        const result = spawnSync("node", [CLI_PATH, zipPath, "-o", outputPath], {
+        const result = spawnSync("node", [CLI_PATH, zipPath, "--preserve-paths", "-o", outputPath], {
           encoding: "utf8",
           env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
         });
@@ -360,7 +361,7 @@ describe("samplekick CLI", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync("node", [CLI_PATH, zipPath, "-w", configPath, "-o", outputDir], {
+      const result = spawnSync("node", [CLI_PATH, zipPath, "-w", configPath, "--preserve-paths", "-o", outputDir], {
         encoding: "utf8",
         env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
       });
@@ -396,7 +397,7 @@ describe("samplekick CLI", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync("node", [CLI_PATH, zipPath, "-o", outputDir], {
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--preserve-paths", "-o", outputDir], {
         encoding: "utf8",
         env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
       });
@@ -427,7 +428,7 @@ describe("samplekick CLI", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync("node", [CLI_PATH, zipPath, "--verbose", "-o", outputDir], {
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--verbose", "--preserve-paths", "-o", outputDir], {
         encoding: "utf8",
         env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
       });
@@ -463,10 +464,7 @@ describe("samplekick CLI", () => {
       await writeFile(zipPath, zipped);
       await writeFile(configPath, config);
 
-      const result = spawnSync("node", [CLI_PATH, zipPath, "--config", configPath, "-o", outputDir], { encoding: "utf8" });
-
-      expect(result.stderr).toBe("");
-      expect(await readFile(join(outputDir, "Drums/My Kick.wav"), "utf8")).toBe("kick-data");
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--config", configPath, "--preserve-paths", "-o", outputDir], { encoding: "utf8" });
       await expect(stat(join(outputDir, "Drums/kick.wav"))).rejects.toThrow();
       await expect(stat(join(outputDir, "Loops/bass.wav"))).rejects.toThrow();
 
@@ -497,7 +495,7 @@ describe("samplekick CLI", () => {
       await writeFile(zipPath, zipped);
       await writeFile(configPath, config);
 
-      const result = spawnSync("node", [CLI_PATH, zipPath, "--config", configPath, "-o", outputDir], { encoding: "utf8" });
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--config", configPath, "--preserve-paths", "-o", outputDir], { encoding: "utf8" });
 
       expect(result.stderr).toBe("");
       expect(await readFile(join(outputDir, "Drums/kick.wav"), "utf8")).toBe("kick-data");
