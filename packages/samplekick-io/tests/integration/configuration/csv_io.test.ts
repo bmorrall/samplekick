@@ -40,7 +40,7 @@ describe("CSV I/O", () => {
     expect(stream.writableEnded).toBe(true);
   });
 
-  it("writes all leaf entries plus mutated folder nodes", () => {
+  it("writes all nodes sorted by path", () => {
     const registry = createRegistry("library", [
       createFileEntry({ path: "jazz/bebop/track01" }),
       createFileEntry({ path: "jazz/bebop/track02" }),
@@ -56,11 +56,14 @@ describe("CSV I/O", () => {
 
     const result = collectConfigEntries(reader);
 
-    expect(result).toHaveLength(4);
+    expect(result).toHaveLength(7);
     expect(result.map((e) => e.getPath())).toEqual([
       "",
+      "jazz",
+      "jazz/bebop",
       "jazz/bebop/track01",
       "jazz/bebop/track02",
+      "rock",
       "rock/track01",
     ]);
   });
@@ -127,11 +130,13 @@ describe("CSV I/O", () => {
 
     const result = collectConfigEntries(reader);
 
-    expect(result).toHaveLength(4);
+    expect(result).toHaveLength(6);
     expect(result.map((e) => e.getPath())).toEqual([
       "",
       "jazz",
+      "jazz/bebop",
       "jazz/bebop/track01",
+      "jazz/swing",
       "jazz/swing/track01",
     ]);
     expect(result.map((e) => e.getPackageName())).toEqual([
@@ -139,9 +144,13 @@ describe("CSV I/O", () => {
       "jazz-pack",
       "jazz-pack",
       "jazz-pack",
+      "jazz-pack",
+      "jazz-pack",
     ]);
     expect(result.map((e) => e.getSampleType())).toEqual([
       undefined,
+      "Melodic Loops - Jazz",
+      "Melodic Loops - Jazz",
       "Melodic Loops - Jazz",
       "Melodic Loops - Jazz",
       "Melodic Loops - Jazz",

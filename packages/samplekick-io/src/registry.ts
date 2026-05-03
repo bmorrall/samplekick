@@ -87,7 +87,7 @@ export class Registry implements FileSource, ConfigSource {
   }
 
   eachConfigEntry(fn: (entry: ConfigEntry) => void): void {
-    this.rootNode.eachMutatedEntry(fn);
+    this.rootNode.eachDescendant(fn);
   }
 
   // Config methods

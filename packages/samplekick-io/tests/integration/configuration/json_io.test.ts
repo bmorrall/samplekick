@@ -33,7 +33,7 @@ describe("JSON I/O", () => {
     expect(result).toEqual([]);
   });
 
-  it("writes all leaf entries plus mutated folder nodes", () => {
+  it("writes all nodes sorted by path", () => {
     const registry = createRegistry("library", [
       createFileEntry({ path: "jazz/bebop/track01" }),
       createFileEntry({ path: "jazz/bebop/track02" }),
@@ -49,11 +49,14 @@ describe("JSON I/O", () => {
 
     const result = collectConfigEntries(reader);
 
-    expect(result).toHaveLength(4);
+    expect(result).toHaveLength(7);
     expect(result.map((e) => e.getPath())).toEqual([
       "",
+      "jazz",
+      "jazz/bebop",
       "jazz/bebop/track01",
       "jazz/bebop/track02",
+      "rock",
       "rock/track01",
     ]);
   });
@@ -120,15 +123,19 @@ describe("JSON I/O", () => {
 
     const result = collectConfigEntries(reader);
 
-    expect(result).toHaveLength(4);
+    expect(result).toHaveLength(6);
     expect(result.map((e) => e.getPath())).toEqual([
       "",
       "jazz",
+      "jazz/bebop",
       "jazz/bebop/track01",
+      "jazz/swing",
       "jazz/swing/track01",
     ]);
     expect(result.map((e) => e.getPackageName())).toEqual([
       undefined,
+      "jazz-pack",
+      "jazz-pack",
       "jazz-pack",
       "jazz-pack",
       "jazz-pack",
@@ -138,14 +145,20 @@ describe("JSON I/O", () => {
       "Melodic Loops - Jazz",
       "Melodic Loops - Jazz",
       "Melodic Loops - Jazz",
+      "Melodic Loops - Jazz",
+      "Melodic Loops - Jazz",
     ]);
     expect(result.map((e) => e.isSkipped())).toEqual([
       undefined,
       undefined,
       undefined,
       undefined,
+      undefined,
+      undefined,
     ]);
     expect(result.map((e) => e.isKeepStructure())).toEqual([
+      undefined,
+      undefined,
       undefined,
       undefined,
       undefined,
@@ -240,7 +253,7 @@ describe("JSON I/O", () => {
     );
     const first = collectConfigEntries(firstReader);
     const second = collectConfigEntries(secondReader);
-    expect(first.map((e) => e.getPath())).toEqual(["", "jazz/track01"]);
-    expect(second.map((e) => e.getPath())).toEqual(["", "rock/track01"]);
+    expect(first.map((e) => e.getPath())).toEqual(["", "jazz", "jazz/track01"]);
+    expect(second.map((e) => e.getPath())).toEqual(["", "rock", "rock/track01"]);
   });
 });

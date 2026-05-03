@@ -63,13 +63,17 @@ describe("Registry load", () => {
     expect(entries.map((e) => e.getPath())).toEqual([
       "",
       "jazz",
+      "jazz/bebop",
       "jazz/bebop/track01",
+      "jazz/swing",
       "jazz/swing/track01",
     ]);
     expect(entries.map((e) => e.getName())).toEqual([
       "library",
       "jazz",
+      "bebop",
       "track01",
+      "swing",
       "track01",
     ]);
     expect(entries.map((e) => e.getPackageName())).toEqual([
@@ -77,9 +81,13 @@ describe("Registry load", () => {
       "jazz-pack",
       "jazz-pack",
       "jazz-pack",
+      "jazz-pack",
+      "jazz-pack",
     ]);
     expect(entries.map((e) => e.getSampleType())).toEqual([
       undefined,
+      "Melodic Loops - Jazz",
+      "Melodic Loops - Jazz",
       "Melodic Loops - Jazz",
       "Melodic Loops - Jazz",
       "Melodic Loops - Jazz",
@@ -161,6 +169,7 @@ describe("Registry eachConfigEntry", () => {
       "jazz/bebop/track01",
       "jazz/swing",
       "jazz/swing/track01",
+      "rock",
       "rock/track01",
     ]);
     expect(configEntries.map((e) => e.getName())).toEqual([
@@ -170,6 +179,7 @@ describe("Registry eachConfigEntry", () => {
       "track01",
       "swing",
       "track01",
+      "rock",
       "track01",
     ]);
   });
@@ -194,17 +204,26 @@ describe("Registry eachConfigEntry", () => {
 
     expect(targetEntries.map((e) => e.getPath())).toEqual([
       "",
+      "jazz",
+      "jazz/bebop",
       "jazz/bebop/track01",
+      "rock",
       "rock/track01",
     ]);
     expect(targetEntries.map((e) => e.getPackageName())).toEqual([
       undefined,
+      undefined,
+      undefined,
       "jazz-pack",
+      undefined,
       "rock-pack",
     ]);
     expect(targetEntries.map((e) => e.getSampleType())).toEqual([
       undefined,
+      undefined,
+      undefined,
       "Melodic Loops - Jazz",
+      undefined,
       "Melodic Loops - Rock",
     ]);
   });
