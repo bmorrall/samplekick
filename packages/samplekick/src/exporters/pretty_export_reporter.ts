@@ -103,10 +103,10 @@ export class PrettyExportReporter implements ExportReporter {
     }
   }
 
-  onSkip(_entry: ConfigEntry, reason: string): void {
+  onSkip(entry: ConfigEntry, reason: string): void {
     this.skippedCount += 1;
     if (!this.quiet) {
-      this.logLine(`${this.chalk.magenta("?")} ${this.chalk.gray(reason)}`);
+      this.logLine(`${this.chalk.magenta("?")} ${entry.getPath()}: ${this.chalk.gray(reason)}`);
     }
   }
 

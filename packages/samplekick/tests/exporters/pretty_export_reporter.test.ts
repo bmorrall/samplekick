@@ -105,12 +105,12 @@ describe("PrettyExportReporter", () => {
   });
 
   describe("onSkip", () => {
-    it("writes '? {reason}' with magenta symbol", () => {
+    it("writes '? {path}: {reason}' with magenta symbol", () => {
       const { reporter, getOutput } = createReporter();
       reporter.onSkip(createEntry("kick.wav"), "Missing sampleType");
       const raw = getOutput();
       expect(raw).toContain("\x1B[35m");
-      expect(stripAnsi(raw)).toBe("  ? Missing sampleType\n");
+      expect(stripAnsi(raw)).toBe("  ? kick.wav: Missing sampleType\n");
     });
 
     it("does not increment totalCount", () => {

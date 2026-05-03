@@ -54,7 +54,7 @@ describe("path strategy", () => {
       });
 
       expect(result.stderr).toBe("");
-      expect(result.stdout).toContain("skipped: Missing sampleType and packageName");
+      expect(result.stdout).toContain("skipped: Drums/kick.wav: Missing sampleType and packageName");
       expect(result.status).toBe(0);
     } finally {
       await rm(tmpDir, { recursive: true });

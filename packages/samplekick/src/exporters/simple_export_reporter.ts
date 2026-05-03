@@ -48,8 +48,8 @@ export class SimpleExportReporter implements ExportReporter {
     }
   }
 
-  onSkip(_entry: ConfigEntry, reason: string): void {
-    this.output.write(`skipped: ${reason}\n`);
+  onSkip(entry: ConfigEntry, reason: string): void {
+    this.output.write(`skipped: ${entry.getPath()}: ${reason}\n`);
   }
 
   onComplete(dirPath: string): void {

@@ -99,6 +99,14 @@ describe("SimpleExportReporter", () => {
     });
   });
 
+  describe("onSkip", () => {
+    it("writes 'skipped: {path}: {reason}'", () => {
+      const { reporter, getOutput } = createReporter();
+      reporter.onSkip(createEntry("Drums/kick.wav"), "Missing sampleType and packageName");
+      expect(getOutput()).toBe("skipped: Drums/kick.wav: Missing sampleType and packageName\n");
+    });
+  });
+
   describe("onComplete", () => {
     it("writes 'Exported to <dirPath>' when there are no errors", () => {
       const { reporter, getOutput } = createReporter();
