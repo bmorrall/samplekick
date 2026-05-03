@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { SP404Mk2NameTransformer, DefaultPackageNameTransformer, SkipJunkTransformer } from "../../src";
+import { SP404Mk2NameTransformer, DefaultPackageNameTransformer, SkipJunkTransformer, KnownFileTypeTransformer, AbletonProjectTransformer } from "../../src";
 import { createRegistry, createFileEntry } from "../support";
 
 describe("Registry transforms", () => {
@@ -64,6 +64,48 @@ describe("Registry transforms", () => {
         "└── sub1",
         "    ├── file1.wav",
         "    └── .hidden [skipped]",
+        "",
+      ].join("\n"),
+    );
+  });
+
+  it("applies KnownFileTypeTransformer to set sampleType on .mid and .fxp files", () => {
+    const registry = createRegistry("root", [
+      createFileEntry({ path: "beats/groove.mid" }),
+      createFileEntry({ path: "presets/bass.fxp" }),
+      createFileEntry({ path: "samples/kick.wav" }),
+    ]);
+    registry.applyTransform(KnownFileTypeTransformer);
+    expect(registry.toString()).toBe(
+      [
+        "root",
+        "├── beats",
+        "│   └── groove.mid [type:MIDI]",
+        "├── presets",
+        "│   └── bass.fxp [type:Serum Presets]",
+        "└── samples",
+        "    └── kick.wav",
+        "",
+      ].join("\n"),
+    );
+  });
+
+  it("applies AbletonProjectTransformer to tag Ableton project folders", () => {
+    const registry = createRegistry("root", [
+      createFileEntry({ path: "My Project/My Project.als" }),
+      createFileEntry({ path: "My Project/Samples/kick.wav" }),
+      createFileEntry({ path: "samples/kick.wav" }),
+    ]);
+    registry.applyTransform(AbletonProjectTransformer);
+    expect(registry.toString()).toBe(
+      [
+        "root",
+        "┣━━ My Project [type:Ableton Projects]",
+        "┃   ├── My Project.als",
+        "┃   └── Samples",
+        "┃       └── kick.wav",
+        "└── samples",
+        "    └── kick.wav",
         "",
       ].join("\n"),
     );

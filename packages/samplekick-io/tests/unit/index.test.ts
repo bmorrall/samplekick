@@ -18,6 +18,10 @@ describe("index exports", () => {
     expect(api.DefaultPackageNameTransformer).toBeDefined();
   });
 
+  test("exports AbletonProjectTransformer", () => {
+    expect(api.AbletonProjectTransformer).toBeDefined();
+  });
+
   test("exports KnownFileTypeTransformer", () => {
     expect(api.KnownFileTypeTransformer).toBeDefined();
   });
@@ -50,6 +54,7 @@ describe("index exports", () => {
       "CsvConfigWriter",
       "CsvConfigReader",
       "ZipDataSource",
+      "AbletonProjectTransformer",
       "DefaultPackageNameTransformer",
       "KnownFileTypeTransformer",
       "SkipJunkTransformer",

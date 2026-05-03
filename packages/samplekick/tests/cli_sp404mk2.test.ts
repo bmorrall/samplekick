@@ -77,6 +77,37 @@ describe("SP-404MKII device preset", () => {
     }
   });
 
+  it("exports an Ableton project folder with its structure preserved under Ableton Projects/<packageName>", async () => {
+    const zipped = zipSync({
+      "My Project/My Project.als": strToU8("als-data"),
+      "My Project/samples/kick.wav": strToU8("kick-data"),
+    });
+
+    const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
+    const zipPath = join(tmpDir, "test-pack.zip");
+    const outputDir = join(tmpDir, "output");
+
+    try {
+      await writeFile(zipPath, zipped);
+
+      const result = spawnSync(
+        "node",
+        [CLI_PATH, zipPath, "--analyse", "-o", outputDir],
+        { encoding: "utf8", env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") } },
+      );
+
+      expect(result.stderr).toBe("");
+      expect(result.status).toBe(0);
+
+      // AbletonProjectTransformer sets sampleType="Ableton Projects" and keepStructure=true,
+      // so OrganisedPathStrategy routes files to Ableton Projects/<packageName>/<original structure>
+      expect(await readFile(join(outputDir, "Ableton Projects/test-pack/My Project/My Project.als"), "utf8")).toBe("als-data");
+      expect(await readFile(join(outputDir, "Ableton Projects/test-pack/My Project/samples/kick.wav"), "utf8")).toBe("kick-data");
+    } finally {
+      await rm(tmpDir, { recursive: true });
+    }
+  });
+
   it("sanitizes non-ASCII filenames and exports to organised paths using sanitized auto-config paths", async () => {
     const zipped = zipSync({
       "Dr\u00fcms/sn\u00e2re.wav": strToU8("snare-data"),

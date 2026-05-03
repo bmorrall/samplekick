@@ -1,3 +1,4 @@
+export { AbletonProjectTransformer } from "./ableton_project_transformer";
 export { DefaultPackageNameTransformer } from "./default_package_name_transformer";
 export { KnownFileTypeTransformer } from "./known_file_type_transformer";
 export { SkipJunkTransformer } from "./skip_junk_transformer";
