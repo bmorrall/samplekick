@@ -54,6 +54,12 @@ export class AudioConverter implements PostProcessor {
   private readonly targetBitDepth: number;
   private readonly targetSampleRate: number;
 
+  private get sampleFmt(): string {
+    if (this.targetBitDepth === BIT_DEPTH_24) return "s24";
+    if (this.targetBitDepth === BIT_DEPTH_32) return "s32";
+    return "s16";
+  }
+
   constructor(
     runFfmpeg: FfmpegRunner = defaultRunner,
     onError: ConvertErrorHandler = defaultErrorHandler,
@@ -76,10 +82,14 @@ export class AudioConverter implements PostProcessor {
     const outputPath = join(dir, `${base}.wav`);
     const tempPath = `${destPath}.converting.wav`;
 
-    const sampleFmt = this.targetBitDepth === BIT_DEPTH_24 ? "s24" : this.targetBitDepth === BIT_DEPTH_32 ? "s32" : "s16";
     this.onDebug?.(`Converting ${basename(destPath)} to ${formatBitDepth(this.targetBitDepth)} ${formatSampleRate(this.targetSampleRate)} WAV`);
     try {
-      await this.runFfmpeg(["-i", destPath, "-ar", String(this.targetSampleRate), "-sample_fmt", sampleFmt, "-y", tempPath]);
+      await this.runFfmpeg([
+        "-i", destPath,
+        "-ar", String(this.targetSampleRate),
+        "-sample_fmt", this.sampleFmt,
+        "-y", tempPath,
+      ]);
       await rename(tempPath, outputPath);
       if (outputPath !== destPath) {
         await unlink(destPath);
