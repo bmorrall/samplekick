@@ -156,7 +156,8 @@ if (values.convert === true) {
     throw err;
   });
   const debugLog = values.verbose === true ? reporter.onDebug.bind(reporter) : undefined;
-  registry.addPostProcessor(new AudioConverter(undefined, (destPath, error) => { reporter.onError(`Could not convert ${basename(destPath)}: ${error.message}`); }, {
+  registry.addPostProcessor(new AudioConverter(undefined, {
+    onError: (destPath, error) => { reporter.onError(`Could not convert ${basename(destPath)}: ${error.message}`); },
     onDebug: debugLog,
     targetBitDepth: devicePreset.targetBitDepth,
     targetSampleRate: devicePreset.targetSampleRate,
