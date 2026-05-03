@@ -104,6 +104,24 @@ describe("PrettyExportReporter", () => {
     });
   });
 
+  describe("onSkip", () => {
+    it("writes '? {reason}' with magenta symbol", () => {
+      const { reporter, getOutput } = createReporter();
+      reporter.onSkip(createEntry("kick.wav"), "Missing sampleType");
+      const raw = getOutput();
+      expect(raw).toContain("\x1B[35m");
+      expect(stripAnsi(raw)).toBe("  ? Missing sampleType\n");
+    });
+
+    it("does not increment totalCount", () => {
+      const { reporter, getOutput } = createReporter();
+      reporter.onSkip(createEntry("a.wav"), "Missing packageName");
+      reporter.onAfterWrite(createEntry("b.wav"), "b.wav");
+      reporter.onComplete("/output/dir");
+      expect(stripAnsi(getOutput())).toContain("Exported 1 file to /output/dir");
+    });
+  });
+
   describe("onComplete", () => {
     it("writes 'Exported 0 files to <dirPath>' when there are no errors", () => {
       const { reporter, getOutput } = createReporter();
@@ -127,6 +145,23 @@ describe("PrettyExportReporter", () => {
       reporter.onComplete("/output/dir");
       expect(stripAnsi(getOutput())).toContain("Exported 2 files to /output/dir (2 errors)\n");
     });
+
+    it("includes skip count when entries were skipped", () => {
+      const { reporter, getOutput } = createReporter();
+      reporter.onSkip(createEntry("a.wav"), "Missing sampleType");
+      reporter.onAfterWrite(createEntry("b.wav"), "b.wav");
+      reporter.onComplete("/output/dir");
+      expect(stripAnsi(getOutput())).toContain("Exported 1 file to /output/dir (1 skipped)\n");
+    });
+
+    it("includes both error and skip counts when both occur", () => {
+      const { reporter, getOutput } = createReporter();
+      reporter.onAfterWrite(createEntry("a.wav"), "a.wav", new Error("fail"));
+      reporter.onSkip(createEntry("b.wav"), "Missing packageName");
+      reporter.onAfterWrite(createEntry("c.wav"), "c.wav");
+      reporter.onComplete("/output/dir");
+      expect(stripAnsi(getOutput())).toContain("Exported 2 files to /output/dir (1 error, 1 skipped)\n");
+    });
   });
 
   describe("quiet mode", () => {
@@ -148,6 +183,12 @@ describe("PrettyExportReporter", () => {
     it("suppresses success lines in onAfterWrite", () => {
       const { reporter, getOutput } = createQuietReporter();
       reporter.onAfterWrite(createEntry("kick.wav"), "kick.wav");
+      expect(getOutput()).toBe("");
+    });
+
+    it("suppresses skip lines in onSkip", () => {
+      const { reporter, getOutput } = createQuietReporter();
+      reporter.onSkip(createEntry("kick.wav"), "Missing sampleType");
       expect(getOutput()).toBe("");
     });
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { SourcePathStrategy } from "../../../src";
+import { SourcePathStrategy, PathResult } from "../../../src";
 import { createFileNodeHierarchy } from "../../support";
 
 describe("SourcePathStrategy", () => {
@@ -9,13 +9,8 @@ describe("SourcePathStrategy", () => {
       { name: "parent" },
       { name: "self" },
     ]);
-    expect(SourcePathStrategy.destinationPathFor(leaf)).toBe(
-      "grandparent/parent/self",
-    );
-  });
-
-  it("returns undefined when only the root node is passed", () => {
-    const root = createFileNodeHierarchy("example.zip", []);
-    expect(SourcePathStrategy.destinationPathFor(root)).toBeUndefined();
+    const result = SourcePathStrategy.destinationPathFor(leaf);
+    expect(result).toBeInstanceOf(PathResult);
+    expect(result).toHaveProperty("path", "grandparent/parent/self");
   });
 });

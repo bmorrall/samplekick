@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { OrganisedPathStrategy } from "../../../src";
+import { OrganisedPathStrategy, PathResult, SkipResult } from "../../../src";
 import { createFileNodeHierarchy } from "../../support";
 
 describe("OrganisedPathStrategy", () => {
@@ -9,36 +9,42 @@ describe("OrganisedPathStrategy", () => {
       { name: "bebop" },
       { name: "track01.wav", sampleType: "loops", packageName: "my-pack" },
     ]);
-    expect(OrganisedPathStrategy.destinationPathFor(leaf)).toBe(
-      "loops/my-pack/track01.wav",
-    );
+    const result = OrganisedPathStrategy.destinationPathFor(leaf);
+    expect(result).toBeInstanceOf(PathResult);
+    expect(result).toHaveProperty("path", "loops/my-pack/track01.wav");
   });
 
-  it("returns undefined when sampleType is missing", () => {
+  it("returns skip result when sampleType is missing", () => {
     const leaf = createFileNodeHierarchy("example.zip", [
       { name: "jazz" },
       { name: "bebop" },
       { name: "track01.wav", packageName: "my-pack" },
     ]);
-    expect(OrganisedPathStrategy.destinationPathFor(leaf)).toBeUndefined();
+    const result = OrganisedPathStrategy.destinationPathFor(leaf);
+    expect(result).toBeInstanceOf(SkipResult);
+    expect(result).toHaveProperty("reason", "Missing sampleType");
   });
 
-  it("returns undefined when packageName is missing", () => {
+  it("returns skip result when packageName is missing", () => {
     const leaf = createFileNodeHierarchy("example.zip", [
       { name: "jazz" },
       { name: "bebop" },
       { name: "track01.wav", sampleType: "loops" },
     ]);
-    expect(OrganisedPathStrategy.destinationPathFor(leaf)).toBeUndefined();
+    const result = OrganisedPathStrategy.destinationPathFor(leaf);
+    expect(result).toBeInstanceOf(SkipResult);
+    expect(result).toHaveProperty("reason", "Missing packageName");
   });
 
-  it("returns undefined when both sampleType and packageName are missing", () => {
+  it("returns skip result when both sampleType and packageName are missing", () => {
     const leaf = createFileNodeHierarchy("example.zip", [
       { name: "jazz" },
       { name: "bebop" },
       { name: "track01.wav" },
     ]);
-    expect(OrganisedPathStrategy.destinationPathFor(leaf)).toBeUndefined();
+    const result = OrganisedPathStrategy.destinationPathFor(leaf);
+    expect(result).toBeInstanceOf(SkipResult);
+    expect(result).toHaveProperty("reason", "Missing sampleType and packageName");
   });
 
   it("keeps the path from the grandparent node when it has keepStructure set", () => {
@@ -47,9 +53,9 @@ describe("OrganisedPathStrategy", () => {
       { name: "bebop", keepStructure: true },
       { name: "track01.wav", sampleType: "loops", packageName: "my-pack", keepStructure: true },
     ]);
-    expect(OrganisedPathStrategy.destinationPathFor(leaf)).toBe(
-      "loops/my-pack/jazz/bebop/track01.wav",
-    );
+    const result = OrganisedPathStrategy.destinationPathFor(leaf);
+    expect(result).toBeInstanceOf(PathResult);
+    expect(result).toHaveProperty("path", "loops/my-pack/jazz/bebop/track01.wav");
   });
 
   it("keeps the path from the parent node when it has keepStructure set", () => {
@@ -58,9 +64,9 @@ describe("OrganisedPathStrategy", () => {
       { name: "bebop", keepStructure: true },
       { name: "track01.wav", sampleType: "loops", packageName: "my-pack", keepStructure: true },
     ]);
-    expect(OrganisedPathStrategy.destinationPathFor(leaf)).toBe(
-      "loops/my-pack/bebop/track01.wav",
-    );
+    const result = OrganisedPathStrategy.destinationPathFor(leaf);
+    expect(result).toBeInstanceOf(PathResult);
+    expect(result).toHaveProperty("path", "loops/my-pack/bebop/track01.wav");
   });
 
   it("uses only the entry name when an explicit false overrides an inherited keepStructure", () => {
@@ -69,9 +75,9 @@ describe("OrganisedPathStrategy", () => {
       { name: "bebop", keepStructure: false },
       { name: "track01.wav", sampleType: "loops", packageName: "my-pack", keepStructure: true },
     ]);
-    expect(OrganisedPathStrategy.destinationPathFor(leaf)).toBe(
-      "loops/my-pack/track01.wav",
-    );
+    const result = OrganisedPathStrategy.destinationPathFor(leaf);
+    expect(result).toBeInstanceOf(PathResult);
+    expect(result).toHaveProperty("path", "loops/my-pack/track01.wav");
   });
 
   it("keeps only the entry name when self has keepStructure set", () => {
@@ -80,9 +86,9 @@ describe("OrganisedPathStrategy", () => {
       { name: "bebop", keepStructure: false },
       { name: "track01.wav", sampleType: "loops", packageName: "my-pack", keepStructure: true },
     ]);
-    expect(OrganisedPathStrategy.destinationPathFor(leaf)).toBe(
-      "loops/my-pack/track01.wav",
-    );
+    const result = OrganisedPathStrategy.destinationPathFor(leaf);
+    expect(result).toBeInstanceOf(PathResult);
+    expect(result).toHaveProperty("path", "loops/my-pack/track01.wav");
   });
 
   it("uses only the entry name when no keepStructure is set anywhere in the tree", () => {
@@ -91,8 +97,8 @@ describe("OrganisedPathStrategy", () => {
       { name: "bebop" },
       { name: "track01.wav", sampleType: "loops", packageName: "my-pack" },
     ]);
-    expect(OrganisedPathStrategy.destinationPathFor(leaf)).toBe(
-      "loops/my-pack/track01.wav",
-    );
+    const result = OrganisedPathStrategy.destinationPathFor(leaf);
+    expect(result).toBeInstanceOf(PathResult);
+    expect(result).toHaveProperty("path", "loops/my-pack/track01.wav");
   });
 });

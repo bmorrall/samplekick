@@ -39,6 +39,10 @@ export interface FileNode extends ConfigEntry {
   getChildNodes: () => FileNode[];
 }
 
+export interface LeafNode extends FileNode {
+  getParentNode: () => FileNode;
+}
+
 // Transform
 
 export interface TransformEntry extends FileNode {
@@ -54,22 +58,6 @@ export interface TransformSource {
 }
 
 export type Transform = (source: TransformSource) => void;
-
-// Validation
-
-export interface Validator {
-  validate: (configSource: ConfigSource) => ValidationResult;
-}
-
-export interface ValidationError {
-  path: string;
-  message: string;
-}
-
-export interface ValidationResult {
-  valid: boolean;
-  errors: ValidationError[];
-}
 
 // Device Preset
 
@@ -87,15 +75,25 @@ export interface PostProcessor {
 }
 
 export interface ExportOptions {
+  onDebug?: (message: string) => void;
   onBeforeWrite?: (entry: ConfigEntry, destRelPath: string) => void;
   onAfterWrite?: (entry: ConfigEntry, destRelPath: string, error?: Error) => void;
+  onSkip?: (entry: ConfigEntry, reason: string) => void;
 }
 
 // Path Strategy
 
+export class PathResult {
+  constructor(readonly path: string) {}
+}
+
+export class SkipResult {
+  constructor(readonly reason: string) {}
+}
+
 export interface PathStrategy {
   /**
-   * Given a leaf FileNode, returns the output path or undefined.
+   * Given a LeafNode (non-root), returns a PathResult with the output path, or a SkipResult with the reason it should be skipped.
    */
-  destinationPathFor: (node: FileNode) => string | undefined;
+  destinationPathFor: (node: LeafNode) => PathResult | SkipResult;
 }

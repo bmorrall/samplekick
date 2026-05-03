@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import type { FileEntry, FileSource, PathStrategy } from "../../src";
+import { PathResult } from "../../src";
 import { createConfigEntry, createFileEntry, createConfigSource, createRegistry, collectFileEntries } from "../support";
 
 type EachFileEntryCallback = (entry: FileEntry) => void;
@@ -407,7 +408,7 @@ describe("Registry", () => {
       const registry = createRegistry("root", [createFileEntry({ path: "a/b" })]);
 
       const strategy: PathStrategy = {
-        destinationPathFor: vi.fn().mockReturnValue("out/b"),
+        destinationPathFor: vi.fn().mockReturnValue(new PathResult("out/b")),
       };
       registry.setPathStrategy(strategy);
 

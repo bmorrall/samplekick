@@ -1,14 +1,16 @@
-import type { PathStrategy, FileNode } from "../types";
+import type { PathStrategy, LeafNode, FileNode } from "../types";
+import { PathResult } from "../types";
 
 export const SourcePathStrategy: PathStrategy = {
-  destinationPathFor: (node: FileNode): string | undefined => {
-    const parts: string[] = [];
-    let current: FileNode | undefined = node;
-    while (current?.getParentNode() !== undefined) {
+  destinationPathFor: (node: LeafNode): PathResult => {
+    const parts: string[] = [node.getName()];
+    let current: FileNode = node.getParentNode();
+    let parent: FileNode | undefined = current.getParentNode();
+    while (parent !== undefined) {
       parts.unshift(current.getName());
-      current = current.getParentNode();
+      current = parent;
+      parent = current.getParentNode();
     }
-    if (parts.length === 0) return undefined;
-    return parts.join("/");
+    return new PathResult(parts.join("/"));
   },
 };

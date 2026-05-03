@@ -60,6 +60,8 @@ describe("index exports", () => {
       "SAMPLE_RATE_96000",
       "formatSampleRate",
       "formatBitDepth",
+      "PathResult",
+      "SkipResult",
     ]);
   });
 });
