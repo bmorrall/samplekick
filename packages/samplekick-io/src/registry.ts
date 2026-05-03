@@ -304,6 +304,7 @@ export class Registry implements FileSource, ConfigSource {
 
   async exportToDirectory(dirPath: string, options: ExportOptions): Promise<void> {
     const promises: Array<Promise<void>> = [];
+    const seenDestPaths = new Set<string>();
     this.rootNode.eachLeafNode((node) => {
       if (node.isSkipped() === true) {
         options.onDebug?.(`skipped: ${node.getPath()}`);
@@ -318,6 +319,11 @@ export class Registry implements FileSource, ConfigSource {
         return;
       }
       const { path: destRelPath } = result;
+      if (seenDestPaths.has(destRelPath)) {
+        options.onSkip?.(node, `duplicate destination: ${destRelPath}`);
+        return;
+      }
+      seenDestPaths.add(destRelPath);
       const write = async (): Promise<void> => {
         options.onBeforeWrite?.(node, destRelPath);
         try {
