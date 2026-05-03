@@ -79,18 +79,18 @@ describe("Registry load", () => {
     expect(entries.map((e) => e.getPackageName())).toEqual([
       undefined,
       "jazz-pack",
-      "jazz-pack",
-      "jazz-pack",
-      "jazz-pack",
-      "jazz-pack",
+      undefined,
+      undefined,
+      undefined,
+      undefined,
     ]);
     expect(entries.map((e) => e.getSampleType())).toEqual([
       undefined,
       "Melodic Loops - Jazz",
-      "Melodic Loops - Jazz",
-      "Melodic Loops - Jazz",
-      "Melodic Loops - Jazz",
-      "Melodic Loops - Jazz",
+      undefined,
+      undefined,
+      undefined,
+      undefined,
     ]);
   });
 });
@@ -333,10 +333,10 @@ describe("Registry eachFileEntry enumeration", () => {
       "library", "jazz", "track01"
     ]);
     expect(entries.map((e) => e.getPackageName())).toEqual([
-      undefined, "jazz-pack", "jazz-pack"
+      undefined, "jazz-pack", undefined
     ]);
     expect(entries.map((e) => e.getSampleType())).toEqual([
-      undefined, "Melodic Loops - Jazz", "Melodic Loops - Jazz"
+      undefined, "Melodic Loops - Jazz", undefined
     ]);
   });
 });

@@ -84,14 +84,14 @@ describe("JSON I/O", () => {
     expect(result.map((e) => e.getPackageName())).toEqual([
       undefined,
       "jazz-pack",
-      "jazz-pack",
-      "jazz-pack",
+      undefined,
+      undefined,
     ]);
     expect(result.map((e) => e.getSampleType())).toEqual([
       undefined,
       undefined,
       "Melodic Loops - Bebop",
-      "Melodic Loops - Bebop",
+      undefined,
     ]);
     expect(result.map((e) => e.isSkipped())).toEqual([
       undefined,
@@ -107,7 +107,7 @@ describe("JSON I/O", () => {
     ]);
   });
 
-  it("reflects inherited tags on entries", () => {
+  it("only writes own tags per node", () => {
     const registry = createRegistry("library", [
       createFileEntry({ path: "jazz/bebop/track01" }),
       createFileEntry({ path: "jazz/swing/track01" }),
@@ -135,30 +135,14 @@ describe("JSON I/O", () => {
     expect(result.map((e) => e.getPackageName())).toEqual([
       undefined,
       "jazz-pack",
-      "jazz-pack",
-      "jazz-pack",
-      "jazz-pack",
-      "jazz-pack",
+      undefined,
+      undefined,
+      undefined,
+      undefined,
     ]);
     expect(result.map((e) => e.getSampleType())).toEqual([
       undefined,
       "Melodic Loops - Jazz",
-      "Melodic Loops - Jazz",
-      "Melodic Loops - Jazz",
-      "Melodic Loops - Jazz",
-      "Melodic Loops - Jazz",
-    ]);
-    expect(result.map((e) => e.isSkipped())).toEqual([
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-    ]);
-    expect(result.map((e) => e.isKeepStructure())).toEqual([
-      undefined,
-      undefined,
       undefined,
       undefined,
       undefined,

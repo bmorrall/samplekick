@@ -38,6 +38,15 @@ const buildRootNodeFromFileSource = (fileSource: FileSource): EntryNode => {
   return rootNode;
 };
 
+const toOwnConfigEntry = (node: EntryNode): ConfigEntry => ({
+  getPath: () => node.getPath(),
+  getName: () => node.getOwnName() ?? getPathName(node.getPath()),
+  getPackageName: () => node.getOwnPackageName(),
+  getSampleType: () => node.getOwnSampleType(),
+  isSkipped: () => node.getOwnSkipped(),
+  isKeepStructure: () => node.getOwnKeepStructure(),
+});
+
 const applyEntryConfig = (node: EntryNode, entry: ConfigEntry): void => {
   const name = entry.getName();
   const packageName = entry.getPackageName();
@@ -87,7 +96,9 @@ export class Registry implements FileSource, ConfigSource {
   }
 
   eachConfigEntry(fn: (entry: ConfigEntry) => void): void {
-    this.rootNode.eachDescendant(fn);
+    this.rootNode.eachDescendant((node) => {
+      fn(toOwnConfigEntry(node));
+    });
   }
 
   // Config methods
