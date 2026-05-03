@@ -21,6 +21,24 @@ describe("NormaliseSpacesTransformer", () => {
     expect(entry.setName).toHaveBeenCalledWith("foo bar.wav");
   });
 
+  it("collapses double underscores to a single underscore", () => {
+    const entry = createTransformEntry({ name: "foo__bar.wav" });
+    NormaliseSpacesTransformer(singleEntryTransformSource(entry));
+    expect(entry.setName).toHaveBeenCalledWith("foo_bar.wav");
+  });
+
+  it("collapses more than two consecutive underscores", () => {
+    const entry = createTransformEntry({ name: "foo___bar.wav" });
+    NormaliseSpacesTransformer(singleEntryTransformSource(entry));
+    expect(entry.setName).toHaveBeenCalledWith("foo_bar.wav");
+  });
+
+  it("leaves a single underscore unchanged", () => {
+    const entry = createTransformEntry({ name: "foo_bar.wav" });
+    NormaliseSpacesTransformer(singleEntryTransformSource(entry));
+    expect(entry.setName).toHaveBeenCalledWith("foo_bar.wav");
+  });
+
   it("normalises packageName when the entry has one", () => {
     const entry = createTransformEntry({ name: "kick.wav", packageName: "My  Pack" });
     NormaliseSpacesTransformer(singleEntryTransformSource(entry));

@@ -158,6 +158,8 @@ describe("Registry transforms", () => {
       createFileEntry({ path: "Drums- Bass/kick.wav" }),
       createFileEntry({ path: "Kicks -Snares/snare.wav" }),
       createFileEntry({ path: "Hi-Hats/hat.wav" }),
+      createFileEntry({ path: "Drums-_Bass/kick.wav" }),
+      createFileEntry({ path: "Kicks_-Snares/snare.wav" }),
     ]);
     registry.applyTransform(NormaliseHyphenTransformer);
     expect(registry.toString()).toBe(
@@ -167,8 +169,12 @@ describe("Registry transforms", () => {
         "│   └── kick.wav [?]",
         "├── Kicks - Snares [renamed]",
         "│   └── snare.wav [?]",
-        "└── Hi-Hats",
-        "    └── hat.wav [?]",
+        "├── Hi-Hats",
+        "│   └── hat.wav [?]",
+        "├── Drums_-_Bass [renamed]",
+        "│   └── kick.wav [?]",
+        "└── Kicks_-_Snares [renamed]",
+        "    └── snare.wav [?]",
         "",
       ].join("\n"),
     );

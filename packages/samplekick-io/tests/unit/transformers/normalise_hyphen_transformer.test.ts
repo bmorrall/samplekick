@@ -27,6 +27,24 @@ describe("NormaliseHyphenTransformer", () => {
     expect(entry.setName).toHaveBeenCalledWith("foo-bar.wav");
   });
 
+  it("adds underscore before a hyphen that is touching the word after it", () => {
+    const entry = createTransformEntry({ name: "foo_-bar.wav" });
+    NormaliseHyphenTransformer(singleEntryTransformSource(entry));
+    expect(entry.setName).toHaveBeenCalledWith("foo_-_bar.wav");
+  });
+
+  it("adds underscore after a hyphen that is touching the word before it", () => {
+    const entry = createTransformEntry({ name: "foo-_bar.wav" });
+    NormaliseHyphenTransformer(singleEntryTransformSource(entry));
+    expect(entry.setName).toHaveBeenCalledWith("foo_-_bar.wav");
+  });
+
+  it("leaves a correctly underscore-spaced hyphen unchanged", () => {
+    const entry = createTransformEntry({ name: "foo_-_bar.wav" });
+    NormaliseHyphenTransformer(singleEntryTransformSource(entry));
+    expect(entry.setName).toHaveBeenCalledWith("foo_-_bar.wav");
+  });
+
   it("normalises packageName when the entry has one", () => {
     const entry = createTransformEntry({ name: "kick.wav", packageName: "Drums- Bass" });
     NormaliseHyphenTransformer(singleEntryTransformSource(entry));
