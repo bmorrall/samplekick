@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { SP404Mk2NameTransformer, DefaultPackageNameTransformer, SkipJunkTransformer, KnownFileTypeTransformer, AbletonProjectTransformer, FLStudioProjectTransformer } from "../../src";
+import { SP404Mk2NameTransformer, DefaultPackageNameTransformer, SkipJunkTransformer, KnownFileTypeTransformer, AbletonProjectTransformer, FLStudioProjectTransformer, NormaliseHyphenTransformer } from "../../src";
 import { createRegistry, createFileEntry } from "../support";
 
 describe("Registry transforms", () => {
@@ -148,6 +148,27 @@ describe("Registry transforms", () => {
         "┃   └── kick.wav [?]",
         "└── samples",
         "    └── kick.wav [?]",
+        "",
+      ].join("\n"),
+    );
+  });
+
+  it("applies NormaliseHyphenTransformer to fix hyphens touching adjacent words", () => {
+    const registry = createRegistry("root", [
+      createFileEntry({ path: "Drums- Bass/kick.wav" }),
+      createFileEntry({ path: "Kicks -Snares/snare.wav" }),
+      createFileEntry({ path: "Hi-Hats/hat.wav" }),
+    ]);
+    registry.applyTransform(NormaliseHyphenTransformer);
+    expect(registry.toString()).toBe(
+      [
+        "root",
+        "├── Drums - Bass [renamed]",
+        "│   └── kick.wav [?]",
+        "├── Kicks - Snares [renamed]",
+        "│   └── snare.wav [?]",
+        "└── Hi-Hats",
+        "    └── hat.wav [?]",
         "",
       ].join("\n"),
     );

@@ -30,6 +30,10 @@ describe("index exports", () => {
     expect(api.KnownFileTypeTransformer).toBeDefined();
   });
 
+  test("exports NormaliseHyphenTransformer", () => {
+    expect(api.NormaliseHyphenTransformer).toBeDefined();
+  });
+
   test("exports SP404Mk2NameTransformer", () => {
     expect(api.SP404Mk2NameTransformer).toBeDefined();
   });
@@ -62,6 +66,7 @@ describe("index exports", () => {
       "DefaultPackageNameTransformer",
       "FLStudioProjectTransformer",
       "KnownFileTypeTransformer",
+      "NormaliseHyphenTransformer",
       "SkipJunkTransformer",
       "SP404Mk2NameTransformer",
       "SourcePathStrategy",
