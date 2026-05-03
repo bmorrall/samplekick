@@ -5,7 +5,7 @@ import { finished } from "node:stream/promises";
 import { basename, dirname, resolve } from "node:path";
 import { parseArgs } from "node:util";
 import { CsvConfigWriter, Registry, SkipJunkTransformer, SourcePathStrategy, ZipDataSource, SP404Mk2Preset } from "samplekick-io";
-import { loadConfig, openConfigInEditor } from "./config_loader";
+import { loadConfig, openConfigInEditor, getDataDir } from "./config_loader";
 import type { DevicePreset } from "samplekick-io";
 import { SimpleExportReporter, PrettyExportReporter } from "./exporters";
 import { AudioConverter, getFfmpegVersion } from "./post_processors";
@@ -153,8 +153,25 @@ if (devicePreset !== undefined) {
     registry.applyTransform(transform);
   }
 }
-const autoConfigPath = await loadConfig(registry, values.config === undefined ? undefined : resolve(values.config));
+const dataDir = process.env.SAMPLEKICK_DATA_DIR ?? getDataDir("samplekick", process.platform, process.env);
+const configPath = values.config === undefined ? undefined : resolve(values.config);
+const autoConfigPath = await loadConfig(registry, configPath, dataDir).catch((err: unknown) => {
+  console.error(err instanceof Error ? err.message : String(err));
+  process.exit(1);
+});
 registry.setPathStrategy(SourcePathStrategy);
+
+if (values.verbose === true) {
+  reporter.onInfo(`Reading: ${zipPath}`);
+  if (configPath !== undefined) {
+    reporter.onInfo(`Using config: ${configPath}`);
+  } else if (autoConfigPath !== undefined) {
+    reporter.onInfo(`Using auto-config: ${autoConfigPath}`);
+  }
+  if (ffmpegVersion !== undefined) {
+    reporter.onInfo(`Using ffmpeg: ${ffmpegVersion}`);
+  }
+}
 
 if (values.debug === true) {
   console.log(registry.toString(values.verbose === true));
@@ -172,12 +189,12 @@ if (autoConfigPath !== undefined) {
 }
 
 if (values.edit === true) {
-  const editPath = values.config === undefined ? autoConfigPath : resolve(values.config);
+  const editPath = configPath ?? autoConfigPath;
   if (editPath === undefined) {
     console.error("Error: no config file to edit. Run an export first to create an auto-config, or specify one with --config.");
     process.exit(1);
   }
-  openConfigInEditor(editPath);
+  openConfigInEditor(editPath, process.platform, process.env);
   process.exit(0);
 }
 
@@ -197,19 +214,6 @@ if (values.output === undefined) {
 }
 
 const destPath = resolve(values.output);
-
-if (values.verbose === true) {
-  reporter.onInfo(`Reading: ${zipPath}`);
-  if (values.config !== undefined) {
-    reporter.onInfo(`Using config: ${resolve(values.config)}`);
-  } else if (autoConfigPath !== undefined) {
-    reporter.onInfo(`Using auto-config: ${autoConfigPath}`);
-  }
-  if (ffmpegVersion !== undefined) {
-    reporter.onInfo(`Using ffmpeg: ${ffmpegVersion}`);
-  }
-}
-
 await registry.exportToDirectory(destPath, reporter).catch((err: unknown) => {
   console.error(`Error: could not export to ${destPath}: ${err instanceof Error ? err.message : String(err)}`);
   process.exit(1);

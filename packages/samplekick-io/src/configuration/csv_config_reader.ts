@@ -1,6 +1,7 @@
 import type { Readable } from "node:stream";
 import type { ConfigSource, ConfigEntry } from "../types";
 import { getPathName } from "../path_utils";
+import { CSV_HEADER } from "./csv_config_writer";
 
 const NOT_FOUND = -1;
 const ESCAPED_QUOTE_LEN = 2;
@@ -123,8 +124,11 @@ export class CsvConfigReader implements ConfigSource {
     }
 
     const lines = chunks.join("").split("\n");
-    // skip header
-    const dataLines = lines.slice(1);
+    // validate and skip header
+    const [header, ...dataLines] = lines;
+    if (header.trimEnd() !== CSV_HEADER) {
+      throw new Error(`Unrecognised CSV header: ${header}`);
+    }
 
     for (const line of dataLines) {
       if (line === "") continue;

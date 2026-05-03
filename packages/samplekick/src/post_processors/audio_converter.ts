@@ -35,7 +35,7 @@ export const getFfmpegVersion = async (runner: FfmpegVersionRunner = defaultVers
   await runner();
 
 const defaultErrorHandler: ConvertErrorHandler = (destPath, error) => {
-  process.stderr.write(`Warning: could not convert ${destPath}: ${error.message}\n`);
+  console.warn(`Warning: could not convert ${destPath}: ${error.message}`);
 };
 
 const AUDIO_EXTENSIONS = new Set([".wav", ".aiff", ".aif", ".mp3"]);

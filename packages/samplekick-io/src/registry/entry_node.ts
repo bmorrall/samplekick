@@ -212,7 +212,8 @@ export class EntryNode implements ConfigEntry, FileEntry, FileNode, TransformEnt
 
   eachDescendant(fn: (node: EntryNode) => void): void {
     fn(this);
-    for (const child of this.getChildNodes()) {
+    const sorted = [...this.nodeLookup.values()].sort((a, b) => a.getName().localeCompare(b.getName()));
+    for (const child of sorted) {
       child.eachDescendant(fn);
     }
   }

@@ -6,33 +6,32 @@ import { Readable } from "node:stream";
 import { CsvConfigReader } from "samplekick-io";
 import type { Registry } from "samplekick-io";
 
-export const getDataDir = (appName: string): string => {
+export const getDataDir = (appName: string, platform: NodeJS.Platform, env: NodeJS.ProcessEnv): string => {
   const home = homedir();
-  if (process.platform === "linux") {
-    return join(process.env.XDG_DATA_HOME ?? join(home, ".local", "share"), appName);
-  } else if (process.platform === "win32") {
-    return join(process.env.APPDATA ?? join(home, "AppData", "Roaming"), appName);
+  if (platform === "linux") {
+    return join(env.XDG_DATA_HOME ?? join(home, ".local", "share"), appName);
+  } else if (platform === "win32") {
+    return join(env.APPDATA ?? join(home, "AppData", "Roaming"), appName);
   } else {
     return join(home, "Library", "Application Support", appName);
   }
 };
 
-export const openConfigInEditor = (configPath: string): void => {
-  const editor = process.env.VISUAL ?? process.env.EDITOR;
+export const openConfigInEditor = (configPath: string, platform: NodeJS.Platform, env: NodeJS.ProcessEnv): void => {
+  const editor = env.VISUAL ?? env.EDITOR;
   if (editor !== undefined) {
     spawnSync(editor, [configPath], { stdio: "inherit" });
-  } else if (process.platform === "win32") {
+  } else if (platform === "win32") {
     spawnSync("cmd", ["/c", "start", "", configPath], { stdio: "inherit" });
-  } else if (process.platform === "linux") {
+  } else if (platform === "linux") {
     spawnSync("xdg-open", [configPath], { stdio: "inherit" });
   } else {
     spawnSync("open", ["-W", configPath], { stdio: "inherit" });
   }
 };
 
-export const loadConfig = async (registry: Registry, configPath: string | undefined): Promise<string | undefined> => {
+export const loadConfig = async (registry: Registry, configPath: string | undefined, dataDir: string): Promise<string | undefined> => {
   if (configPath === undefined) {
-    const dataDir = process.env.SAMPLEKICK_DATA_DIR ?? getDataDir("samplekick");
     const autoConfigPath = join(dataDir, `${registry.getFingerprint()}.csv`);
     const content = await readFile(autoConfigPath, "utf8").catch((err: unknown) => {
       if (typeof err === "object" && err !== null && "code" in err && err.code === "ENOENT") {
@@ -43,8 +42,8 @@ export const loadConfig = async (registry: Registry, configPath: string | undefi
     if (content !== undefined) {
       try {
         registry.loadConfig(new CsvConfigReader(Readable.from([content])));
-      } catch {
-        // silently ignore corrupt auto-config files
+      } catch (err) {
+        throw new Error(`Error: auto-config could not be loaded from ${autoConfigPath} — ${String(err)}`, { cause: err });
       }
     }
     return autoConfigPath;
@@ -52,8 +51,7 @@ export const loadConfig = async (registry: Registry, configPath: string | undefi
 
   const content = await readFile(configPath, "utf8").catch((err: unknown) => {
     if (typeof err === "object" && err !== null && "code" in err && err.code === "ENOENT") {
-      console.error(`Error: config file not found: ${configPath}`);
-      process.exit(1);
+      throw new Error(`Error: config file not found: ${configPath}`);
     }
     throw err;
   });

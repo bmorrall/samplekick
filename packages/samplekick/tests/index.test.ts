@@ -264,6 +264,8 @@ describe("samplekick CLI", () => {
 
       expect(result.stderr).toBe("");
       const expected = [
+        `Reading: ${zipPath}`,
+        `Using config: ${configPath}`,
         "test-pack.zip",
         "├── Drums [pkg:my-pack, type:Percussion]",
         "│   └── kick_01.wav [renamed, pkg:my-pack, type:Percussion, orig:kick.wav]",
@@ -298,12 +300,14 @@ describe("samplekick CLI", () => {
 
       expect(result.stderr).toBe("");
       const lines = result.stdout.trim().split("\n");
+      expect(lines).toHaveLength(7);
       expect(lines[0]).toBe("path,name,packageName,sampleType,skip,keepPath");
-      expect(lines).toHaveLength(5);
-      expect(result.stdout).toContain("Drums/kick.wav");
-      expect(result.stdout).toContain("Loops/bass.wav");
-      expect(result.stdout).toContain(".DS_Store");
-      expect(result.stdout).toContain("true");
+      expect(lines[1]).toBe(",test-pack.zip,,,,");
+      expect(lines[2]).toBe(".DS_Store,,,,true,");
+      expect(lines[3]).toBe("Drums,,,,,");
+      expect(lines[4]).toBe("Drums/kick.wav,,,,,");
+      expect(lines[5]).toBe("Loops,,,,,");
+      expect(lines[6]).toBe("Loops/bass.wav,,,,,");
 
       expect(result.status).toBe(0);
     } finally {
@@ -436,6 +440,40 @@ describe("samplekick CLI", () => {
       expect(await readFile(join(outputDir, "Drums/My Kick.wav"), "utf8")).toBe("kick-data");
       await expect(stat(join(outputDir, "Drums/kick.wav"))).rejects.toThrow();
       await expect(stat(join(outputDir, "Loops/bass.wav"))).rejects.toThrow();
+
+      expect(result.status).toBe(0);
+    } finally {
+      await rm(tmpDir, { recursive: true });
+    }
+  });
+
+  it("inherits skip from a folder row when exporting", async () => {
+    const zipped = zipSync({
+      "Drums/kick.wav": strToU8("kick-data"),
+      "Loops/bass.wav": strToU8("bass-data"),
+      "Loops/synth.wav": strToU8("synth-data"),
+    });
+
+    const config = [
+      "path,name,packageName,sampleType,skip,keepPath",
+      "Loops,,,,true,",
+    ].join("\n");
+
+    const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
+    const zipPath = join(tmpDir, "test-pack.zip");
+    const configPath = join(tmpDir, "config.csv");
+    const outputDir = join(tmpDir, "output");
+
+    try {
+      await writeFile(zipPath, zipped);
+      await writeFile(configPath, config);
+
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--config", configPath, "-o", outputDir], { encoding: "utf8" });
+
+      expect(result.stderr).toBe("");
+      expect(await readFile(join(outputDir, "Drums/kick.wav"), "utf8")).toBe("kick-data");
+      await expect(stat(join(outputDir, "Loops/bass.wav"))).rejects.toThrow();
+      await expect(stat(join(outputDir, "Loops/synth.wav"))).rejects.toThrow();
 
       expect(result.status).toBe(0);
     } finally {

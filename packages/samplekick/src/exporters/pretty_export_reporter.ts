@@ -19,7 +19,7 @@ export class PrettyExportReporter implements ExportReporter {
   private spinnerTimer: ReturnType<typeof setInterval> | undefined = undefined;
   private spinnerFrame = 0;
 
-  constructor(output: Writable = process.stdout, chalkInstance: ChalkInstance = chalk, quiet = false, packName = "") {
+  constructor(output: Writable, chalkInstance: ChalkInstance = chalk, quiet = false, packName = "") {
     this.output = output;
     this.chalk = chalkInstance;
     this.quiet = quiet;

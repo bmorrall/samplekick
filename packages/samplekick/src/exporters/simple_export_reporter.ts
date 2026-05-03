@@ -10,7 +10,7 @@ export class SimpleExportReporter implements ExportReporter {
   private errorCount = 0;
   private started = false;
 
-  constructor(output: Writable = process.stdout, quiet = false, packName = "") {
+  constructor(output: Writable, quiet = false, packName = "") {
     this.output = output;
     this.quiet = quiet;
     this.packName = packName;

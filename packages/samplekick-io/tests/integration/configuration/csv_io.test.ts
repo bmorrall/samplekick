@@ -40,7 +40,7 @@ describe("CSV I/O", () => {
     expect(stream.writableEnded).toBe(true);
   });
 
-  it("writes all leaf entries plus mutated folder nodes", () => {
+  it("writes all nodes sorted by path", () => {
     const registry = createRegistry("library", [
       createFileEntry({ path: "jazz/bebop/track01" }),
       createFileEntry({ path: "jazz/bebop/track02" }),
@@ -56,11 +56,14 @@ describe("CSV I/O", () => {
 
     const result = collectConfigEntries(reader);
 
-    expect(result).toHaveLength(4);
+    expect(result).toHaveLength(7);
     expect(result.map((e) => e.getPath())).toEqual([
       "",
+      "jazz",
+      "jazz/bebop",
       "jazz/bebop/track01",
       "jazz/bebop/track02",
+      "rock",
       "rock/track01",
     ]);
   });
@@ -88,14 +91,14 @@ describe("CSV I/O", () => {
     expect(result.map((e) => e.getPackageName())).toEqual([
       undefined,
       "jazz-pack",
-      "jazz-pack",
-      "jazz-pack",
+      undefined,
+      undefined,
     ]);
     expect(result.map((e) => e.getSampleType())).toEqual([
       undefined,
       undefined,
       "Melodic Loops - Bebop",
-      "Melodic Loops - Bebop",
+      undefined,
     ]);
     expect(result.map((e) => e.isSkipped())).toEqual([
       undefined,
@@ -111,7 +114,7 @@ describe("CSV I/O", () => {
     ]);
   });
 
-  it("reflects inherited tags on entries", () => {
+  it("only writes own tags per node", () => {
     const registry = createRegistry("library", [
       createFileEntry({ path: "jazz/bebop/track01" }),
       createFileEntry({ path: "jazz/swing/track01" }),
@@ -127,25 +130,60 @@ describe("CSV I/O", () => {
 
     const result = collectConfigEntries(reader);
 
-    expect(result).toHaveLength(4);
+    expect(result).toHaveLength(6);
     expect(result.map((e) => e.getPath())).toEqual([
       "",
       "jazz",
+      "jazz/bebop",
       "jazz/bebop/track01",
+      "jazz/swing",
       "jazz/swing/track01",
     ]);
     expect(result.map((e) => e.getPackageName())).toEqual([
       undefined,
       "jazz-pack",
-      "jazz-pack",
-      "jazz-pack",
+      undefined,
+      undefined,
+      undefined,
+      undefined,
     ]);
     expect(result.map((e) => e.getSampleType())).toEqual([
       undefined,
       "Melodic Loops - Jazz",
-      "Melodic Loops - Jazz",
-      "Melodic Loops - Jazz",
+      undefined,
+      undefined,
+      undefined,
+      undefined,
     ]);
+  });
+
+  it("round-trips inherited tags without duplicating them onto child rows", () => {
+    const registry = createRegistry("library", [
+      createFileEntry({ path: "jazz/loops/track01" }),
+      createFileEntry({ path: "jazz/loops/track02" }),
+    ]);
+    registry.setSampleType("jazz/loops", "Jazz Loops");
+
+    const output = collectOutput((stream) => {
+      const writer = new CsvConfigWriter(stream);
+      writer.writeConfig(registry);
+    });
+
+    const restored = createRegistry("library", [
+      createFileEntry({ path: "jazz/loops/track01" }),
+      createFileEntry({ path: "jazz/loops/track02" }),
+    ]);
+    restored.loadConfig(new CsvConfigReader(Readable.from([output])));
+
+    expect(restored.getEntry("jazz/loops/track01")?.getSampleType()).toBe("Jazz Loops");
+    expect(restored.getEntry("jazz/loops/track02")?.getSampleType()).toBe("Jazz Loops");
+
+    const output2 = collectOutput((stream) => {
+      const writer = new CsvConfigWriter(stream);
+      writer.writeConfig(restored);
+    });
+
+    expect(output2).toBe(output);
   });
 
   it("reflects isSkipped and isKeepStructure when set", () => {
