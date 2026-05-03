@@ -18,6 +18,18 @@ describe("index exports", () => {
     expect(api.DefaultPackageNameTransformer).toBeDefined();
   });
 
+  test("exports AbletonProjectTransformer", () => {
+    expect(api.AbletonProjectTransformer).toBeDefined();
+  });
+
+  test("exports FLStudioProjectTransformer", () => {
+    expect(api.FLStudioProjectTransformer).toBeDefined();
+  });
+
+  test("exports KnownFileTypeTransformer", () => {
+    expect(api.KnownFileTypeTransformer).toBeDefined();
+  });
+
   test("exports SP404Mk2NameTransformer", () => {
     expect(api.SP404Mk2NameTransformer).toBeDefined();
   });
@@ -46,7 +58,10 @@ describe("index exports", () => {
       "CsvConfigWriter",
       "CsvConfigReader",
       "ZipDataSource",
+      "AbletonProjectTransformer",
       "DefaultPackageNameTransformer",
+      "FLStudioProjectTransformer",
+      "KnownFileTypeTransformer",
       "SkipJunkTransformer",
       "SP404Mk2NameTransformer",
       "SourcePathStrategy",
