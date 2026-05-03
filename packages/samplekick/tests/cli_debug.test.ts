@@ -32,9 +32,9 @@ describe("--debug flag", () => {
       const expected = [
         "test-pack.zip",
         "├── Drums",
-        "│   └── kick_01.wav [renamed]",
+        "│   └── kick_01.wav [?] [renamed]",
         "└── Loops",
-        "    └── bass.wav",
+        "    └── bass.wav [?]",
       ].join("\n");
       expect(result.stdout.trim()).toBe(expected);
 
@@ -77,7 +77,7 @@ describe("--debug flag", () => {
         "├── Drums [pkg:my-pack, type:Percussion]",
         "│   └── kick_01.wav [renamed, pkg:my-pack, type:Percussion, orig:kick.wav]",
         "└── Loops",
-        "    └── bass.wav",
+        "    └── bass.wav [?]",
       ].join("\n");
       expect(result.stdout.trim()).toBe(expected);
 

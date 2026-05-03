@@ -285,7 +285,7 @@ describe("CSV I/O", () => {
       new CsvConfigReader(Readable.from([output])),
     );
     expect(restoredEmptyRegistry.toString()).toBe(
-      "Renamed Library [pkg:library-pack]\n",
+      "Renamed Library [?] [pkg:library-pack]\n",
     );
 
     const restoredRegistryWithFiles = createRegistry("library", [createFileEntry({ path: "jazz/track01" })]);

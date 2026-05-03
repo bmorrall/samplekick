@@ -396,14 +396,14 @@ describe("EntryNode", () => {
   describe("toString", () => {
     it("renders a leaf node", () => {
       const node = EntryNode.blankEntry("root");
-      expect(node.toString()).toBe("root\n");
+      expect(node.toString()).toBe("root [?]\n");
     });
 
     it("renders the renamed node name", () => {
       const node = EntryNode.blankEntry("node");
       node.setName("renamed-node");
 
-      expect(node.toString()).toBe("renamed-node [renamed]\n");
+      expect(node.toString()).toBe("renamed-node [?] [renamed]\n");
     });
 
     it("renders a node with children", () => {
@@ -413,8 +413,8 @@ describe("EntryNode", () => {
       expect(root.toString()).toBe(
         [
           "root",
-          "├── a",
-          "└── b",
+          "├── a [?]",
+          "└── b [?]",
           "",
         ].join("\n"),
       );

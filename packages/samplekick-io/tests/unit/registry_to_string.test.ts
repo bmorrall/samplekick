@@ -11,8 +11,8 @@ describe("Registry.toString", () => {
     expect(registry.toString()).toBe(
       [
         "library",
-        "├── jazz",
-        "└── rock",
+        "├── jazz [?]",
+        "└── rock [?]",
         "",
       ].join("\n"),
     );
@@ -30,10 +30,10 @@ describe("Registry.toString", () => {
         "library",
         "└── jazz",
         "    ├── bebop",
-        "    │   ├── track01",
-        "    │   └── track02",
+        "    │   ├── track01 [?]",
+        "    │   └── track02 [?]",
         "    └── swing",
-        "        └── track01",
+        "        └── track01 [?]",
         "",
       ].join("\n"),
     );

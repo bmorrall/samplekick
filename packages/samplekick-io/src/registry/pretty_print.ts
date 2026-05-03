@@ -51,21 +51,28 @@ function isNodeRenamed(node: EntryNode): boolean {
   return !node.isRootNode() && node.getOwnName() !== undefined && node.getOwnName() !== node.getEntryName();
 }
 
-function formatTags(node: EntryNode, showInherited: boolean, verbose: boolean): string {
-  const tags: string[] = [];
-  const packageName = showInherited
-    ? node.getPackageName()
-    : node.getOwnPackageName();
-  const sampleType = showInherited
-    ? node.getSampleType()
-    : node.getOwnSampleType();
+function isMissingRequired(node: EntryNode): boolean {
+  return (
+    node.getChildNodes().length === 0 &&
+    (node.getPackageName() === undefined || node.getSampleType() === undefined)
+  );
+}
+
+function buildTags(node: EntryNode, showInherited: boolean, verbose: boolean): string[] {
+  const packageName = showInherited ? node.getPackageName() : node.getOwnPackageName();
+  const sampleType = showInherited ? node.getSampleType() : node.getOwnSampleType();
   const isRenamed = isNodeRenamed(node);
+  const tags: string[] = [];
   if (isRenamed) tags.push("renamed");
   if (packageName !== undefined) tags.push(`pkg:${packageName}`);
   if (sampleType !== undefined) tags.push(`type:${sampleType}`);
   if (node.isSkipped() === true) tags.push("skipped");
-  if (verbose && isRenamed) {
-    tags.push(`orig:${node.getEntryName()}`);
-  }
-  return tags.length > 0 ? ` [${tags.join(", ")}]` : "";
+  if (verbose && isRenamed) tags.push(`orig:${node.getEntryName()}`);
+  return tags;
+}
+
+function formatTags(node: EntryNode, showInherited: boolean, verbose: boolean): string {
+  const tags = buildTags(node, showInherited, verbose);
+  const tagStr = tags.length > 0 ? ` [${tags.join(", ")}]` : "";
+  return isMissingRequired(node) ? ` [?]${tagStr}` : tagStr;
 }
