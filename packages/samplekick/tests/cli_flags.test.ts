@@ -21,7 +21,7 @@ describe("samplekick CLI flags", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync("node", [CLI_PATH, zipPath, "--allow-junk", "-o", outputDir], {
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--allow-junk", "--preserve-paths", "-o", outputDir], {
         encoding: "utf8",
         env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
       });
@@ -70,7 +70,7 @@ describe("samplekick CLI flags", () => {
         try {
           await writeFile(zipPath, zipped);
 
-          const result = spawnSync("node", [CLI_PATH, zipPath, "--device", deviceAlias, "-o", outputDir], {
+          const result = spawnSync("node", [CLI_PATH, zipPath, "--device", deviceAlias, "--preserve-paths", "-o", outputDir], {
             encoding: "utf8",
             env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
           });
@@ -107,7 +107,7 @@ describe("samplekick CLI flags", () => {
 
         const result = spawnSync(
           "node",
-          [CLI_PATH, zipPath, "--device", "sp404mk2", "--config", configPath, "-o", outputDir],
+          [CLI_PATH, zipPath, "--device", "sp404mk2", "--config", configPath, "--preserve-paths", "-o", outputDir],
           { encoding: "utf8" },
         );
 

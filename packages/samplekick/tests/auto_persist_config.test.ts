@@ -21,7 +21,7 @@ describe("auto-persist config", () => {
       await writeFile(zipPath, zipped);
 
       // First run: no config exists yet, auto-saves config to data dir
-      const result1 = spawnSync("node", [CLI_PATH, zipPath, "-o", outputDir1], {
+      const result1 = spawnSync("node", [CLI_PATH, zipPath, "--preserve-paths", "-o", outputDir1], {
         encoding: "utf8",
         env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
       });
@@ -39,7 +39,7 @@ describe("auto-persist config", () => {
       ].join("\n"));
 
       // Second run: loads the modified auto-saved config
-      const result2 = spawnSync("node", [CLI_PATH, zipPath, "-o", outputDir2], {
+      const result2 = spawnSync("node", [CLI_PATH, zipPath, "--preserve-paths", "-o", outputDir2], {
         encoding: "utf8",
         env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
       });
