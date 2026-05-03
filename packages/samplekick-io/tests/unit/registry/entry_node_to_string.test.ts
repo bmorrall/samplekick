@@ -16,7 +16,7 @@ describe("EntryNode.toString", () => {
   describe("tree structure", () => {
     it("prints a single node with no children", () => {
       const root = EntryNode.fromEntry(createFileEntry({ path: "", name: "root" }));
-      expect(root.toString()).toBe("root\n");
+      expect(root.toString()).toBe("root [?]\n");
     });
 
     it("prints a flat list of children", () => {
@@ -26,8 +26,8 @@ describe("EntryNode.toString", () => {
       expect(root.toString()).toBe(
         [
           "root",
-          "├── a",
-          "└── b",
+          "├── a [?]",
+          "└── b [?]",
           "",
         ].join("\n"),
       );
@@ -39,10 +39,10 @@ describe("EntryNode.toString", () => {
         [
           "root",
           "├── a",
-          "│   ├── b",
-          "│   └── c",
+          "│   ├── b [?]",
+          "│   └── c [?]",
           "└── d",
-          "    └── e",
+          "    └── e [?]",
           "",
         ].join("\n"),
       );
@@ -95,8 +95,8 @@ describe("EntryNode.toString", () => {
       expect(root.toString()).toBe(
         [
           "root",
-          "┣━━ a",
-          "└── b",
+          "┣━━ a [?]",
+          "└── b [?]",
           "",
         ].join("\n"),
       );
@@ -110,8 +110,8 @@ describe("EntryNode.toString", () => {
       expect(root.toString()).toBe(
         [
           "root",
-          "├── a",
-          "┗━━ b",
+          "├── a [?]",
+          "┗━━ b [?]",
           "",
         ].join("\n"),
       );
@@ -128,9 +128,9 @@ describe("EntryNode.toString", () => {
         [
           "root",
           "┣━━ a",
-          "┃   ├── b",
-          "┃   └── c",
-          "└── d",
+          "┃   ├── b [?]",
+          "┃   └── c [?]",
+          "└── d [?]",
           "",
         ].join("\n"),
       );
@@ -147,7 +147,7 @@ describe("EntryNode.toString", () => {
           "root",
           "┗━━ a",
           "    └── b",
-          "        └── c",
+          "        └── c [?]",
           "",
         ].join("\n"),
       );
@@ -162,7 +162,7 @@ describe("EntryNode.toString", () => {
       expect(root.toString()).toBe(
         [
           "root",
-          "└── a [skipped]",
+          "└── a [?] [skipped]",
           "",
         ].join("\n"),
       );
@@ -175,13 +175,13 @@ describe("EntryNode.toString", () => {
       expect(root.toString()).toBe(
         [
           "root",
-          "└── a",
+          "└── a [?]",
           "",
         ].join("\n"),
       );
     });
 
-    it("shows [skipped] on child nodes that inherit skipped from a parent", () => {
+    it("shows ... instead of children when a directory is skipped", () => {
       const root = EntryNode.fromEntry(createFileEntry({ path: "", name: "root" }));
       const parent = root.addNode(createFileEntry({ path: "a" }));
       parent.setSkipped(true);
@@ -190,7 +190,7 @@ describe("EntryNode.toString", () => {
         [
           "root",
           "└── a [skipped]",
-          "    └── b [skipped]",
+          "    └── ...",
           "",
         ].join("\n"),
       );
@@ -220,7 +220,7 @@ describe("EntryNode.toString", () => {
       expect(root.toString()).toBe(
         [
           "root",
-          "└── renamed.wav [renamed]",
+          "└── renamed.wav [?] [renamed]",
           "",
         ].join("\n"),
       );
@@ -233,7 +233,7 @@ describe("EntryNode.toString", () => {
       expect(root.toString()).toBe(
         [
           "root",
-          "└── original.wav",
+          "└── original.wav [?]",
           "",
         ].join("\n"),
       );
@@ -242,7 +242,7 @@ describe("EntryNode.toString", () => {
     it("does not show [renamed] tag on the root node", () => {
       const root = EntryNode.fromEntry(createFileEntry({ path: "", name: "original" }));
       root.setName("renamed");
-      expect(root.toString()).toBe("renamed\n");
+      expect(root.toString()).toBe("renamed [?]\n");
     });
   });
 
@@ -297,7 +297,75 @@ describe("EntryNode.toString", () => {
       expect(root.toString(true)).toBe(
         [
           "root",
-          "└── renamed.wav [renamed, orig:original.wav]",
+          "└── renamed.wav [?] [renamed, orig:original.wav]",
+          "",
+        ].join("\n"),
+      );
+    });
+  });
+
+  describe("[?] missing required tags", () => {
+    it("shows [?] on a leaf node with no packageName or sampleType", () => {
+      const root = EntryNode.fromEntry(createFileEntry({ path: "", name: "root" }));
+      root.addNode(createFileEntry({ path: "a.wav" }));
+      expect(root.toString()).toBe(
+        [
+          "root",
+          "└── a.wav [?]",
+          "",
+        ].join("\n"),
+      );
+    });
+
+    it("shows [?] on a leaf node missing sampleType but with packageName", () => {
+      const root = EntryNode.fromEntry(createFileEntry({ path: "", name: "root" }));
+      const child = root.addNode(createFileEntry({ path: "a.wav" }));
+      child.setPackageName("my-pack");
+      expect(root.toString()).toBe(
+        [
+          "root",
+          "└── a.wav [?] [pkg:my-pack]",
+          "",
+        ].join("\n"),
+      );
+    });
+
+    it("shows [?] on a leaf node missing packageName but with sampleType", () => {
+      const root = EntryNode.fromEntry(createFileEntry({ path: "", name: "root" }));
+      const child = root.addNode(createFileEntry({ path: "a.wav" }));
+      child.setSampleType("Hits");
+      expect(root.toString()).toBe(
+        [
+          "root",
+          "└── a.wav [?] [type:Hits]",
+          "",
+        ].join("\n"),
+      );
+    });
+
+    it("does not show [?] on a leaf node that inherits both packageName and sampleType", () => {
+      const root = EntryNode.fromEntry(createFileEntry({ path: "", name: "root" }));
+      root.setPackageName("my-pack");
+      root.setSampleType("Loops");
+      root.addNode(createFileEntry({ path: "a.wav" }));
+      expect(root.toString()).toBe(
+        [
+          "root [pkg:my-pack, type:Loops]",
+          "└── a.wav",
+          "",
+        ].join("\n"),
+      );
+    });
+
+    it("does not show [?] on a non-leaf node missing packageName and sampleType", () => {
+      const root = EntryNode.fromEntry(createFileEntry({ path: "", name: "root" }));
+      const dir = root.addNode(createFileEntry({ path: "dir" }));
+      dir.addNode(createFileEntry({ path: "dir/a.wav" }));
+      expect(root.toString()).toBe(
+        [
+          "root",
+          "└── dir",
+          "    └── a.wav [?]",
           "",
         ].join("\n"),
       );

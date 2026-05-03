@@ -8,18 +8,21 @@ describe("KnownFileTypeTransformer", () => {
       const entry = createTransformEntry({ name: "song.mid" });
       KnownFileTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("MIDI");
+      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
     });
 
     it("sets sampleType to MIDI when extension is uppercase", () => {
       const entry = createTransformEntry({ name: "song.MID" });
       KnownFileTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("MIDI");
+      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
     });
 
     it("does not overwrite an existing sampleType", () => {
       const entry = createTransformEntry({ name: "song.mid", sampleType: "custom" });
       KnownFileTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
+      expect(entry.setKeepStructure).not.toHaveBeenCalled();
     });
   });
 
@@ -28,6 +31,7 @@ describe("KnownFileTypeTransformer", () => {
       const entry = createTransformEntry({ name: "song", path: "midi/song.mid" });
       KnownFileTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("MIDI");
+      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
     });
   });
 
@@ -36,18 +40,21 @@ describe("KnownFileTypeTransformer", () => {
       const entry = createTransformEntry({ name: "patch.fxp" });
       KnownFileTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Serum Presets");
+      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
     });
 
     it("sets sampleType to Serum Presets when extension is uppercase", () => {
       const entry = createTransformEntry({ name: "patch.FXP" });
       KnownFileTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Serum Presets");
+      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
     });
 
     it("does not overwrite an existing sampleType", () => {
       const entry = createTransformEntry({ name: "patch.fxp", sampleType: "custom" });
       KnownFileTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
+      expect(entry.setKeepStructure).not.toHaveBeenCalled();
     });
   });
 
@@ -56,6 +63,7 @@ describe("KnownFileTypeTransformer", () => {
       const entry = createTransformEntry({ name: "kick.wav" });
       KnownFileTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
+      expect(entry.setKeepStructure).not.toHaveBeenCalled();
     });
 
     it("does not set sampleType for files whose name merely contains .mid", () => {

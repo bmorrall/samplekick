@@ -15,11 +15,11 @@ describe("Registry transforms", () => {
       [
         "MyProject.zip [pkg:MyProject]",
         "├── sub1",
-        "│   ├── file1.wav",
-        "│   └── file2.wav",
+        "│   ├── file1.wav [?]",
+        "│   └── file2.wav [?]",
         "├── sub2",
-        "│   └── file3.wav",
-        "└── file4.wav",
+        "│   └── file3.wav [?]",
+        "└── file4.wav [?]",
         "",
       ].join("\n"),
     );
@@ -38,10 +38,32 @@ describe("Registry transforms", () => {
     expect(registry.toString()).toBe(
       [
         "root",
-        "├── NameWithAccents.wav [renamed]",
-        "├── Invalid_Char_.mp3 [renamed]",
-        "├── ThisIsAVeryLongNameThatShouldBeTruncatedBecauseItIsWayTooLongToFitTheLimitOf.wav [renamed]",
-        "└── Valid_Name-OK!.aif",
+        "├── NameWithAccents.wav [?] [renamed]",
+        "├── Invalid_Char_.mp3 [?] [renamed]",
+        "├── ThisIsAVeryLongNameThatShouldBeTruncatedBecauseItIsWayTooLongToFitTheLimitOf.wav [?] [renamed]",
+        "└── Valid_Name-OK!.aif [?]",
+        "",
+      ].join("\n"),
+    );
+  });
+
+  it("does not rename entries inside a keepStructure folder when SP404Mk2NameTransformer is applied", () => {
+    const registry = createRegistry("root", [
+      createFileEntry({ path: "Mÿ Prøject/Mÿ Prøject.als" }),
+      createFileEntry({ path: "Mÿ Prøject/Sämples/kick.wav" }),
+      createFileEntry({ path: "Drums/snâre.wav" }),
+    ]);
+    registry.applyTransform(AbletonProjectTransformer);
+    registry.applyTransform(SP404Mk2NameTransformer);
+    expect(registry.toString()).toBe(
+      [
+        "root",
+        "┣━━ Mÿ Prøject [type:Ableton Projects]",
+        "┃   ├── Mÿ Prøject.als [?]",
+        "┃   └── Sämples",
+        "┃       └── kick.wav [?]",
+        "└── Drums",
+        "    └── snare.wav [?] [renamed]",
         "",
       ].join("\n"),
     );
@@ -59,11 +81,11 @@ describe("Registry transforms", () => {
       [
         "root",
         "├── __MACOSX [skipped]",
-        "│   └── file1.wav [skipped]",
-        "├── .DS_Store [skipped]",
+        "│   └── ...",
+        "├── .DS_Store [?] [skipped]",
         "└── sub1",
-        "    ├── file1.wav",
-        "    └── .hidden [skipped]",
+        "    ├── file1.wav [?]",
+        "    └── .hidden [?] [skipped]",
         "",
       ].join("\n"),
     );
@@ -80,11 +102,11 @@ describe("Registry transforms", () => {
       [
         "root",
         "├── beats",
-        "│   └── groove.mid [type:MIDI]",
+        "│   ┗━━ groove.mid [?] [type:MIDI]",
         "├── presets",
-        "│   └── bass.fxp [type:Serum Presets]",
+        "│   ┗━━ bass.fxp [?] [type:Serum Presets]",
         "└── samples",
-        "    └── kick.wav",
+        "    └── kick.wav [?]",
         "",
       ].join("\n"),
     );
@@ -101,11 +123,11 @@ describe("Registry transforms", () => {
       [
         "root",
         "┣━━ My Project [type:Ableton Projects]",
-        "┃   ├── My Project.als",
+        "┃   ├── My Project.als [?]",
         "┃   └── Samples",
-        "┃       └── kick.wav",
+        "┃       └── kick.wav [?]",
         "└── samples",
-        "    └── kick.wav",
+        "    └── kick.wav [?]",
         "",
       ].join("\n"),
     );
@@ -122,10 +144,10 @@ describe("Registry transforms", () => {
       [
         "root",
         "┣━━ My Beat [type:FL Studio Projects]",
-        "┃   ├── My Beat.flp",
-        "┃   └── kick.wav",
+        "┃   ├── My Beat.flp [?]",
+        "┃   └── kick.wav [?]",
         "└── samples",
-        "    └── kick.wav",
+        "    └── kick.wav [?]",
         "",
       ].join("\n"),
     );

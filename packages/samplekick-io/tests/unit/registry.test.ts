@@ -44,7 +44,7 @@ describe("Registry", () => {
 
       expect(registry.setName("library")).toBe(true);
 
-      expect(registry.toString()).toBe("library\n");
+      expect(registry.toString()).toBe("library [?]\n");
     });
 
     it("clears the renamed entry name when undefined is passed as the second argument", () => {

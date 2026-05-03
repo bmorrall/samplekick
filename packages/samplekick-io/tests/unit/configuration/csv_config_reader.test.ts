@@ -63,6 +63,15 @@ describe("CsvConfigReader", () => {
     expect(fn).not.toHaveBeenCalled();
   });
 
+  it("does not call the callback when the file is blank", () => {
+    for (const blank of ["", "   ", "\n", "\n\n"]) {
+      const reader = new CsvConfigReader(Readable.from([blank]));
+      const fn = vi.fn<(entry: ConfigEntry) => void>();
+      reader.eachConfigEntry(fn);
+      expect(fn).not.toHaveBeenCalled();
+    }
+  });
+
   it("accepts an entry that only contains a path", () => {
     const reader = new CsvConfigReader(
       Readable.from([

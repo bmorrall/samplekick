@@ -204,6 +204,51 @@ describe("CSV I/O", () => {
     expect(entry.isKeepStructure()).toBe(true);
   });
 
+  it("omits children of skipped directories from config output", () => {
+    const registry = createRegistry("library", [
+      createFileEntry({ path: "__MACOSX/file1.wav" }),
+      createFileEntry({ path: "jazz/track01" }),
+    ]);
+    registry.setSkipped("__MACOSX", true);
+
+    const output = collectOutput((stream) => {
+      const writer = new CsvConfigWriter(stream);
+      writer.writeConfig(registry);
+    });
+    const reader = new CsvConfigReader(Readable.from([output]));
+
+    const result = collectConfigEntries(reader);
+    const paths = result.map((e) => e.getPath());
+
+    expect(paths).toContain("__MACOSX");
+    expect(paths).not.toContain("__MACOSX/file1.wav");
+    expect(paths).toContain("jazz/track01");
+  });
+
+  it("omits children of keepStructure directories from config output", () => {
+    const registry = createRegistry("library", [
+      createFileEntry({ path: "My Project/My Project.als" }),
+      createFileEntry({ path: "My Project/samples/kick.wav" }),
+      createFileEntry({ path: "jazz/track01" }),
+    ]);
+    registry.setKeepStructure("My Project", true);
+
+    const output = collectOutput((stream) => {
+      const writer = new CsvConfigWriter(stream);
+      writer.writeConfig(registry);
+    });
+    const reader = new CsvConfigReader(Readable.from([output]));
+
+    const result = collectConfigEntries(reader);
+    const paths = result.map((e) => e.getPath());
+
+    expect(paths).toContain("My Project");
+    expect(paths).not.toContain("My Project/My Project.als");
+    expect(paths).not.toContain("My Project/samples/kick.wav");
+    expect(paths).not.toContain("My Project/samples");
+    expect(paths).toContain("jazz/track01");
+  });
+
   it("round-trips renamed entries through CSV", () => {
     const registry = createRegistry("library", [createFileEntry({ path: "jazz/bebop/track01" })]);
     registry.setName("jazz/bebop/track01", "Alt Track 01");
@@ -240,7 +285,7 @@ describe("CSV I/O", () => {
       new CsvConfigReader(Readable.from([output])),
     );
     expect(restoredEmptyRegistry.toString()).toBe(
-      "Renamed Library [pkg:library-pack]\n",
+      "Renamed Library [?] [pkg:library-pack]\n",
     );
 
     const restoredRegistryWithFiles = createRegistry("library", [createFileEntry({ path: "jazz/track01" })]);

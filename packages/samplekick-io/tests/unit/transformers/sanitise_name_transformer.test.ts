@@ -59,4 +59,13 @@ describe("createSanitiseNameTransformer", () => {
     expect(entry.setSkipped).not.toHaveBeenCalled();
     expect(entry.setKeepStructure).not.toHaveBeenCalled();
   });
+
+  it("does not sanitize any fields when keepStructure is true", () => {
+    const transform = createSanitiseNameTransformer(upperCase);
+    const entry = createTransformEntry({ name: "kick.wav", packageName: "pack", sampleType: "drums", keepStructure: true });
+    transform(singleEntryTransformSource(entry));
+    expect(entry.setName).not.toHaveBeenCalled();
+    expect(entry.setPackageName).not.toHaveBeenCalled();
+    expect(entry.setSampleType).not.toHaveBeenCalled();
+  });
 });
