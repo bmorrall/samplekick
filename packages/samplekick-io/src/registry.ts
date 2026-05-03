@@ -1,6 +1,5 @@
 import { join } from "node:path";
 import { EntryNode } from "./registry/entry_node";
-import { SimpleValidator } from "./simple_validator";
 import { prettyPrint } from "./registry/pretty_print";
 import { getPathName, splitPath } from "./path_utils";
 import { SourcePathStrategy } from "./path_strategies/source_path_strategy";
@@ -15,7 +14,6 @@ import type {
   Transform,
   TransformEntry,
   TransformSource,
-  ValidationResult,
   ExportOptions,
   PostProcessor,
 } from "./types";
@@ -77,12 +75,10 @@ export class Registry implements FileSource, ConfigSource {
   private readonly rootNode: EntryNode;
   private pathStrategy: PathStrategy = SourcePathStrategy;
   private readonly postProcessors: PostProcessor[] = [];
-  private readonly validator: SimpleValidator;
   private readonly fingerprint: string;
 
   constructor(fileSource: FileSource) {
     this.rootNode = buildRootNodeFromFileSource(fileSource);
-    this.validator = new SimpleValidator();
     this.fingerprint = fileSource.getFingerprint();
   }
 
@@ -328,27 +324,6 @@ export class Registry implements FileSource, ConfigSource {
       currentNode = nextNode;
     }
     return currentNode;
-  }
-
-  // Validation methods
-
-  validate(): ValidationResult {
-    return this.validator.validate({
-      eachConfigEntry: (fn) => { this.rootNode.eachLeafNode(fn); },
-    });
-  }
-
-  validateEntry(path: string): ValidationResult {
-    const node = this.findEntryNode(path);
-    if (node === undefined) {
-      return {
-        valid: true,
-        errors: [],
-      };
-    }
-    return this.validator.validate({
-      eachConfigEntry: (fn) => { node.eachLeafNode(fn); },
-    });
   }
 
   // Debugging methods

@@ -15,8 +15,6 @@ export { PathResult, SkipResult } from "./types";
 export type {
   PathStrategy,
   LeafNode,
-  ValidationResult,
-  ValidationError,
   FileSource,
   FileNode,
   ConfigEntry,

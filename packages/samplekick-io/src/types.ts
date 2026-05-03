@@ -59,22 +59,6 @@ export interface TransformSource {
 
 export type Transform = (source: TransformSource) => void;
 
-// Validation
-
-export interface Validator {
-  validate: (configSource: ConfigSource) => ValidationResult;
-}
-
-export interface ValidationError {
-  path: string;
-  message: string;
-}
-
-export interface ValidationResult {
-  valid: boolean;
-  errors: ValidationError[];
-}
-
 // Device Preset
 
 export interface DevicePreset {
