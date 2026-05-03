@@ -85,7 +85,7 @@ describe("--convert flag", () => {
     }
   });
 
-  it("reports a warning to stderr and exits with code 0 when ffmpeg fails to convert an audio file", async () => {
+  it("reports a conversion error to stdout and exits with code 0 when ffmpeg fails to convert an audio file", async () => {
     const zipped = zipSync({
       "Drums/kick.wav": strToU8("not-valid-audio"),
     });
@@ -102,8 +102,9 @@ describe("--convert flag", () => {
         env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
       });
 
-      expect(result.stderr).toContain("Warning: could not convert");
-      expect(result.stderr).toContain("kick.wav");
+      expect(result.stderr).toBe("");
+      expect(result.stdout).toContain("Could not convert");
+      expect(result.stdout).toContain("kick.wav");
 
       expect(result.status).toBe(0);
     } finally {

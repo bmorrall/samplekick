@@ -60,6 +60,16 @@ describe("PrettyExportReporter", () => {
     });
   });
 
+  describe("onError", () => {
+    it("writes '! {message}' in red with indent", () => {
+      const { reporter, getOutput } = createReporter();
+      reporter.onError("Could not convert kick.wav: ffmpeg error");
+      const raw = getOutput();
+      expect(raw).toContain("\x1B[31m");
+      expect(stripAnsi(raw)).toBe("  ! Could not convert kick.wav: ffmpeg error\n");
+    });
+  });
+
   describe("onBeforeWrite", () => {
     it("writes nothing on non-TTY", () => {
       const { reporter, getOutput } = createReporter();

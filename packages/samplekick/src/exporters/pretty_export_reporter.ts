@@ -76,6 +76,10 @@ export class PrettyExportReporter implements ExportReporter {
     this.logLine(this.chalk.gray(`\u00b7 ${message}`));
   }
 
+  onError(message: string): void {
+    this.logLine(this.chalk.red(`! ${message}`));
+  }
+
   onBeforeWrite(_entry: ConfigEntry, _destRelPath: string): void {
     this.startSpinner();
   }

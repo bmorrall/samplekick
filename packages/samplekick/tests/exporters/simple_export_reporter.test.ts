@@ -56,6 +56,14 @@ describe("SimpleExportReporter", () => {
     });
   });
 
+  describe("onError", () => {
+    it("writes 'error: ...' on its own line", () => {
+      const { reporter, getOutput } = createReporter();
+      reporter.onError("Could not convert kick.wav: ffmpeg error");
+      expect(getOutput()).toBe("error: Could not convert kick.wav: ffmpeg error\n");
+    });
+  });
+
   describe("onBeforeWrite", () => {
     it("writes 'Exporting\u2026' on the first call", () => {
       const { reporter, getOutput } = createReporter();

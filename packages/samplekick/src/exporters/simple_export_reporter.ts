@@ -24,6 +24,10 @@ export class SimpleExportReporter implements ExportReporter {
     this.output.write(`${message}\n`);
   }
 
+  onError(message: string): void {
+    this.output.write(`error: ${message}\n`);
+  }
+
   onBeforeWrite(_entry: ConfigEntry, _destRelPath: string): void {
     if (!this.started) {
       this.started = true;
