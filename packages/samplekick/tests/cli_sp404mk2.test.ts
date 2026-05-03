@@ -24,7 +24,7 @@ describe("SP-404MKII device preset", () => {
       await writeFile(zipPath, zipped);
 
       // First run: no config yet — all entries skipped, auto-config is saved
-      const firstRun = spawnSync("node", [CLI_PATH, zipPath, "--device", "sp404mk2", "--convert"], {
+      const firstRun = spawnSync("node", [CLI_PATH, zipPath, "--analyse", "--device", "sp404mk2"], {
         encoding: "utf8",
         env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
       });
@@ -91,7 +91,7 @@ describe("SP-404MKII device preset", () => {
       await writeFile(zipPath, zipped);
 
       // First run: entry is skipped, auto-config saved with sanitized paths (Drums/snare.wav)
-      const firstRun = spawnSync("node", [CLI_PATH, zipPath, "--device", "sp404mk2"], {
+      const firstRun = spawnSync("node", [CLI_PATH, zipPath, "-a", "-d", "sp404mk2"], {
         encoding: "utf8",
         env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
       });
@@ -117,7 +117,7 @@ describe("SP-404MKII device preset", () => {
       // Second run: exports to organised paths using sanitized names
       const result = spawnSync(
         "node",
-        [CLI_PATH, zipPath, "--device", "sp404mk2", "-o", outputDir],
+        [CLI_PATH, zipPath, "-d", "sp404mk2", "-o", outputDir],
         { encoding: "utf8", env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir } },
       );
 
