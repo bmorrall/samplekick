@@ -23,7 +23,6 @@ const execFileWithOutputAsync = promisify((
 
 export type FfmpegRunner = (args: string[]) => Promise<void>;
 export type FfmpegVersionRunner = () => Promise<string>;
-export type ConvertErrorHandler = (destPath: string, error: Error) => void;
 
 const defaultRunner: FfmpegRunner = async (args) => {
   await execFileAsync("ffmpeg", args);
@@ -35,31 +34,27 @@ const defaultVersionRunner: FfmpegVersionRunner = async () =>
 export const getFfmpegVersion = async (runner: FfmpegVersionRunner = defaultVersionRunner): Promise<string> =>
   await runner();
 
-const defaultErrorHandler: ConvertErrorHandler = (destPath, error) => {
-  console.warn(`Warning: could not convert ${destPath}: ${error.message}`);
-};
-
 const AUDIO_EXTENSIONS = new Set([".wav", ".aiff", ".aif", ".mp3"]);
 
 export interface AudioConverterOptions {
   targetBitDepth: number;
   targetSampleRate: number;
+  onError: (destPath: string, error: Error) => void;
   onDebug?: (message: string) => void;
 }
 
 export class AudioConverter implements PostProcessor {
   private readonly runFfmpeg: FfmpegRunner;
-  private readonly onError: ConvertErrorHandler;
+  private readonly onError: (destPath: string, error: Error) => void;
   private readonly onDebug: ((message: string) => void) | undefined;
   private readonly targetBitDepth: number;
   private readonly targetSampleRate: number;
 
   constructor(
     runFfmpeg: FfmpegRunner = defaultRunner,
-    onError: ConvertErrorHandler = defaultErrorHandler,
     options: AudioConverterOptions,
   ) {
-    const { onDebug, targetBitDepth, targetSampleRate } = options;
+    const { onDebug, onError, targetBitDepth, targetSampleRate } = options;
     this.runFfmpeg = runFfmpeg;
     this.onError = onError;
     this.onDebug = onDebug;
