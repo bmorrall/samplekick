@@ -18,6 +18,10 @@ describe("index exports", () => {
     expect(api.DefaultPackageNameTransformer).toBeDefined();
   });
 
+  test("exports KnownFileTypeTransformer", () => {
+    expect(api.KnownFileTypeTransformer).toBeDefined();
+  });
+
   test("exports SP404Mk2NameTransformer", () => {
     expect(api.SP404Mk2NameTransformer).toBeDefined();
   });
@@ -47,6 +51,7 @@ describe("index exports", () => {
       "CsvConfigReader",
       "ZipDataSource",
       "DefaultPackageNameTransformer",
+      "KnownFileTypeTransformer",
       "SkipJunkTransformer",
       "SP404Mk2NameTransformer",
       "SourcePathStrategy",
