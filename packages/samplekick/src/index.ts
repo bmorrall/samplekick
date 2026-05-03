@@ -4,7 +4,7 @@ import { mkdir } from "node:fs/promises";
 import { finished } from "node:stream/promises";
 import { basename, dirname, resolve } from "node:path";
 import { parseArgs } from "node:util";
-import { AbletonProjectTransformer, CsvConfigWriter, DefaultPackageNameTransformer, FLStudioProjectTransformer, KnownFileTypeTransformer, NormaliseHyphenTransformer, OrganisedPathStrategy, Registry, SkipJunkTransformer, SourcePathStrategy, ZipDataSource, SP404Mk2Preset, formatSampleRate, formatBitDepth } from "samplekick-io";
+import { AbletonProjectTransformer, CsvConfigWriter, DefaultPackageNameTransformer, FLStudioProjectTransformer, KnownFileTypeTransformer, NormaliseHyphenTransformer, NormaliseSpacesTransformer, OrganisedPathStrategy, Registry, SkipJunkTransformer, SourcePathStrategy, ZipDataSource, SP404Mk2Preset, formatSampleRate, formatBitDepth } from "samplekick-io";
 import { loadConfig, openConfigInEditor, getDataDir } from "./config_loader";
 import type { DevicePreset } from "samplekick-io";
 import { SimpleExportReporter, PrettyExportReporter } from "./exporters";
@@ -180,6 +180,7 @@ if (values.analyse === true) {
 
   // Name transforms: run after file transforms so locked entries are skipped
   registry.applyTransform(DefaultPackageNameTransformer);
+  registry.applyTransform(NormaliseSpacesTransformer);
   registry.applyTransform(NormaliseHyphenTransformer);
 }
 const dataDir = process.env.SAMPLEKICK_DATA_DIR ?? getDataDir("samplekick", process.platform, process.env);

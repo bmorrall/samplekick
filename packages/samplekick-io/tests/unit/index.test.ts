@@ -34,6 +34,10 @@ describe("index exports", () => {
     expect(api.NormaliseHyphenTransformer).toBeDefined();
   });
 
+  test("exports NormaliseSpacesTransformer", () => {
+    expect(api.NormaliseSpacesTransformer).toBeDefined();
+  });
+
   test("exports SP404Mk2NameTransformer", () => {
     expect(api.SP404Mk2NameTransformer).toBeDefined();
   });
@@ -67,6 +71,7 @@ describe("index exports", () => {
       "FLStudioProjectTransformer",
       "KnownFileTypeTransformer",
       "NormaliseHyphenTransformer",
+      "NormaliseSpacesTransformer",
       "SkipJunkTransformer",
       "SP404Mk2NameTransformer",
       "SourcePathStrategy",
