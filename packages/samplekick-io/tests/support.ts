@@ -7,6 +7,7 @@ import type {
   ConfigEntry,
   FileEntry,
   FileNode,
+  LeafNode,
   TransformEntry,
   TransformSource,
 } from "../src";
@@ -231,16 +232,20 @@ export const collectConfigEntries = (
   return entries;
 };
 
-export const createFileNodeHierarchy = (
+interface NodePart {
+  name: string;
+  packageName?: string;
+  sampleType?: string;
+  skipped?: boolean;
+  keepStructure?: boolean;
+}
+
+export function createFileNodeHierarchy(rootName: string, parts: []): FileNode;
+export function createFileNodeHierarchy(rootName: string, parts: [NodePart, ...NodePart[]]): LeafNode;
+export function createFileNodeHierarchy(
   rootName: string,
-  parts: Array<{
-    name: string;
-    packageName?: string;
-    sampleType?: string;
-    skipped?: boolean;
-    keepStructure?: boolean;
-  }>,
-): FileNode => {
+  parts: NodePart[],
+): FileNode {
   // Each node uses a mutable ref so its child can be assigned after the child is created
   const rootChildRef: { current: FileNode | undefined } = { current: undefined };
   const root: FileNode = {
@@ -263,7 +268,7 @@ export const createFileNodeHierarchy = (
     const path = currentPath;
     const currentParent = parent;
     const nodeChildRef: { current: FileNode | undefined } = { current: undefined };
-    const node: FileNode = {
+    const node: LeafNode = {
       getPath: () => path,
       getName: () => part.name,
       getPackageName: () => part.packageName,
@@ -280,7 +285,7 @@ export const createFileNodeHierarchy = (
     parent = node;
   }
   return leaf;
-};
+}
 
 // File Source
 

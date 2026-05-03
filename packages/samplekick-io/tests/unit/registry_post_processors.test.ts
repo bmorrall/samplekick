@@ -19,7 +19,7 @@ describe("Registry.addPostProcessor", () => {
     const registry = new Registry(createFileSource("root", [entry]));
     registry.addPostProcessor(processor);
 
-    await registry.exportToDirectory("/output");
+    await registry.exportToDirectory("/output", {});
 
     expect(processor.processFile).toHaveBeenCalledWith("/output/a.wav", expect.objectContaining({ getPath: expect.any(Function) as unknown }));
   });
@@ -33,7 +33,7 @@ describe("Registry.addPostProcessor", () => {
     registry.addPostProcessor(processorA);
     registry.addPostProcessor(processorB);
 
-    await registry.exportToDirectory("/output");
+    await registry.exportToDirectory("/output", {});
 
     expect(calls).toStrictEqual(["A", "B"]);
   });
@@ -46,7 +46,7 @@ describe("Registry.addPostProcessor", () => {
     const registry = new Registry(createFileSource("root", [entry]));
     registry.addPostProcessor(processor);
 
-    await registry.exportToDirectory("/output");
+    await registry.exportToDirectory("/output", {});
 
     expect(callOrder).toStrictEqual(["copy", "process"]);
   });
@@ -57,7 +57,7 @@ describe("Registry.addPostProcessor", () => {
     const registry = new Registry(createFileSource("root", [entry]));
     registry.addPostProcessor(processor);
 
-    await expect(registry.exportToDirectory("/output")).rejects.toThrow(AggregateError);
+    await expect(registry.exportToDirectory("/output", {})).rejects.toThrow(AggregateError);
   });
 
   it("does not call processFile for skipped entries", async () => {
@@ -67,7 +67,7 @@ describe("Registry.addPostProcessor", () => {
     registry.setSkipped("a.wav", true);
     registry.addPostProcessor(processor);
 
-    await registry.exportToDirectory("/output");
+    await registry.exportToDirectory("/output", {});
 
     expect(processor.processFile).not.toHaveBeenCalled();
   });

@@ -4,7 +4,9 @@ import { SimpleValidator } from "./simple_validator";
 import { prettyPrint } from "./registry/pretty_print";
 import { getPathName, splitPath } from "./path_utils";
 import { SourcePathStrategy } from "./path_strategies/source_path_strategy";
+import { SkipResult } from "./types";
 import type {
+  LeafNode,
   PathStrategy,
   ConfigSource,
   FileSource,
@@ -17,6 +19,9 @@ import type {
   ExportOptions,
   PostProcessor,
 } from "./types";
+
+const isLeafNode = (node: EntryNode): node is EntryNode & LeafNode =>
+  node.getParentNode() !== undefined;
 
 const buildRootNodeFromFileSource = (fileSource: FileSource): EntryNode => {
   const rootNode = EntryNode.buildRootNode(fileSource.getName());
@@ -265,22 +270,27 @@ export class Registry implements FileSource, ConfigSource {
    */
   destinationPathFor(path: string): string | undefined {
     const node = this.findEntryNode(path);
-    if (node === undefined || node.isSkipped() === true) {
+    if (node === undefined || node.isSkipped() === true || !isLeafNode(node)) {
       return undefined;
     }
-    return this.pathStrategy.destinationPathFor(node);
+    const result = this.pathStrategy.destinationPathFor(node);
+    return result instanceof SkipResult ? undefined : result.path;
   }
 
-  async exportToDirectory(dirPath: string, options?: ExportOptions): Promise<void> {
+  async exportToDirectory(dirPath: string, options: ExportOptions): Promise<void> {
     const promises: Array<Promise<void>> = [];
     this.rootNode.eachLeafNode((node) => {
-      const destRelPath = this.destinationPathFor(node.getPath());
-      if (destRelPath === undefined) {
-        /* v8 ignore next */
+      if (node.isSkipped() === true || !isLeafNode(node)) {
         return;
       }
+      const result = this.pathStrategy.destinationPathFor(node);
+      if (result instanceof SkipResult) {
+        options.onSkip?.(node, result.reason);
+        return;
+      }
+      const { path: destRelPath } = result;
       const write = async (): Promise<void> => {
-        options?.onBeforeWrite?.(node, destRelPath);
+        options.onBeforeWrite?.(node, destRelPath);
         try {
           const destPath = join(dirPath, destRelPath);
           await node.copyToPath(destPath);
@@ -288,10 +298,10 @@ export class Registry implements FileSource, ConfigSource {
             async (chain, processor) => { await chain; await processor.processFile(destPath, node); },
             Promise.resolve(),
           );
-          options?.onAfterWrite?.(node, destRelPath);
+          options.onAfterWrite?.(node, destRelPath);
         } catch (err) {
           const error = err instanceof Error ? err : new Error(String(err));
-          options?.onAfterWrite?.(node, destRelPath, error);
+          options.onAfterWrite?.(node, destRelPath, error);
           throw error;
         }
       };

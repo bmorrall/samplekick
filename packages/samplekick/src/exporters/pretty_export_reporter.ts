@@ -16,6 +16,7 @@ export class PrettyExportReporter implements ExportReporter {
   private readonly packName: string;
   private totalCount = 0;
   private errorCount = 0;
+  private skippedCount = 0;
   private spinnerTimer: ReturnType<typeof setInterval> | undefined = undefined;
   private spinnerFrame = 0;
 
@@ -102,15 +103,26 @@ export class PrettyExportReporter implements ExportReporter {
     }
   }
 
+  onSkip(_entry: ConfigEntry, reason: string): void {
+    this.skippedCount += 1;
+    if (!this.quiet) {
+      this.logLine(`${this.chalk.magenta("?")} ${this.chalk.gray(reason)}`);
+    }
+  }
+
   onComplete(dirPath: string): void {
     this.stopSpinner();
     const filePlural = this.totalCount === 1 ? "file" : "files";
     const totalPart = `${this.totalCount} ${filePlural}`;
+    const suffixParts: string[] = [];
     if (this.errorCount > 0) {
       const errPlural = this.errorCount === 1 ? "error" : "errors";
-      this.output.write(`Exported ${totalPart} to ${dirPath} ${this.chalk.red(`(${this.errorCount} ${errPlural})`)}\n`);
-    } else {
-      this.output.write(`Exported ${totalPart} to ${dirPath}\n`);
+      suffixParts.push(this.chalk.red(`${this.errorCount} ${errPlural}`));
     }
+    if (this.skippedCount > 0) {
+      suffixParts.push(this.chalk.dim(`${this.skippedCount} skipped`));
+    }
+    const suffix = suffixParts.length > 0 ? ` (${suffixParts.join(", ")})` : "";
+    this.output.write(`Exported ${totalPart} to ${dirPath}${suffix}\n`);
   }
 }

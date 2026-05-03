@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
-import { Registry, OrganisedPathStrategy } from "../../src";
-import type { FileEntry } from "../../src";
+import { Registry, OrganisedPathStrategy, SkipResult } from "../../src";
+import type { ConfigEntry, FileEntry } from "../../src";
 import { createFileEntry, createFileSource } from "../support";
 
 const createCopyableEntry = (path: string): FileEntry => ({
@@ -17,7 +17,7 @@ describe("Registry.exportToDirectory", () => {
     registry.setPackageName("my-pack");
     registry.setSampleType("loops");
 
-    await registry.exportToDirectory("/output");
+    await registry.exportToDirectory("/output", {});
 
     expect(entryA.copyToPath).toHaveBeenCalledWith(
       "/output/loops/my-pack/a.wav",
@@ -27,16 +27,52 @@ describe("Registry.exportToDirectory", () => {
     );
   });
 
-  it("skips entries where pathStrategy returns undefined", async () => {
+  it("skips entries where pathStrategy returns skip", async () => {
     const entry = createCopyableEntry("a.wav");
     const registry = new Registry(createFileSource("root", [entry]));
-    // no packageName or sampleType → OrganisedPathStrategy returns undefined, SourcePathStrategy returns the name
-    // use a custom strategy that always returns undefined
-    registry.setPathStrategy({ destinationPathFor: () => undefined });
+    // use a custom strategy that always returns skip
+    registry.setPathStrategy({ destinationPathFor: () => new SkipResult("test") });
 
-    await registry.exportToDirectory("/output");
+    await registry.exportToDirectory("/output", {});
 
     expect(entry.copyToPath).not.toHaveBeenCalled();
+  });
+
+  it("calls onSkip when pathStrategy returns skip", async () => {
+    const entry = createCopyableEntry("a.wav");
+    const registry = new Registry(createFileSource("root", [entry]));
+    registry.setPathStrategy({ destinationPathFor: () => new SkipResult("test") });
+    const onSkip = vi.fn<(entry: ConfigEntry, reason: string) => void>();
+
+    await registry.exportToDirectory("/output", { onSkip });
+
+    expect(onSkip).toHaveBeenCalledOnce();
+  });
+
+  it("uses skipReasonFor message in onSkip when available", async () => {
+    const entry = createCopyableEntry("a.wav");
+    const registry = new Registry(createFileSource("root", [entry]));
+    registry.setPathStrategy(OrganisedPathStrategy);
+    // no packageName or sampleType set → OrganisedPathStrategy returns undefined
+    const onSkip = vi.fn<(entry: ConfigEntry, reason: string) => void>();
+
+    await registry.exportToDirectory("/output", { onSkip });
+
+    expect(onSkip).toHaveBeenCalledWith(expect.anything(), "Missing sampleType and packageName");
+  });
+
+  it("does not call onSkip when isSkipped is true", async () => {
+    const entry = createCopyableEntry("a.wav");
+    const registry = new Registry(createFileSource("root", [entry]));
+    registry.setPathStrategy(OrganisedPathStrategy);
+    registry.setSkipped("a.wav", true);
+    registry.setPackageName("my-pack");
+    registry.setSampleType("loops");
+    const onSkip = vi.fn<(entry: ConfigEntry, reason: string) => void>();
+
+    await registry.exportToDirectory("/output", { onSkip });
+
+    expect(onSkip).not.toHaveBeenCalled();
   });
 
   it("skips entries where isSkipped is true", async () => {
@@ -47,7 +83,7 @@ describe("Registry.exportToDirectory", () => {
     registry.setPackageName("my-pack");
     registry.setSampleType("loops");
 
-    await registry.exportToDirectory("/output");
+    await registry.exportToDirectory("/output", {});
 
     expect(entry.copyToPath).not.toHaveBeenCalled();
   });
@@ -60,7 +96,7 @@ describe("Registry.exportToDirectory", () => {
     vi.mocked(entryB.copyToPath).mockRejectedValue(error);
     const registry = new Registry(createFileSource("root", [entryA, entryB, entryC]));
 
-    await expect(registry.exportToDirectory("/output")).rejects.toThrow(AggregateError);
+    await expect(registry.exportToDirectory("/output", {})).rejects.toThrow(AggregateError);
 
     expect(entryA.copyToPath).toHaveBeenCalled();
     expect(entryB.copyToPath).toHaveBeenCalled();
@@ -75,7 +111,7 @@ describe("Registry.exportToDirectory", () => {
     registry.setPackageName("my-pack");
     registry.setSampleType("drums");
 
-    await registry.exportToDirectory("/output");
+    await registry.exportToDirectory("/output", {});
 
     expect(entryA.copyToPath).toHaveBeenCalledWith(
       "/output/drums/my-pack/kick.wav",

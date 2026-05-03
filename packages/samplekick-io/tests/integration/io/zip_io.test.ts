@@ -47,7 +47,7 @@ describe("ZIP I/O", () => {
 
     const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-io-"));
     try {
-      await registry.exportToDirectory(tmpDir);
+      await registry.exportToDirectory(tmpDir, {});
       expect(
         await readFile(join(tmpDir, "loops/jazz-pack/track01.wav"), "utf8"),
       ).toBe("track01-data");

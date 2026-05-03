@@ -48,6 +48,10 @@ export class SimpleExportReporter implements ExportReporter {
     }
   }
 
+  onSkip(_entry: ConfigEntry, reason: string): void {
+    this.output.write(`skipped: ${reason}\n`);
+  }
+
   onComplete(dirPath: string): void {
     const filePlural = this.totalCount === 1 ? "file" : "files";
     const totalPart = `${this.totalCount} ${filePlural}`;

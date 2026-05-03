@@ -62,7 +62,7 @@ describe("SP404 Mk2 end-to-end sample processing", () => {
     // Export all non-skipped entries to a temp directory and verify all expected files exist
     const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "sp404-export-"));
     try {
-      await registry.exportToDirectory(tmpDir);
+      await registry.exportToDirectory(tmpDir, {});
 
       // List all files recursively in the export directory
       async function listFiles(dir: string): Promise<string[]> {

@@ -1,4 +1,5 @@
-import type { PathStrategy, FileNode } from "../types";
+import type { PathStrategy, LeafNode, FileNode } from "../types";
+import { PathResult, SkipResult } from "../types";
 
 // Walk up from the leaf, collecting names while keepStructure is true and node is not root
 const structuredPathFor = (leaf: FileNode): string => {
@@ -19,12 +20,18 @@ const structuredPathFor = (leaf: FileNode): string => {
 };
 
 export const OrganisedPathStrategy: PathStrategy = {
-  destinationPathFor: (node: FileNode): string | undefined => {
+  destinationPathFor: (node: LeafNode): PathResult | SkipResult => {
     const sampleType = node.getSampleType();
     const packageName = node.getPackageName();
-    if (sampleType === undefined || packageName === undefined) {
-      return undefined;
+    if (sampleType === undefined && packageName === undefined) {
+      return new SkipResult("Missing sampleType and packageName");
     }
-    return `${sampleType}/${packageName}/${structuredPathFor(node)}`;
+    if (sampleType === undefined) {
+      return new SkipResult("Missing sampleType");
+    }
+    if (packageName === undefined) {
+      return new SkipResult("Missing packageName");
+    }
+    return new PathResult(`${sampleType}/${packageName}/${structuredPathFor(node)}`);
   },
 };
