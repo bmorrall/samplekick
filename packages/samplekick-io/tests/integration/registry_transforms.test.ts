@@ -47,6 +47,28 @@ describe("Registry transforms", () => {
     );
   });
 
+  it("does not rename entries inside a keepStructure folder when SP404Mk2NameTransformer is applied", () => {
+    const registry = createRegistry("root", [
+      createFileEntry({ path: "Mÿ Prøject/Mÿ Prøject.als" }),
+      createFileEntry({ path: "Mÿ Prøject/Sämples/kick.wav" }),
+      createFileEntry({ path: "Drums/snâre.wav" }),
+    ]);
+    registry.applyTransform(AbletonProjectTransformer);
+    registry.applyTransform(SP404Mk2NameTransformer);
+    expect(registry.toString()).toBe(
+      [
+        "root",
+        "┣━━ Mÿ Prøject [type:Ableton Projects]",
+        "┃   ├── Mÿ Prøject.als",
+        "┃   └── Sämples",
+        "┃       └── kick.wav",
+        "└── Drums",
+        "    └── snare.wav [renamed]",
+        "",
+      ].join("\n"),
+    );
+  });
+
   it("applies SkipJunkTransformer to mark __MACOSX and hidden entries as skipped", () => {
     const registry = createRegistry("root", [
       createFileEntry({ path: "__MACOSX/file1.wav" }),

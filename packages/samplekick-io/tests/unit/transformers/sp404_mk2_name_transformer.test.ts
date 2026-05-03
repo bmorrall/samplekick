@@ -55,6 +55,14 @@ describe("SP404Mk2NameTransformer", () => {
     expect(entry.setKeepStructure).not.toHaveBeenCalled();
   });
 
+  it("does not modify any fields when keepStructure is true", () => {
+    const entry = createTransformEntry({ name: "Drüms", packageName: "Påck", sampleType: "Drüms", keepStructure: true });
+    SP404Mk2NameTransformer(singleEntryTransformSource(entry));
+    expect(entry.setName).not.toHaveBeenCalled();
+    expect(entry.setPackageName).not.toHaveBeenCalled();
+    expect(entry.setSampleType).not.toHaveBeenCalled();
+  });
+
   it("sanitizes packageName when the entry has one", () => {
     const entry = createTransformEntry({ name: "kick.wav", packageName: "SP404 Påck" });
     SP404Mk2NameTransformer(singleEntryTransformSource(entry));
