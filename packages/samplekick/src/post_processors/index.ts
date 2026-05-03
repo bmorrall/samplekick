@@ -1,2 +1,2 @@
-export { AudioConverter, getFfmpegVersion } from "./audio_converter";
-export type { FfmpegRunner, FfmpegVersionRunner } from "./audio_converter";
+export { AudioConverter } from "./audio_converter";
+export type { AudioConverterOptions } from "./audio_converter";

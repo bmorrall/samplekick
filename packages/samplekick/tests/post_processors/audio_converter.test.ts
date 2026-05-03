@@ -2,8 +2,9 @@ import { rename, rm, unlink } from "node:fs/promises";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ConfigEntry } from "samplekick-io";
 import { BIT_DEPTH_16, BIT_DEPTH_24, BIT_DEPTH_32, SAMPLE_RATE_44100, SAMPLE_RATE_48000, SAMPLE_RATE_96000 } from "samplekick-io";
-import { AudioConverter, getFfmpegVersion } from "../../src/post_processors/audio_converter";
-import type { AudioConverterOptions, FfmpegRunner } from "../../src/post_processors/audio_converter";
+import { AudioConverter } from "../../src/post_processors/audio_converter";
+import type { AudioConverterOptions } from "../../src/post_processors/audio_converter";
+import type { FfmpegRunner } from "../../src/adaptors/ffmpeg";
 
 vi.mock("node:fs/promises", () => ({
   rename: vi.fn().mockResolvedValue(undefined),
@@ -23,14 +24,13 @@ const createEntry = (path = "drums/kick.wav"): ConfigEntry => ({
 const buildConverter = (
   runFfmpeg: FfmpegRunner,
   overrides: Partial<AudioConverterOptions> = {},
-): AudioConverter => {
-  return new AudioConverter(runFfmpeg, {
+): AudioConverter =>
+  new AudioConverter(runFfmpeg, {
     targetBitDepth: BIT_DEPTH_16,
     targetSampleRate: SAMPLE_RATE_48000,
-    onError: vi.fn(),
+    onError: vi.fn<(destPath: string, error: Error) => void>(),
     ...overrides,
   });
-};
 
 describe("AudioConverter", () => {
   const mockRename = vi.mocked(rename);
@@ -230,23 +230,5 @@ describe("AudioConverter", () => {
         converter.processFile("/output/drums/kick.wav", createEntry()),
       ).resolves.toBeUndefined();
     });
-  });
-});
-
-describe("getFfmpegVersion", () => {
-  it("returns the first line from the version runner", async () => {
-    const runner = vi.fn().mockResolvedValue("ffmpeg version 7.1 Copyright (c) 2000-2024 the FFmpeg developers");
-
-    const result = await getFfmpegVersion(runner);
-
-    expect(result).toBe("ffmpeg version 7.1 Copyright (c) 2000-2024 the FFmpeg developers");
-    expect(runner).toHaveBeenCalledOnce();
-  });
-
-  it("propagates errors from the version runner", async () => {
-    const err = Object.assign(new Error("spawn ffmpeg ENOENT"), { code: "ENOENT" });
-    const runner = vi.fn().mockRejectedValue(err);
-
-    await expect(getFfmpegVersion(runner)).rejects.toThrow("spawn ffmpeg ENOENT");
   });
 });

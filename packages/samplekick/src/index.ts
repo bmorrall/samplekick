@@ -8,7 +8,8 @@ import { CsvConfigWriter, Registry, SkipJunkTransformer, SourcePathStrategy, Zip
 import { loadConfig, openConfigInEditor, getDataDir } from "./config_loader";
 import type { DevicePreset } from "samplekick-io";
 import { SimpleExportReporter, PrettyExportReporter } from "./exporters";
-import { AudioConverter, getFfmpegVersion } from "./post_processors";
+import { AudioConverter } from "./post_processors";
+import { createFfmpegRunner, getFfmpegVersion } from "./adaptors";
 import chalk from "chalk";
 import type { ExportReporter } from "./exporters";
 import packageJson from "../package.json" with { type: "json" };
@@ -156,7 +157,7 @@ if (values.convert === true) {
     throw err;
   });
   const debugLog = values.verbose === true ? reporter.onDebug.bind(reporter) : undefined;
-  registry.addPostProcessor(new AudioConverter(undefined, {
+  registry.addPostProcessor(new AudioConverter(createFfmpegRunner(), {
     onError: (destPath, error) => { reporter.onError(`Could not convert ${basename(destPath)}: ${error.message}`); },
     onDebug: debugLog,
     targetBitDepth: devicePreset.targetBitDepth,
