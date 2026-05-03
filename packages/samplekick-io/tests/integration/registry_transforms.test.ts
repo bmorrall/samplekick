@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { SP404Mk2NameTransformer, DefaultPackageNameTransformer, SkipJunkTransformer, KnownFileTypeTransformer, AbletonProjectTransformer, FLStudioProjectTransformer, NormaliseHyphenTransformer, NormaliseSpacesTransformer } from "../../src";
+import { SP404Mk2NameTransformer, DefaultPackageNameTransformer, SkipJunkTransformer, KnownFileTypeTransformer, AbletonProjectTransformer, FLStudioProjectTransformer, NormaliseBracketSpacingTransformer, NormaliseHyphenTransformer, NormaliseSpacesTransformer, TrimNameTransformer } from "../../src";
 import { createRegistry, createFileEntry } from "../support";
 
 describe("Registry transforms", () => {
@@ -187,6 +187,48 @@ describe("Registry transforms", () => {
         "│   └── kick.wav [?]",
         "└── Hi Hats",
         "    └── hat.wav [?]",
+        "",
+      ].join("\n"),
+    );
+  });
+
+  it("applies TrimNameTransformer to strip leading and trailing whitespace", () => {
+    const registry = createRegistry("root", [
+      createFileEntry({ path: " Kicks/kick.wav" }),
+      createFileEntry({ path: "Snares /snare.wav" }),
+      createFileEntry({ path: "hi-hats/hat.wav" }),
+    ]);
+    registry.applyTransform(TrimNameTransformer);
+    expect(registry.toString()).toBe(
+      [
+        "root",
+        "├── Kicks [renamed]",
+        "│   └── kick.wav [?]",
+        "├── Snares [renamed]",
+        "│   └── snare.wav [?]",
+        "└── hi-hats",
+        "    └── hat.wav [?]",
+        "",
+      ].join("\n"),
+    );
+  });
+
+  it("applies NormaliseBracketSpacingTransformer to fix spacing around all SP404 bracket types", () => {
+    const registry = createRegistry("root", [
+      createFileEntry({ path: "kick(hard)/sample.wav" }),
+      createFileEntry({ path: "snare[soft]/sample.wav" }),
+      createFileEntry({ path: "hi-hats{open}/sample.wav" }),
+    ]);
+    registry.applyTransform(NormaliseBracketSpacingTransformer);
+    expect(registry.toString()).toBe(
+      [
+        "root",
+        "├── kick (hard) [renamed]",
+        "│   └── sample.wav [?]",
+        "├── snare [soft] [renamed]",
+        "│   └── sample.wav [?]",
+        "└── hi-hats {open} [renamed]",
+        "    └── sample.wav [?]",
         "",
       ].join("\n"),
     );
