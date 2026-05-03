@@ -76,6 +76,8 @@ export interface ValidationResult {
 export interface DevicePreset {
   displayName: string;
   transforms: readonly Transform[];
+  targetBitDepth?: number;
+  targetSampleRate?: number;
 }
 
 // Export

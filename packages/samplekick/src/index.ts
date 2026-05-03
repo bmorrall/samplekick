@@ -4,7 +4,7 @@ import { mkdir } from "node:fs/promises";
 import { finished } from "node:stream/promises";
 import { basename, dirname, resolve } from "node:path";
 import { parseArgs } from "node:util";
-import { CsvConfigWriter, Registry, SkipJunkTransformer, SourcePathStrategy, ZipDataSource, SP404Mk2Preset } from "samplekick-io";
+import { CsvConfigWriter, Registry, SkipJunkTransformer, SourcePathStrategy, ZipDataSource, SP404Mk2Preset, formatSampleRate, formatBitDepth } from "samplekick-io";
 import { loadConfig, openConfigInEditor, getDataDir } from "./config_loader";
 import type { DevicePreset } from "samplekick-io";
 import { SimpleExportReporter, PrettyExportReporter } from "./exporters";
@@ -35,7 +35,10 @@ const buildHelpText = (): string => {
       .map(([key]) => key)
       .sort((a, b) => b.length - a.length)
       .join(", ");
-    deviceLines.push(`  ${aliases.padEnd(DEVICE_ALIAS_PAD_WIDTH)}${preset.displayName}`);
+    const conversionSuffix = preset.targetBitDepth !== undefined && preset.targetSampleRate !== undefined
+      ? ` (converts to ${formatBitDepth(preset.targetBitDepth)} ${formatSampleRate(preset.targetSampleRate)})`
+      : "";
+    deviceLines.push(`  ${aliases.padEnd(DEVICE_ALIAS_PAD_WIDTH)}${preset.displayName}${conversionSuffix}`);
   }
 
   return `\
@@ -52,7 +55,7 @@ Options:
   -c, --config <path>     Load a CSV config file to apply to the pack
   -w, --write <path>      Write the pack config as CSV to a file
   -d, --device <name>     Apply a device preset
-      --convert           Convert audio files to 16-bit 48 kHz WAV
+      --convert           Convert audio files to device format
       --allow-junk        Keep junk entries (e.g. __MACOSX, hidden files)
       --debug             Print pack string representation to stdout
                           without writing any files
@@ -104,6 +107,10 @@ if (positionals.length === 0) {
 
 const devicePreset =
   values.device === undefined ? undefined : DEVICE_PRESETS[values.device];
+if (values.convert === true && values.device === undefined) {
+  console.error("Error: --convert requires a device preset (use -d/--device)");
+  process.exit(1);
+}
 if (values.device !== undefined && devicePreset === undefined) {
   console.error(
     `Error: unknown device "${values.device}". Valid devices: ${Object.keys(DEVICE_PRESETS).join(", ")}`,
@@ -137,6 +144,10 @@ const reporter: ExportReporter = chalk.level > 0
 
 let ffmpegVersion: string | undefined = undefined;
 if (values.convert === true) {
+  if (devicePreset?.targetBitDepth === undefined || devicePreset.targetSampleRate === undefined) {
+    console.error(`Error: device "${values.device ?? ""}" does not support --convert (no conversion settings defined)`);
+    process.exit(1);
+  }
   ffmpegVersion = await getFfmpegVersion().catch((err: unknown) => {
     if (typeof err === "object" && err !== null && "code" in err && err.code === "ENOENT") {
       console.error("Error: ffmpeg not found. Please install ffmpeg to use --convert.");
@@ -145,7 +156,11 @@ if (values.convert === true) {
     throw err;
   });
   const debugLog = values.verbose === true ? reporter.onDebug.bind(reporter) : undefined;
-  registry.addPostProcessor(new AudioConverter(undefined, undefined, debugLog));
+  registry.addPostProcessor(new AudioConverter(undefined, (destPath, error) => { reporter.onError(`Could not convert ${basename(destPath)}: ${error.message}`); }, {
+    onDebug: debugLog,
+    targetBitDepth: devicePreset.targetBitDepth,
+    targetSampleRate: devicePreset.targetSampleRate,
+  }));
 }
 
 if (devicePreset !== undefined) {

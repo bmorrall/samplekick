@@ -39,7 +39,7 @@ describe("--convert flag", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync("node", [CLI_PATH, zipPath, "--convert", "-o", outputDir], {
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--convert", "-d", "sp404mk2", "-o", outputDir], {
         encoding: "utf8",
         env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
       });
@@ -71,7 +71,7 @@ describe("--convert flag", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync("node", [CLI_PATH, zipPath, "--convert", "-o", outputDir], {
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--convert", "-d", "sp404mk2", "-o", outputDir], {
         encoding: "utf8",
         env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
       });
@@ -85,7 +85,7 @@ describe("--convert flag", () => {
     }
   });
 
-  it("reports a warning to stderr and exits with code 0 when ffmpeg fails to convert an audio file", async () => {
+  it("reports a conversion error to stdout and exits with code 0 when ffmpeg fails to convert an audio file", async () => {
     const zipped = zipSync({
       "Drums/kick.wav": strToU8("not-valid-audio"),
     });
@@ -97,13 +97,14 @@ describe("--convert flag", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync("node", [CLI_PATH, zipPath, "--convert", "-o", outputDir], {
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--convert", "-d", "sp404mk2", "-o", outputDir], {
         encoding: "utf8",
         env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
       });
 
-      expect(result.stderr).toContain("Warning: could not convert");
-      expect(result.stderr).toContain("kick.wav");
+      expect(result.stderr).toBe("");
+      expect(result.stdout).toContain("Could not convert");
+      expect(result.stdout).toContain("kick.wav");
 
       expect(result.status).toBe(0);
     } finally {
@@ -123,7 +124,7 @@ describe("--convert flag", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync("node", [CLI_PATH, zipPath, "--convert", "--verbose", "-o", outputDir], {
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--convert", "-d", "sp404mk2", "--verbose", "-o", outputDir], {
         encoding: "utf8",
         env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
       });
@@ -147,7 +148,7 @@ describe("--convert flag", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync("node", [CLI_PATH, zipPath, "--convert", "-o", outputDir], {
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--convert", "-d", "sp404mk2", "-o", outputDir], {
         encoding: "utf8",
         env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
       });
@@ -170,7 +171,7 @@ describe("--convert flag", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync(process.execPath, [CLI_PATH, zipPath, "--convert", "-o", outputDir], {
+      const result = spawnSync(process.execPath, [CLI_PATH, zipPath, "--convert", "-d", "sp404mk2", "-o", outputDir], {
         encoding: "utf8",
         env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data"), PATH: tmpDir },
       });
@@ -194,7 +195,7 @@ describe("--convert flag", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync("node", [CLI_PATH, zipPath, "--convert", "--verbose", "-o", outputDir], {
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--convert", "-d", "sp404mk2", "--verbose", "-o", outputDir], {
         encoding: "utf8",
         env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
       });

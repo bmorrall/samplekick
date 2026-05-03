@@ -46,7 +46,7 @@ describe("samplekick CLI", () => {
           "  -c, --config <path>     Load a CSV config file to apply to the pack",
           "  -w, --write <path>      Write the pack config as CSV to a file",
           "  -d, --device <name>     Apply a device preset",
-          "      --convert           Convert audio files to 16-bit 48 kHz WAV",
+          "      --convert           Convert audio files to device format",
           "      --allow-junk        Keep junk entries (e.g. __MACOSX, hidden files)",
           "      --debug             Print pack string representation to stdout",
           "                          without writing any files",
@@ -57,7 +57,7 @@ describe("samplekick CLI", () => {
           "  -h, --help              Show this help message",
           "",
           "Devices:",
-          "  sp404mk2, sp404, 404    Roland SP-404MKII",
+          "  sp404mk2, sp404, 404    Roland SP-404MKII (converts to 16-bit 48 kHz)",
         ].join("\n"),
       );
 
