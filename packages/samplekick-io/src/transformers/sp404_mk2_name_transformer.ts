@@ -1,4 +1,5 @@
-import type { Transform } from "../types";
+import type { StringTransformer, Transform } from "../types";
+import { createSanitiseNameTransformer } from "./sanitise_name_transformer";
 
 const digitZeroCodePoint = 48;
 const digitNineCodePoint = 57;
@@ -70,7 +71,7 @@ const truncateSP404Mk2Name = (name: string): string => {
   return `${name.slice(0, basenameMaxLength)}${extension}`;
 };
 
-const sanitizeSP404Mk2Name = (name: string): string => {
+const sp404Mk2StringTransformer: StringTransformer = (name: string): string => {
   const normalizedName = normalizeAccents(name);
   const finalDotIndex = normalizedName.lastIndexOf(".");
   let sanitizedName = "";
@@ -86,8 +87,4 @@ const sanitizeSP404Mk2Name = (name: string): string => {
   return truncateSP404Mk2Name(sanitizedName);
 };
 
-export const SP404Mk2NameTransformer: Transform = (source) => {
-  source.eachTransformEntry((entry) => {
-    entry.setName(sanitizeSP404Mk2Name(entry.getName()));
-  });
-};
+export const SP404Mk2NameTransformer: Transform = createSanitiseNameTransformer(sp404Mk2StringTransformer);

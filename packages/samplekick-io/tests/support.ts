@@ -210,6 +210,9 @@ export const singleEntryTransformSource = (entry: TransformEntry): TransformSour
   eachTransformEntry: (fn: (e: TransformEntry) => void) => {
     fn(entry);
   },
+  eachTransformModification: (fn: (e: TransformEntry) => void) => {
+    fn(entry);
+  },
 });
 
 export const createConfigSource = (

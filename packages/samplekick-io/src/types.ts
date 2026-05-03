@@ -45,6 +45,8 @@ export interface LeafNode extends FileNode {
 
 // Transform
 
+export type StringTransformer = (value: string) => string;
+
 export interface TransformEntry extends FileNode {
   setName: (name: string | undefined) => void;
   setPackageName: (name: string | undefined) => void;
@@ -55,6 +57,7 @@ export interface TransformEntry extends FileNode {
 
 export interface TransformSource {
   eachTransformEntry: (fn: (entry: TransformEntry) => void) => void;
+  eachTransformModification: (fn: (entry: TransformEntry) => void) => void;
 }
 
 export type Transform = (source: TransformSource) => void;

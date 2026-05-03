@@ -142,6 +142,28 @@ export class Registry implements FileSource, ConfigSource {
       eachTransformEntry: (fn: (entry: TransformEntry) => void) => {
         this.rootNode.eachDescendant(fn);
       },
+      eachTransformModification: (fn: (entry: TransformEntry) => void) => {
+        this.rootNode.eachDescendant((node) => {
+          if (node.isKeepStructure() === true) return;
+          const facade: TransformEntry = {
+            getPath: () => node.getPath(),
+            getName: () => node.getName(),
+            getPackageName: () => node.getOwnPackageName(),
+            getSampleType: () => node.getOwnSampleType(),
+            isSkipped: () => node.getOwnSkipped(),
+            isKeepStructure: () => node.getOwnKeepStructure(),
+            isFile: () => node.isFile(),
+            getParentNode: () => node.getParentNode(),
+            getChildNodes: () => node.getChildNodes(),
+            setName: (name) => { node.setName(name); },
+            setPackageName: (name) => { node.setPackageName(name); },
+            setSampleType: (type) => { node.setSampleType(type); },
+            setSkipped: (skipped) => { node.setSkipped(skipped); },
+            setKeepStructure: (value) => { node.setKeepStructure(value); },
+          };
+          fn(facade);
+        });
+      },
     };
     transform(source);
   }

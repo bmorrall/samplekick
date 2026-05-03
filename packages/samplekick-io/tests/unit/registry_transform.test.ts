@@ -143,3 +143,115 @@ describe("Registry applyTransform", () => {
     expect(registry.getEntry("a/c")?.isSkipped()).toBeUndefined();
   });
 });
+
+const collectModifiedPaths =
+  (visitedPaths: string[]): Transform =>
+  (source) => {
+    source.eachTransformModification((entry) => {
+      visitedPaths.push(entry.getPath());
+    });
+  };
+
+const collectModifiedPackageNames =
+  (seen: Array<{ path: string; packageName: string | undefined }>): Transform =>
+  (source) => {
+    source.eachTransformModification((entry) => {
+      seen.push({ path: entry.getPath(), packageName: entry.getPackageName() });
+    });
+  };
+
+const collectModifiedSampleTypes =
+  (seen: Array<{ path: string; sampleType: string | undefined }>): Transform =>
+  (source) => {
+    source.eachTransformModification((entry) => {
+      seen.push({ path: entry.getPath(), sampleType: entry.getSampleType() });
+    });
+  };
+
+const setPackageNameAtPathViaModification =
+  (path: string, packageName: string): Transform =>
+  (source) => {
+    source.eachTransformModification((entry) => {
+      if (entry.getPath() === path) {
+        entry.setPackageName(packageName);
+      }
+    });
+  };
+
+describe("Registry applyTransform eachTransformModification", () => {
+  it("visits nodes that do not have keepStructure set", () => {
+    const registry = createRegistry("root", [
+      createFileEntry({ path: "a/b" }),
+    ]);
+
+    const visitedPaths: string[] = [];
+    registry.applyTransform(collectModifiedPaths(visitedPaths));
+
+    expect(visitedPaths).toEqual(["", "a", "a/b"]);
+  });
+
+  it("skips nodes where isKeepStructure is true", () => {
+    const registry = createRegistry("root", [
+      createFileEntry({ path: "Loops/bass.wav" }),
+      createFileEntry({ path: "Drums/kick.wav" }),
+    ]);
+    registry.setKeepStructure("Loops", true);
+
+    const visitedPaths: string[] = [];
+    registry.applyTransform(collectModifiedPaths(visitedPaths));
+
+    expect(visitedPaths).not.toContain("Loops");
+    expect(visitedPaths).toContain("Drums");
+    expect(visitedPaths).toContain("Drums/kick.wav");
+  });
+
+  it("skips children of a keepStructure node due to inheritance", () => {
+    const registry = createRegistry("root", [
+      createFileEntry({ path: "Loops/bass.wav" }),
+    ]);
+    registry.setKeepStructure("Loops", true);
+
+    const visitedPaths: string[] = [];
+    registry.applyTransform(collectModifiedPaths(visitedPaths));
+
+    expect(visitedPaths).not.toContain("Loops/bass.wav");
+  });
+
+  it("exposes only the node's own packageName, not an inherited parent value", () => {
+    const registry = createRegistry("root", [
+      createFileEntry({ path: "Drums/kick.wav" }),
+    ]);
+    registry.setPackageName("my-pack");
+
+    const seen: Array<{ path: string; packageName: string | undefined }> = [];
+    registry.applyTransform(collectModifiedPackageNames(seen));
+
+    expect(seen.find((e) => e.path === "")?.packageName).toBe("my-pack");
+    expect(seen.find((e) => e.path === "Drums")?.packageName).toBeUndefined();
+    expect(seen.find((e) => e.path === "Drums/kick.wav")?.packageName).toBeUndefined();
+  });
+
+  it("exposes only the node's own sampleType, not an inherited parent value", () => {
+    const registry = createRegistry("root", [
+      createFileEntry({ path: "Drums/kick.wav" }),
+    ]);
+    registry.setSampleType("Percussion");
+
+    const seen: Array<{ path: string; sampleType: string | undefined }> = [];
+    registry.applyTransform(collectModifiedSampleTypes(seen));
+
+    expect(seen.find((e) => e.path === "")?.sampleType).toBe("Percussion");
+    expect(seen.find((e) => e.path === "Drums")?.sampleType).toBeUndefined();
+    expect(seen.find((e) => e.path === "Drums/kick.wav")?.sampleType).toBeUndefined();
+  });
+
+  it("mutations made via the facade persist on the real node", () => {
+    const registry = createRegistry("root", [
+      createFileEntry({ path: "a/b" }),
+    ]);
+
+    registry.applyTransform(setPackageNameAtPathViaModification("a", "new-pack"));
+
+    expect(registry.getEntry("a")?.getPackageName()).toBe("new-pack");
+  });
+});
