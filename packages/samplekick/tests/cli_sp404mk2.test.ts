@@ -36,7 +36,7 @@ describe("SP-404MKII device preset", () => {
       const autoConfig = await readFile(join(dataDir, autoConfigFile), "utf8");
       expect(autoConfig).toBe([
         "path,name,packageName,sampleType,skip,keepPath",
-        ",test_pack.zip,test-pack,,,",
+        ",test_pack.zip,test_pack,,,",
         "Drums,,,,,",
         "Drums/kick.wav,,,,,",
         "Loops,,,,,",
@@ -83,7 +83,7 @@ describe("SP-404MKII device preset", () => {
     });
 
     const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
-    const zipPath = join(tmpDir, "test-pack.zip");
+    const zipPath = join(tmpDir, "t\u00ebst-pack.zip");
     const dataDir = join(tmpDir, "data");
     const outputDir = join(tmpDir, "output");
 
@@ -98,23 +98,25 @@ describe("SP-404MKII device preset", () => {
       expect(firstRun.stderr).toBe("");
       expect(firstRun.status).toBe(0);
 
-      // Auto-config preserves original paths and stores sanitized names in the name column
+      // Auto-config preserves original paths and stores sanitized names in the name column.
+      // SP404Mk2NameTransformer also sanitizes packageName set by DefaultPackageNameTransformer.
       const [autoConfigFile] = await readdir(dataDir);
       const autoConfig = await readFile(join(dataDir, autoConfigFile), "utf8");
       expect(autoConfig).toBe([
         "path,name,packageName,sampleType,skip,keepPath",
-        ",test_pack.zip,test-pack,,,",
+        ",test_pack.zip,test_pack,,,",
         "Dr\u00fcms,Drums,,,,",
         "Dr\u00fcms/sn\u00e2re.wav,snare.wav,,,,",
       ].join("\n"));
 
-      // Set packageName and sampleType on the folder node
+      // Carry the auto-detected packageName forward; only add sampleType
       await writeFile(join(dataDir, autoConfigFile), [
         "path,name,packageName,sampleType,skip,keepPath",
-        "Dr\u00fcms,,my-pack,Percussion,,",
+        ",test_pack.zip,test_pack,,,",
+        "Dr\u00fcms,,,Percussion,,",
       ].join("\n"));
 
-      // Second run: exports to organised paths using sanitized names
+      // Second run: exports to organised paths; packageName comes from the auto-config
       const result = spawnSync(
         "node",
         [CLI_PATH, zipPath, "-d", "sp404mk2", "-o", outputDir],
@@ -123,7 +125,7 @@ describe("SP-404MKII device preset", () => {
 
       expect(result.stderr).toBe("");
       expect(result.status).toBe(0);
-      expect(await readFile(join(outputDir, "Percussion/my-pack/snare.wav"), "utf8")).toBe("snare-data");
+      expect(await readFile(join(outputDir, "Percussion/test_pack/snare.wav"), "utf8")).toBe("snare-data");
     } finally {
       await rm(tmpDir, { recursive: true });
     }

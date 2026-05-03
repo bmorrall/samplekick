@@ -1,9 +1,5 @@
 import type { Transform } from '../types';
 
-/**
- * DefaultPackageNameTransformer
- * If the entry is the root (no parents), sets the name to the filename without extension.
- */
 export const DefaultPackageNameTransformer: Transform = (source) => {
   source.eachTransformEntry((entry) => {
     if (entry.getParentNode() !== undefined) return;

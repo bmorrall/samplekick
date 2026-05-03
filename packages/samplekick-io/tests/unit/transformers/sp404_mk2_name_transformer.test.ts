@@ -46,13 +46,25 @@ describe("SP404Mk2NameTransformer", () => {
     expect(entry.setName).toHaveBeenCalledWith("x".repeat(80));
   });
 
-  it("only calls setName and no other setters", () => {
+  it("only calls setName and no other setters when packageName and sampleType are absent", () => {
     const entry = createTransformEntry({ name: "parênt [parent]" });
     SP404Mk2NameTransformer(singleEntryTransformSource(entry));
     expect(entry.setPackageName).not.toHaveBeenCalled();
     expect(entry.setSampleType).not.toHaveBeenCalled();
     expect(entry.setSkipped).not.toHaveBeenCalled();
     expect(entry.setKeepStructure).not.toHaveBeenCalled();
+  });
+
+  it("sanitizes packageName when the entry has one", () => {
+    const entry = createTransformEntry({ name: "kick.wav", packageName: "SP404 Påck" });
+    SP404Mk2NameTransformer(singleEntryTransformSource(entry));
+    expect(entry.setPackageName).toHaveBeenCalledWith("SP404 Pack");
+  });
+
+  it("sanitizes sampleType when the entry has one", () => {
+    const entry = createTransformEntry({ name: "kick.wav", sampleType: "Drüms" });
+    SP404Mk2NameTransformer(singleEntryTransformSource(entry));
+    expect(entry.setSampleType).toHaveBeenCalledWith("Drums");
   });
 
   it("truncates to 80 characters when the extension is too long to preserve", () => {
