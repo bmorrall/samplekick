@@ -225,6 +225,30 @@ describe("CSV I/O", () => {
     expect(paths).toContain("jazz/track01");
   });
 
+  it("omits children of keepStructure directories from config output", () => {
+    const registry = createRegistry("library", [
+      createFileEntry({ path: "My Project/My Project.als" }),
+      createFileEntry({ path: "My Project/samples/kick.wav" }),
+      createFileEntry({ path: "jazz/track01" }),
+    ]);
+    registry.setKeepStructure("My Project", true);
+
+    const output = collectOutput((stream) => {
+      const writer = new CsvConfigWriter(stream);
+      writer.writeConfig(registry);
+    });
+    const reader = new CsvConfigReader(Readable.from([output]));
+
+    const result = collectConfigEntries(reader);
+    const paths = result.map((e) => e.getPath());
+
+    expect(paths).toContain("My Project");
+    expect(paths).not.toContain("My Project/My Project.als");
+    expect(paths).not.toContain("My Project/samples/kick.wav");
+    expect(paths).not.toContain("My Project/samples");
+    expect(paths).toContain("jazz/track01");
+  });
+
   it("round-trips renamed entries through CSV", () => {
     const registry = createRegistry("library", [createFileEntry({ path: "jazz/bebop/track01" })]);
     registry.setName("jazz/bebop/track01", "Alt Track 01");

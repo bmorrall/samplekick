@@ -98,7 +98,9 @@ export class Registry implements FileSource, ConfigSource {
 
   eachConfigEntry(fn: (entry: ConfigEntry) => void): void {
     this.rootNode.eachDescendant((node) => {
-      if (node.getParentNode()?.isSkipped() === true) return;
+      const parent = node.getParentNode();
+      if (parent?.isSkipped() === true) return;
+      if (parent?.isKeepStructure() === true) return;
       fn(toOwnConfigEntry(node));
     });
   }
