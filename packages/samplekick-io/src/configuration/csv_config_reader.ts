@@ -123,7 +123,10 @@ export class CsvConfigReader implements ConfigSource {
       chunk = readChunk();
     }
 
-    const lines = chunks.join("").split("\n");
+    const content = chunks.join("");
+    if (content.trim() === "") return;
+
+    const lines = content.split("\n");
     // validate and skip header
     const [header, ...dataLines] = lines;
     if (header.trimEnd() !== CSV_HEADER) {
