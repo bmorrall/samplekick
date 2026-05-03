@@ -77,7 +77,7 @@ describe("samplekick CLI flags", () => {
 
           expect(result.stderr).toBe("");
           expect(await readFile(join(outputDir, "Drums/snare.wav"), "utf8")).toBe("snare-data");
-          expect(await readFile(join(outputDir, "Loops/hi_hat.wav"), "utf8")).toBe("hihat-data");
+          expect(await readFile(join(outputDir, "Loops/hi-hat.wav"), "utf8")).toBe("hihat-data");
 
           expect(result.status).toBe(0);
         } finally {

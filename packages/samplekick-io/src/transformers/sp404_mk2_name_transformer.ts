@@ -12,6 +12,7 @@ const notFoundIndex = -1;
 
 const allowedPunctuation = new Set([
   " ",
+  "-",
   "_",
   "!",
   "&",
