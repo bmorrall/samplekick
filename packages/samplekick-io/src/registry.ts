@@ -276,7 +276,11 @@ export class Registry implements FileSource, ConfigSource {
   async exportToDirectory(dirPath: string, options: ExportOptions): Promise<void> {
     const promises: Array<Promise<void>> = [];
     this.rootNode.eachLeafNode((node) => {
-      if (node.isSkipped() === true || !isLeafNode(node)) {
+      if (node.isSkipped() === true) {
+        options.onDebug?.(`skipped: ${node.getPath()}`);
+        return;
+      }
+      if (!isLeafNode(node)) {
         return;
       }
       const result = this.pathStrategy.destinationPathFor(node);

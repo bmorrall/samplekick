@@ -406,6 +406,35 @@ describe("samplekick CLI", () => {
       expect(await readFile(join(outputDir, "Drums/snare.wav"), "utf8")).toBe("snare-data");
       expect(await readFile(join(outputDir, "Loops/bass.wav"), "utf8")).toBe("bass-data");
       await expect(stat(join(outputDir, "__MACOSX/Drums/._kick.wav"))).rejects.toThrow();
+      expect(result.stdout).not.toContain("skipped:");
+
+      expect(result.status).toBe(0);
+    } finally {
+      await rm(tmpDir, { recursive: true });
+    }
+  });
+
+  it("logs skipped junk entries when --verbose is passed", async () => {
+    const zipped = zipSync({
+      "Drums/kick.wav": strToU8("kick-data"),
+      "__MACOSX/Drums/._kick.wav": strToU8("junk"),
+    });
+
+    const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
+    const zipPath = join(tmpDir, "test-pack.zip");
+    const outputDir = join(tmpDir, "output");
+
+    try {
+      await writeFile(zipPath, zipped);
+
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--verbose", "-o", outputDir], {
+        encoding: "utf8",
+        env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
+      });
+
+      expect(result.stderr).toBe("");
+      expect(result.stdout).toContain("skipped: __MACOSX/Drums/._kick.wav");
+      await expect(stat(join(outputDir, "__MACOSX/Drums/._kick.wav"))).rejects.toThrow();
 
       expect(result.status).toBe(0);
     } finally {

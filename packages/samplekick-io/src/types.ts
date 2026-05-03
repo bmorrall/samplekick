@@ -75,6 +75,7 @@ export interface PostProcessor {
 }
 
 export interface ExportOptions {
+  onDebug?: (message: string) => void;
   onBeforeWrite?: (entry: ConfigEntry, destRelPath: string) => void;
   onAfterWrite?: (entry: ConfigEntry, destRelPath: string, error?: Error) => void;
   onSkip?: (entry: ConfigEntry, reason: string) => void;

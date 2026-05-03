@@ -143,6 +143,9 @@ const reporter: ExportReporter = chalk.level > 0
   ? new PrettyExportReporter(process.stdout, chalk, values.quiet === true, basename(zipPath))
   : new SimpleExportReporter(process.stdout, values.quiet === true, basename(zipPath));
 
+// Debug messages (e.g. skipped entries) are suppressed unless --verbose is passed
+const debugLog = values.verbose === true ? reporter.onDebug.bind(reporter) : undefined;
+
 let ffmpegVersion: string | undefined = undefined;
 if (values.convert === true) {
   if (devicePreset?.targetBitDepth === undefined || devicePreset.targetSampleRate === undefined) {
@@ -156,7 +159,6 @@ if (values.convert === true) {
     }
     throw err;
   });
-  const debugLog = values.verbose === true ? reporter.onDebug.bind(reporter) : undefined;
   registry.addPostProcessor(new AudioConverter(createFfmpegRunner(), {
     onError: (destPath, error) => { reporter.onError(`Could not convert ${basename(destPath)}: ${error.message}`); },
     onDebug: debugLog,
@@ -231,7 +233,12 @@ if (values.output === undefined) {
 }
 
 const destPath = resolve(values.output);
-await registry.exportToDirectory(destPath, reporter).catch((err: unknown) => {
+await registry.exportToDirectory(destPath, {
+  onDebug: debugLog,
+  onBeforeWrite: (e, p) => { reporter.onBeforeWrite?.(e, p); },
+  onAfterWrite: (e, p, err) => { reporter.onAfterWrite?.(e, p, err); },
+  onSkip: (e, r) => { reporter.onSkip(e, r); },
+}).catch((err: unknown) => {
   console.error(`Error: could not export to ${destPath}: ${err instanceof Error ? err.message : String(err)}`);
   process.exit(1);
 });
