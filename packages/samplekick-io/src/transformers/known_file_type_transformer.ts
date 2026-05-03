@@ -17,8 +17,10 @@ export const KnownFileTypeTransformer: Transform = (source) => {
 
     if (name.endsWith('.mid') || path.endsWith('.mid')) {
       entry.setSampleType('MIDI');
+      entry.setKeepStructure(true);
     } else if (name.endsWith('.fxp') || path.endsWith('.fxp')) {
       entry.setSampleType('Serum Presets');
+      entry.setKeepStructure(true);
     }
   });
 };

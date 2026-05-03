@@ -102,9 +102,9 @@ describe("Registry transforms", () => {
       [
         "root",
         "├── beats",
-        "│   └── groove.mid [type:MIDI]",
+        "│   ┗━━ groove.mid [type:MIDI]",
         "├── presets",
-        "│   └── bass.fxp [type:Serum Presets]",
+        "│   ┗━━ bass.fxp [type:Serum Presets]",
         "└── samples",
         "    └── kick.wav",
         "",
