@@ -8,24 +8,44 @@ import type { ExportReporter } from "./export_reporter";
 const SPINNER_FRAMES = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];
 const SPINNER_INTERVAL_MS = 80;
 
+export interface PrettyExportReporterOptions {
+  quiet?: boolean;
+  packName?: string;
+  organised?: boolean;
+}
+
 export class PrettyExportReporter implements ExportReporter {
   private readonly output: Writable;
   private readonly chalk: ChalkInstance;
   private readonly quiet: boolean;
   private readonly isTTY: boolean;
   private readonly packName: string;
+  private readonly organised: boolean;
   private totalCount = 0;
   private errorCount = 0;
   private skippedCount = 0;
   private spinnerTimer: ReturnType<typeof setInterval> | undefined = undefined;
   private spinnerFrame = 0;
 
-  constructor(output: Writable, chalkInstance: ChalkInstance = chalk, quiet = false, packName = "") {
+  constructor(output: Writable, chalkInstance: ChalkInstance = chalk, options: PrettyExportReporterOptions = {}) {
     this.output = output;
     this.chalk = chalkInstance;
-    this.quiet = quiet;
+    this.quiet = options.quiet ?? false;
     this.isTTY = "isTTY" in output && (output as { isTTY: unknown }).isTTY === true;
-    this.packName = packName;
+    this.packName = options.packName ?? "";
+    this.organised = options.organised ?? false;
+  }
+
+  private formatDir(dir: string): string {
+    if (!this.organised) {
+      return this.chalk.gray(dir);
+    }
+    const segments = dir.split("/");
+    return segments.map((seg, i) => {
+      if (i === 0) return this.chalk.yellowBright(seg);
+      if (i === 1) return this.chalk.yellow(seg);
+      return this.chalk.gray(seg);
+    }).join(this.chalk.gray("/"));
   }
 
   private drawSpinner(): void {
@@ -94,7 +114,7 @@ export class PrettyExportReporter implements ExportReporter {
         }
       } else {
         const dir = dirname(destRelPath);
-        const dirSuffix = dir === "." ? "" : `  ${this.chalk.gray(`${dir}/`)}`;
+        const dirSuffix = dir === "." ? "" : `  ${this.formatDir(dir)}${this.chalk.gray("/")}`;
         this.logLine(`${this.chalk.green("✓")} ${basename(destRelPath)}${dirSuffix}`);
       }
     } else {

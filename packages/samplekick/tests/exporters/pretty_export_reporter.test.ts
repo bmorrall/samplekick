@@ -34,7 +34,7 @@ const createTTYReporter = (): { reporter: PrettyExportReporter; getOutput: () =>
   Object.assign(stream, { isTTY: true });
   const chunks: string[] = [];
   stream.on("data", (chunk: Buffer) => { chunks.push(chunk.toString()); });
-  const reporter = new PrettyExportReporter(stream, chalk1, false, "my-pack.zip");
+  const reporter = new PrettyExportReporter(stream, chalk1, { packName: "my-pack.zip" });
   const getOutput = (): string => chunks.join("");
   return { reporter, getOutput };
 };
@@ -169,7 +169,7 @@ describe("PrettyExportReporter", () => {
       const stream = new PassThrough();
       const chunks: string[] = [];
       stream.on("data", (chunk: Buffer) => { chunks.push(chunk.toString()); });
-      const reporter = new PrettyExportReporter(stream, chalk1, true);
+      const reporter = new PrettyExportReporter(stream, chalk1, { quiet: true });
       const getOutput = (): string => chunks.join("");
       return { reporter, getOutput };
     };
@@ -203,6 +203,43 @@ describe("PrettyExportReporter", () => {
       reporter.onAfterWrite(createEntry("kick.wav"), "kick.wav");
       reporter.onComplete("/output/dir");
       expect(stripAnsi(getOutput())).toBe("Exported 1 file to /output/dir\n");
+    });
+  });
+
+  describe("organised path colouring", () => {
+    const createOrganisedReporter = (): { reporter: PrettyExportReporter; getOutput: () => string } => {
+      const stream = new PassThrough();
+      const chunks: string[] = [];
+      stream.on("data", (chunk: Buffer) => { chunks.push(chunk.toString()); });
+      const reporter = new PrettyExportReporter(stream, chalk1, { organised: true });
+      const getOutput = (): string => chunks.join("");
+      return { reporter, getOutput };
+    };
+
+    it("colours sampleType (folder 1) with greenBright and packageName (folder 2) with cyan", () => {
+      const { reporter, getOutput } = createOrganisedReporter();
+      reporter.onAfterWrite(createEntry("kick.wav"), "loops/my-pack/kick.wav");
+      const raw = getOutput();
+      expect(stripAnsi(raw)).toBe("  ✓ kick.wav  loops/my-pack/\n");
+      expect(raw).toContain("\x1B[93m"); // yellowBright — sampleType
+      expect(raw).toContain("\x1B[33m"); // yellow — packageName
+    });
+
+    it("colours extra subfolder segments gray", () => {
+      const { reporter, getOutput } = createOrganisedReporter();
+      reporter.onAfterWrite(createEntry("kick.wav"), "loops/my-pack/sub/kick.wav");
+      const raw = getOutput();
+      expect(stripAnsi(raw)).toBe("  ✓ kick.wav  loops/my-pack/sub/\n");
+      expect(raw).toContain("\x1B[93m"); // yellowBright — sampleType
+      expect(raw).toContain("\x1B[33m"); // yellow — packageName
+    });
+
+    it("does not apply organised colouring when organised is false", () => {
+      const { reporter, getOutput } = createReporter();
+      reporter.onAfterWrite(createEntry("kick.wav"), "loops/my-pack/kick.wav");
+      const raw = getOutput();
+      expect(raw).not.toContain("\x1B[93m"); // no yellowBright
+      expect(raw).not.toContain("\x1B[33m"); // no yellow
     });
   });
 
