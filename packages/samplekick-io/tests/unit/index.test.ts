@@ -52,6 +52,14 @@ describe("index exports", () => {
       "SourcePathStrategy",
       "OrganisedPathStrategy",
       "SP404Mk2Preset",
+      "BIT_DEPTH_16",
+      "BIT_DEPTH_24",
+      "BIT_DEPTH_32",
+      "SAMPLE_RATE_44100",
+      "SAMPLE_RATE_48000",
+      "SAMPLE_RATE_96000",
+      "formatSampleRate",
+      "formatBitDepth",
     ]);
   });
 });

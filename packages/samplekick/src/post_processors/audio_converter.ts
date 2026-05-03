@@ -3,6 +3,7 @@ import { rename, rm, unlink } from "node:fs/promises";
 import { basename, dirname, extname, join } from "node:path";
 import { promisify } from "node:util";
 import type { ConfigEntry, PostProcessor } from "samplekick-io";
+import { BIT_DEPTH_24, BIT_DEPTH_32, formatBitDepth, formatSampleRate } from "samplekick-io";
 
 const execFileAsync = promisify((
   file: string,
@@ -40,19 +41,30 @@ const defaultErrorHandler: ConvertErrorHandler = (destPath, error) => {
 
 const AUDIO_EXTENSIONS = new Set([".wav", ".aiff", ".aif", ".mp3"]);
 
+export interface AudioConverterOptions {
+  targetBitDepth: number;
+  targetSampleRate: number;
+  onDebug?: (message: string) => void;
+}
+
 export class AudioConverter implements PostProcessor {
   private readonly runFfmpeg: FfmpegRunner;
   private readonly onError: ConvertErrorHandler;
   private readonly onDebug: ((message: string) => void) | undefined;
+  private readonly targetBitDepth: number;
+  private readonly targetSampleRate: number;
 
   constructor(
     runFfmpeg: FfmpegRunner = defaultRunner,
     onError: ConvertErrorHandler = defaultErrorHandler,
-    onDebug?: (message: string) => void,
+    options: AudioConverterOptions,
   ) {
+    const { onDebug, targetBitDepth, targetSampleRate } = options;
     this.runFfmpeg = runFfmpeg;
     this.onError = onError;
     this.onDebug = onDebug;
+    this.targetBitDepth = targetBitDepth;
+    this.targetSampleRate = targetSampleRate;
   }
 
   async processFile(destPath: string, _entry: ConfigEntry): Promise<void> {
@@ -64,9 +76,10 @@ export class AudioConverter implements PostProcessor {
     const outputPath = join(dir, `${base}.wav`);
     const tempPath = `${destPath}.converting.wav`;
 
-    this.onDebug?.(`Converting ${basename(destPath)} to 16-bit 48 kHz WAV`);
+    const sampleFmt = this.targetBitDepth === BIT_DEPTH_24 ? "s24" : this.targetBitDepth === BIT_DEPTH_32 ? "s32" : "s16";
+    this.onDebug?.(`Converting ${basename(destPath)} to ${formatBitDepth(this.targetBitDepth)} ${formatSampleRate(this.targetSampleRate)} WAV`);
     try {
-      await this.runFfmpeg(["-i", destPath, "-ar", "48000", "-sample_fmt", "s16", "-y", tempPath]);
+      await this.runFfmpeg(["-i", destPath, "-ar", String(this.targetSampleRate), "-sample_fmt", sampleFmt, "-y", tempPath]);
       await rename(tempPath, outputPath);
       if (outputPath !== destPath) {
         await unlink(destPath);

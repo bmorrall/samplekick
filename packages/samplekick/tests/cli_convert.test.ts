@@ -39,7 +39,7 @@ describe("--convert flag", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync("node", [CLI_PATH, zipPath, "--convert", "-o", outputDir], {
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--convert", "-d", "sp404mk2", "-o", outputDir], {
         encoding: "utf8",
         env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
       });
@@ -71,7 +71,7 @@ describe("--convert flag", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync("node", [CLI_PATH, zipPath, "--convert", "-o", outputDir], {
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--convert", "-d", "sp404mk2", "-o", outputDir], {
         encoding: "utf8",
         env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
       });
@@ -97,7 +97,7 @@ describe("--convert flag", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync("node", [CLI_PATH, zipPath, "--convert", "-o", outputDir], {
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--convert", "-d", "sp404mk2", "-o", outputDir], {
         encoding: "utf8",
         env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
       });
@@ -123,7 +123,7 @@ describe("--convert flag", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync("node", [CLI_PATH, zipPath, "--convert", "--verbose", "-o", outputDir], {
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--convert", "-d", "sp404mk2", "--verbose", "-o", outputDir], {
         encoding: "utf8",
         env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
       });
@@ -147,7 +147,7 @@ describe("--convert flag", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync("node", [CLI_PATH, zipPath, "--convert", "-o", outputDir], {
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--convert", "-d", "sp404mk2", "-o", outputDir], {
         encoding: "utf8",
         env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
       });
@@ -170,7 +170,7 @@ describe("--convert flag", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync(process.execPath, [CLI_PATH, zipPath, "--convert", "-o", outputDir], {
+      const result = spawnSync(process.execPath, [CLI_PATH, zipPath, "--convert", "-d", "sp404mk2", "-o", outputDir], {
         encoding: "utf8",
         env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data"), PATH: tmpDir },
       });
@@ -194,7 +194,7 @@ describe("--convert flag", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync("node", [CLI_PATH, zipPath, "--convert", "--verbose", "-o", outputDir], {
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--convert", "-d", "sp404mk2", "--verbose", "-o", outputDir], {
         encoding: "utf8",
         env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
       });
