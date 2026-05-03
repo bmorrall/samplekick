@@ -31,7 +31,27 @@ describe("KnownFileTypeTransformer", () => {
     });
   });
 
-  describe("when the file is not a .mid file", () => {
+  describe("when the name ends with .fxp", () => {
+    it("sets sampleType to Serum Presets", () => {
+      const entry = createTransformEntry({ name: "patch.fxp" });
+      KnownFileTypeTransformer(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("Serum Presets");
+    });
+
+    it("sets sampleType to Serum Presets when extension is uppercase", () => {
+      const entry = createTransformEntry({ name: "patch.FXP" });
+      KnownFileTypeTransformer(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("Serum Presets");
+    });
+
+    it("does not overwrite an existing sampleType", () => {
+      const entry = createTransformEntry({ name: "patch.fxp", sampleType: "custom" });
+      KnownFileTypeTransformer(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("when the file is not a .mid or .fxp file", () => {
     it("does not set sampleType for .wav files", () => {
       const entry = createTransformEntry({ name: "kick.wav" });
       KnownFileTypeTransformer(singleEntryTransformSource(entry));

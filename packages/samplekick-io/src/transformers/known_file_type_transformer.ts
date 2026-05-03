@@ -4,6 +4,7 @@ import type { Transform } from '../types';
  * KnownFileTypeTransformer
  * Sets sampleType based on the file extension when it has not already been set.
  * - ".mid" (case-insensitive) → "MIDI"
+ * - ".fxp" (case-insensitive) → "Serum Presets"
  */
 export const KnownFileTypeTransformer: Transform = (source) => {
   source.eachTransformEntry((entry) => {
@@ -16,6 +17,8 @@ export const KnownFileTypeTransformer: Transform = (source) => {
 
     if (name.endsWith('.mid') || path.endsWith('.mid')) {
       entry.setSampleType('MIDI');
+    } else if (name.endsWith('.fxp') || path.endsWith('.fxp')) {
+      entry.setSampleType('Serum Presets');
     }
   });
 };
