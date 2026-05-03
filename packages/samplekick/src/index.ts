@@ -4,7 +4,7 @@ import { mkdir } from "node:fs/promises";
 import { finished } from "node:stream/promises";
 import { basename, dirname, resolve } from "node:path";
 import { parseArgs } from "node:util";
-import { AbletonProjectTransformer, CsvConfigWriter, DefaultPackageNameTransformer, FLStudioProjectTransformer, KnownFileTypeTransformer, OrganisedPathStrategy, Registry, SkipJunkTransformer, SourcePathStrategy, ZipDataSource, SP404Mk2Preset, formatSampleRate, formatBitDepth } from "samplekick-io";
+import { AbletonProjectTransformer, CsvConfigWriter, DefaultPackageNameTransformer, FLStudioProjectTransformer, KnownFileTypeTransformer, NormaliseBracketSpacingTransformer, NormaliseHyphenTransformer, NormaliseSpacesTransformer, OrganisedPathStrategy, Registry, SkipJunkTransformer, SourcePathStrategy, TrimNameTransformer, ZipDataSource, SP404Mk2Preset, formatSampleRate, formatBitDepth } from "samplekick-io";
 import { loadConfig, openConfigInEditor, getDataDir } from "./config_loader";
 import type { DevicePreset } from "samplekick-io";
 import { SimpleExportReporter, PrettyExportReporter } from "./exporters";
@@ -173,10 +173,17 @@ if (values.convert === true) {
 }
 
 if (values.analyse === true) {
-  registry.applyTransform(DefaultPackageNameTransformer);
+  // File transforms: identify known file/project types and lock their folder structure
   registry.applyTransform(KnownFileTypeTransformer);
   registry.applyTransform(AbletonProjectTransformer);
   registry.applyTransform(FLStudioProjectTransformer);
+
+  // Name transforms: run after file transforms so locked entries are skipped
+  registry.applyTransform(DefaultPackageNameTransformer);
+  registry.applyTransform(TrimNameTransformer);
+  registry.applyTransform(NormaliseSpacesTransformer);
+  registry.applyTransform(NormaliseBracketSpacingTransformer);
+  registry.applyTransform(NormaliseHyphenTransformer);
 }
 const dataDir = process.env.SAMPLEKICK_DATA_DIR ?? getDataDir("samplekick", process.platform, process.env);
 const configPath = values.config === undefined ? undefined : resolve(values.config);

@@ -6,7 +6,7 @@ export {
   CsvConfigReader,
 } from "./configuration";
 export { ZipDataSource } from "./io";
-export { AbletonProjectTransformer, DefaultPackageNameTransformer, FLStudioProjectTransformer, KnownFileTypeTransformer, SkipJunkTransformer, SP404Mk2NameTransformer } from "./transformers";
+export { AbletonProjectTransformer, DefaultPackageNameTransformer, FLStudioProjectTransformer, KnownFileTypeTransformer, NormaliseBracketSpacingTransformer, NormaliseHyphenTransformer, NormaliseSpacesTransformer, SkipJunkTransformer, SP404Mk2NameTransformer, TrimNameTransformer } from "./transformers";
 export { SourcePathStrategy } from "./path_strategies/source_path_strategy";
 export { OrganisedPathStrategy } from "./path_strategies/organised_path_strategy";
 export { SP404Mk2Preset } from "./devices/sp404_mk2";

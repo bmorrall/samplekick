@@ -284,6 +284,18 @@ describe("Registry", () => {
   });
 
   describe("loadConfig", () => {
+    it("does not overwrite a transformer-set name when the config has no name override", () => {
+      const registry = createRegistry("root", [createFileEntry({ path: "a/b" })]);
+      registry.setName("a/b", "Transformer Name");
+
+      const configSource = createConfigSource([
+        createConfigEntry({ path: "a/b", packageName: "my-pack" })
+      ]);
+      registry.loadConfig(configSource);
+
+      expect(registry.getEntry("a/b")?.getName()).toBe("Transformer Name");
+    });
+
     it("updates an existing entry when one exists at the path", () => {
       const registry = createRegistry("root", [createFileEntry({ path: "a/b" })]);
       const configSource = createConfigSource([

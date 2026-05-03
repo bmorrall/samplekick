@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { SP404Mk2NameTransformer, DefaultPackageNameTransformer, SkipJunkTransformer, KnownFileTypeTransformer, AbletonProjectTransformer, FLStudioProjectTransformer } from "../../src";
+import { SP404Mk2NameTransformer, DefaultPackageNameTransformer, SkipJunkTransformer, KnownFileTypeTransformer, AbletonProjectTransformer, FLStudioProjectTransformer, NormaliseBracketSpacingTransformer, NormaliseHyphenTransformer, NormaliseSpacesTransformer, TrimNameTransformer } from "../../src";
 import { createRegistry, createFileEntry } from "../support";
 
 describe("Registry transforms", () => {
@@ -148,6 +148,93 @@ describe("Registry transforms", () => {
         "┃   └── kick.wav [?]",
         "└── samples",
         "    └── kick.wav [?]",
+        "",
+      ].join("\n"),
+    );
+  });
+
+  it("applies NormaliseHyphenTransformer to fix hyphens touching adjacent words", () => {
+    const registry = createRegistry("root", [
+      createFileEntry({ path: "Drums- Bass/kick.wav" }),
+      createFileEntry({ path: "Kicks -Snares/snare.wav" }),
+      createFileEntry({ path: "Hi-Hats/hat.wav" }),
+      createFileEntry({ path: "Drums-_Bass/kick.wav" }),
+      createFileEntry({ path: "Kicks_-Snares/snare.wav" }),
+    ]);
+    registry.applyTransform(NormaliseHyphenTransformer);
+    expect(registry.toString()).toBe(
+      [
+        "root",
+        "├── Drums - Bass [renamed]",
+        "│   └── kick.wav [?]",
+        "├── Kicks - Snares [renamed]",
+        "│   └── snare.wav [?]",
+        "├── Hi-Hats",
+        "│   └── hat.wav [?]",
+        "├── Drums_-_Bass [renamed]",
+        "│   └── kick.wav [?]",
+        "└── Kicks_-_Snares [renamed]",
+        "    └── snare.wav [?]",
+        "",
+      ].join("\n"),
+    );
+  });
+
+  it("applies NormaliseSpacesTransformer to collapse multiple spaces", () => {
+    const registry = createRegistry("root", [
+      createFileEntry({ path: "Drums  Bass/kick.wav" }),
+      createFileEntry({ path: "Hi Hats/hat.wav" }),
+    ]);
+    registry.applyTransform(NormaliseSpacesTransformer);
+    expect(registry.toString()).toBe(
+      [
+        "root",
+        "├── Drums Bass [renamed]",
+        "│   └── kick.wav [?]",
+        "└── Hi Hats",
+        "    └── hat.wav [?]",
+        "",
+      ].join("\n"),
+    );
+  });
+
+  it("applies TrimNameTransformer to strip leading and trailing whitespace", () => {
+    const registry = createRegistry("root", [
+      createFileEntry({ path: " Kicks/kick.wav" }),
+      createFileEntry({ path: "Snares /snare.wav" }),
+      createFileEntry({ path: "hi-hats/hat.wav" }),
+    ]);
+    registry.applyTransform(TrimNameTransformer);
+    expect(registry.toString()).toBe(
+      [
+        "root",
+        "├── Kicks [renamed]",
+        "│   └── kick.wav [?]",
+        "├── Snares [renamed]",
+        "│   └── snare.wav [?]",
+        "└── hi-hats",
+        "    └── hat.wav [?]",
+        "",
+      ].join("\n"),
+    );
+  });
+
+  it("applies NormaliseBracketSpacingTransformer to fix spacing around all SP404 bracket types", () => {
+    const registry = createRegistry("root", [
+      createFileEntry({ path: "kick(hard)/sample.wav" }),
+      createFileEntry({ path: "snare[soft]/sample.wav" }),
+      createFileEntry({ path: "hi-hats{open}/sample.wav" }),
+    ]);
+    registry.applyTransform(NormaliseBracketSpacingTransformer);
+    expect(registry.toString()).toBe(
+      [
+        "root",
+        "├── kick (hard) [renamed]",
+        "│   └── sample.wav [?]",
+        "├── snare [soft] [renamed]",
+        "│   └── sample.wav [?]",
+        "└── hi-hats {open} [renamed]",
+        "    └── sample.wav [?]",
         "",
       ].join("\n"),
     );

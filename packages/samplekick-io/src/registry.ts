@@ -56,7 +56,11 @@ const applyEntryConfig = (node: EntryNode, entry: ConfigEntry): void => {
   const sampleType = entry.getSampleType();
   const skipped = entry.isSkipped();
   const keepStructure = entry.isKeepStructure();
-  node.setName(name === getPathName(entry.getPath()) ? undefined : name);
+  // Only set name if it differs from the default (path-derived) name, so existing
+  // transformer-set names are not overwritten when a config has no name override
+  if (name !== getPathName(entry.getPath())) {
+    node.setName(name);
+  }
   if (packageName !== undefined) {
     node.setPackageName(packageName);
   }
