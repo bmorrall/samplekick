@@ -146,7 +146,7 @@ const reporter: ExportReporter = chalk.level > 0
   ? new PrettyExportReporter(process.stdout, chalk, { quiet: values.quiet === true, packName: basename(zipPath), organised: values["preserve-paths"] !== true })
   : new SimpleExportReporter(process.stdout, values.quiet === true, basename(zipPath));
 
-// Debug messages (e.g. skipped entries) are suppressed unless --verbose is passed
+// Debug messages are suppressed unless --verbose is passed
 const debugLog = values.verbose === true ? reporter.onDebug.bind(reporter) : undefined;
 
 let ffmpegVersion: string | undefined = undefined;
@@ -262,9 +262,9 @@ if (values["dump-config"] === true) {
 if (values.output === undefined) {
   const dryRun = new DryRunReporter(reporter);
   await registry.exportToDirectory(undefined, {
-    onDebug: debugLog,
     onAfterWrite: (e, p, err) => { dryRun.onAfterWrite(e, p, err); },
     onReject: (e, r) => { dryRun.onReject(e, r); },
+    onSkip: (e) => { dryRun.onSkip(e); },
   }).catch((err: unknown) => {
     console.error(`Error: ${err instanceof Error ? err.message : String(err)}`);
     process.exit(1);
@@ -275,10 +275,10 @@ if (values.output === undefined) {
 
 const destPath = resolve(values.output);
 await registry.exportToDirectory(destPath, {
-  onDebug: debugLog,
   onBeforeWrite: (e, p) => { reporter.onBeforeWrite?.(e, p); },
   onAfterWrite: (e, p, err) => { reporter.onAfterWrite(e, p, err); },
   onReject: (e, r) => { reporter.onReject(e, r); },
+  onSkip: values.verbose === true ? (e) => { reporter.onSkip(e); } : undefined,
 }).catch((err: unknown) => {
   console.error(`Error: could not export to ${destPath}: ${err instanceof Error ? err.message : String(err)}`);
   process.exit(1);

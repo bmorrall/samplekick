@@ -130,6 +130,12 @@ export class PrettyExportReporter implements ExportReporter {
     }
   }
 
+  onSkip(entry: ConfigEntry): void {
+    if (!this.quiet) {
+      this.logLine(`${this.chalk.dim("-")} ${this.chalk.dim(entry.getPath())}`);
+    }
+  }
+
   onComplete(dirPath: string): void {
     this.stopSpinner();
     const filePlural = this.totalCount === 1 ? "file" : "files";
@@ -146,12 +152,17 @@ export class PrettyExportReporter implements ExportReporter {
     this.output.write(`Exported ${totalPart} to ${dirPath}${suffix}\n`);
   }
 
-  onPreview(successCount: number, rejectCount: number): void {
+  onPreview(successCount: number, rejectCount: number, skipCount: number): void {
     const filePlural = successCount === 1 ? "file" : "files";
     const totalPart = `${successCount} ${filePlural}`;
-    const suffix = rejectCount > 0
-      ? ` (${this.chalk.dim(`${rejectCount} ${rejectCount === 1 ? "entry" : "entries"} rejected`)})`
-      : "";
+    const parts: string[] = [];
+    if (rejectCount > 0) {
+      parts.push(`${rejectCount} ${rejectCount === 1 ? "entry" : "entries"} rejected`);
+    }
+    if (skipCount > 0) {
+      parts.push(`${skipCount} ${skipCount === 1 ? "record" : "records"} skipped`);
+    }
+    const suffix = parts.length > 0 ? ` (${this.chalk.dim(parts.join(", "))})` : "";
     this.output.write(`Would export ${totalPart}${suffix}\n`);
   }
 }

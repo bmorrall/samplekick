@@ -104,6 +104,15 @@ describe("PrettyExportReporter", () => {
     });
   });
 
+  describe("onSkip", () => {
+    it("writes '- {path}' with dim styling", () => {
+      const { reporter, getOutput } = createReporter();
+      reporter.onSkip(createEntry("kick.wav"));
+      const raw = getOutput();
+      expect(stripAnsi(raw)).toBe("  - kick.wav\n");
+    });
+  });
+
   describe("onReject", () => {
     it("writes '? {path}: {reason}' with magenta symbol", () => {
       const { reporter, getOutput } = createReporter();
@@ -189,6 +198,12 @@ describe("PrettyExportReporter", () => {
     it("suppresses reject lines in onReject", () => {
       const { reporter, getOutput } = createQuietReporter();
       reporter.onReject(createEntry("kick.wav"), "Missing sampleType");
+      expect(getOutput()).toBe("");
+    });
+
+    it("suppresses skip lines in onSkip", () => {
+      const { reporter, getOutput } = createQuietReporter();
+      reporter.onSkip(createEntry("kick.wav"));
       expect(getOutput()).toBe("");
     });
 
@@ -305,28 +320,46 @@ describe("PrettyExportReporter", () => {
   });
 
   describe("onPreview", () => {
-    it("writes 'Would export N files' with no skips", () => {
+    it("writes 'Would export N files' with no counts", () => {
       const { reporter, getOutput } = createReporter();
-      reporter.onPreview(3, 0);
+      reporter.onPreview(3, 0, 0);
       expect(stripAnsi(getOutput())).toBe("Would export 3 files\n");
     });
 
     it("uses singular 'file' when count is 1", () => {
       const { reporter, getOutput } = createReporter();
-      reporter.onPreview(1, 0);
+      reporter.onPreview(1, 0, 0);
       expect(stripAnsi(getOutput())).toBe("Would export 1 file\n");
     });
 
     it("includes reject count when rejections > 0", () => {
       const { reporter, getOutput } = createReporter();
-      reporter.onPreview(2, 1);
+      reporter.onPreview(2, 1, 0);
       expect(stripAnsi(getOutput())).toBe("Would export 2 files (1 entry rejected)\n");
     });
 
     it("uses plural 'entries' when reject count > 1", () => {
       const { reporter, getOutput } = createReporter();
-      reporter.onPreview(2, 3);
+      reporter.onPreview(2, 3, 0);
       expect(stripAnsi(getOutput())).toBe("Would export 2 files (3 entries rejected)\n");
+    });
+
+    it("includes skip count when skips > 0", () => {
+      const { reporter, getOutput } = createReporter();
+      reporter.onPreview(2, 0, 1);
+      expect(stripAnsi(getOutput())).toBe("Would export 2 files (1 record skipped)\n");
+    });
+
+    it("uses plural 'records' when skip count > 1", () => {
+      const { reporter, getOutput } = createReporter();
+      reporter.onPreview(2, 0, 3);
+      expect(stripAnsi(getOutput())).toBe("Would export 2 files (3 records skipped)\n");
+    });
+
+    it("includes both reject and skip counts", () => {
+      const { reporter, getOutput } = createReporter();
+      reporter.onPreview(2, 1, 2);
+      expect(stripAnsi(getOutput())).toBe("Would export 2 files (1 entry rejected, 2 records skipped)\n");
     });
   });
 });

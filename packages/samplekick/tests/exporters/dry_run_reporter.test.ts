@@ -19,8 +19,9 @@ const createInner = (): ExportReporter => ({
   onBeforeWrite: vi.fn<(entry: ConfigEntry, destRelPath: string) => void>(),
   onAfterWrite: vi.fn<(entry: ConfigEntry, destRelPath: string, error?: Error) => void>(),
   onReject: vi.fn<(entry: ConfigEntry, reason: string) => void>(),
+  onSkip: vi.fn<(entry: ConfigEntry) => void>(),
   onComplete: vi.fn<(dirPath: string) => void>(),
-  onPreview: vi.fn<(successCount: number, rejectCount: number) => void>(),
+  onPreview: vi.fn<(successCount: number, rejectCount: number, skipCount: number) => void>(),
 });
 
 describe("DryRunReporter", () => {
@@ -38,18 +39,20 @@ describe("DryRunReporter", () => {
     expect(inner.onAfterWrite).toHaveBeenNthCalledWith(3, expect.anything(), "z.wav");
   });
 
-  it("flush replays successes before rejections", () => {
+  it("flush replays skips before successes before rejections", () => {
     const inner = createInner();
     const order: string[] = [];
     vi.mocked(inner.onAfterWrite).mockImplementation((_, p) => { order.push(`success:${p}`); });
     vi.mocked(inner.onReject).mockImplementation((e) => { order.push(`reject:${e.getPath()}`); });
+    vi.mocked(inner.onSkip).mockImplementation((e) => { order.push(`skip:${e.getPath()}`); });
     const dryRun = new DryRunReporter(inner);
 
     dryRun.onReject(createEntry("a.wav"), "Missing packageName");
     dryRun.onAfterWrite(createEntry("b.wav"), "b.wav");
+    dryRun.onSkip(createEntry("c.wav"));
     dryRun.flush();
 
-    expect(order).toEqual(["success:b.wav", "reject:a.wav"]);
+    expect(order).toEqual(["skip:c.wav", "success:b.wav", "reject:a.wav"]);
   });
 
   it("flush replays rejections sorted by entry path", () => {
@@ -65,7 +68,7 @@ describe("DryRunReporter", () => {
     expect(rejectPaths).toEqual(["a.wav", "m.wav", "z.wav"]);
   });
 
-  it("flush calls onPreview with success and reject counts", () => {
+  it("flush calls onPreview with success, reject, and skip counts", () => {
     const inner = createInner();
     const dryRun = new DryRunReporter(inner);
 
@@ -74,14 +77,14 @@ describe("DryRunReporter", () => {
     dryRun.onReject(createEntry("c.wav"), "Missing packageName");
     dryRun.flush();
 
-    expect(inner.onPreview).toHaveBeenCalledWith(2, 1);
+    expect(inner.onPreview).toHaveBeenCalledWith(2, 1, 0);
   });
 
   it("flush calls onPreview with zero counts when nothing was collected", () => {
     const inner = createInner();
     const dryRun = new DryRunReporter(inner);
     dryRun.flush();
-    expect(inner.onPreview).toHaveBeenCalledWith(0, 0);
+    expect(inner.onPreview).toHaveBeenCalledWith(0, 0, 0);
   });
 
   it("forwards errors to inner.onError immediately without buffering", () => {
@@ -101,7 +104,32 @@ describe("DryRunReporter", () => {
     dryRun.onAfterWrite(createEntry("a.wav"), "a.wav", new Error("fail"));
     dryRun.flush();
 
-    expect(inner.onPreview).toHaveBeenCalledWith(0, 0);
+    expect(inner.onPreview).toHaveBeenCalledWith(0, 0, 0);
+  });
+
+  it("flush replays config-skips sorted by entry path", () => {
+    const inner = createInner();
+    const dryRun = new DryRunReporter(inner);
+
+    dryRun.onSkip(createEntry("z.wav"));
+    dryRun.onSkip(createEntry("a.wav"));
+    dryRun.onSkip(createEntry("m.wav"));
+    dryRun.flush();
+
+    const skipPaths = vi.mocked(inner.onSkip).mock.calls.map(([e]) => e.getPath());
+    expect(skipPaths).toEqual(["a.wav", "m.wav", "z.wav"]);
+  });
+
+  it("flush includes skip count in onPreview", () => {
+    const inner = createInner();
+    const dryRun = new DryRunReporter(inner);
+
+    dryRun.onAfterWrite(createEntry("a.wav"), "a.wav");
+    dryRun.onSkip(createEntry("b.wav"));
+    dryRun.onSkip(createEntry("c.wav"));
+    dryRun.flush();
+
+    expect(inner.onPreview).toHaveBeenCalledWith(1, 0, 2);
   });
 
   it("onBeforeWrite is a no-op and does not forward to inner", () => {

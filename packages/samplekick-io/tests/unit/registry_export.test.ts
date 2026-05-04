@@ -88,15 +88,16 @@ describe("Registry.exportToDirectory", () => {
     expect(entry.copyToPath).not.toHaveBeenCalled();
   });
 
-  it("calls onDebug with the entry path when isSkipped is true", async () => {
+  it("calls onSkip with the entry when isSkipped is true", async () => {
     const entry = createCopyableEntry("a.wav");
     const registry = new Registry(createFileSource("root", [entry]));
     registry.setSkipped("a.wav", true);
-    const onDebug = vi.fn<(message: string) => void>();
+    const onSkip = vi.fn<(entry: ConfigEntry) => void>();
 
-    await registry.exportToDirectory("/output", { onDebug });
+    await registry.exportToDirectory("/output", { onSkip });
 
-    expect(onDebug).toHaveBeenCalledWith("skipped: a.wav");
+    expect(onSkip).toHaveBeenCalledOnce();
+    expect(onSkip.mock.calls[0][0].getPath()).toBe("a.wav");
   });
 
   it("continues processing all entries when one throws, then throws AggregateError", async () => {

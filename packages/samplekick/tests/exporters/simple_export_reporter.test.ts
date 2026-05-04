@@ -107,6 +107,14 @@ describe("SimpleExportReporter", () => {
     });
   });
 
+  describe("onSkip", () => {
+    it("writes 'skipped: {path}'", () => {
+      const { reporter, getOutput } = createReporter();
+      reporter.onSkip(createEntry("Drums/kick.wav"));
+      expect(getOutput()).toBe("skipped: Drums/kick.wav\n");
+    });
+  });
+
   describe("onComplete", () => {
     it("writes 'Exported to <dirPath>' when there are no errors", () => {
       const { reporter, getOutput } = createReporter();
@@ -158,28 +166,46 @@ describe("SimpleExportReporter", () => {
   });
 
   describe("onPreview", () => {
-    it("writes 'Would export N files' with no skips", () => {
+    it("writes 'Would export N files' with no counts", () => {
       const { reporter, getOutput } = createReporter();
-      reporter.onPreview(3, 0);
+      reporter.onPreview(3, 0, 0);
       expect(getOutput()).toBe("Would export 3 files\n");
     });
 
     it("uses singular 'file' when count is 1", () => {
       const { reporter, getOutput } = createReporter();
-      reporter.onPreview(1, 0);
+      reporter.onPreview(1, 0, 0);
       expect(getOutput()).toBe("Would export 1 file\n");
     });
 
     it("includes reject count when rejections > 0", () => {
       const { reporter, getOutput } = createReporter();
-      reporter.onPreview(2, 1);
+      reporter.onPreview(2, 1, 0);
       expect(getOutput()).toBe("Would export 2 files (1 entry rejected)\n");
     });
 
     it("uses plural 'entries' when reject count > 1", () => {
       const { reporter, getOutput } = createReporter();
-      reporter.onPreview(2, 3);
+      reporter.onPreview(2, 3, 0);
       expect(getOutput()).toBe("Would export 2 files (3 entries rejected)\n");
+    });
+
+    it("includes skip count when skips > 0", () => {
+      const { reporter, getOutput } = createReporter();
+      reporter.onPreview(2, 0, 1);
+      expect(getOutput()).toBe("Would export 2 files (1 record skipped)\n");
+    });
+
+    it("uses plural 'records' when skip count > 1", () => {
+      const { reporter, getOutput } = createReporter();
+      reporter.onPreview(2, 0, 3);
+      expect(getOutput()).toBe("Would export 2 files (3 records skipped)\n");
+    });
+
+    it("includes both reject and skip counts", () => {
+      const { reporter, getOutput } = createReporter();
+      reporter.onPreview(2, 1, 2);
+      expect(getOutput()).toBe("Would export 2 files (1 entry rejected, 2 records skipped)\n");
     });
   });
 });

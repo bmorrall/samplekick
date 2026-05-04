@@ -52,6 +52,10 @@ export class SimpleExportReporter implements ExportReporter {
     this.output.write(`rejected: ${entry.getPath()}: ${reason}\n`);
   }
 
+  onSkip(entry: ConfigEntry): void {
+    this.output.write(`skipped: ${entry.getPath()}\n`);
+  }
+
   onComplete(dirPath: string): void {
     const filePlural = this.totalCount === 1 ? "file" : "files";
     const totalPart = `${this.totalCount} ${filePlural}`;
@@ -63,14 +67,19 @@ export class SimpleExportReporter implements ExportReporter {
     }
   }
 
-  onPreview(successCount: number, rejectCount: number): void {
+  onPreview(successCount: number, rejectCount: number, skipCount: number): void {
     const filePlural = successCount === 1 ? "file" : "files";
     const totalPart = `${successCount} ${filePlural}`;
+    const parts: string[] = [];
     if (rejectCount > 0) {
       const rejectPlural = rejectCount === 1 ? "entry" : "entries";
-      this.output.write(`Would export ${totalPart} (${rejectCount} ${rejectPlural} rejected)\n`);
-    } else {
-      this.output.write(`Would export ${totalPart}\n`);
+      parts.push(`${rejectCount} ${rejectPlural} rejected`);
     }
+    if (skipCount > 0) {
+      const skipPlural = skipCount === 1 ? "record" : "records";
+      parts.push(`${skipCount} ${skipPlural} skipped`);
+    }
+    const suffix = parts.length > 0 ? ` (${parts.join(", ")})` : "";
+    this.output.write(`Would export ${totalPart}${suffix}\n`);
   }
 }

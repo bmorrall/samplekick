@@ -307,7 +307,7 @@ export class Registry implements FileSource, ConfigSource {
     const seenDestPaths = new Set<string>();
     this.rootNode.eachLeafNode((node) => {
       if (node.isSkipped() === true) {
-        options.onDebug?.(`skipped: ${node.getPath()}`);
+        options.onSkip?.(node);
         return;
       }
       if (!isLeafNode(node)) {

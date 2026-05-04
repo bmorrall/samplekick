@@ -1,10 +1,6 @@
 import type { ConfigEntry } from "samplekick-io";
 import type { ExportReporter } from "./export_reporter";
 
-// TODO: add a third group for config-skipped entries (isSkipped === true on the registry),
-// currently visible via --verbose only. Would need a post-dry-run registry walk via
-// eachConfigEntry() filtering isSkipped() === true.
-
 interface SuccessItem {
   entry: ConfigEntry;
   destRelPath: string;
@@ -19,6 +15,7 @@ export class DryRunReporter {
   private readonly inner: ExportReporter;
   private readonly successes: SuccessItem[] = [];
   private readonly rejections: RejectionItem[] = [];
+  private readonly configSkips: ConfigEntry[] = [];
 
   constructor(inner: ExportReporter) {
     this.inner = inner;
@@ -42,10 +39,18 @@ export class DryRunReporter {
     this.rejections.push({ entry, reason });
   }
 
+  onSkip(entry: ConfigEntry): void {
+    this.configSkips.push(entry);
+  }
+
   flush(): void {
     const sortedSuccesses = [...this.successes].sort((a, b) => a.destRelPath.localeCompare(b.destRelPath));
     const sortedRejections = [...this.rejections].sort((a, b) => a.entry.getPath().localeCompare(b.entry.getPath()));
+    const sortedSkips = [...this.configSkips].sort((a, b) => a.getPath().localeCompare(b.getPath()));
 
+    for (const entry of sortedSkips) {
+      this.inner.onSkip(entry);
+    }
     for (const { entry, destRelPath } of sortedSuccesses) {
       this.inner.onAfterWrite(entry, destRelPath);
     }
@@ -53,6 +58,6 @@ export class DryRunReporter {
       this.inner.onReject(entry, reason);
     }
 
-    this.inner.onPreview(sortedSuccesses.length, sortedRejections.length);
+    this.inner.onPreview(sortedSuccesses.length, sortedRejections.length, sortedSkips.length);
   }
 }
