@@ -7,7 +7,7 @@ import { parseArgs } from "node:util";
 import { AbletonProjectTransformer, CsvConfigWriter, DefaultRootPackageNameTransformer, ExpandRootPackageNameTransformer, FLStudioProjectTransformer, KnownFileTypeTransformer, NormaliseBracketSpacingTransformer, NormaliseHyphenTransformer, NormaliseSpacesTransformer, OrganisedPathStrategy, Registry, SkipJunkTransformer, SourcePathStrategy, TrimNameTransformer, ZipDataSource, SP404Mk2Preset, formatSampleRate, formatBitDepth } from "samplekick-io";
 import { loadConfig, openConfigInEditor, getDataDir } from "./config_loader";
 import type { DevicePreset } from "samplekick-io";
-import { SimpleExportReporter, PrettyExportReporter } from "./exporters";
+import { SimpleExportReporter, PrettyExportReporter, DryRunReporter } from "./exporters";
 import { AudioConverter } from "./post_processors";
 import { createFfmpegRunner, getFfmpegVersion } from "./adaptors";
 import chalk from "chalk";
@@ -52,7 +52,6 @@ Arguments:
 
 Options:
   -o, --output <path>     Export samples to a directory
-                          (omit to dump CSV config to stdout)
   -a, --analyse           Analyse pack and save auto-config
   -d, --device <name>     Apply a device preset
   -c, --convert           Convert audio files to device format
@@ -64,6 +63,7 @@ Options:
       --config <path>     Load a CSV config file to apply to the pack
       --write-config <path>
                           Write the pack config as CSV to a file
+      --dump-config       Print CSV config to stdout and exit
       --verbose           Show inherited tags on all nodes in debug output
       --quiet             Only show errors (suppress per-file success lines)
   -v, --version           Show version number
@@ -81,6 +81,7 @@ const { values, positionals } = parseArgs({
     device: { type: "string", short: "d" },
     output: { type: "string", short: "o" },
     "write-config": { type: "string" },
+    "dump-config": { type: "boolean" },
     convert: { type: "boolean", short: "c" },
     analyse: { type: "boolean", short: "a" },
     "allow-junk": { type: "boolean" },
@@ -145,7 +146,7 @@ const reporter: ExportReporter = chalk.level > 0
   ? new PrettyExportReporter(process.stdout, chalk, { quiet: values.quiet === true, packName: basename(zipPath), organised: values["preserve-paths"] !== true })
   : new SimpleExportReporter(process.stdout, values.quiet === true, basename(zipPath));
 
-// Debug messages (e.g. skipped entries) are suppressed unless --verbose is passed
+// Debug messages are suppressed unless --verbose is passed
 const debugLog = values.verbose === true ? reporter.onDebug.bind(reporter) : undefined;
 
 let ffmpegVersion: string | undefined = undefined;
@@ -253,19 +254,32 @@ if (values["write-config"] !== undefined) {
   });
 }
 
-if (values.output === undefined) {
+if (values["dump-config"] === true) {
   new CsvConfigWriter(process.stdout).writeConfig(registry);
   process.exit(0);
 }
 
-const destPath = resolve(values.output);
-await registry.exportToDirectory(destPath, {
-  onDebug: debugLog,
-  onBeforeWrite: (e, p) => { reporter.onBeforeWrite?.(e, p); },
-  onAfterWrite: (e, p, err) => { reporter.onAfterWrite?.(e, p, err); },
-  onSkip: (e, r) => { reporter.onSkip(e, r); },
-}).catch((err: unknown) => {
-  console.error(`Error: could not export to ${destPath}: ${err instanceof Error ? err.message : String(err)}`);
-  process.exit(1);
-});
-reporter.onComplete(destPath);
+if (values.output === undefined) {
+  const dryRun = new DryRunReporter(reporter);
+  await registry.exportToDirectory(undefined, {
+    onAfterWrite: (e, p, err) => { dryRun.onAfterWrite(e, p, err); },
+    onReject: (e, r) => { dryRun.onReject(e, r); },
+    onSkip: (e) => { dryRun.onSkip(e); },
+  }).catch((err: unknown) => {
+    console.error(`Error: ${err instanceof Error ? err.message : String(err)}`);
+    process.exit(1);
+  });
+  dryRun.flush();
+} else {
+  const destPath = resolve(values.output);
+  await registry.exportToDirectory(destPath, {
+    onBeforeWrite: (e, p) => { reporter.onBeforeWrite?.(e, p); },
+    onAfterWrite: (e, p, err) => { reporter.onAfterWrite(e, p, err); },
+    onReject: (e, r) => { reporter.onReject(e, r); },
+    onSkip: values.verbose === true ? (e) => { reporter.onSkip(e); } : undefined,
+  }).catch((err: unknown) => {
+    console.error(`Error: could not export to ${destPath}: ${err instanceof Error ? err.message : String(err)}`);
+    process.exit(1);
+  });
+  reporter.onComplete(destPath);
+}

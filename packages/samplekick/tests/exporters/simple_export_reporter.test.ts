@@ -1,15 +1,18 @@
 import { PassThrough } from "node:stream";
 import { describe, expect, it } from "vitest";
-import type { ConfigEntry } from "samplekick-io";
+import type { FileNode } from "samplekick-io";
 import { SimpleExportReporter } from "../../src/exporters/simple_export_reporter";
 
-const createEntry = (path: string): ConfigEntry => ({
+const createEntry = (path: string): FileNode => ({
   getPath: () => path,
   getName: () => path.split("/").pop() ?? path,
   getPackageName: () => undefined,
   getSampleType: () => undefined,
   isSkipped: () => undefined,
   isKeepStructure: () => undefined,
+  isFile: () => true,
+  getParentNode: () => undefined,
+  getChildNodes: () => [],
 });
 
 const createReporter = (): { reporter: SimpleExportReporter; getOutput: () => string } => {
@@ -99,11 +102,19 @@ describe("SimpleExportReporter", () => {
     });
   });
 
-  describe("onSkip", () => {
-    it("writes 'skipped: {path}: {reason}'", () => {
+  describe("onReject", () => {
+    it("writes 'rejected: {path}: {reason}'", () => {
       const { reporter, getOutput } = createReporter();
-      reporter.onSkip(createEntry("Drums/kick.wav"), "Missing sampleType and packageName");
-      expect(getOutput()).toBe("skipped: Drums/kick.wav: Missing sampleType and packageName\n");
+      reporter.onReject(createEntry("Drums/kick.wav"), "Missing sampleType and packageName");
+      expect(getOutput()).toBe("rejected: Drums/kick.wav: Missing sampleType and packageName\n");
+    });
+  });
+
+  describe("onSkip", () => {
+    it("writes 'skipped: {path}'", () => {
+      const { reporter, getOutput } = createReporter();
+      reporter.onSkip(createEntry("Drums/kick.wav"));
+      expect(getOutput()).toBe("skipped: Drums/kick.wav\n");
     });
   });
 
@@ -154,6 +165,50 @@ describe("SimpleExportReporter", () => {
       reporter.onAfterWrite(createEntry("kick.wav"), "kick.wav");
       reporter.onComplete("/output/dir");
       expect(getOutput()).toBe("Exported 1 file to /output/dir\n");
+    });
+  });
+
+  describe("onPreview", () => {
+    it("writes 'Would export N files' with no counts", () => {
+      const { reporter, getOutput } = createReporter();
+      reporter.onPreview(3, 0, 0);
+      expect(getOutput()).toBe("Would export 3 files\n");
+    });
+
+    it("uses singular 'file' when count is 1", () => {
+      const { reporter, getOutput } = createReporter();
+      reporter.onPreview(1, 0, 0);
+      expect(getOutput()).toBe("Would export 1 file\n");
+    });
+
+    it("includes reject count when rejections > 0", () => {
+      const { reporter, getOutput } = createReporter();
+      reporter.onPreview(2, 1, 0);
+      expect(getOutput()).toBe("Would export 2 files (1 entry rejected)\n");
+    });
+
+    it("uses plural 'entries' when reject count > 1", () => {
+      const { reporter, getOutput } = createReporter();
+      reporter.onPreview(2, 3, 0);
+      expect(getOutput()).toBe("Would export 2 files (3 entries rejected)\n");
+    });
+
+    it("includes skip count when skips > 0", () => {
+      const { reporter, getOutput } = createReporter();
+      reporter.onPreview(2, 0, 1);
+      expect(getOutput()).toBe("Would export 2 files (1 entry skipped)\n");
+    });
+
+    it("uses plural 'records' when skip count > 1", () => {
+      const { reporter, getOutput } = createReporter();
+      reporter.onPreview(2, 0, 3);
+      expect(getOutput()).toBe("Would export 2 files (3 entries skipped)\n");
+    });
+
+    it("includes both reject and skip counts", () => {
+      const { reporter, getOutput } = createReporter();
+      reporter.onPreview(2, 1, 2);
+      expect(getOutput()).toBe("Would export 2 files (1 entry rejected, 2 entries skipped)\n");
     });
   });
 });

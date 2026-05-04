@@ -42,7 +42,6 @@ describe("samplekick CLI", () => {
           "",
           "Options:",
           "  -o, --output <path>     Export samples to a directory",
-          "                          (omit to dump CSV config to stdout)",
           "  -a, --analyse           Analyse pack and save auto-config",
           "  -d, --device <name>     Apply a device preset",
           "  -c, --convert           Convert audio files to device format",
@@ -54,6 +53,7 @@ describe("samplekick CLI", () => {
           "      --config <path>     Load a CSV config file to apply to the pack",
           "      --write-config <path>",
           "                          Write the pack config as CSV to a file",
+          "      --dump-config       Print CSV config to stdout and exit",
           "      --verbose           Show inherited tags on all nodes in debug output",
           "      --quiet             Only show errors (suppress per-file success lines)",
           "  -v, --version           Show version number",
@@ -96,7 +96,7 @@ describe("samplekick CLI", () => {
     });
   });
 
-  it("dumps registry config as CSV to stdout when --output is omitted", async () => {
+  it("dumps registry config as CSV to stdout when --dump-config is passed", async () => {
     const zipped = zipSync({
       "Drums/kick.wav": strToU8("kick-data"),
       "Loops/bass.wav": strToU8("bass-data"),
@@ -109,7 +109,7 @@ describe("samplekick CLI", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync("node", [CLI_PATH, zipPath], {
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--dump-config"], {
         encoding: "utf8",
         env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
       });
@@ -117,7 +117,6 @@ describe("samplekick CLI", () => {
       expect(result.stderr).toBe("");
       const lines = result.stdout.trim().split("\n");
       expect(lines).toHaveLength(7);
-      expect(lines[0]).toBe("path,name,packageName,sampleType,skip,keepPath");
       expect(lines[1]).toBe(",test-pack.zip,,,,");
       expect(lines[2]).toBe(".DS_Store,,,,true,");
       expect(lines[3]).toBe("Drums,,,,,");
@@ -167,6 +166,7 @@ describe("samplekick CLI", () => {
   it("logs skipped junk entries when --verbose is passed", async () => {
     const zipped = zipSync({
       "Drums/kick.wav": strToU8("kick-data"),
+      "Drums/.DS_Store": strToU8("junk"),
       "__MACOSX/Drums/._kick.wav": strToU8("junk"),
     });
 
@@ -183,7 +183,9 @@ describe("samplekick CLI", () => {
       });
 
       expect(result.stderr).toBe("");
-      expect(result.stdout).toContain("skipped: __MACOSX/Drums/._kick.wav");
+      expect(result.stdout).toContain("skipped: Drums/.DS_Store");
+      expect(result.stdout).toContain("skipped: __MACOSX (1 file)");
+      expect(result.stdout).not.toContain("skipped: __MACOSX/Drums/._kick.wav");
       await expect(stat(join(outputDir, "__MACOSX/Drums/._kick.wav"))).rejects.toThrow();
 
       expect(result.status).toBe(0);

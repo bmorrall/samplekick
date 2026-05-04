@@ -26,7 +26,6 @@ describe("samplekick CLI", () => {
       });
 
       expect(result.stderr).toBe("");
-      expect(result.stdout).toContain("path,name,packageName,sampleType,skip,keepPath");
 
       const fileContent = await readFile(configPath, "utf8");
       expect(fileContent).toContain("path,name,packageName,sampleType,skip,keepPath");
@@ -141,7 +140,7 @@ describe("samplekick CLI", () => {
     }
   });
 
-  it("outputs CSV to stdout when --config is passed without --output", async () => {
+  it("outputs CSV to stdout when --dump-config is passed", async () => {
     const zipped = zipSync({
       "Drums/kick.wav": strToU8("kick-data"),
     });
@@ -159,7 +158,7 @@ describe("samplekick CLI", () => {
       await writeFile(zipPath, zipped);
       await writeFile(configPath, config);
 
-      const result = spawnSync("node", [CLI_PATH, zipPath, "--config", configPath], { encoding: "utf8" });
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--config", configPath, "--dump-config"], { encoding: "utf8" });
 
       expect(result.stderr).toBe("");
       expect(result.stdout).toContain("Drums/kick.wav");
@@ -171,7 +170,7 @@ describe("samplekick CLI", () => {
     }
   });
 
-  it("excludes children of __MACOSX from the stdout CSV", async () => {
+  it("excludes children of __MACOSX from the --dump-config CSV output", async () => {
     const zipped = zipSync({
       "__MACOSX/._kick.wav": strToU8("macosx-data"),
       "Drums/kick.wav": strToU8("kick-data"),
@@ -183,7 +182,7 @@ describe("samplekick CLI", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync("node", [CLI_PATH, zipPath], { encoding: "utf8" });
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--dump-config"], { encoding: "utf8" });
 
       expect(result.stderr).toBe("");
       expect(result.status).toBe(0);

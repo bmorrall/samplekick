@@ -2,8 +2,14 @@ import { basename, dirname } from "node:path";
 import type { Writable } from "node:stream";
 import type { ChalkInstance } from "chalk";
 import chalk from "chalk";
-import type { ConfigEntry } from "samplekick-io";
+import type { ConfigEntry, FileNode } from "samplekick-io";
 import type { ExportReporter } from "./export_reporter";
+
+const countLeafNodes = (entry: FileNode): number => {
+  const children = entry.getChildNodes();
+  if (children.length === 0) return 1;
+  return children.reduce((sum, child) => sum + countLeafNodes(child), 0);
+};
 
 const SPINNER_FRAMES = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];
 const SPINNER_INTERVAL_MS = 80;
@@ -23,6 +29,7 @@ export class PrettyExportReporter implements ExportReporter {
   private readonly organised: boolean;
   private totalCount = 0;
   private errorCount = 0;
+  private rejectedCount = 0;
   private skippedCount = 0;
   private spinnerTimer: ReturnType<typeof setInterval> | undefined = undefined;
   private spinnerFrame = 0;
@@ -36,6 +43,18 @@ export class PrettyExportReporter implements ExportReporter {
     this.organised = options.organised ?? false;
   }
 
+  private formatErrors(count: number): string {
+    return this.chalk.red(`${count} ${count === 1 ? "error" : "errors"}`);
+  }
+
+  private formatRejected(count: number): string {
+    return this.chalk.magenta(`${count} ${count === 1 ? "entry" : "entries"} rejected`);
+  }
+
+  private formatSkipped(count: number): string {
+    return this.chalk.dim(`${count} ${count === 1 ? "entry" : "entries"} skipped`);
+  }
+
   private formatDir(dir: string): string {
     if (!this.organised) {
       return this.chalk.gray(dir);
@@ -43,7 +62,7 @@ export class PrettyExportReporter implements ExportReporter {
     const segments = dir.split("/");
     return segments.map((seg, i) => {
       if (i === 0) return this.chalk.cyan(seg);
-      if (i === 1) return this.chalk.blue(seg);
+      if (i === 1) return this.chalk.greenBright(seg);
       return this.chalk.gray(seg);
     }).join(this.chalk.gray("/"));
   }
@@ -105,7 +124,7 @@ export class PrettyExportReporter implements ExportReporter {
     this.startSpinner();
   }
 
-  onAfterWrite(_entry: ConfigEntry, destRelPath: string, error?: Error): void {
+  onAfterWrite(entry: ConfigEntry, destRelPath: string, error?: Error): void {
     this.totalCount += 1;
     if (error === undefined) {
       if (this.quiet) {
@@ -113,9 +132,17 @@ export class PrettyExportReporter implements ExportReporter {
           this.drawSpinner();
         }
       } else {
+        const sourcePath = entry.getPath();
         const dir = dirname(destRelPath);
-        const dirSuffix = dir === "." ? "" : `  ${this.formatDir(dir)}${this.chalk.gray("/")}`;
-        this.logLine(`${this.chalk.green("✓")} ${basename(destRelPath)}${dirSuffix}`);
+        const formattedDest = dir === "."
+          ? basename(destRelPath)
+          : `${this.formatDir(dir)}${this.chalk.gray("/")}${basename(destRelPath)}`;
+        const isDifferent = sourcePath !== destRelPath;
+        const destSuffix = isDifferent
+          ? `\n    ${this.chalk.gray("└── ")}${formattedDest}`
+          : "";
+        const label = isDifferent ? this.chalk.gray(sourcePath) : formattedDest;
+        this.logLine(`${this.chalk.green("✓")} ${label}${destSuffix}`);
       }
     } else {
       this.errorCount += 1;
@@ -123,10 +150,20 @@ export class PrettyExportReporter implements ExportReporter {
     }
   }
 
-  onSkip(entry: ConfigEntry, reason: string): void {
+  onReject(entry: ConfigEntry, reason: string): void {
+    this.rejectedCount += 1;
+    if (!this.quiet) {
+      this.logLine(`${this.chalk.magenta("?")} ${entry.getPath()}\n    ${this.chalk.gray(`└── ${reason}`)}`);
+    }
+  }
+
+  onSkip(entry: FileNode): void {
     this.skippedCount += 1;
     if (!this.quiet) {
-      this.logLine(`${this.chalk.magenta("?")} ${entry.getPath()}: ${this.chalk.gray(reason)}`);
+      const children = entry.getChildNodes();
+      const count = children.length > 0 ? countLeafNodes(entry) : 0;
+      const suffix = count > 0 ? ` (${count} ${count === 1 ? "file" : "files"})` : "";
+      this.logLine(`${this.chalk.dim("-")} ${this.chalk.dim(`${entry.getPath()}${suffix}`)}`);
     }
   }
 
@@ -136,13 +173,29 @@ export class PrettyExportReporter implements ExportReporter {
     const totalPart = `${this.totalCount} ${filePlural}`;
     const suffixParts: string[] = [];
     if (this.errorCount > 0) {
-      const errPlural = this.errorCount === 1 ? "error" : "errors";
-      suffixParts.push(this.chalk.red(`${this.errorCount} ${errPlural}`));
+      suffixParts.push(this.formatErrors(this.errorCount));
+    }
+    if (this.rejectedCount > 0) {
+      suffixParts.push(this.formatRejected(this.rejectedCount));
     }
     if (this.skippedCount > 0) {
-      suffixParts.push(this.chalk.dim(`${this.skippedCount} skipped`));
+      suffixParts.push(this.formatSkipped(this.skippedCount));
     }
     const suffix = suffixParts.length > 0 ? ` (${suffixParts.join(", ")})` : "";
     this.output.write(`Exported ${totalPart} to ${dirPath}${suffix}\n`);
+  }
+
+  onPreview(successCount: number, rejectCount: number, skipCount: number): void {
+    const filePlural = successCount === 1 ? "file" : "files";
+    const totalPart = `${successCount} ${filePlural}`;
+    const parts: string[] = [];
+    if (rejectCount > 0) {
+      parts.push(this.formatRejected(rejectCount));
+    }
+    if (skipCount > 0) {
+      parts.push(this.formatSkipped(skipCount));
+    }
+    const suffix = parts.length > 0 ? ` (${parts.join(", ")})` : "";
+    this.output.write(`Would export ${totalPart}${suffix}\n`);
   }
 }

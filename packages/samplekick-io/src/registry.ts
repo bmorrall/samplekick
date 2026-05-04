@@ -302,12 +302,22 @@ export class Registry implements FileSource, ConfigSource {
     return result instanceof SkipResult ? undefined : result.path;
   }
 
-  async exportToDirectory(dirPath: string, options: ExportOptions): Promise<void> {
+  async exportToDirectory(dirPath: string | undefined, options: ExportOptions): Promise<void> {
+    // Report the topmost skipped nodes (directories or files) — children of already-skipped
+    // ancestors are implicitly covered and do not need their own callbacks.
+    if (options.onSkip !== undefined) {
+      const { onSkip } = options;
+      this.rootNode.eachDescendant((node) => {
+        if (node.isSkipped() === true && node.getParentNode()?.isSkipped() !== true) {
+          onSkip(node);
+        }
+      });
+    }
+
     const promises: Array<Promise<void>> = [];
     const seenDestPaths = new Set<string>();
     this.rootNode.eachLeafNode((node) => {
       if (node.isSkipped() === true) {
-        options.onDebug?.(`skipped: ${node.getPath()}`);
         return;
       }
       if (!isLeafNode(node)) {
@@ -315,30 +325,32 @@ export class Registry implements FileSource, ConfigSource {
       }
       const result = this.pathStrategy.destinationPathFor(node);
       if (result instanceof SkipResult) {
-        options.onSkip?.(node, result.reason);
+        options.onReject?.(node, result.reason);
         return;
       }
       const { path: destRelPath } = result;
       if (seenDestPaths.has(destRelPath)) {
-        options.onSkip?.(node, `duplicate destination: ${destRelPath}`);
+        options.onReject?.(node, `duplicate destination: ${destRelPath}`);
         return;
       }
       seenDestPaths.add(destRelPath);
       const write = async (): Promise<void> => {
         options.onBeforeWrite?.(node, destRelPath);
-        try {
-          const destPath = join(dirPath, destRelPath);
-          await node.copyToPath(destPath);
-          await this.postProcessors.reduce<Promise<void>>(
-            async (chain, processor) => { await chain; await processor.processFile(destPath, node); },
-            Promise.resolve(),
-          );
-          options.onAfterWrite?.(node, destRelPath);
-        } catch (err) {
-          const error = err instanceof Error ? err : new Error(String(err));
-          options.onAfterWrite?.(node, destRelPath, error);
-          throw error;
+        if (dirPath !== undefined) {
+          try {
+            const destPath = join(dirPath, destRelPath);
+            await node.copyToPath(destPath);
+            await this.postProcessors.reduce<Promise<void>>(
+              async (chain, processor) => { await chain; await processor.processFile(destPath, node); },
+              Promise.resolve(),
+            );
+          } catch (err) {
+            const error = err instanceof Error ? err : new Error(String(err));
+            options.onAfterWrite?.(node, destRelPath, error);
+            throw error;
+          }
         }
+        options.onAfterWrite?.(node, destRelPath);
       };
       promises.push(write());
     });
