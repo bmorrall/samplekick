@@ -302,7 +302,7 @@ export class Registry implements FileSource, ConfigSource {
     return result instanceof SkipResult ? undefined : result.path;
   }
 
-  async exportToDirectory(dirPath: string, options: ExportOptions): Promise<void> {
+  async exportToDirectory(dirPath: string | undefined, options: ExportOptions): Promise<void> {
     const promises: Array<Promise<void>> = [];
     const seenDestPaths = new Set<string>();
     this.rootNode.eachLeafNode((node) => {
@@ -326,19 +326,21 @@ export class Registry implements FileSource, ConfigSource {
       seenDestPaths.add(destRelPath);
       const write = async (): Promise<void> => {
         options.onBeforeWrite?.(node, destRelPath);
-        try {
-          const destPath = join(dirPath, destRelPath);
-          await node.copyToPath(destPath);
-          await this.postProcessors.reduce<Promise<void>>(
-            async (chain, processor) => { await chain; await processor.processFile(destPath, node); },
-            Promise.resolve(),
-          );
-          options.onAfterWrite?.(node, destRelPath);
-        } catch (err) {
-          const error = err instanceof Error ? err : new Error(String(err));
-          options.onAfterWrite?.(node, destRelPath, error);
-          throw error;
+        if (dirPath !== undefined) {
+          try {
+            const destPath = join(dirPath, destRelPath);
+            await node.copyToPath(destPath);
+            await this.postProcessors.reduce<Promise<void>>(
+              async (chain, processor) => { await chain; await processor.processFile(destPath, node); },
+              Promise.resolve(),
+            );
+          } catch (err) {
+            const error = err instanceof Error ? err : new Error(String(err));
+            options.onAfterWrite?.(node, destRelPath, error);
+            throw error;
+          }
         }
+        options.onAfterWrite?.(node, destRelPath);
       };
       promises.push(write());
     });

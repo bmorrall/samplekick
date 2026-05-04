@@ -161,4 +161,46 @@ describe("Registry.exportToDirectory", () => {
     expect(onSkip).toHaveBeenCalledOnce();
     expect(onSkip).toHaveBeenCalledWith(expect.anything(), expect.stringContaining("duplicate destination"));
   });
+
+  describe("dry-run (dirPath: undefined)", () => {
+    it("does not call copyToPath", async () => {
+      const entry = createCopyableEntry("a.wav");
+      const registry = new Registry(createFileSource("root", [entry]));
+      registry.setPathStrategy(OrganisedPathStrategy);
+      registry.setPackageName("my-pack");
+      registry.setSampleType("loops");
+
+      await registry.exportToDirectory(undefined, {});
+
+      expect(entry.copyToPath).not.toHaveBeenCalled();
+    });
+
+    it("calls onBeforeWrite and onAfterWrite without error for each entry", async () => {
+      const entryA = createCopyableEntry("a.wav");
+      const entryB = createCopyableEntry("b.wav");
+      const registry = new Registry(createFileSource("root", [entryA, entryB]));
+      registry.setPathStrategy(OrganisedPathStrategy);
+      registry.setPackageName("my-pack");
+      registry.setSampleType("loops");
+      const onBeforeWrite = vi.fn<(entry: ConfigEntry, destRelPath: string) => void>();
+      const onAfterWrite = vi.fn<(entry: ConfigEntry, destRelPath: string, error?: Error) => void>();
+
+      await registry.exportToDirectory(undefined, { onBeforeWrite, onAfterWrite });
+
+      expect(onBeforeWrite).toHaveBeenCalledTimes(2);
+      expect(onAfterWrite).toHaveBeenCalledTimes(2);
+      expect(onAfterWrite).not.toHaveBeenCalledWith(expect.anything(), expect.any(String), expect.any(Error));
+    });
+
+    it("still calls onSkip when path strategy returns skip", async () => {
+      const entry = createCopyableEntry("a.wav");
+      const registry = new Registry(createFileSource("root", [entry]));
+      registry.setPathStrategy({ destinationPathFor: () => new SkipResult("test") });
+      const onSkip = vi.fn<(entry: ConfigEntry, reason: string) => void>();
+
+      await registry.exportToDirectory(undefined, { onSkip });
+
+      expect(onSkip).toHaveBeenCalledOnce();
+    });
+  });
 });

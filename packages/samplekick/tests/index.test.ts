@@ -42,7 +42,6 @@ describe("samplekick CLI", () => {
           "",
           "Options:",
           "  -o, --output <path>     Export samples to a directory",
-          "                          (omit to dump CSV config to stdout)",
           "  -a, --analyse           Analyse pack and save auto-config",
           "  -d, --device <name>     Apply a device preset",
           "  -c, --convert           Convert audio files to device format",
