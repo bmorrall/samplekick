@@ -1,8 +1,8 @@
 import { createHash } from "node:crypto";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, open, stat, writeFile } from "node:fs/promises";
 import { basename, dirname } from "node:path";
 import { unzip } from "unzipit";
-import type { ZipEntry } from "unzipit";
+import type { Reader, ZipEntry } from "unzipit";
 import type { FileSource, FileEntry } from "../types";
 import { getPathName } from "../path_utils";
 
@@ -18,6 +18,42 @@ const createFileEntryForZip = (
     await writeFile(destPath, new Uint8Array(buffer));
   },
 });
+
+class NodeFileReader implements Reader {
+  constructor(private readonly filePath: string) {}
+
+  async getLength(): Promise<number> {
+    const { size } = await stat(this.filePath);
+    return size;
+  }
+
+  async read(offset: number, length: number): Promise<Uint8Array<ArrayBuffer>> {
+    const handle = await open(this.filePath, "r");
+    try {
+      const buf = new Uint8Array(new ArrayBuffer(length));
+      const { bytesRead } = await handle.read(Buffer.from(buf.buffer), 0, length, offset);
+      return bytesRead === length ? buf : new Uint8Array(buf.buffer, 0, bytesRead);
+    } finally {
+      await handle.close();
+    }
+  }
+}
+
+const computeFileFingerprint = async (filePath: string): Promise<string> => {
+  const hash = createHash("sha256");
+  const handle = await open(filePath, "r");
+  try {
+    for await (const chunk of handle.createReadStream()) {
+      if (!Buffer.isBuffer(chunk)) {
+        throw new TypeError(`unexpected chunk type: ${typeof chunk}`);
+      }
+      hash.update(chunk);
+    }
+  } finally {
+    await handle.close();
+  }
+  return hash.digest("hex");
+};
 
 export class ZipDataSource implements FileSource {
   private readonly entries: Map<string, ZipEntry>;
@@ -36,10 +72,11 @@ export class ZipDataSource implements FileSource {
   }
 
   static async fromFile(filePath: string): Promise<ZipDataSource> {
-    const buffer = await readFile(filePath);
-    const fingerprint = createHash("sha256").update(buffer).digest("hex");
-    const blob = new Blob([buffer]);
-    return await ZipDataSource.fromBlob(blob, basename(filePath), fingerprint);
+    const [fingerprint, { entries }] = await Promise.all([
+      computeFileFingerprint(filePath),
+      unzip(new NodeFileReader(filePath)),
+    ]);
+    return new ZipDataSource(new Map(Object.entries(entries)), basename(filePath), fingerprint);
   }
 
   getName(): string {
