@@ -130,7 +130,7 @@ describe("SP-404MKII device preset", () => {
       expect(firstRun.status).toBe(0);
 
       // Auto-config preserves original paths and stores sanitized names in the name column.
-      // SP404Mk2NameTransformer also sanitizes packageName set by DefaultPackageNameTransformer.
+      // SP404Mk2NameTransformer also sanitizes packageName set by DefaultRootPackageNameTransformer.
       const [autoConfigFile] = await readdir(dataDir);
       const autoConfig = await readFile(join(dataDir, autoConfigFile), "utf8");
       expect(autoConfig).toBe([

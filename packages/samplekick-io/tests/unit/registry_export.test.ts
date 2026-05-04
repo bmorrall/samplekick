@@ -142,8 +142,9 @@ describe("Registry.exportToDirectory", () => {
 
     await registry.exportToDirectory("/output", {});
 
-    const callCount = [entryA.copyToPath, entryB.copyToPath].filter((fn) => vi.mocked(fn).mock.calls.length > 0).length;
-    expect(callCount).toBe(1);
+    const aWritten = vi.mocked(entryA.copyToPath).mock.calls.length > 0;
+    const bWritten = vi.mocked(entryB.copyToPath).mock.calls.length > 0;
+    expect(aWritten !== bWritten).toBe(true);
   });
 
   it("calls onSkip with a duplicate destination reason when paths collide", async () => {

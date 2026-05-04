@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   OrganisedPathStrategy,
 } from "../../src";
-import { SP404Mk2NameTransformer, DefaultPackageNameTransformer } from "../../src/transformers";
+import { SP404Mk2NameTransformer, DefaultRootPackageNameTransformer } from "../../src/transformers";
 import { createZipRegistry } from "../support";
 import fs from "node:fs/promises";
 import os from "node:os";
@@ -31,7 +31,7 @@ describe("SP404 Mk2 end-to-end sample processing", () => {
     registry.applyTransform(SP404Mk2NameTransformer);
 
     // Set default package name based on root zip name (minus extension)
-    registry.applyTransform(DefaultPackageNameTransformer);
+    registry.applyTransform(DefaultRootPackageNameTransformer);
 
     // Apply metadata and manual edits using original paths (paths are immutable)
     registry.setSampleType("Melodic Loops");
