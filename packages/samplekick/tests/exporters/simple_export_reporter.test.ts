@@ -156,4 +156,30 @@ describe("SimpleExportReporter", () => {
       expect(getOutput()).toBe("Exported 1 file to /output/dir\n");
     });
   });
+
+  describe("onPreview", () => {
+    it("writes 'Would export N files' with no skips", () => {
+      const { reporter, getOutput } = createReporter();
+      reporter.onPreview(3, 0);
+      expect(getOutput()).toBe("Would export 3 files\n");
+    });
+
+    it("uses singular 'file' when count is 1", () => {
+      const { reporter, getOutput } = createReporter();
+      reporter.onPreview(1, 0);
+      expect(getOutput()).toBe("Would export 1 file\n");
+    });
+
+    it("includes skip count when skips > 0", () => {
+      const { reporter, getOutput } = createReporter();
+      reporter.onPreview(2, 1);
+      expect(getOutput()).toBe("Would export 2 files (1 entry skipped)\n");
+    });
+
+    it("uses plural 'entries' when skip count > 1", () => {
+      const { reporter, getOutput } = createReporter();
+      reporter.onPreview(2, 3);
+      expect(getOutput()).toBe("Would export 2 files (3 entries skipped)\n");
+    });
+  });
 });

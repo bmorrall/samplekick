@@ -62,4 +62,15 @@ export class SimpleExportReporter implements ExportReporter {
       this.output.write(`Exported ${totalPart} to ${dirPath}\n`);
     }
   }
+
+  onPreview(successCount: number, skipCount: number): void {
+    const filePlural = successCount === 1 ? "file" : "files";
+    const totalPart = `${successCount} ${filePlural}`;
+    if (skipCount > 0) {
+      const skipPlural = skipCount === 1 ? "entry" : "entries";
+      this.output.write(`Would export ${totalPart} (${skipCount} ${skipPlural} skipped)\n`);
+    } else {
+      this.output.write(`Would export ${totalPart}\n`);
+    }
+  }
 }

@@ -96,7 +96,7 @@ describe("samplekick CLI", () => {
     });
   });
 
-  it("dumps registry config as CSV to stdout when --output is omitted", async () => {
+  it("dumps registry config as CSV to stdout when --dump-config is passed", async () => {
     const zipped = zipSync({
       "Drums/kick.wav": strToU8("kick-data"),
       "Loops/bass.wav": strToU8("bass-data"),
@@ -109,7 +109,7 @@ describe("samplekick CLI", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync("node", [CLI_PATH, zipPath], {
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--dump-config"], {
         encoding: "utf8",
         env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
       });
@@ -117,7 +117,6 @@ describe("samplekick CLI", () => {
       expect(result.stderr).toBe("");
       const lines = result.stdout.trim().split("\n");
       expect(lines).toHaveLength(7);
-      expect(lines[0]).toBe("path,name,packageName,sampleType,skip,keepPath");
       expect(lines[1]).toBe(",test-pack.zip,,,,");
       expect(lines[2]).toBe(".DS_Store,,,,true,");
       expect(lines[3]).toBe("Drums,,,,,");

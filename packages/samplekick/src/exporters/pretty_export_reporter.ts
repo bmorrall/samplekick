@@ -145,4 +145,13 @@ export class PrettyExportReporter implements ExportReporter {
     const suffix = suffixParts.length > 0 ? ` (${suffixParts.join(", ")})` : "";
     this.output.write(`Exported ${totalPart} to ${dirPath}${suffix}\n`);
   }
+
+  onPreview(successCount: number, skipCount: number): void {
+    const filePlural = successCount === 1 ? "file" : "files";
+    const totalPart = `${successCount} ${filePlural}`;
+    const suffix = skipCount > 0
+      ? ` (${this.chalk.dim(`${skipCount} ${skipCount === 1 ? "entry" : "entries"} skipped`)})`
+      : "";
+    this.output.write(`Would export ${totalPart}${suffix}\n`);
+  }
 }
