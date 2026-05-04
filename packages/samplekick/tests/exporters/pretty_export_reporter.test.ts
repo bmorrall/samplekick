@@ -82,18 +82,34 @@ describe("PrettyExportReporter", () => {
   });
 
   describe("onAfterWrite (success)", () => {
-    it("writes '✓ {filename}  {dir}/' with green symbol and dimmed directory", () => {
+    it("writes '✓ {dir}/{filename}' with green symbol and dimmed directory", () => {
       const { reporter, getOutput } = createReporter();
-      reporter.onAfterWrite(createEntry("kick.wav"), "loops/my-pack/kick.wav");
+      reporter.onAfterWrite(createEntry("loops/my-pack/kick.wav"), "loops/my-pack/kick.wav");
       const raw = getOutput();
       expect(raw).toContain("\x1B[32m");
-      expect(stripAnsi(raw)).toBe("  ✓ kick.wav  loops/my-pack/\n");
+      expect(stripAnsi(raw)).toBe("  ✓ loops/my-pack/kick.wav\n");
     });
 
-    it("omits directory suffix when file is at root of output dir", () => {
+    it("omits directory prefix when file is at root of output dir", () => {
       const { reporter, getOutput } = createReporter();
       reporter.onAfterWrite(createEntry("kick.wav"), "kick.wav");
       expect(stripAnsi(getOutput())).toBe("  ✓ kick.wav\n");
+    });
+
+    it("shows destination path below source when they differ", () => {
+      const { reporter, getOutput } = createReporter();
+      reporter.onAfterWrite(createEntry("Drums/Kick 01.wav"), "loops/my-pack/kick.wav");
+      expect(stripAnsi(getOutput())).toBe([
+        "  ✓ Drums/Kick 01.wav",
+        "    └── loops/my-pack/kick.wav",
+        "",
+      ].join("\n"));
+    });
+
+    it("omits source path when source and destination are identical", () => {
+      const { reporter, getOutput } = createReporter();
+      reporter.onAfterWrite(createEntry("loops/my-pack/kick.wav"), "loops/my-pack/kick.wav");
+      expect(stripAnsi(getOutput())).toBe("  ✓ loops/my-pack/kick.wav\n");
     });
   });
 
@@ -163,7 +179,7 @@ describe("PrettyExportReporter", () => {
       reporter.onReject(createEntry("a.wav"), "Missing sampleType");
       reporter.onAfterWrite(createEntry("b.wav"), "b.wav");
       reporter.onComplete("/output/dir");
-      expect(stripAnsi(getOutput())).toContain("Exported 1 file to /output/dir (1 rejected)\n");
+      expect(stripAnsi(getOutput())).toContain("Exported 1 file to /output/dir (1 entry rejected)\n");
     });
 
     it("includes both error and reject counts when both occur", () => {
@@ -172,7 +188,7 @@ describe("PrettyExportReporter", () => {
       reporter.onReject(createEntry("b.wav"), "Missing packageName");
       reporter.onAfterWrite(createEntry("c.wav"), "c.wav");
       reporter.onComplete("/output/dir");
-      expect(stripAnsi(getOutput())).toContain("Exported 2 files to /output/dir (1 error, 1 rejected)\n");
+      expect(stripAnsi(getOutput())).toContain("Exported 2 files to /output/dir (1 error, 1 entry rejected)\n");
     });
   });
 
@@ -238,7 +254,7 @@ describe("PrettyExportReporter", () => {
       const { reporter, getOutput } = createOrganisedReporter();
       reporter.onAfterWrite(createEntry("kick.wav"), "loops/my-pack/kick.wav");
       const raw = getOutput();
-      expect(stripAnsi(raw)).toBe("  ✓ kick.wav  loops/my-pack/\n");
+      expect(stripAnsi(raw)).toBe("  ✓ kick.wav\n    └── loops/my-pack/kick.wav\n");
       expect(raw).toContain("\x1B[36m"); // cyan — sampleType
       expect(raw).toContain("\x1B[34m"); // blue — packageName
     });
@@ -247,14 +263,14 @@ describe("PrettyExportReporter", () => {
       const { reporter, getOutput } = createOrganisedReporter();
       reporter.onAfterWrite(createEntry("kick.wav"), "loops/my-pack/sub/kick.wav");
       const raw = getOutput();
-      expect(stripAnsi(raw)).toBe("  ✓ kick.wav  loops/my-pack/sub/\n");
+      expect(stripAnsi(raw)).toBe("  ✓ kick.wav\n    └── loops/my-pack/sub/kick.wav\n");
       expect(raw).toContain("\x1B[36m"); // cyan — sampleType
       expect(raw).toContain("\x1B[34m"); // blue — packageName
     });
 
     it("does not apply organised colouring when organised is false", () => {
       const { reporter, getOutput } = createReporter();
-      reporter.onAfterWrite(createEntry("kick.wav"), "loops/my-pack/kick.wav");
+      reporter.onAfterWrite(createEntry("loops/my-pack/kick.wav"), "loops/my-pack/kick.wav");
       const raw = getOutput();
       expect(raw).not.toContain("\x1B[36m"); // no cyan
       expect(raw).not.toContain("\x1B[34m"); // no blue

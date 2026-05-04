@@ -124,7 +124,7 @@ export class PrettyExportReporter implements ExportReporter {
     this.startSpinner();
   }
 
-  onAfterWrite(_entry: ConfigEntry, destRelPath: string, error?: Error): void {
+  onAfterWrite(entry: ConfigEntry, destRelPath: string, error?: Error): void {
     this.totalCount += 1;
     if (error === undefined) {
       if (this.quiet) {
@@ -132,9 +132,17 @@ export class PrettyExportReporter implements ExportReporter {
           this.drawSpinner();
         }
       } else {
+        const sourcePath = entry.getPath();
         const dir = dirname(destRelPath);
-        const dirSuffix = dir === "." ? "" : `  ${this.formatDir(dir)}${this.chalk.gray("/")}`;
-        this.logLine(`${this.chalk.green("✓")} ${basename(destRelPath)}${dirSuffix}`);
+        const formattedDest = dir === "."
+          ? basename(destRelPath)
+          : `${this.formatDir(dir)}${this.chalk.gray("/")}${basename(destRelPath)}`;
+        const isDifferent = sourcePath !== destRelPath;
+        const destSuffix = isDifferent
+          ? `\n    ${this.chalk.gray("└── ")}${formattedDest}`
+          : "";
+        const label = isDifferent ? this.chalk.gray(sourcePath) : formattedDest;
+        this.logLine(`${this.chalk.green("✓")} ${label}${destSuffix}`);
       }
     } else {
       this.errorCount += 1;
@@ -145,7 +153,7 @@ export class PrettyExportReporter implements ExportReporter {
   onReject(entry: ConfigEntry, reason: string): void {
     this.rejectedCount += 1;
     if (!this.quiet) {
-      this.logLine(`${this.chalk.magenta("?")} ${entry.getPath()}\n    ${this.chalk.gray("└── " + reason)}`);
+      this.logLine(`${this.chalk.magenta("?")} ${entry.getPath()}\n    ${this.chalk.gray(`└── ${reason}`)}`);
     }
   }
 
