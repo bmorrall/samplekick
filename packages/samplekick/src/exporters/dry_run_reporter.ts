@@ -10,7 +10,7 @@ interface SuccessItem {
   destRelPath: string;
 }
 
-interface SkipItem {
+interface RejectionItem {
   entry: ConfigEntry;
   reason: string;
 }
@@ -18,7 +18,7 @@ interface SkipItem {
 export class DryRunReporter {
   private readonly inner: ExportReporter;
   private readonly successes: SuccessItem[] = [];
-  private readonly problemSkips: SkipItem[] = [];
+  private readonly rejections: RejectionItem[] = [];
 
   constructor(inner: ExportReporter) {
     this.inner = inner;
@@ -38,21 +38,21 @@ export class DryRunReporter {
     }
   }
 
-  onSkip(entry: ConfigEntry, reason: string): void {
-    this.problemSkips.push({ entry, reason });
+  onReject(entry: ConfigEntry, reason: string): void {
+    this.rejections.push({ entry, reason });
   }
 
   flush(): void {
     const sortedSuccesses = [...this.successes].sort((a, b) => a.destRelPath.localeCompare(b.destRelPath));
-    const sortedSkips = [...this.problemSkips].sort((a, b) => a.entry.getPath().localeCompare(b.entry.getPath()));
+    const sortedRejections = [...this.rejections].sort((a, b) => a.entry.getPath().localeCompare(b.entry.getPath()));
 
     for (const { entry, destRelPath } of sortedSuccesses) {
       this.inner.onAfterWrite(entry, destRelPath);
     }
-    for (const { entry, reason } of sortedSkips) {
-      this.inner.onSkip(entry, reason);
+    for (const { entry, reason } of sortedRejections) {
+      this.inner.onReject(entry, reason);
     }
 
-    this.inner.onPreview(sortedSuccesses.length, sortedSkips.length);
+    this.inner.onPreview(sortedSuccesses.length, sortedRejections.length);
   }
 }

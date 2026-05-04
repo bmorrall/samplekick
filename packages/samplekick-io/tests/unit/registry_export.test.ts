@@ -38,41 +38,41 @@ describe("Registry.exportToDirectory", () => {
     expect(entry.copyToPath).not.toHaveBeenCalled();
   });
 
-  it("calls onSkip when pathStrategy returns skip", async () => {
+  it("calls onReject when pathStrategy returns skip", async () => {
     const entry = createCopyableEntry("a.wav");
     const registry = new Registry(createFileSource("root", [entry]));
     registry.setPathStrategy({ destinationPathFor: () => new SkipResult("test") });
-    const onSkip = vi.fn<(entry: ConfigEntry, reason: string) => void>();
+    const onReject = vi.fn<(entry: ConfigEntry, reason: string) => void>();
 
-    await registry.exportToDirectory("/output", { onSkip });
+    await registry.exportToDirectory("/output", { onReject });
 
-    expect(onSkip).toHaveBeenCalledOnce();
+    expect(onReject).toHaveBeenCalledOnce();
   });
 
-  it("uses skipReasonFor message in onSkip when available", async () => {
+  it("uses skipReasonFor message in onReject when available", async () => {
     const entry = createCopyableEntry("a.wav");
     const registry = new Registry(createFileSource("root", [entry]));
     registry.setPathStrategy(OrganisedPathStrategy);
     // no packageName or sampleType set → OrganisedPathStrategy returns undefined
-    const onSkip = vi.fn<(entry: ConfigEntry, reason: string) => void>();
+    const onReject = vi.fn<(entry: ConfigEntry, reason: string) => void>();
 
-    await registry.exportToDirectory("/output", { onSkip });
+    await registry.exportToDirectory("/output", { onReject });
 
-    expect(onSkip).toHaveBeenCalledWith(expect.anything(), "Missing sampleType and packageName");
+    expect(onReject).toHaveBeenCalledWith(expect.anything(), "Missing sampleType and packageName");
   });
 
-  it("does not call onSkip when isSkipped is true", async () => {
+  it("does not call onReject when isSkipped is true", async () => {
     const entry = createCopyableEntry("a.wav");
     const registry = new Registry(createFileSource("root", [entry]));
     registry.setPathStrategy(OrganisedPathStrategy);
     registry.setSkipped("a.wav", true);
     registry.setPackageName("my-pack");
     registry.setSampleType("loops");
-    const onSkip = vi.fn<(entry: ConfigEntry, reason: string) => void>();
+    const onReject = vi.fn<(entry: ConfigEntry, reason: string) => void>();
 
-    await registry.exportToDirectory("/output", { onSkip });
+    await registry.exportToDirectory("/output", { onReject });
 
-    expect(onSkip).not.toHaveBeenCalled();
+    expect(onReject).not.toHaveBeenCalled();
   });
 
   it("skips entries where isSkipped is true", async () => {
@@ -147,19 +147,19 @@ describe("Registry.exportToDirectory", () => {
     expect(aWritten !== bWritten).toBe(true);
   });
 
-  it("calls onSkip with a duplicate destination reason when paths collide", async () => {
+  it("calls onReject with a duplicate destination reason when paths collide", async () => {
     const entryA = createCopyableEntry("pack-a/kick.wav");
     const entryB = createCopyableEntry("pack-b/kick.wav");
     const registry = new Registry(createFileSource("root", [entryA, entryB]));
     registry.setPathStrategy(OrganisedPathStrategy);
     registry.setPackageName("my-pack");
     registry.setSampleType("drums");
-    const onSkip = vi.fn<(entry: ConfigEntry, reason: string) => void>();
+    const onReject = vi.fn<(entry: ConfigEntry, reason: string) => void>();
 
-    await registry.exportToDirectory("/output", { onSkip });
+    await registry.exportToDirectory("/output", { onReject });
 
-    expect(onSkip).toHaveBeenCalledOnce();
-    expect(onSkip).toHaveBeenCalledWith(expect.anything(), expect.stringContaining("duplicate destination"));
+    expect(onReject).toHaveBeenCalledOnce();
+    expect(onReject).toHaveBeenCalledWith(expect.anything(), expect.stringContaining("duplicate destination"));
   });
 
   describe("dry-run (dirPath: undefined)", () => {
@@ -192,15 +192,15 @@ describe("Registry.exportToDirectory", () => {
       expect(onAfterWrite).not.toHaveBeenCalledWith(expect.anything(), expect.any(String), expect.any(Error));
     });
 
-    it("still calls onSkip when path strategy returns skip", async () => {
+    it("still calls onReject when path strategy returns skip", async () => {
       const entry = createCopyableEntry("a.wav");
       const registry = new Registry(createFileSource("root", [entry]));
       registry.setPathStrategy({ destinationPathFor: () => new SkipResult("test") });
-      const onSkip = vi.fn<(entry: ConfigEntry, reason: string) => void>();
+      const onReject = vi.fn<(entry: ConfigEntry, reason: string) => void>();
 
-      await registry.exportToDirectory(undefined, { onSkip });
+      await registry.exportToDirectory(undefined, { onReject });
 
-      expect(onSkip).toHaveBeenCalledOnce();
+      expect(onReject).toHaveBeenCalledOnce();
     });
   });
 });

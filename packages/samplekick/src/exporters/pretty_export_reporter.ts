@@ -23,7 +23,7 @@ export class PrettyExportReporter implements ExportReporter {
   private readonly organised: boolean;
   private totalCount = 0;
   private errorCount = 0;
-  private skippedCount = 0;
+  private rejectedCount = 0;
   private spinnerTimer: ReturnType<typeof setInterval> | undefined = undefined;
   private spinnerFrame = 0;
 
@@ -123,8 +123,8 @@ export class PrettyExportReporter implements ExportReporter {
     }
   }
 
-  onSkip(entry: ConfigEntry, reason: string): void {
-    this.skippedCount += 1;
+  onReject(entry: ConfigEntry, reason: string): void {
+    this.rejectedCount += 1;
     if (!this.quiet) {
       this.logLine(`${this.chalk.magenta("?")} ${entry.getPath()}: ${this.chalk.gray(reason)}`);
     }
@@ -139,18 +139,18 @@ export class PrettyExportReporter implements ExportReporter {
       const errPlural = this.errorCount === 1 ? "error" : "errors";
       suffixParts.push(this.chalk.red(`${this.errorCount} ${errPlural}`));
     }
-    if (this.skippedCount > 0) {
-      suffixParts.push(this.chalk.dim(`${this.skippedCount} skipped`));
+    if (this.rejectedCount > 0) {
+      suffixParts.push(this.chalk.dim(`${this.rejectedCount} rejected`));
     }
     const suffix = suffixParts.length > 0 ? ` (${suffixParts.join(", ")})` : "";
     this.output.write(`Exported ${totalPart} to ${dirPath}${suffix}\n`);
   }
 
-  onPreview(successCount: number, skipCount: number): void {
+  onPreview(successCount: number, rejectCount: number): void {
     const filePlural = successCount === 1 ? "file" : "files";
     const totalPart = `${successCount} ${filePlural}`;
-    const suffix = skipCount > 0
-      ? ` (${this.chalk.dim(`${skipCount} ${skipCount === 1 ? "entry" : "entries"} skipped`)})`
+    const suffix = rejectCount > 0
+      ? ` (${this.chalk.dim(`${rejectCount} ${rejectCount === 1 ? "entry" : "entries"} rejected`)})`
       : "";
     this.output.write(`Would export ${totalPart}${suffix}\n`);
   }

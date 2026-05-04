@@ -48,8 +48,8 @@ export class SimpleExportReporter implements ExportReporter {
     }
   }
 
-  onSkip(entry: ConfigEntry, reason: string): void {
-    this.output.write(`skipped: ${entry.getPath()}: ${reason}\n`);
+  onReject(entry: ConfigEntry, reason: string): void {
+    this.output.write(`rejected: ${entry.getPath()}: ${reason}\n`);
   }
 
   onComplete(dirPath: string): void {
@@ -63,12 +63,12 @@ export class SimpleExportReporter implements ExportReporter {
     }
   }
 
-  onPreview(successCount: number, skipCount: number): void {
+  onPreview(successCount: number, rejectCount: number): void {
     const filePlural = successCount === 1 ? "file" : "files";
     const totalPart = `${successCount} ${filePlural}`;
-    if (skipCount > 0) {
-      const skipPlural = skipCount === 1 ? "entry" : "entries";
-      this.output.write(`Would export ${totalPart} (${skipCount} ${skipPlural} skipped)\n`);
+    if (rejectCount > 0) {
+      const rejectPlural = rejectCount === 1 ? "entry" : "entries";
+      this.output.write(`Would export ${totalPart} (${rejectCount} ${rejectPlural} rejected)\n`);
     } else {
       this.output.write(`Would export ${totalPart}\n`);
     }

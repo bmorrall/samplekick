@@ -315,12 +315,12 @@ export class Registry implements FileSource, ConfigSource {
       }
       const result = this.pathStrategy.destinationPathFor(node);
       if (result instanceof SkipResult) {
-        options.onSkip?.(node, result.reason);
+        options.onReject?.(node, result.reason);
         return;
       }
       const { path: destRelPath } = result;
       if (seenDestPaths.has(destRelPath)) {
-        options.onSkip?.(node, `duplicate destination: ${destRelPath}`);
+        options.onReject?.(node, `duplicate destination: ${destRelPath}`);
         return;
       }
       seenDestPaths.add(destRelPath);

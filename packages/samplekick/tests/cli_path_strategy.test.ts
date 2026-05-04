@@ -36,7 +36,7 @@ describe("path strategy", () => {
     }
   });
 
-  it("logs skipped entries with reason when no config is set and --verbose is passed", async () => {
+  it("logs rejected entries with reason when no config is set and --verbose is passed", async () => {
     const zipped = zipSync({
       "Drums/kick.wav": strToU8("kick-data"),
     });
@@ -54,7 +54,7 @@ describe("path strategy", () => {
       });
 
       expect(result.stderr).toBe("");
-      expect(result.stdout).toContain("skipped: Drums/kick.wav: Missing sampleType and packageName");
+      expect(result.stdout).toContain("rejected: Drums/kick.wav: Missing sampleType and packageName");
       expect(result.status).toBe(0);
     } finally {
       await rm(tmpDir, { recursive: true });

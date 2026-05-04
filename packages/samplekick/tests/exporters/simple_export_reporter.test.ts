@@ -99,11 +99,11 @@ describe("SimpleExportReporter", () => {
     });
   });
 
-  describe("onSkip", () => {
-    it("writes 'skipped: {path}: {reason}'", () => {
+  describe("onReject", () => {
+    it("writes 'rejected: {path}: {reason}'", () => {
       const { reporter, getOutput } = createReporter();
-      reporter.onSkip(createEntry("Drums/kick.wav"), "Missing sampleType and packageName");
-      expect(getOutput()).toBe("skipped: Drums/kick.wav: Missing sampleType and packageName\n");
+      reporter.onReject(createEntry("Drums/kick.wav"), "Missing sampleType and packageName");
+      expect(getOutput()).toBe("rejected: Drums/kick.wav: Missing sampleType and packageName\n");
     });
   });
 
@@ -170,16 +170,16 @@ describe("SimpleExportReporter", () => {
       expect(getOutput()).toBe("Would export 1 file\n");
     });
 
-    it("includes skip count when skips > 0", () => {
+    it("includes reject count when rejections > 0", () => {
       const { reporter, getOutput } = createReporter();
       reporter.onPreview(2, 1);
-      expect(getOutput()).toBe("Would export 2 files (1 entry skipped)\n");
+      expect(getOutput()).toBe("Would export 2 files (1 entry rejected)\n");
     });
 
-    it("uses plural 'entries' when skip count > 1", () => {
+    it("uses plural 'entries' when reject count > 1", () => {
       const { reporter, getOutput } = createReporter();
       reporter.onPreview(2, 3);
-      expect(getOutput()).toBe("Would export 2 files (3 entries skipped)\n");
+      expect(getOutput()).toBe("Would export 2 files (3 entries rejected)\n");
     });
   });
 });

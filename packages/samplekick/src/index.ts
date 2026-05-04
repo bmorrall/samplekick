@@ -264,7 +264,7 @@ if (values.output === undefined) {
   await registry.exportToDirectory(undefined, {
     onDebug: debugLog,
     onAfterWrite: (e, p, err) => { dryRun.onAfterWrite(e, p, err); },
-    onSkip: (e, r) => { dryRun.onSkip(e, r); },
+    onReject: (e, r) => { dryRun.onReject(e, r); },
   }).catch((err: unknown) => {
     console.error(`Error: ${err instanceof Error ? err.message : String(err)}`);
     process.exit(1);
@@ -278,7 +278,7 @@ await registry.exportToDirectory(destPath, {
   onDebug: debugLog,
   onBeforeWrite: (e, p) => { reporter.onBeforeWrite?.(e, p); },
   onAfterWrite: (e, p, err) => { reporter.onAfterWrite(e, p, err); },
-  onSkip: (e, r) => { reporter.onSkip(e, r); },
+  onReject: (e, r) => { reporter.onReject(e, r); },
 }).catch((err: unknown) => {
   console.error(`Error: could not export to ${destPath}: ${err instanceof Error ? err.message : String(err)}`);
   process.exit(1);
