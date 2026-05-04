@@ -132,7 +132,7 @@ export class PrettyExportReporter implements ExportReporter {
   onReject(entry: ConfigEntry, reason: string): void {
     this.rejectedCount += 1;
     if (!this.quiet) {
-      this.logLine(`${this.chalk.magenta("?")} ${entry.getPath()}: ${this.chalk.gray(reason)}`);
+      this.logLine(`${this.chalk.magenta("?")} ${entry.getPath()}\n    ${this.chalk.gray("└── " + reason)}`);
     }
   }
 

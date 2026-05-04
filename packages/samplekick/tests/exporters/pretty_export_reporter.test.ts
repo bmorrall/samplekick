@@ -122,7 +122,7 @@ describe("PrettyExportReporter", () => {
       reporter.onReject(createEntry("kick.wav"), "Missing sampleType");
       const raw = getOutput();
       expect(raw).toContain("\x1B[35m");
-      expect(stripAnsi(raw)).toBe("  ? kick.wav: Missing sampleType\n");
+      expect(stripAnsi(raw)).toBe("  ? kick.wav\n    └── Missing sampleType\n");
     });
 
     it("does not increment totalCount", () => {
