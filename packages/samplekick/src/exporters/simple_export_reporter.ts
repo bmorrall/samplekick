@@ -14,12 +14,26 @@ export class SimpleExportReporter implements ExportReporter {
   private readonly packName: string;
   private totalCount = 0;
   private errorCount = 0;
+  private rejectedCount = 0;
+  private skippedCount = 0;
   private started = false;
 
   constructor(output: Writable, quiet = false, packName = "") {
     this.output = output;
     this.quiet = quiet;
     this.packName = packName;
+  }
+
+  private formatErrors(count: number): string {
+    return `${count} ${count === 1 ? "error" : "errors"}`;
+  }
+
+  private formatRejected(count: number): string {
+    return `${count} ${count === 1 ? "entry" : "entries"} rejected`;
+  }
+
+  private formatSkipped(count: number): string {
+    return `${count} ${count === 1 ? "entry" : "entries"} skipped`;
   }
 
   onInfo(message: string): void {
@@ -55,10 +69,12 @@ export class SimpleExportReporter implements ExportReporter {
   }
 
   onReject(entry: ConfigEntry, reason: string): void {
+    this.rejectedCount += 1;
     this.output.write(`rejected: ${entry.getPath()}: ${reason}\n`);
   }
 
   onSkip(entry: FileNode): void {
+    this.skippedCount += 1;
     const children = entry.getChildNodes();
     const count = children.length > 0 ? countLeafNodes(entry) : 0;
     const suffix = count > 0 ? ` (${count} ${count === 1 ? "file" : "files"})` : "";
@@ -68,12 +84,18 @@ export class SimpleExportReporter implements ExportReporter {
   onComplete(dirPath: string): void {
     const filePlural = this.totalCount === 1 ? "file" : "files";
     const totalPart = `${this.totalCount} ${filePlural}`;
+    const suffixParts: string[] = [];
     if (this.errorCount > 0) {
-      const errPlural = this.errorCount === 1 ? "error" : "errors";
-      this.output.write(`Exported ${totalPart} to ${dirPath} (${this.errorCount} ${errPlural})\n`);
-    } else {
-      this.output.write(`Exported ${totalPart} to ${dirPath}\n`);
+      suffixParts.push(this.formatErrors(this.errorCount));
     }
+    if (this.rejectedCount > 0) {
+      suffixParts.push(this.formatRejected(this.rejectedCount));
+    }
+    if (this.skippedCount > 0) {
+      suffixParts.push(this.formatSkipped(this.skippedCount));
+    }
+    const suffix = suffixParts.length > 0 ? ` (${suffixParts.join(", ")})` : "";
+    this.output.write(`Exported ${totalPart} to ${dirPath}${suffix}\n`);
   }
 
   onPreview(successCount: number, rejectCount: number, skipCount: number): void {
@@ -81,12 +103,10 @@ export class SimpleExportReporter implements ExportReporter {
     const totalPart = `${successCount} ${filePlural}`;
     const parts: string[] = [];
     if (rejectCount > 0) {
-      const rejectPlural = rejectCount === 1 ? "entry" : "entries";
-      parts.push(`${rejectCount} ${rejectPlural} rejected`);
+      parts.push(this.formatRejected(rejectCount));
     }
     if (skipCount > 0) {
-      const skipPlural = skipCount === 1 ? "record" : "records";
-      parts.push(`${skipCount} ${skipPlural} skipped`);
+      parts.push(this.formatSkipped(skipCount));
     }
     const suffix = parts.length > 0 ? ` (${parts.join(", ")})` : "";
     this.output.write(`Would export ${totalPart}${suffix}\n`);

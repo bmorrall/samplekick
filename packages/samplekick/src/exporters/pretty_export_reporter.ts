@@ -30,6 +30,7 @@ export class PrettyExportReporter implements ExportReporter {
   private totalCount = 0;
   private errorCount = 0;
   private rejectedCount = 0;
+  private skippedCount = 0;
   private spinnerTimer: ReturnType<typeof setInterval> | undefined = undefined;
   private spinnerFrame = 0;
 
@@ -40,6 +41,18 @@ export class PrettyExportReporter implements ExportReporter {
     this.isTTY = "isTTY" in output && (output as { isTTY: unknown }).isTTY === true;
     this.packName = options.packName ?? "";
     this.organised = options.organised ?? false;
+  }
+
+  private formatErrors(count: number): string {
+    return this.chalk.red(`${count} ${count === 1 ? "error" : "errors"}`);
+  }
+
+  private formatRejected(count: number): string {
+    return this.chalk.magenta(`${count} ${count === 1 ? "entry" : "entries"} rejected`);
+  }
+
+  private formatSkipped(count: number): string {
+    return this.chalk.dim(`${count} ${count === 1 ? "entry" : "entries"} skipped`);
   }
 
   private formatDir(dir: string): string {
@@ -137,6 +150,7 @@ export class PrettyExportReporter implements ExportReporter {
   }
 
   onSkip(entry: FileNode): void {
+    this.skippedCount += 1;
     if (!this.quiet) {
       const children = entry.getChildNodes();
       const count = children.length > 0 ? countLeafNodes(entry) : 0;
@@ -151,11 +165,13 @@ export class PrettyExportReporter implements ExportReporter {
     const totalPart = `${this.totalCount} ${filePlural}`;
     const suffixParts: string[] = [];
     if (this.errorCount > 0) {
-      const errPlural = this.errorCount === 1 ? "error" : "errors";
-      suffixParts.push(this.chalk.red(`${this.errorCount} ${errPlural}`));
+      suffixParts.push(this.formatErrors(this.errorCount));
     }
     if (this.rejectedCount > 0) {
-      suffixParts.push(this.chalk.dim(`${this.rejectedCount} rejected`));
+      suffixParts.push(this.formatRejected(this.rejectedCount));
+    }
+    if (this.skippedCount > 0) {
+      suffixParts.push(this.formatSkipped(this.skippedCount));
     }
     const suffix = suffixParts.length > 0 ? ` (${suffixParts.join(", ")})` : "";
     this.output.write(`Exported ${totalPart} to ${dirPath}${suffix}\n`);
@@ -166,12 +182,12 @@ export class PrettyExportReporter implements ExportReporter {
     const totalPart = `${successCount} ${filePlural}`;
     const parts: string[] = [];
     if (rejectCount > 0) {
-      parts.push(`${rejectCount} ${rejectCount === 1 ? "entry" : "entries"} rejected`);
+      parts.push(this.formatRejected(rejectCount));
     }
     if (skipCount > 0) {
-      parts.push(`${skipCount} ${skipCount === 1 ? "record" : "records"} skipped`);
+      parts.push(this.formatSkipped(skipCount));
     }
-    const suffix = parts.length > 0 ? ` (${this.chalk.dim(parts.join(", "))})` : "";
+    const suffix = parts.length > 0 ? ` (${parts.join(", ")})` : "";
     this.output.write(`Would export ${totalPart}${suffix}\n`);
   }
 }

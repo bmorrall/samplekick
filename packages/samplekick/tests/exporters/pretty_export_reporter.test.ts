@@ -350,19 +350,19 @@ describe("PrettyExportReporter", () => {
     it("includes skip count when skips > 0", () => {
       const { reporter, getOutput } = createReporter();
       reporter.onPreview(2, 0, 1);
-      expect(stripAnsi(getOutput())).toBe("Would export 2 files (1 record skipped)\n");
+      expect(stripAnsi(getOutput())).toBe("Would export 2 files (1 entry skipped)\n");
     });
 
     it("uses plural 'records' when skip count > 1", () => {
       const { reporter, getOutput } = createReporter();
       reporter.onPreview(2, 0, 3);
-      expect(stripAnsi(getOutput())).toBe("Would export 2 files (3 records skipped)\n");
+      expect(stripAnsi(getOutput())).toBe("Would export 2 files (3 entries skipped)\n");
     });
 
     it("includes both reject and skip counts", () => {
       const { reporter, getOutput } = createReporter();
       reporter.onPreview(2, 1, 2);
-      expect(stripAnsi(getOutput())).toBe("Would export 2 files (1 entry rejected, 2 records skipped)\n");
+      expect(stripAnsi(getOutput())).toBe("Would export 2 files (1 entry rejected, 2 entries skipped)\n");
     });
   });
 });
