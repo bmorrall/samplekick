@@ -1,15 +1,18 @@
 import { describe, expect, it, vi } from "vitest";
-import type { ConfigEntry } from "samplekick-io";
+import type { ConfigEntry, FileNode } from "samplekick-io";
 import type { ExportReporter } from "../../src/exporters/export_reporter";
 import { DryRunReporter } from "../../src/exporters/dry_run_reporter";
 
-const createEntry = (path: string): ConfigEntry => ({
+const createEntry = (path: string): FileNode => ({
   getPath: () => path,
   getName: () => path.split("/").pop() ?? path,
   getPackageName: () => undefined,
   getSampleType: () => undefined,
   isSkipped: () => undefined,
   isKeepStructure: () => undefined,
+  isFile: () => true,
+  getParentNode: () => undefined,
+  getChildNodes: () => [],
 });
 
 const createInner = (): ExportReporter => ({
@@ -19,7 +22,7 @@ const createInner = (): ExportReporter => ({
   onBeforeWrite: vi.fn<(entry: ConfigEntry, destRelPath: string) => void>(),
   onAfterWrite: vi.fn<(entry: ConfigEntry, destRelPath: string, error?: Error) => void>(),
   onReject: vi.fn<(entry: ConfigEntry, reason: string) => void>(),
-  onSkip: vi.fn<(entry: ConfigEntry) => void>(),
+  onSkip: vi.fn<(entry: FileNode) => void>(),
   onComplete: vi.fn<(dirPath: string) => void>(),
   onPreview: vi.fn<(successCount: number, rejectCount: number, skipCount: number) => void>(),
 });

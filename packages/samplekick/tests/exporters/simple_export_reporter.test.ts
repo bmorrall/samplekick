@@ -1,15 +1,18 @@
 import { PassThrough } from "node:stream";
 import { describe, expect, it } from "vitest";
-import type { ConfigEntry } from "samplekick-io";
+import type { FileNode } from "samplekick-io";
 import { SimpleExportReporter } from "../../src/exporters/simple_export_reporter";
 
-const createEntry = (path: string): ConfigEntry => ({
+const createEntry = (path: string): FileNode => ({
   getPath: () => path,
   getName: () => path.split("/").pop() ?? path,
   getPackageName: () => undefined,
   getSampleType: () => undefined,
   isSkipped: () => undefined,
   isKeepStructure: () => undefined,
+  isFile: () => true,
+  getParentNode: () => undefined,
+  getChildNodes: () => [],
 });
 
 const createReporter = (): { reporter: SimpleExportReporter; getOutput: () => string } => {

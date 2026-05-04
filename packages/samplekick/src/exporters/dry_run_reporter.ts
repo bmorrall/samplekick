@@ -1,4 +1,4 @@
-import type { ConfigEntry } from "samplekick-io";
+import type { ConfigEntry, FileNode } from "samplekick-io";
 import type { ExportReporter } from "./export_reporter";
 
 interface SuccessItem {
@@ -15,7 +15,7 @@ export class DryRunReporter {
   private readonly inner: ExportReporter;
   private readonly successes: SuccessItem[] = [];
   private readonly rejections: RejectionItem[] = [];
-  private readonly configSkips: ConfigEntry[] = [];
+  private readonly configSkips: FileNode[] = [];
 
   constructor(inner: ExportReporter) {
     this.inner = inner;
@@ -39,7 +39,7 @@ export class DryRunReporter {
     this.rejections.push({ entry, reason });
   }
 
-  onSkip(entry: ConfigEntry): void {
+  onSkip(entry: FileNode): void {
     this.configSkips.push(entry);
   }
 

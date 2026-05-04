@@ -2,8 +2,14 @@ import { basename, dirname } from "node:path";
 import type { Writable } from "node:stream";
 import type { ChalkInstance } from "chalk";
 import chalk from "chalk";
-import type { ConfigEntry } from "samplekick-io";
+import type { ConfigEntry, FileNode } from "samplekick-io";
 import type { ExportReporter } from "./export_reporter";
+
+const countLeafNodes = (entry: FileNode): number => {
+  const children = entry.getChildNodes();
+  if (children.length === 0) return 1;
+  return children.reduce((sum, child) => sum + countLeafNodes(child), 0);
+};
 
 const SPINNER_FRAMES = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];
 const SPINNER_INTERVAL_MS = 80;
@@ -130,9 +136,12 @@ export class PrettyExportReporter implements ExportReporter {
     }
   }
 
-  onSkip(entry: ConfigEntry): void {
+  onSkip(entry: FileNode): void {
     if (!this.quiet) {
-      this.logLine(`${this.chalk.dim("-")} ${this.chalk.dim(entry.getPath())}`);
+      const children = entry.getChildNodes();
+      const count = children.length > 0 ? countLeafNodes(entry) : 0;
+      const suffix = count > 0 ? ` (${count} ${count === 1 ? "file" : "files"})` : "";
+      this.logLine(`${this.chalk.dim("-")} ${this.chalk.dim(`${entry.getPath()}${suffix}`)}`);
     }
   }
 

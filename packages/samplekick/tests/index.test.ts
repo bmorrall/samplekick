@@ -166,6 +166,7 @@ describe("samplekick CLI", () => {
   it("logs skipped junk entries when --verbose is passed", async () => {
     const zipped = zipSync({
       "Drums/kick.wav": strToU8("kick-data"),
+      "Drums/.DS_Store": strToU8("junk"),
       "__MACOSX/Drums/._kick.wav": strToU8("junk"),
     });
 
@@ -182,7 +183,9 @@ describe("samplekick CLI", () => {
       });
 
       expect(result.stderr).toBe("");
-      expect(result.stdout).toContain("skipped: __MACOSX/Drums/._kick.wav");
+      expect(result.stdout).toContain("skipped: Drums/.DS_Store");
+      expect(result.stdout).toContain("skipped: __MACOSX (1 file)");
+      expect(result.stdout).not.toContain("skipped: __MACOSX/Drums/._kick.wav");
       await expect(stat(join(outputDir, "__MACOSX/Drums/._kick.wav"))).rejects.toThrow();
 
       expect(result.status).toBe(0);

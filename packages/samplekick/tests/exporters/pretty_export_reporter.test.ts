@@ -1,7 +1,7 @@
 import { PassThrough } from "node:stream";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { Chalk } from "chalk";
-import type { ConfigEntry } from "samplekick-io";
+import type { FileNode } from "samplekick-io";
 import { PrettyExportReporter } from "../../src/exporters/pretty_export_reporter";
 
 // Force level 1 (ANSI 16 colors) so chalk always emits escape codes in tests
@@ -11,13 +11,16 @@ const ESC = String.fromCharCode(0x1B);
 const ANSI_RE = new RegExp(`${ESC}\\[[0-9;]*[A-Za-z]`, "gv");
 const stripAnsi = (s: string): string => s.replace(ANSI_RE, "");
 
-const createEntry = (path: string): ConfigEntry => ({
+const createEntry = (path: string): FileNode => ({
   getPath: () => path,
   getName: () => path.split("/").pop() ?? path,
   getPackageName: () => undefined,
   getSampleType: () => undefined,
   isSkipped: () => undefined,
   isKeepStructure: () => undefined,
+  isFile: () => true,
+  getParentNode: () => undefined,
+  getChildNodes: () => [],
 });
 
 const createReporter = (): { reporter: PrettyExportReporter; getOutput: () => string } => {

@@ -303,11 +303,21 @@ export class Registry implements FileSource, ConfigSource {
   }
 
   async exportToDirectory(dirPath: string | undefined, options: ExportOptions): Promise<void> {
+    // Report the topmost skipped nodes (directories or files) — children of already-skipped
+    // ancestors are implicitly covered and do not need their own callbacks.
+    if (options.onSkip !== undefined) {
+      const { onSkip } = options;
+      this.rootNode.eachDescendant((node) => {
+        if (node.isSkipped() === true && node.getParentNode()?.isSkipped() !== true) {
+          onSkip(node);
+        }
+      });
+    }
+
     const promises: Array<Promise<void>> = [];
     const seenDestPaths = new Set<string>();
     this.rootNode.eachLeafNode((node) => {
       if (node.isSkipped() === true) {
-        options.onSkip?.(node);
         return;
       }
       if (!isLeafNode(node)) {
