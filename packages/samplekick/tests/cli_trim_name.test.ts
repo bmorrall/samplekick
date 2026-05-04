@@ -32,7 +32,7 @@ describe("TrimNameTransformer", () => {
       const csv = await readFile(join(dataDir, configFile), "utf8");
 
       const row = csv.split("\n").find((line) => line.startsWith(" Kicks,"));
-      expect(row).toBe(" Kicks,Kicks,,,,");
+      expect(row).toBe(" Kicks,Kicks,,Kicks,,");
     } finally {
       await rm(tmpDir, { recursive: true });
     }

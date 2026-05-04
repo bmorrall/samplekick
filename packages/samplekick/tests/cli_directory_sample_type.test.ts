@@ -7,11 +7,11 @@ import { describe, expect, it } from "vitest";
 
 const CLI_PATH = resolve(import.meta.dirname, "../dist/index.mjs");
 
-describe("NormaliseHyphenTransformer", () => {
-  it("normalises hyphens touching adjacent words in the auto-config", async () => {
+describe("DirectorySampleTypeTransformer", () => {
+  it("tags a Drums directory with sampleType in the auto-config", async () => {
     const zipped = zipSync({
-      "Drums- Bass/kick.wav": strToU8("kick-data"),
-      "Kicks -Snares/snare.wav": strToU8("snare-data"),
+      "Drums/kick.wav": strToU8("kick-data"),
+      "Drums/snare.wav": strToU8("snare-data"),
     });
 
     const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-analyse-"));
@@ -32,21 +32,16 @@ describe("NormaliseHyphenTransformer", () => {
       const [configFile] = await readdir(dataDir);
       const csv = await readFile(join(dataDir, configFile), "utf8");
 
-      // "Drums- Bass" folder should be renamed to "Drums - Bass"
-      const drumsRow = csv.split("\n").find((row) => row.startsWith("Drums- Bass,"));
-      expect(drumsRow).toBe("Drums- Bass,Drums - Bass,,Drums - Bass,,");
-
-      // "Kicks -Snares" folder should be renamed to "Kicks - Snares"
-      const kicksRow = csv.split("\n").find((row) => row.startsWith("Kicks -Snares,"));
-      expect(kicksRow).toBe("Kicks -Snares,Kicks - Snares,,Kicks - Snares,,");
+      const dirRow = csv.split("\n").find((row) => row.startsWith("Drums,"));
+      expect(dirRow).toBe("Drums,,,Drums,,");
     } finally {
       await rm(tmpDir, { recursive: true });
     }
   });
 
-  it("normalisation persists on a second --analyse run against an existing auto-config", async () => {
+  it("tags a Percussion directory with sampleType in the auto-config", async () => {
     const zipped = zipSync({
-      "Drums- Bass/kick.wav": strToU8("kick-data"),
+      "Percussion/shaker.wav": strToU8("shaker-data"),
     });
 
     const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-analyse-"));
@@ -56,31 +51,49 @@ describe("NormaliseHyphenTransformer", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      // First run: saves auto-config with normalised name
-      const runOnce = spawnSync(
+      const result = spawnSync(
         "node",
         [CLI_PATH, zipPath, "--analyse"],
         { encoding: "utf8", env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir } },
       );
-      expect(runOnce.status).toBe(0);
 
-      // Simulate a stale auto-config with no name override (as if saved before transformer existed)
+      expect(result.status).toBe(0);
+
       const [configFile] = await readdir(dataDir);
-      const configPath = join(dataDir, configFile);
-      const staleConfig = "path,name,packageName,sampleType,skip,keepPath\nDrums- Bass,,,,,\nDrums- Bass/kick.wav,,,,,";
-      await writeFile(configPath, staleConfig);
+      const csv = await readFile(join(dataDir, configFile), "utf8");
 
-      // Second run: transformer should still normalise despite the stale config not having a name
-      const runTwice = spawnSync(
+      const dirRow = csv.split("\n").find((row) => row.startsWith("Percussion,"));
+      expect(dirRow).toBe("Percussion,,,Percussion,,");
+    } finally {
+      await rm(tmpDir, { recursive: true });
+    }
+  });
+
+  it("does not tag an unrecognised directory", async () => {
+    const zipped = zipSync({
+      "Bonks/lead.wav": strToU8("lead-data"),
+    });
+
+    const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-analyse-"));
+    const zipPath = join(tmpDir, "test-pack.zip");
+    const dataDir = join(tmpDir, "data");
+
+    try {
+      await writeFile(zipPath, zipped);
+
+      const result = spawnSync(
         "node",
         [CLI_PATH, zipPath, "--analyse"],
         { encoding: "utf8", env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir } },
       );
-      expect(runTwice.status).toBe(0);
 
-      const csv = await readFile(configPath, "utf8");
-      const drumsRow = csv.split("\n").find((row) => row.startsWith("Drums- Bass,"));
-      expect(drumsRow).toBe("Drums- Bass,Drums - Bass,,Drums - Bass,,");
+      expect(result.status).toBe(0);
+
+      const [configFile] = await readdir(dataDir);
+      const csv = await readFile(join(dataDir, configFile), "utf8");
+
+      const dirRow = csv.split("\n").find((row) => row.startsWith("Bonks,"));
+      expect(dirRow).toBe("Bonks,,,,,");
     } finally {
       await rm(tmpDir, { recursive: true });
     }
