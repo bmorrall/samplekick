@@ -1,16 +1,16 @@
 import { describe, it, expect } from "vitest";
-import { SP404Mk2NameTransformer, DefaultPackageNameTransformer, SkipJunkTransformer, KnownFileTypeTransformer, AbletonProjectTransformer, FLStudioProjectTransformer, NormaliseBracketSpacingTransformer, NormaliseHyphenTransformer, NormaliseSpacesTransformer, TrimNameTransformer } from "../../src";
+import { SP404Mk2NameTransformer, DefaultRootPackageNameTransformer, SkipJunkTransformer, KnownFileTypeTransformer, AbletonProjectTransformer, FLStudioProjectTransformer, NormaliseBracketSpacingTransformer, ExpandRootPackageNameTransformer, NormaliseHyphenTransformer, NormaliseSpacesTransformer, TrimNameTransformer, OrganisedPathStrategy } from "../../src";
 import { createRegistry, createFileEntry } from "../support";
 
 describe("Registry transforms", () => {
-  it("applies DefaultPackageNameTransformer to set package name on root node", () => {
+  it("applies DefaultRootPackageNameTransformer to set package name on root node", () => {
     const registry = createRegistry("MyProject.zip", [
       createFileEntry({ path: "sub1/file1.wav" }),
       createFileEntry({ path: "sub1/file2.wav" }),
       createFileEntry({ path: "sub2/file3.wav" }),
       createFileEntry({ path: "file4.wav" }),
     ]);
-    registry.applyTransform(DefaultPackageNameTransformer);
+    registry.applyTransform(DefaultRootPackageNameTransformer);
     expect(registry.toString()).toBe(
       [
         "MyProject.zip [pkg:MyProject]",
@@ -217,6 +217,17 @@ describe("Registry transforms", () => {
         "",
       ].join("\n"),
     );
+  });
+
+  it("applies ExpandRootPackageNameTransformer to expand CamelCase packageName", () => {
+    const registry = createRegistry("CoolPack-v2.zip", [
+      createFileEntry({ path: "Drums/kick.wav" }),
+    ]);
+    registry.applyTransform(DefaultRootPackageNameTransformer);
+    registry.applyTransform(ExpandRootPackageNameTransformer);
+    registry.setSampleType("drums");
+    registry.setPathStrategy(OrganisedPathStrategy);
+    expect(registry.destinationPathFor("Drums/kick.wav")).toBe("drums/Cool Pack - v2/kick.wav");
   });
 
   it("applies NormaliseBracketSpacingTransformer to fix spacing around all SP404 bracket types", () => {

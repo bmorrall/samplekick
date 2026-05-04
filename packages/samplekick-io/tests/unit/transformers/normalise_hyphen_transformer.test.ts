@@ -21,7 +21,7 @@ describe("NormaliseHyphenTransformer", () => {
     expect(entry.setName).toHaveBeenCalledWith("foo - bar.wav");
   });
 
-  it("leaves a hyphen with no adjacent space (e.g. compound word) unchanged", () => {
+  it("leaves a bare hyphen between two words unchanged", () => {
     const entry = createTransformEntry({ name: "foo-bar.wav" });
     NormaliseHyphenTransformer(singleEntryTransformSource(entry));
     expect(entry.setName).toHaveBeenCalledWith("foo-bar.wav");

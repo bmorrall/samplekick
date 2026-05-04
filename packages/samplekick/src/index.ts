@@ -4,7 +4,7 @@ import { mkdir } from "node:fs/promises";
 import { finished } from "node:stream/promises";
 import { basename, dirname, resolve } from "node:path";
 import { parseArgs } from "node:util";
-import { AbletonProjectTransformer, CsvConfigWriter, DefaultPackageNameTransformer, FLStudioProjectTransformer, KnownFileTypeTransformer, NormaliseBracketSpacingTransformer, NormaliseHyphenTransformer, NormaliseSpacesTransformer, OrganisedPathStrategy, Registry, SkipJunkTransformer, SourcePathStrategy, TrimNameTransformer, ZipDataSource, SP404Mk2Preset, formatSampleRate, formatBitDepth } from "samplekick-io";
+import { AbletonProjectTransformer, CsvConfigWriter, DefaultRootPackageNameTransformer, ExpandRootPackageNameTransformer, FLStudioProjectTransformer, KnownFileTypeTransformer, NormaliseBracketSpacingTransformer, NormaliseHyphenTransformer, NormaliseSpacesTransformer, OrganisedPathStrategy, Registry, SkipJunkTransformer, SourcePathStrategy, TrimNameTransformer, ZipDataSource, SP404Mk2Preset, formatSampleRate, formatBitDepth } from "samplekick-io";
 import { loadConfig, openConfigInEditor, getDataDir } from "./config_loader";
 import type { DevicePreset } from "samplekick-io";
 import { SimpleExportReporter, PrettyExportReporter } from "./exporters";
@@ -140,9 +140,6 @@ const dataSource = await ZipDataSource.fromFile(zipPath).catch((err: unknown) =>
 });
 
 const registry = new Registry(dataSource);
-if (values["allow-junk"] !== true) {
-  registry.applyTransform(SkipJunkTransformer);
-}
 
 const reporter: ExportReporter = chalk.level > 0
   ? new PrettyExportReporter(process.stdout, chalk, { quiet: values.quiet === true, packName: basename(zipPath), organised: values["preserve-paths"] !== true })
@@ -172,14 +169,22 @@ if (values.convert === true) {
   }));
 }
 
+if (values["allow-junk"] !== true) {
+  // Junk transforms: mark OS metadata and hidden files as skipped
+  registry.applyTransform(SkipJunkTransformer);
+}
+
 if (values.analyse === true) {
   // File transforms: identify known file/project types and lock their folder structure
   registry.applyTransform(KnownFileTypeTransformer);
   registry.applyTransform(AbletonProjectTransformer);
   registry.applyTransform(FLStudioProjectTransformer);
 
+  // Root transforms: derive and expand the package name from the zip filename
+  registry.applyTransform(DefaultRootPackageNameTransformer);
+  registry.applyTransform(ExpandRootPackageNameTransformer);
+
   // Name transforms: run after file transforms so locked entries are skipped
-  registry.applyTransform(DefaultPackageNameTransformer);
   registry.applyTransform(TrimNameTransformer);
   registry.applyTransform(NormaliseSpacesTransformer);
   registry.applyTransform(NormaliseBracketSpacingTransformer);

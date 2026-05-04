@@ -33,10 +33,16 @@ describe("NormaliseSpacesTransformer", () => {
     expect(entry.setName).toHaveBeenCalledWith("foo_bar.wav");
   });
 
-  it("leaves a single underscore unchanged", () => {
+  it("leaves a single underscore unchanged when the name has no spaces", () => {
     const entry = createTransformEntry({ name: "foo_bar.wav" });
     NormaliseSpacesTransformer(singleEntryTransformSource(entry));
     expect(entry.setName).toHaveBeenCalledWith("foo_bar.wav");
+  });
+
+  it("converts underscores to spaces when the name has spaces", () => {
+    const entry = createTransformEntry({ name: "foo_bar baz.wav" });
+    NormaliseSpacesTransformer(singleEntryTransformSource(entry));
+    expect(entry.setName).toHaveBeenCalledWith("foo bar baz.wav");
   });
 
   it("normalises packageName when the entry has one", () => {

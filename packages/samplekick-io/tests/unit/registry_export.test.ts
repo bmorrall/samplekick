@@ -131,4 +131,34 @@ describe("Registry.exportToDirectory", () => {
       "/output/drums/my-pack/snare.wav",
     );
   });
+
+  it("skips entries with a duplicate destination path", async () => {
+    const entryA = createCopyableEntry("pack-a/kick.wav");
+    const entryB = createCopyableEntry("pack-b/kick.wav");
+    const registry = new Registry(createFileSource("root", [entryA, entryB]));
+    registry.setPathStrategy(OrganisedPathStrategy);
+    registry.setPackageName("my-pack");
+    registry.setSampleType("drums");
+
+    await registry.exportToDirectory("/output", {});
+
+    const aWritten = vi.mocked(entryA.copyToPath).mock.calls.length > 0;
+    const bWritten = vi.mocked(entryB.copyToPath).mock.calls.length > 0;
+    expect(aWritten !== bWritten).toBe(true);
+  });
+
+  it("calls onSkip with a duplicate destination reason when paths collide", async () => {
+    const entryA = createCopyableEntry("pack-a/kick.wav");
+    const entryB = createCopyableEntry("pack-b/kick.wav");
+    const registry = new Registry(createFileSource("root", [entryA, entryB]));
+    registry.setPathStrategy(OrganisedPathStrategy);
+    registry.setPackageName("my-pack");
+    registry.setSampleType("drums");
+    const onSkip = vi.fn<(entry: ConfigEntry, reason: string) => void>();
+
+    await registry.exportToDirectory("/output", { onSkip });
+
+    expect(onSkip).toHaveBeenCalledOnce();
+    expect(onSkip).toHaveBeenCalledWith(expect.anything(), expect.stringContaining("duplicate destination"));
+  });
 });

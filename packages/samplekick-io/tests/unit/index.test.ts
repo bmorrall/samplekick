@@ -14,8 +14,8 @@ describe("index exports", () => {
     expect(api.JsonConfigReader).toBeDefined();
   });
 
-  test("exports DefaultPackageNameTransformer", () => {
-    expect(api.DefaultPackageNameTransformer).toBeDefined();
+  test("exports DefaultRootPackageNameTransformer", () => {
+    expect(api.DefaultRootPackageNameTransformer).toBeDefined();
   });
 
   test("exports AbletonProjectTransformer", () => {
@@ -32,6 +32,10 @@ describe("index exports", () => {
 
   test("exports NormaliseBracketSpacingTransformer", () => {
     expect(api.NormaliseBracketSpacingTransformer).toBeDefined();
+  });
+
+  test("exports ExpandRootPackageNameTransformer", () => {
+    expect(api.ExpandRootPackageNameTransformer).toBeDefined();
   });
 
   test("exports NormaliseHyphenTransformer", () => {
@@ -75,7 +79,8 @@ describe("index exports", () => {
       "CsvConfigReader",
       "ZipDataSource",
       "AbletonProjectTransformer",
-      "DefaultPackageNameTransformer",
+      "DefaultRootPackageNameTransformer",
+      "ExpandRootPackageNameTransformer",
       "FLStudioProjectTransformer",
       "KnownFileTypeTransformer",
       "NormaliseBracketSpacingTransformer",
