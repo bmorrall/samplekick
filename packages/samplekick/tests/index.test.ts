@@ -54,6 +54,7 @@ describe("samplekick CLI", () => {
           "      --config <path>     Load a CSV config file to apply to the pack",
           "      --write-config <path>",
           "                          Write the pack config as CSV to a file",
+          "      --dump-config       Print CSV config to stdout and exit",
           "      --verbose           Show inherited tags on all nodes in debug output",
           "      --quiet             Only show errors (suppress per-file success lines)",
           "  -v, --version           Show version number",

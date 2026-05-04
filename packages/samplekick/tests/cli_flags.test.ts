@@ -1,5 +1,5 @@
 import { spawnSync } from "node:child_process";
-import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdtemp, readFile, rm, stat, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { zipSync, strToU8 } from "fflate";
@@ -131,6 +131,34 @@ describe("samplekick CLI flags", () => {
       expect(result.stdout).toContain("404");
 
       expect(result.status).toBe(0);
+    });
+  });
+
+  describe("--dump-config flag", () => {
+    it("prints CSV config to stdout and exits without writing files", async () => {
+      const zipped = zipSync({ "Drums/kick.wav": strToU8("kick-data") });
+
+      const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
+      const zipPath = join(tmpDir, "test-pack.zip");
+      const dataDir = join(tmpDir, "data");
+
+      try {
+        await writeFile(zipPath, zipped);
+
+        const result = spawnSync("node", [CLI_PATH, zipPath, "--dump-config"], {
+          encoding: "utf8",
+          env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+        });
+
+        expect(result.stderr).toBe("");
+        expect(result.stdout).toContain("Drums/kick.wav");
+        expect(result.status).toBe(0);
+
+        // Must not write anything to disk
+        await expect(stat(dataDir)).rejects.toThrow();
+      } finally {
+        await rm(tmpDir, { recursive: true });
+      }
     });
   });
 });

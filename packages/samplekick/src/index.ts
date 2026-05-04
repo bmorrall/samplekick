@@ -64,6 +64,7 @@ Options:
       --config <path>     Load a CSV config file to apply to the pack
       --write-config <path>
                           Write the pack config as CSV to a file
+      --dump-config       Print CSV config to stdout and exit
       --verbose           Show inherited tags on all nodes in debug output
       --quiet             Only show errors (suppress per-file success lines)
   -v, --version           Show version number
@@ -81,6 +82,7 @@ const { values, positionals } = parseArgs({
     device: { type: "string", short: "d" },
     output: { type: "string", short: "o" },
     "write-config": { type: "string" },
+    "dump-config": { type: "boolean" },
     convert: { type: "boolean", short: "c" },
     analyse: { type: "boolean", short: "a" },
     "allow-junk": { type: "boolean" },
@@ -253,7 +255,7 @@ if (values["write-config"] !== undefined) {
   });
 }
 
-if (values.output === undefined) {
+if (values["dump-config"] === true || values.output === undefined) {
   new CsvConfigWriter(process.stdout).writeConfig(registry);
   process.exit(0);
 }
