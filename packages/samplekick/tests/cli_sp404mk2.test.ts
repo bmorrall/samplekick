@@ -37,7 +37,7 @@ describe("SP-404MKII device preset", () => {
       expect(autoConfig).toBe([
         "path,name,packageName,sampleType,skip,keepPath",
         ",test-pack.zip,test-pack,,,",
-        "Drums,,,,,",
+        "Drums,,,Drums,,",
         "Drums/kick.wav,,,,,",
         "Loops,,,,,",
         "Loops/bass.wav,,,,,",

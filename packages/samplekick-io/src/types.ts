@@ -48,6 +48,7 @@ export interface LeafNode extends FileNode {
 export type StringTransformer = (value: string) => string;
 
 export interface TransformEntry extends FileNode {
+  getOwnSampleType: () => string | undefined;
   setName: (name: string | undefined) => void;
   setPackageName: (name: string | undefined) => void;
   setSampleType: (type: string | undefined) => void;
