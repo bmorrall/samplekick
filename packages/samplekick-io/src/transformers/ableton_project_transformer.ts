@@ -15,7 +15,11 @@ export const AbletonProjectTransformer: Transform = (source) => {
       child.getName().toLowerCase().endsWith('.als'),
     );
 
-    if (hasAls) {
+    const hasAbletonFolderInfo = children.some(
+      (child) => child.getName() === 'Ableton Folder Info',
+    );
+
+    if (hasAls || hasAbletonFolderInfo) {
       entry.setSampleType('Ableton Projects');
       entry.setKeepStructure(true);
     }

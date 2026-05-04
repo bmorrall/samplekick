@@ -54,6 +54,10 @@ describe("index exports", () => {
     expect(api.SP404Mk2NameTransformer).toBeDefined();
   });
 
+  test("exports DirectorySampleTypeTransformer", () => {
+    expect(api.DirectorySampleTypeTransformer).toBeDefined();
+  });
+
   test("exports SkipJunkTransformer", () => {
     expect(api.SkipJunkTransformer).toBeDefined();
   });
@@ -80,6 +84,7 @@ describe("index exports", () => {
       "ZipDataSource",
       "AbletonProjectTransformer",
       "DefaultRootPackageNameTransformer",
+      "DirectorySampleTypeTransformer",
       "ExpandRootPackageNameTransformer",
       "FLStudioProjectTransformer",
       "KnownFileTypeTransformer",

@@ -4,7 +4,7 @@ import { mkdir } from "node:fs/promises";
 import { finished } from "node:stream/promises";
 import { basename, dirname, resolve } from "node:path";
 import { parseArgs } from "node:util";
-import { AbletonProjectTransformer, CsvConfigWriter, DefaultRootPackageNameTransformer, ExpandRootPackageNameTransformer, FLStudioProjectTransformer, KnownFileTypeTransformer, NormaliseBracketSpacingTransformer, NormaliseHyphenTransformer, NormaliseSpacesTransformer, OrganisedPathStrategy, Registry, SkipJunkTransformer, SourcePathStrategy, TrimNameTransformer, ZipDataSource, SP404Mk2Preset, formatSampleRate, formatBitDepth } from "samplekick-io";
+import { AbletonProjectTransformer, CsvConfigWriter, DefaultRootPackageNameTransformer, DirectorySampleTypeTransformer, ExpandRootPackageNameTransformer, FLStudioProjectTransformer, KnownFileTypeTransformer, NormaliseBracketSpacingTransformer, NormaliseHyphenTransformer, NormaliseSpacesTransformer, OrganisedPathStrategy, Registry, SkipJunkTransformer, SourcePathStrategy, TrimNameTransformer, ZipDataSource, SP404Mk2Preset, formatSampleRate, formatBitDepth } from "samplekick-io";
 import { loadConfig, openConfigInEditor, getDataDir } from "./config_loader";
 import type { DevicePreset } from "samplekick-io";
 import { SimpleExportReporter, PrettyExportReporter, DryRunReporter } from "./exporters";
@@ -176,10 +176,13 @@ if (values["allow-junk"] !== true) {
 }
 
 if (values.analyse === true) {
-  // File transforms: identify known file/project types and lock their folder structure
+  // File transforms: identify known file types and lock their folder structure
   registry.applyTransform(KnownFileTypeTransformer);
   registry.applyTransform(AbletonProjectTransformer);
   registry.applyTransform(FLStudioProjectTransformer);
+
+  // Directory transforms: identify known project/sample-type folders
+  registry.applyTransform(DirectorySampleTypeTransformer);
 
   // Root transforms: derive and expand the package name from the zip filename
   registry.applyTransform(DefaultRootPackageNameTransformer);

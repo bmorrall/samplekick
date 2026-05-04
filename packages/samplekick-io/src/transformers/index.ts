@@ -6,6 +6,7 @@ export { NormaliseBracketSpacingTransformer } from "./normalise_bracket_spacing_
 export { ExpandRootPackageNameTransformer } from "./expand_root_package_name_transformer";
 export { NormaliseHyphenTransformer } from "./normalise_hyphen_transformer";
 export { NormaliseSpacesTransformer } from "./normalise_spaces_transformer";
+export { DirectorySampleTypeTransformer } from "./directory_sample_type_transformer";
 export { SkipJunkTransformer } from "./skip_junk_transformer";
 export { SP404Mk2NameTransformer } from "./sp404_mk2_name_transformer";
 export { TrimNameTransformer } from "./trim_name_transformer";
