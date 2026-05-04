@@ -256,10 +256,7 @@ if (values["write-config"] !== undefined) {
 
 if (values["dump-config"] === true) {
   new CsvConfigWriter(process.stdout).writeConfig(registry);
-  process.exit(0);
-}
-
-if (values.output === undefined) {
+} else if (values.output === undefined) {
   const dryRun = new DryRunReporter(reporter);
   await registry.exportToDirectory(undefined, {
     onAfterWrite: (e, p, err) => { dryRun.onAfterWrite(e, p, err); },
