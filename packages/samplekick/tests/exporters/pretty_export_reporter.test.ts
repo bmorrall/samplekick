@@ -256,16 +256,16 @@ describe("PrettyExportReporter", () => {
       const raw = getOutput();
       expect(stripAnsi(raw)).toBe("  ✓ kick.wav\n    └── loops/my-pack/kick.wav\n");
       expect(raw).toContain("\x1B[36m"); // cyan — sampleType
-      expect(raw).toContain("\x1B[34m"); // blue — packageName
+      expect(raw).toContain("\x1B[92m"); // greenBright — packageName
     });
 
     it("colours extra subfolder segments gray", () => {
       const { reporter, getOutput } = createOrganisedReporter();
       reporter.onAfterWrite(createEntry("kick.wav"), "loops/my-pack/sub/kick.wav");
       const raw = getOutput();
-      expect(stripAnsi(raw)).toBe("  ✓ kick.wav\n    └── loops/my-pack/sub/kick.wav\n");
+      expect(stripAnsi(raw)).toBe(["  ✓ kick.wav", "    └── loops/my-pack/sub/kick.wav", ""].join("\n"));
       expect(raw).toContain("\x1B[36m"); // cyan — sampleType
-      expect(raw).toContain("\x1B[34m"); // blue — packageName
+      expect(raw).toContain("\x1B[92m"); // greenBright — packageName
     });
 
     it("does not apply organised colouring when organised is false", () => {

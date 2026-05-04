@@ -62,7 +62,7 @@ export class PrettyExportReporter implements ExportReporter {
     const segments = dir.split("/");
     return segments.map((seg, i) => {
       if (i === 0) return this.chalk.cyan(seg);
-      if (i === 1) return this.chalk.blue(seg);
+      if (i === 1) return this.chalk.greenBright(seg);
       return this.chalk.gray(seg);
     }).join(this.chalk.gray("/"));
   }
