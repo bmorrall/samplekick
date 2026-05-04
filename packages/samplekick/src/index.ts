@@ -270,17 +270,16 @@ if (values.output === undefined) {
     process.exit(1);
   });
   dryRun.flush();
-  process.exit(0);
+} else {
+  const destPath = resolve(values.output);
+  await registry.exportToDirectory(destPath, {
+    onBeforeWrite: (e, p) => { reporter.onBeforeWrite?.(e, p); },
+    onAfterWrite: (e, p, err) => { reporter.onAfterWrite(e, p, err); },
+    onReject: (e, r) => { reporter.onReject(e, r); },
+    onSkip: values.verbose === true ? (e) => { reporter.onSkip(e); } : undefined,
+  }).catch((err: unknown) => {
+    console.error(`Error: could not export to ${destPath}: ${err instanceof Error ? err.message : String(err)}`);
+    process.exit(1);
+  });
+  reporter.onComplete(destPath);
 }
-
-const destPath = resolve(values.output);
-await registry.exportToDirectory(destPath, {
-  onBeforeWrite: (e, p) => { reporter.onBeforeWrite?.(e, p); },
-  onAfterWrite: (e, p, err) => { reporter.onAfterWrite(e, p, err); },
-  onReject: (e, r) => { reporter.onReject(e, r); },
-  onSkip: values.verbose === true ? (e) => { reporter.onSkip(e); } : undefined,
-}).catch((err: unknown) => {
-  console.error(`Error: could not export to ${destPath}: ${err instanceof Error ? err.message : String(err)}`);
-  process.exit(1);
-});
-reporter.onComplete(destPath);
