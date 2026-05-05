@@ -8,6 +8,7 @@ import {
   AbletonProjectTransformer,
   CsvConfigWriter,
   DefaultRootPackageNameTransformer,
+  DirectorySampleTypeTransformer,
   ExpandRootPackageNameTransformer,
   FLStudioProjectTransformer,
   KnownFileTypeTransformer,
@@ -196,7 +197,7 @@ if (values["allow-junk"] !== true) {
 }
 
 if (values.analyse === true) {
-  // File transforms: identify known file/project types and lock their folder structure
+  // File transforms: identify known file types and lock their folder structure
   registry.applyTransform(KnownFileTypeTransformer);
   registry.applyTransform(AbletonProjectTransformer);
   registry.applyTransform(FLStudioProjectTransformer);
@@ -211,6 +212,9 @@ if (values.analyse === true) {
   registry.applyTransform(NormaliseBracketSpacingTransformer);
   registry.applyTransform(NormaliseCommaSpacingTransformer);
   registry.applyTransform(NormaliseHyphenTransformer);
+
+  // Directory transforms: run after name transforms so folder names are normalised first
+  registry.applyTransform(DirectorySampleTypeTransformer);
 }
 const dataDir = process.env.SAMPLEKICK_DATA_DIR ?? getDataDir("samplekick", process.platform, process.env);
 const configPath = values.config === undefined ? undefined : resolve(values.config);

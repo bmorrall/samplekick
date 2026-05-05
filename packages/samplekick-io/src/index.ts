@@ -9,6 +9,7 @@ export { ZipDataSource } from "./io";
 export {
   AbletonProjectTransformer,
   DefaultRootPackageNameTransformer,
+  DirectorySampleTypeTransformer,
   ExpandRootPackageNameTransformer,
   FLStudioProjectTransformer,
   KnownFileTypeTransformer,

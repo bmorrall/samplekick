@@ -58,6 +58,36 @@ describe("KnownFileTypeTransformer", () => {
     });
   });
 
+  describe("when the name ends with .phaseplant", () => {
+    it("sets sampleType to Phase Plant Presets", () => {
+      const entry = createTransformEntry({ name: "patch.phaseplant" });
+      KnownFileTypeTransformer(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("Phase Plant Presets");
+      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+    });
+
+    it("sets sampleType to Phase Plant Presets when extension is uppercase", () => {
+      const entry = createTransformEntry({ name: "patch.PHASEPLANT" });
+      KnownFileTypeTransformer(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("Phase Plant Presets");
+      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+    });
+
+    it("does not overwrite an existing sampleType", () => {
+      const entry = createTransformEntry({ name: "patch.phaseplant", sampleType: "custom" });
+      KnownFileTypeTransformer(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).not.toHaveBeenCalled();
+      expect(entry.setKeepStructure).not.toHaveBeenCalled();
+    });
+
+    it("sets sampleType when extension is on the path", () => {
+      const entry = createTransformEntry({ name: "patch", path: "presets/patch.phaseplant" });
+      KnownFileTypeTransformer(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("Phase Plant Presets");
+      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+    });
+  });
+
   describe("when the file is not a .mid or .fxp file", () => {
     it("does not set sampleType for .wav files", () => {
       const entry = createTransformEntry({ name: "kick.wav" });
