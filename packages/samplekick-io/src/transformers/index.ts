@@ -3,6 +3,7 @@ export { DefaultRootPackageNameTransformer } from "./default_root_package_name_t
 export { FLStudioProjectTransformer } from "./fl_studio_project_transformer";
 export { KnownFileTypeTransformer } from "./known_file_type_transformer";
 export { NormaliseBracketSpacingTransformer } from "./normalise_bracket_spacing_transformer";
+export { NormaliseCommaSpacingTransformer } from "./normalise_comma_spacing_transformer";
 export { ExpandRootPackageNameTransformer } from "./expand_root_package_name_transformer";
 export { NormaliseHyphenTransformer } from "./normalise_hyphen_transformer";
 export { NormaliseSpacesTransformer } from "./normalise_spaces_transformer";

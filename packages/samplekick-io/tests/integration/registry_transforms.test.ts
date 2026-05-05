@@ -1,5 +1,19 @@
 import { describe, it, expect } from "vitest";
-import { SP404Mk2NameTransformer, DefaultRootPackageNameTransformer, SkipJunkTransformer, KnownFileTypeTransformer, AbletonProjectTransformer, FLStudioProjectTransformer, NormaliseBracketSpacingTransformer, ExpandRootPackageNameTransformer, NormaliseHyphenTransformer, NormaliseSpacesTransformer, TrimNameTransformer, OrganisedPathStrategy } from "../../src";
+import {
+  SP404Mk2NameTransformer,
+  DefaultRootPackageNameTransformer,
+  SkipJunkTransformer,
+  KnownFileTypeTransformer,
+  AbletonProjectTransformer,
+  FLStudioProjectTransformer,
+  NormaliseBracketSpacingTransformer,
+  NormaliseCommaSpacingTransformer,
+  ExpandRootPackageNameTransformer,
+  NormaliseHyphenTransformer,
+  NormaliseSpacesTransformer,
+  TrimNameTransformer,
+  OrganisedPathStrategy,
+} from "../../src";
 import { createRegistry, createFileEntry } from "../support";
 
 describe("Registry transforms", () => {
@@ -246,6 +260,27 @@ describe("Registry transforms", () => {
         "│   └── sample.wav [?]",
         "└── hi-hats {open} [renamed]",
         "    └── sample.wav [?]",
+        "",
+      ].join("\n"),
+    );
+  });
+
+  it("applies NormaliseCommaSpacingTransformer to fix spacing around commas", () => {
+    const registry = createRegistry("root", [
+      createFileEntry({ path: "Hihat , Kicks and Claps/hat.wav" }),
+      createFileEntry({ path: "Kicks ,Snares/kick.wav" }),
+      createFileEntry({ path: "Hihat_,_Kicks_and_Claps/hat.wav" }),
+    ]);
+    registry.applyTransform(NormaliseCommaSpacingTransformer);
+    expect(registry.toString()).toBe(
+      [
+        "root",
+        "├── Hihat, Kicks and Claps [renamed]",
+        "│   └── hat.wav [?]",
+        "├── Kicks, Snares [renamed]",
+        "│   └── kick.wav [?]",
+        "└── Hihat,_Kicks_and_Claps [renamed]",
+        "    └── hat.wav [?]",
         "",
       ].join("\n"),
     );
