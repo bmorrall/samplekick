@@ -4,7 +4,7 @@ import { mkdir } from "node:fs/promises";
 import { finished } from "node:stream/promises";
 import { basename, dirname, resolve } from "node:path";
 import { parseArgs } from "node:util";
-import { AbletonProjectTransformer, CsvConfigWriter, DefaultRootPackageNameTransformer, DirectorySampleTypeTransformer, ExpandRootPackageNameTransformer, FLStudioProjectTransformer, KnownFileTypeTransformer, NormaliseBracketSpacingTransformer, NormaliseHyphenTransformer, NormaliseSpacesTransformer, OrganisedPathStrategy, Registry, SkipJunkTransformer, SourcePathStrategy, TrimNameTransformer, ZipDataSource, SP404Mk2Preset, formatSampleRate, formatBitDepth } from "samplekick-io";
+import { AbletonProjectTransformer, CsvConfigWriter, DefaultRootPackageNameTransformer, DirectorySampleTypeTransformer, ExpandRootPackageNameTransformer, FLStudioProjectTransformer, KnownFileTypeTransformer, NormaliseBracketSpacingTransformer, NormaliseCommaSpacingTransformer, NormaliseHyphenTransformer, NormaliseSpacesTransformer, OrganisedPathStrategy, Registry, SkipJunkTransformer, SourcePathStrategy, TrimNameTransformer, ZipDataSource, SP404Mk2Preset, formatSampleRate, formatBitDepth } from "samplekick-io";
 import { loadConfig, openConfigInEditor, getDataDir } from "./config_loader";
 import type { DevicePreset } from "samplekick-io";
 import { SimpleExportReporter, PrettyExportReporter, DryRunReporter } from "./exporters";
@@ -192,6 +192,7 @@ if (values.analyse === true) {
   registry.applyTransform(TrimNameTransformer);
   registry.applyTransform(NormaliseSpacesTransformer);
   registry.applyTransform(NormaliseBracketSpacingTransformer);
+  registry.applyTransform(NormaliseCommaSpacingTransformer);
   registry.applyTransform(NormaliseHyphenTransformer);
 }
 const dataDir = process.env.SAMPLEKICK_DATA_DIR ?? getDataDir("samplekick", process.platform, process.env);

@@ -34,6 +34,10 @@ describe("index exports", () => {
     expect(api.NormaliseBracketSpacingTransformer).toBeDefined();
   });
 
+  test("exports NormaliseCommaSpacingTransformer", () => {
+    expect(api.NormaliseCommaSpacingTransformer).toBeDefined();
+  });
+
   test("exports ExpandRootPackageNameTransformer", () => {
     expect(api.ExpandRootPackageNameTransformer).toBeDefined();
   });
@@ -89,6 +93,7 @@ describe("index exports", () => {
       "FLStudioProjectTransformer",
       "KnownFileTypeTransformer",
       "NormaliseBracketSpacingTransformer",
+      "NormaliseCommaSpacingTransformer",
       "NormaliseHyphenTransformer",
       "NormaliseSpacesTransformer",
       "SkipJunkTransformer",
