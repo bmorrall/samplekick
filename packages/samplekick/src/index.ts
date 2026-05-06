@@ -291,9 +291,10 @@ if (values["dump-config"] === true) {
     console.error(`Error: ${err instanceof Error ? err.message : String(err)}`);
     process.exit(1);
   });
-  dryRun.flush();
+  dryRun.flush(basename(zipPath));
 } else {
   const destPath = resolve(values.output);
+  reporter.onStart(basename(zipPath));
   await registry.exportToDirectory(destPath, {
     onBeforeWrite: (e, p) => { reporter.onBeforeWrite?.(e, p); },
     onAfterWrite: (e, p, err) => { reporter.onAfterWrite(e, p, err); },

@@ -11,17 +11,14 @@ const countLeafNodes = (entry: FileNode): number => {
 export class SimpleExportReporter implements ExportReporter {
   private readonly output: Writable;
   private readonly quiet: boolean;
-  private readonly packName: string;
   private totalCount = 0;
   private errorCount = 0;
   private rejectedCount = 0;
   private skippedCount = 0;
-  private started = false;
 
-  constructor(output: Writable, quiet = false, packName = "") {
+  constructor(output: Writable, quiet = false, _packName = "") {
     this.output = output;
     this.quiet = quiet;
-    this.packName = packName;
   }
 
   private formatErrors(count: number): string {
@@ -36,6 +33,12 @@ export class SimpleExportReporter implements ExportReporter {
     return `${count} ${count === 1 ? "entry" : "entries"} skipped`;
   }
 
+  onStart(packName: string): void {
+    if (packName.length > 0) {
+      this.output.write(`${packName}:\n`);
+    }
+  }
+
   onInfo(message: string): void {
     this.output.write(`${message}\n`);
   }
@@ -46,14 +49,6 @@ export class SimpleExportReporter implements ExportReporter {
 
   onError(message: string): void {
     this.output.write(`error: ${message}\n`);
-  }
-
-  onBeforeWrite(_entry: ConfigEntry, _destRelPath: string): void {
-    if (!this.started) {
-      this.started = true;
-      const label = this.packName.length > 0 ? ` ${this.packName}` : "";
-      this.output.write(`Exporting${label}\u2026\n`);
-    }
   }
 
   onAfterWrite(_entry: ConfigEntry, destRelPath: string, error?: Error): void {

@@ -103,6 +103,12 @@ export class PrettyExportReporter implements ExportReporter {
     }
   }
 
+  onStart(packName: string): void {
+    if (packName.length > 0) {
+      this.output.write(`${packName}:\n`);
+    }
+  }
+
   onInfo(message: string): void {
     if (this.isTTY && this.spinnerTimer !== undefined) {
       this.output.write(`\x1b[2K\r${this.chalk.dim(message)}\n`);

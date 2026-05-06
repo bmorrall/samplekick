@@ -42,6 +42,15 @@ const createPackReporter = (): { reporter: SimpleExportReporter; getOutput: () =
   return { reporter, getOutput };
 };
 
+const createQuietPackReporter = (): { reporter: SimpleExportReporter; getOutput: () => string } => {
+  const stream = new PassThrough();
+  const chunks: string[] = [];
+  stream.on("data", (chunk: Buffer) => { chunks.push(chunk.toString()); });
+  const reporter = new SimpleExportReporter(stream, true, "my-pack.zip");
+  const getOutput = (): string => chunks.join("");
+  return { reporter, getOutput };
+};
+
 describe("SimpleExportReporter", () => {
   describe("onInfo", () => {
     it("writes the message on its own line", () => {
@@ -67,24 +76,17 @@ describe("SimpleExportReporter", () => {
     });
   });
 
-  describe("onBeforeWrite", () => {
-    it("writes 'Exporting\u2026' on the first call", () => {
-      const { reporter, getOutput } = createReporter();
-      reporter.onBeforeWrite(createEntry("drums/kick.wav"), "loops/my-pack/kick.wav");
-      expect(getOutput()).toBe("Exporting\u2026\n");
-    });
-
-    it("only writes the header once", () => {
-      const { reporter, getOutput } = createReporter();
-      reporter.onBeforeWrite(createEntry("kick.wav"), "kick.wav");
-      reporter.onBeforeWrite(createEntry("snare.wav"), "snare.wav");
-      expect(getOutput()).toBe("Exporting\u2026\n");
-    });
-
-    it("includes the pack name when provided", () => {
+  describe("onStart", () => {
+    it("writes 'filename:' when a pack name is set", () => {
       const { reporter, getOutput } = createPackReporter();
-      reporter.onBeforeWrite(createEntry("kick.wav"), "kick.wav");
-      expect(getOutput()).toBe("Exporting my-pack.zip\u2026\n");
+      reporter.onStart("my-pack.zip");
+      expect(getOutput()).toBe("my-pack.zip:\n");
+    });
+
+    it("writes nothing when pack name is empty", () => {
+      const { reporter, getOutput } = createReporter();
+      reporter.onStart("");
+      expect(getOutput()).toBe("");
     });
   });
 
@@ -142,10 +144,10 @@ describe("SimpleExportReporter", () => {
   });
 
   describe("quiet mode", () => {
-    it("still writes the Exporting header on first onBeforeWrite", () => {
-      const { reporter, getOutput } = createQuietReporter();
-      reporter.onBeforeWrite(createEntry("kick.wav"), "kick.wav");
-      expect(getOutput()).toBe("Exporting\u2026\n");
+    it("still writes 'filename:' in quiet mode", () => {
+      const { reporter, getOutput } = createQuietPackReporter();
+      reporter.onStart("my-pack.zip");
+      expect(getOutput()).toBe("my-pack.zip:\n");
     });
 
     it("suppresses success lines in onAfterWrite", () => {
