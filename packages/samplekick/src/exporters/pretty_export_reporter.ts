@@ -1,8 +1,9 @@
-import { basename, dirname } from "node:path";
+import { basename, dirname, extname } from "node:path";
 import type { Writable } from "node:stream";
 import type { ChalkInstance } from "chalk";
 import chalk from "chalk";
 import type { ConfigEntry, FileNode } from "samplekick-io";
+import { AUDIO_EXTENSIONS } from "../post_processors/audio_converter";
 import type { ExportReporter } from "./export_reporter";
 
 const countLeafNodes = (entry: FileNode): number => {
@@ -33,6 +34,7 @@ export class PrettyExportReporter implements ExportReporter {
   private skippedCount = 0;
   private spinnerTimer: ReturnType<typeof setInterval> | undefined = undefined;
   private spinnerFrame = 0;
+  private readonly packageSummary = new Map<string, Map<string, number>>();
 
   constructor(output: Writable, chalkInstance: ChalkInstance = chalk, options: PrettyExportReporterOptions = {}) {
     this.output = output;
@@ -103,6 +105,20 @@ export class PrettyExportReporter implements ExportReporter {
     }
   }
 
+  private printSummary(): void {
+    if (!this.organised || this.packageSummary.size === 0) return;
+    this.output.write('\n');
+    for (const [pkg, types] of [...this.packageSummary].sort(([a], [b]) => a.localeCompare(b))) {
+      const total = [...types.values()].reduce((a, b) => a + b, 0);
+      this.output.write(`${this.chalk.greenBright(pkg)}: ${total} ${total === 1 ? "sample" : "samples"}\n`);
+      for (const [type, count] of [...types].sort(([a], [b]) => a.localeCompare(b))) {
+        if (type.length > 0) {
+          this.output.write(`  ${this.chalk.cyan(type)}: ${count} ${count === 1 ? "sample" : "samples"}\n`);
+        }
+      }
+    }
+  }
+
   onStart(packName: string): void {
     if (packName.length > 0) {
       this.output.write(`${packName}:\n`);
@@ -130,9 +146,22 @@ export class PrettyExportReporter implements ExportReporter {
     this.startSpinner();
   }
 
+  private trackSummary(entry: ConfigEntry, destRelPath: string): void {
+    if (!this.organised) return;
+    if (!AUDIO_EXTENSIONS.has(extname(destRelPath).toLowerCase())) return;
+    const pkg = entry.getPackageName();
+    const type = entry.getSampleType() ?? "";
+    if (pkg !== undefined && pkg.length > 0) {
+      const types = this.packageSummary.get(pkg) ?? new Map<string, number>();
+      types.set(type, (types.get(type) ?? 0) + 1);
+      this.packageSummary.set(pkg, types);
+    }
+  }
+
   onAfterWrite(entry: ConfigEntry, destRelPath: string, error?: Error): void {
     this.totalCount += 1;
     if (error === undefined) {
+      this.trackSummary(entry, destRelPath);
       if (this.quiet) {
         if (this.isTTY && this.spinnerTimer !== undefined) {
           this.drawSpinner();
@@ -189,6 +218,7 @@ export class PrettyExportReporter implements ExportReporter {
     }
     const suffix = suffixParts.length > 0 ? ` (${suffixParts.join(", ")})` : "";
     this.output.write(`Exported ${totalPart} to ${dirPath}${suffix}\n`);
+    this.printSummary();
   }
 
   onPreview(successCount: number, rejectCount: number, skipCount: number): void {
@@ -203,5 +233,6 @@ export class PrettyExportReporter implements ExportReporter {
     }
     const suffix = parts.length > 0 ? ` (${parts.join(", ")})` : "";
     this.output.write(`Would export ${totalPart}${suffix}\n`);
+    this.printSummary();
   }
 }

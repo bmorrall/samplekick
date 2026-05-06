@@ -165,7 +165,7 @@ const registry = new Registry(dataSource);
 
 const reporter: ExportReporter = chalk.level > 0
   ? new PrettyExportReporter(process.stdout, chalk, { quiet: values.quiet === true, packName: basename(zipPath), organised: values["preserve-paths"] !== true })
-  : new SimpleExportReporter(process.stdout, values.quiet === true, basename(zipPath));
+  : new SimpleExportReporter(process.stdout, values.quiet === true, basename(zipPath), values["preserve-paths"] !== true);
 
 // Debug messages are suppressed unless --verbose is passed
 const debugLog = values.verbose === true ? reporter.onDebug.bind(reporter) : undefined;
