@@ -112,4 +112,119 @@ describe("samplekick CLI error handling", () => {
       await rm(tmpDir, { recursive: true });
     }
   });
+
+  it("exits with code 1 and prints an error when --config is used with multiple input files", async () => {
+    const zipped = zipSync({ "Drums/kick.wav": strToU8("kick-data") });
+    const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
+    const zipPath1 = join(tmpDir, "pack1.zip");
+    const zipPath2 = join(tmpDir, "pack2.zip");
+
+    try {
+      await writeFile(zipPath1, zipped);
+      await writeFile(zipPath2, zipped);
+
+      const result = spawnSync(
+        "node",
+        [CLI_PATH, zipPath1, zipPath2, "--config", join(tmpDir, "config.csv")],
+        { encoding: "utf8" },
+      );
+
+      expect(result.stderr).toContain("Error: --config cannot be used with multiple input files");
+      expect(result.status).toBe(1);
+    } finally {
+      await rm(tmpDir, { recursive: true });
+    }
+  });
+
+  it("exits with code 1 and prints an error when --write-config is used with multiple input files", async () => {
+    const zipped = zipSync({ "Drums/kick.wav": strToU8("kick-data") });
+    const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
+    const zipPath1 = join(tmpDir, "pack1.zip");
+    const zipPath2 = join(tmpDir, "pack2.zip");
+
+    try {
+      await writeFile(zipPath1, zipped);
+      await writeFile(zipPath2, zipped);
+
+      const result = spawnSync(
+        "node",
+        [CLI_PATH, zipPath1, zipPath2, "--write-config", join(tmpDir, "config.csv")],
+        { encoding: "utf8" },
+      );
+
+      expect(result.stderr).toContain("Error: --write-config cannot be used with multiple input files");
+      expect(result.status).toBe(1);
+    } finally {
+      await rm(tmpDir, { recursive: true });
+    }
+  });
+
+  it("exits with code 1 and prints an error when --dump-config is used with multiple input files", async () => {
+    const zipped = zipSync({ "Drums/kick.wav": strToU8("kick-data") });
+    const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
+    const zipPath1 = join(tmpDir, "pack1.zip");
+    const zipPath2 = join(tmpDir, "pack2.zip");
+
+    try {
+      await writeFile(zipPath1, zipped);
+      await writeFile(zipPath2, zipped);
+
+      const result = spawnSync(
+        "node",
+        [CLI_PATH, zipPath1, zipPath2, "--dump-config"],
+        { encoding: "utf8" },
+      );
+
+      expect(result.stderr).toContain("Error: --dump-config cannot be used with multiple input files");
+      expect(result.status).toBe(1);
+    } finally {
+      await rm(tmpDir, { recursive: true });
+    }
+  });
+
+  it("exits with code 1 and prints an error when --edit is used with multiple input files", async () => {
+    const zipped = zipSync({ "Drums/kick.wav": strToU8("kick-data") });
+    const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
+    const zipPath1 = join(tmpDir, "pack1.zip");
+    const zipPath2 = join(tmpDir, "pack2.zip");
+
+    try {
+      await writeFile(zipPath1, zipped);
+      await writeFile(zipPath2, zipped);
+
+      const result = spawnSync(
+        "node",
+        [CLI_PATH, zipPath1, zipPath2, "--edit"],
+        { encoding: "utf8" },
+      );
+
+      expect(result.stderr).toContain("Error: --edit cannot be used with multiple input files");
+      expect(result.status).toBe(1);
+    } finally {
+      await rm(tmpDir, { recursive: true });
+    }
+  });
+
+  it("exits with code 1 and prints an error when --debug is used with multiple input files", async () => {
+    const zipped = zipSync({ "Drums/kick.wav": strToU8("kick-data") });
+    const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
+    const zipPath1 = join(tmpDir, "pack1.zip");
+    const zipPath2 = join(tmpDir, "pack2.zip");
+
+    try {
+      await writeFile(zipPath1, zipped);
+      await writeFile(zipPath2, zipped);
+
+      const result = spawnSync(
+        "node",
+        [CLI_PATH, zipPath1, zipPath2, "--debug"],
+        { encoding: "utf8" },
+      );
+
+      expect(result.stderr).toContain("Error: --debug cannot be used with multiple input files");
+      expect(result.status).toBe(1);
+    } finally {
+      await rm(tmpDir, { recursive: true });
+    }
+  });
 });

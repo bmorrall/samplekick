@@ -147,6 +147,29 @@ if (values.device !== undefined && devicePreset === undefined) {
 }
 const zipPaths = positionals.map((p) => resolve(p));
 
+if (zipPaths.length > 1) {
+  if (values.config !== undefined) {
+    console.error("Error: --config cannot be used with multiple input files");
+    process.exit(1);
+  }
+  if (values["write-config"] !== undefined) {
+    console.error("Error: --write-config cannot be used with multiple input files");
+    process.exit(1);
+  }
+  if (values["dump-config"] === true) {
+    console.error("Error: --dump-config cannot be used with multiple input files");
+    process.exit(1);
+  }
+  if (values.edit === true) {
+    console.error("Error: --edit cannot be used with multiple input files");
+    process.exit(1);
+  }
+  if (values.debug === true) {
+    console.error("Error: --debug cannot be used with multiple input files");
+    process.exit(1);
+  }
+}
+
 const dataDir = process.env.SAMPLEKICK_DATA_DIR ?? getDataDir("samplekick", process.platform, process.env);
 const pathStrategy = values["preserve-paths"] === true ? SourcePathStrategy : OrganisedPathStrategy;
 
