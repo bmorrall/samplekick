@@ -360,6 +360,70 @@ describe("DirectorySampleTypeTransformer", () => {
     });
   });
 
+  describe('when the directory is named "Cinematics"', () => {
+    it('sets sampleType to "Cinematic"', () => {
+      const entry = createTransformEntryInHierarchy(
+        [],
+        { name: "Cinematics", isFile: false },
+        [{ name: "cinematic.wav" }],
+      );
+      DirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("Cinematic");
+    });
+
+    it('sets sampleType to "Cinematic" for the singular form "Cinematic"', () => {
+      const entry = createTransformEntryInHierarchy(
+        [],
+        { name: "Cinematic", isFile: false },
+        [{ name: "cinematic.wav" }],
+      );
+      DirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("Cinematic");
+    });
+
+    it("matches case-insensitively", () => {
+      const entry = createTransformEntryInHierarchy(
+        [],
+        { name: "cinematics", isFile: false },
+        [{ name: "cinematic.wav" }],
+      );
+      DirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("Cinematic");
+    });
+  });
+
+  describe('when the directory is named "Drones"', () => {
+    it('sets sampleType to "Drones"', () => {
+      const entry = createTransformEntryInHierarchy(
+        [],
+        { name: "Drones", isFile: false },
+        [{ name: "drone.wav" }],
+      );
+      DirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("Drones");
+    });
+
+    it('sets sampleType to "Drones" for the singular form "Drone"', () => {
+      const entry = createTransformEntryInHierarchy(
+        [],
+        { name: "Drone", isFile: false },
+        [{ name: "drone.wav" }],
+      );
+      DirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("Drones");
+    });
+
+    it("matches case-insensitively", () => {
+      const entry = createTransformEntryInHierarchy(
+        [],
+        { name: "drones", isFile: false },
+        [{ name: "drone.wav" }],
+      );
+      DirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("Drones");
+    });
+  });
+
   describe('when the directory is named "E-Piano"', () => {
     it('sets sampleType to "E-Piano"', () => {
       const entry = createTransformEntryInHierarchy(
