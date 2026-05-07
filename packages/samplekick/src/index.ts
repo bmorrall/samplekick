@@ -66,10 +66,10 @@ const buildHelpText = (): string => {
   return `\
 samplekick/${packageJson.version}
 
-Usage: samplekick <zip-file> [-o <output-dir>]
+Usage: samplekick <zip-file> [zip-file...] [-o <output-dir>]
 
 Arguments:
-  <zip-file>              Path to the input ZIP file
+  <zip-file> [zip-file...]  One or more input ZIP files
 
 Options:
   -o, --output <path>     Export samples to a directory
