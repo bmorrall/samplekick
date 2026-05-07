@@ -26,6 +26,10 @@ describe("index exports", () => {
     expect(api.FLStudioProjectTransformer).toBeDefined();
   });
 
+  test("exports GhosthackNameTransformer", () => {
+    expect(api.GhosthackNameTransformer).toBeDefined();
+  });
+
   test("exports KnownFileTypeTransformer", () => {
     expect(api.KnownFileTypeTransformer).toBeDefined();
   });
@@ -99,6 +103,7 @@ describe("index exports", () => {
       "SkipJunkTransformer",
       "SP404Mk2NameTransformer",
       "TrimNameTransformer",
+      "GhosthackNameTransformer",
       "SourcePathStrategy",
       "OrganisedPathStrategy",
       "SP404Mk2Preset",
