@@ -145,164 +145,173 @@ if (values.device !== undefined && devicePreset === undefined) {
   );
   process.exit(1);
 }
-const [inputPath] = positionals;
+const zipPaths = positionals.map((p) => resolve(p));
 
-const zipPath = resolve(inputPath);
+const dataDir = process.env.SAMPLEKICK_DATA_DIR ?? getDataDir("samplekick", process.platform, process.env);
+const pathStrategy = values["preserve-paths"] === true ? SourcePathStrategy : OrganisedPathStrategy;
 
-const dataSource = await ZipDataSource.fromFile(zipPath).catch((err: unknown) => {
-  if (typeof err === "object" && err !== null && "code" in err && err.code === "ENOENT") {
-    console.error(`Error: file not found: ${zipPath}`);
-    process.exit(1);
-  }
-  if (err instanceof Error && err.message.includes("not zip file")) {
-    console.error(`Error: not a valid zip file: ${zipPath}`);
-    process.exit(1);
-  }
-  throw err;
-});
-
-const registry = new Registry(dataSource);
-
-const reporter: ExportReporter = chalk.level > 0
-  ? new PrettyExportReporter(process.stdout, chalk, { quiet: values.quiet === true, packName: basename(zipPath), organised: values["preserve-paths"] !== true })
-  : new SimpleExportReporter(process.stdout, values.quiet === true, basename(zipPath), values["preserve-paths"] !== true);
-
-// Debug messages are suppressed unless --verbose is passed
-const debugLog = values.verbose === true ? reporter.onDebug.bind(reporter) : undefined;
-
-let ffmpegVersion: string | undefined = undefined;
+let conversion: { targetBitDepth: number; targetSampleRate: number; ffmpegVersion: string } | undefined = undefined;
 if (values.convert === true) {
   if (devicePreset?.targetBitDepth === undefined || devicePreset.targetSampleRate === undefined) {
     console.error(`Error: device "${values.device ?? ""}" does not support --convert (no conversion settings defined)`);
     process.exit(1);
   }
-  ffmpegVersion = await getFfmpegVersion().catch((err: unknown) => {
+  const { targetBitDepth, targetSampleRate } = devicePreset;
+  const ffmpegVersion = await getFfmpegVersion().catch((err: unknown) => {
     if (typeof err === "object" && err !== null && "code" in err && err.code === "ENOENT") {
       console.error("Error: ffmpeg not found. Please install ffmpeg to use --convert.");
       process.exit(1);
     }
     throw err;
   });
-  registry.addPostProcessor(new AudioConverter(createFfmpegRunner(), {
-    onError: (destPath, error) => { reporter.onError(`Could not convert ${basename(destPath)}: ${error.message}`); },
-    onDebug: debugLog,
-    targetBitDepth: devicePreset.targetBitDepth,
-    targetSampleRate: devicePreset.targetSampleRate,
-  }));
+  conversion = { targetBitDepth, targetSampleRate, ffmpegVersion };
 }
 
-if (values["allow-junk"] !== true) {
-  // Junk transforms: mark OS metadata and hidden files as skipped
-  registry.applyTransform(SkipJunkTransformer);
-}
-
-if (values.analyse === true) {
-  // File transforms: identify known file types and lock their folder structure
-  registry.applyTransform(KnownFileTypeTransformer);
-  registry.applyTransform(AbletonProjectTransformer);
-  registry.applyTransform(FLStudioProjectTransformer);
-
-  // Root transforms: derive and expand the package name from the zip filename
-  registry.applyTransform(DefaultRootPackageNameTransformer);
-  registry.applyTransform(ExpandRootPackageNameTransformer);
-
-  // Name transforms: run after file transforms so locked entries are skipped
-  registry.applyTransform(TrimNameTransformer);
-  registry.applyTransform(NormaliseSpacesTransformer);
-  registry.applyTransform(NormaliseBracketSpacingTransformer);
-  registry.applyTransform(NormaliseCommaSpacingTransformer);
-  registry.applyTransform(NormaliseHyphenTransformer);
-
-  // Directory transforms: run after name transforms so folder names are normalised first
-  registry.applyTransform(DirectorySampleTypeTransformer);
-}
-const dataDir = process.env.SAMPLEKICK_DATA_DIR ?? getDataDir("samplekick", process.platform, process.env);
-const configPath = values.config === undefined ? undefined : resolve(values.config);
-const autoConfigPath = await loadConfig(registry, configPath, dataDir).catch((err: unknown) => {
-  console.error(err instanceof Error ? err.message : String(err));
-  process.exit(1);
-});
-
-if (devicePreset !== undefined) {
-  for (const transform of devicePreset.transforms) {
-    registry.applyTransform(transform);
-  }
-}
-
-const pathStrategy = values["preserve-paths"] === true ? SourcePathStrategy : OrganisedPathStrategy;
-registry.setPathStrategy(pathStrategy);
-
-if (values.verbose === true) {
-  reporter.onInfo(`Reading: ${zipPath}`);
-  if (configPath !== undefined) {
-    reporter.onInfo(`Using config: ${configPath}`);
-  } else if (autoConfigPath !== undefined) {
-    reporter.onInfo(`Using auto-config: ${autoConfigPath}`);
-  }
-  if (ffmpegVersion !== undefined) {
-    reporter.onInfo(`Using ffmpeg: ${ffmpegVersion}`);
-  }
-}
-
-if (values.debug === true) {
-  console.log(registry.toString(values.verbose === true));
-  process.exit(0);
-}
-
-if (values.analyse === true && autoConfigPath !== undefined) {
-  const savePath = autoConfigPath;
-  await mkdir(dirname(savePath), { recursive: true });
-  const autoConfigStream = createWriteStream(savePath);
-  new CsvConfigWriter(autoConfigStream).writeConfig(registry);
-  await finished(autoConfigStream).catch((err: unknown) => {
-    console.error(`Warning: could not save config to ${savePath}: ${err instanceof Error ? err.message : String(err)}`);
+/* eslint-disable no-await-in-loop -- sequential per-file processing is intentional */
+for (const zipPath of zipPaths) {
+  const dataSource = await ZipDataSource.fromFile(zipPath).catch((err: unknown) => {
+    if (typeof err === "object" && err !== null && "code" in err && err.code === "ENOENT") {
+      console.error(`Error: file not found: ${zipPath}`);
+      process.exit(1);
+    }
+    if (err instanceof Error && err.message.includes("not zip file")) {
+      console.error(`Error: not a valid zip file: ${zipPath}`);
+      process.exit(1);
+    }
+    throw err;
   });
-}
 
-if (values.edit === true) {
-  const editPath = configPath ?? autoConfigPath;
-  if (editPath === undefined) {
-    console.error("Error: no config file to edit. Run an export first to create an auto-config, or specify one with --config.");
-    process.exit(1);
+  const registry = new Registry(dataSource);
+
+  const reporter: ExportReporter = chalk.level > 0
+    ? new PrettyExportReporter(process.stdout, chalk, { quiet: values.quiet === true, packName: basename(zipPath), organised: values["preserve-paths"] !== true })
+    : new SimpleExportReporter(process.stdout, values.quiet === true, basename(zipPath), values["preserve-paths"] !== true);
+
+  // Debug messages are suppressed unless --verbose is passed
+  const debugLog = values.verbose === true ? reporter.onDebug.bind(reporter) : undefined;
+
+  if (conversion !== undefined) {
+    registry.addPostProcessor(new AudioConverter(createFfmpegRunner(), {
+      onError: (destPath, error) => { reporter.onError(`Could not convert ${basename(destPath)}: ${error.message}`); },
+      onDebug: debugLog,
+      targetBitDepth: conversion.targetBitDepth,
+      targetSampleRate: conversion.targetSampleRate,
+    }));
   }
-  openConfigInEditor(editPath, process.platform, process.env);
-  process.exit(0);
-}
 
-if (values["write-config"] !== undefined) {
-  const writePath = resolve(values["write-config"]);
-  const fileStream = createWriteStream(writePath);
-  new CsvConfigWriter(fileStream).writeConfig(registry);
-  await finished(fileStream).catch((err: unknown) => {
-    console.error(`Error: could not write to ${writePath}: ${err instanceof Error ? err.message : String(err)}`);
+  if (values["allow-junk"] !== true) {
+    // Junk transforms: mark OS metadata and hidden files as skipped
+    registry.applyTransform(SkipJunkTransformer);
+  }
+
+  if (values.analyse === true) {
+    // File transforms: identify known file types and lock their folder structure
+    registry.applyTransform(KnownFileTypeTransformer);
+    registry.applyTransform(AbletonProjectTransformer);
+    registry.applyTransform(FLStudioProjectTransformer);
+
+    // Root transforms: derive and expand the package name from the zip filename
+    registry.applyTransform(DefaultRootPackageNameTransformer);
+    registry.applyTransform(ExpandRootPackageNameTransformer);
+
+    // Name transforms: run after file transforms so locked entries are skipped
+    registry.applyTransform(TrimNameTransformer);
+    registry.applyTransform(NormaliseSpacesTransformer);
+    registry.applyTransform(NormaliseBracketSpacingTransformer);
+    registry.applyTransform(NormaliseCommaSpacingTransformer);
+    registry.applyTransform(NormaliseHyphenTransformer);
+
+    // Directory transforms: run after name transforms so folder names are normalised first
+    registry.applyTransform(DirectorySampleTypeTransformer);
+  }
+
+  const configPath = values.config === undefined ? undefined : resolve(values.config);
+  const autoConfigPath = await loadConfig(registry, configPath, dataDir).catch((err: unknown) => {
+    console.error(err instanceof Error ? err.message : String(err));
     process.exit(1);
   });
-}
 
-if (values["dump-config"] === true) {
-  new CsvConfigWriter(process.stdout).writeConfig(registry);
-} else if (values.output === undefined) {
-  const dryRun = new DryRunReporter(reporter);
-  await registry.exportToDirectory(undefined, {
-    onAfterWrite: (e, p, err) => { dryRun.onAfterWrite(e, p, err); },
-    onReject: (e, r) => { dryRun.onReject(e, r); },
-    onSkip: (e) => { dryRun.onSkip(e); },
-  }).catch((err: unknown) => {
-    console.error(`Error: ${err instanceof Error ? err.message : String(err)}`);
-    process.exit(1);
-  });
-  dryRun.flush(basename(zipPath));
-} else {
-  const destPath = resolve(values.output);
-  reporter.onStart(basename(zipPath));
-  await registry.exportToDirectory(destPath, {
-    onBeforeWrite: (e, p) => { reporter.onBeforeWrite?.(e, p); },
-    onAfterWrite: (e, p, err) => { reporter.onAfterWrite(e, p, err); },
-    onReject: (e, r) => { reporter.onReject(e, r); },
-    onSkip: values.verbose === true ? (e) => { reporter.onSkip(e); } : undefined,
-  }).catch((err: unknown) => {
-    console.error(`Error: could not export to ${destPath}: ${err instanceof Error ? err.message : String(err)}`);
-    process.exit(1);
-  });
-  reporter.onComplete(destPath);
+  if (devicePreset !== undefined) {
+    for (const transform of devicePreset.transforms) {
+      registry.applyTransform(transform);
+    }
+  }
+
+  registry.setPathStrategy(pathStrategy);
+
+  if (values.verbose === true) {
+    reporter.onInfo(`Reading: ${zipPath}`);
+    if (configPath !== undefined) {
+      reporter.onInfo(`Using config: ${configPath}`);
+    } else if (autoConfigPath !== undefined) {
+      reporter.onInfo(`Using auto-config: ${autoConfigPath}`);
+    }
+    if (conversion !== undefined) {
+      reporter.onInfo(`Using ffmpeg: ${conversion.ffmpegVersion}`);
+    }
+  }
+
+  if (values.debug === true) {
+    console.log(registry.toString(values.verbose === true));
+    process.exit(0);
+  }
+
+  if (values.analyse === true && autoConfigPath !== undefined) {
+    const savePath = autoConfigPath;
+    await mkdir(dirname(savePath), { recursive: true });
+    const autoConfigStream = createWriteStream(savePath);
+    new CsvConfigWriter(autoConfigStream).writeConfig(registry);
+    await finished(autoConfigStream).catch((err: unknown) => {
+      console.error(`Warning: could not save config to ${savePath}: ${err instanceof Error ? err.message : String(err)}`);
+    });
+  }
+
+  if (values.edit === true) {
+    const editPath = configPath ?? autoConfigPath;
+    if (editPath === undefined) {
+      console.error("Error: no config file to edit. Run an export first to create an auto-config, or specify one with --config.");
+      process.exit(1);
+    }
+    openConfigInEditor(editPath, process.platform, process.env);
+    process.exit(0);
+  }
+
+  if (values["write-config"] !== undefined) {
+    const writePath = resolve(values["write-config"]);
+    const fileStream = createWriteStream(writePath);
+    new CsvConfigWriter(fileStream).writeConfig(registry);
+    await finished(fileStream).catch((err: unknown) => {
+      console.error(`Error: could not write to ${writePath}: ${err instanceof Error ? err.message : String(err)}`);
+      process.exit(1);
+    });
+  }
+
+  if (values["dump-config"] === true) {
+    new CsvConfigWriter(process.stdout).writeConfig(registry);
+  } else if (values.output === undefined) {
+    const dryRun = new DryRunReporter(reporter);
+    await registry.exportToDirectory(undefined, {
+      onAfterWrite: (e, p, err) => { dryRun.onAfterWrite(e, p, err); },
+      onReject: (e, r) => { dryRun.onReject(e, r); },
+      onSkip: (e) => { dryRun.onSkip(e); },
+    }).catch((err: unknown) => {
+      console.error(`Error: ${err instanceof Error ? err.message : String(err)}`);
+      process.exit(1);
+    });
+    dryRun.flush(basename(zipPath));
+  } else {
+    const destPath = resolve(values.output);
+    reporter.onStart(basename(zipPath));
+    await registry.exportToDirectory(destPath, {
+      onBeforeWrite: (e, p) => { reporter.onBeforeWrite?.(e, p); },
+      onAfterWrite: (e, p, err) => { reporter.onAfterWrite(e, p, err); },
+      onReject: (e, r) => { reporter.onReject(e, r); },
+      onSkip: values.verbose === true ? (e) => { reporter.onSkip(e); } : undefined,
+    }).catch((err: unknown) => {
+      console.error(`Error: could not export to ${destPath}: ${err instanceof Error ? err.message : String(err)}`);
+      process.exit(1);
+    });
+    reporter.onComplete(destPath);
+  }
 }
+/* eslint-enable no-await-in-loop -- sequential per-file processing is intentional */
