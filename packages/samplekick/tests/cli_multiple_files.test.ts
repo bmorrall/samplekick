@@ -71,6 +71,11 @@ describe("multiple input files", () => {
       expect(result.stdout).toContain("Drums/kick.wav");
       expect(result.stdout).toContain("Loops/hihat.wav");
 
+      // A blank line should separate the output of the two files
+      const kickIdx = result.stdout.indexOf("Drums/kick.wav");
+      const hihatIdx = result.stdout.indexOf("Loops/hihat.wav");
+      expect(result.stdout.slice(kickIdx, hihatIdx)).toContain("\n\n");
+
       // No files written to disk
       await expect(stat(dataDir)).rejects.toThrow();
     } finally {

@@ -191,7 +191,9 @@ if (values.convert === true) {
 }
 
 /* eslint-disable no-await-in-loop -- sequential per-file processing is intentional */
-for (const zipPath of zipPaths) {
+for (const [zipIndex, zipPath] of zipPaths.entries()) {
+  if (zipIndex > 0) process.stdout.write("\n");
+
   const dataSource = await ZipDataSource.fromFile(zipPath).catch((err: unknown) => {
     if (typeof err === "object" && err !== null && "code" in err && err.code === "ENOENT") {
       console.error(`Error: file not found: ${zipPath}`);
