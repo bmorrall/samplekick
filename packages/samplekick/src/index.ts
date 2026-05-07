@@ -11,6 +11,7 @@ import {
   DirectorySampleTypeTransformer,
   ExpandRootPackageNameTransformer,
   FLStudioProjectTransformer,
+  GhosthackNameTransformer,
   KnownFileTypeTransformer,
   NormaliseBracketSpacingTransformer,
   NormaliseCommaSpacingTransformer,
@@ -245,6 +246,7 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
     registry.applyTransform(NormaliseBracketSpacingTransformer);
     registry.applyTransform(NormaliseCommaSpacingTransformer);
     registry.applyTransform(NormaliseHyphenTransformer);
+    registry.applyTransform(GhosthackNameTransformer);
 
     // Directory transforms: run after name transforms so folder names are normalised first
     registry.applyTransform(DirectorySampleTypeTransformer);
