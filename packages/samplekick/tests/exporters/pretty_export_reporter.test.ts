@@ -37,7 +37,7 @@ const createTTYReporter = (): { reporter: PrettyExportReporter; getOutput: () =>
   Object.assign(stream, { isTTY: true });
   const chunks: string[] = [];
   stream.on("data", (chunk: Buffer) => { chunks.push(chunk.toString()); });
-  const reporter = new PrettyExportReporter(stream, chalk1, { packName: "my-pack.zip" });
+  const reporter = new PrettyExportReporter(stream, chalk1, { displayName: "my-pack.zip" });
   const getOutput = (): string => chunks.join("");
   return { reporter, getOutput };
 };
@@ -46,7 +46,7 @@ const createPackReporter = (): { reporter: PrettyExportReporter; getOutput: () =
   const stream = new PassThrough();
   const chunks: string[] = [];
   stream.on("data", (chunk: Buffer) => { chunks.push(chunk.toString()); });
-  const reporter = new PrettyExportReporter(stream, chalk1, { packName: "my-pack.zip" });
+  const reporter = new PrettyExportReporter(stream, chalk1, { displayName: "my-pack.zip" });
   const getOutput = (): string => chunks.join("");
   return { reporter, getOutput };
 };
@@ -55,7 +55,7 @@ const createQuietPackReporter = (): { reporter: PrettyExportReporter; getOutput:
   const stream = new PassThrough();
   const chunks: string[] = [];
   stream.on("data", (chunk: Buffer) => { chunks.push(chunk.toString()); });
-  const reporter = new PrettyExportReporter(stream, chalk1, { quiet: true, packName: "my-pack.zip" });
+  const reporter = new PrettyExportReporter(stream, chalk1, { quiet: true, displayName: "my-pack.zip" });
   const getOutput = (): string => chunks.join("");
   return { reporter, getOutput };
 };

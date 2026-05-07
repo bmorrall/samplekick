@@ -209,7 +209,7 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
   const registry = new Registry(dataSource);
 
   const reporter: ExportReporter = chalk.level > 0
-    ? new PrettyExportReporter(process.stdout, chalk, { quiet: values.quiet === true, packName: basename(zipPath), organised: values["preserve-paths"] !== true })
+    ? new PrettyExportReporter(process.stdout, chalk, { quiet: values.quiet === true, displayName: basename(zipPath), organised: values["preserve-paths"] !== true })
     : new SimpleExportReporter(process.stdout, values.quiet === true, basename(zipPath), values["preserve-paths"] !== true);
 
   // Debug messages are suppressed unless --verbose is passed
