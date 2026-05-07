@@ -165,7 +165,7 @@ const registry = new Registry(dataSource);
 
 const reporter: ExportReporter = chalk.level > 0
   ? new PrettyExportReporter(process.stdout, chalk, { quiet: values.quiet === true, packName: basename(zipPath), organised: values["preserve-paths"] !== true })
-  : new SimpleExportReporter(process.stdout, values.quiet === true, basename(zipPath));
+  : new SimpleExportReporter(process.stdout, values.quiet === true, basename(zipPath), values["preserve-paths"] !== true);
 
 // Debug messages are suppressed unless --verbose is passed
 const debugLog = values.verbose === true ? reporter.onDebug.bind(reporter) : undefined;
@@ -291,9 +291,10 @@ if (values["dump-config"] === true) {
     console.error(`Error: ${err instanceof Error ? err.message : String(err)}`);
     process.exit(1);
   });
-  dryRun.flush();
+  dryRun.flush(basename(zipPath));
 } else {
   const destPath = resolve(values.output);
+  reporter.onStart(basename(zipPath));
   await registry.exportToDirectory(destPath, {
     onBeforeWrite: (e, p) => { reporter.onBeforeWrite?.(e, p); },
     onAfterWrite: (e, p, err) => { reporter.onAfterWrite(e, p, err); },

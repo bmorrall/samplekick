@@ -1,5 +1,7 @@
+import { extname } from "node:path";
 import type { Writable } from "node:stream";
 import type { ConfigEntry, FileNode } from "samplekick-io";
+import { AUDIO_EXTENSIONS } from "../post_processors/audio_converter";
 import type { ExportReporter } from "./export_reporter";
 
 const countLeafNodes = (entry: FileNode): number => {
@@ -11,17 +13,17 @@ const countLeafNodes = (entry: FileNode): number => {
 export class SimpleExportReporter implements ExportReporter {
   private readonly output: Writable;
   private readonly quiet: boolean;
-  private readonly packName: string;
+  private readonly organised: boolean;
   private totalCount = 0;
   private errorCount = 0;
   private rejectedCount = 0;
   private skippedCount = 0;
-  private started = false;
+  private readonly packageSummary = new Map<string, Map<string, number>>();
 
-  constructor(output: Writable, quiet = false, packName = "") {
+  constructor(output: Writable, quiet = false, _packName = "", organised = false) {
     this.output = output;
     this.quiet = quiet;
-    this.packName = packName;
+    this.organised = organised;
   }
 
   private formatErrors(count: number): string {
@@ -36,6 +38,26 @@ export class SimpleExportReporter implements ExportReporter {
     return `${count} ${count === 1 ? "entry" : "entries"} skipped`;
   }
 
+  private printSummary(): void {
+    if (!this.organised || this.packageSummary.size === 0) return;
+    this.output.write('\n');
+    for (const [pkg, types] of [...this.packageSummary].sort(([a], [b]) => a.localeCompare(b))) {
+      const total = [...types.values()].reduce((a, b) => a + b, 0);
+      this.output.write(`${pkg}: ${total} ${total === 1 ? "sample" : "samples"}\n`);
+      for (const [type, count] of [...types].sort(([a], [b]) => a.localeCompare(b))) {
+        if (type.length > 0) {
+          this.output.write(`  ${type}: ${count} ${count === 1 ? "sample" : "samples"}\n`);
+        }
+      }
+    }
+  }
+
+  onStart(packName: string): void {
+    if (packName.length > 0) {
+      this.output.write(`${packName}:\n`);
+    }
+  }
+
   onInfo(message: string): void {
     this.output.write(`${message}\n`);
   }
@@ -48,17 +70,18 @@ export class SimpleExportReporter implements ExportReporter {
     this.output.write(`error: ${message}\n`);
   }
 
-  onBeforeWrite(_entry: ConfigEntry, _destRelPath: string): void {
-    if (!this.started) {
-      this.started = true;
-      const label = this.packName.length > 0 ? ` ${this.packName}` : "";
-      this.output.write(`Exporting${label}\u2026\n`);
-    }
-  }
-
-  onAfterWrite(_entry: ConfigEntry, destRelPath: string, error?: Error): void {
+  onAfterWrite(entry: ConfigEntry, destRelPath: string, error?: Error): void {
     this.totalCount += 1;
     if (error === undefined) {
+      if (this.organised && AUDIO_EXTENSIONS.has(extname(destRelPath).toLowerCase())) {
+        const pkg = entry.getPackageName();
+        const type = entry.getSampleType() ?? "";
+        if (pkg !== undefined && pkg.length > 0) {
+          const types = this.packageSummary.get(pkg) ?? new Map<string, number>();
+          types.set(type, (types.get(type) ?? 0) + 1);
+          this.packageSummary.set(pkg, types);
+        }
+      }
       if (!this.quiet) {
         this.output.write(`success: ${destRelPath}\n`);
       }
@@ -96,6 +119,7 @@ export class SimpleExportReporter implements ExportReporter {
     }
     const suffix = suffixParts.length > 0 ? ` (${suffixParts.join(", ")})` : "";
     this.output.write(`Exported ${totalPart} to ${dirPath}${suffix}\n`);
+    this.printSummary();
   }
 
   onPreview(successCount: number, rejectCount: number, skipCount: number): void {
@@ -110,5 +134,6 @@ export class SimpleExportReporter implements ExportReporter {
     }
     const suffix = parts.length > 0 ? ` (${parts.join(", ")})` : "";
     this.output.write(`Would export ${totalPart}${suffix}\n`);
+    this.printSummary();
   }
 }

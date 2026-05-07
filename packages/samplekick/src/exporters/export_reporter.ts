@@ -1,6 +1,7 @@
 import type { ConfigEntry, ExportOptions, FileNode } from "samplekick-io";
 
 export interface ExportReporter extends ExportOptions {
+  onStart: (packName: string) => void;
   onInfo: (message: string) => void;
   onDebug: (message: string) => void;
   onError: (message: string) => void;

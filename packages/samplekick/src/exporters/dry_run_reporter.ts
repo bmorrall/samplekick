@@ -21,12 +21,6 @@ export class DryRunReporter {
     this.inner = inner;
   }
 
-  // onBeforeWrite is intentionally a no-op — prevents the spinner from starting
-  onBeforeWrite(_entry: ConfigEntry, _destRelPath: string): void {
-    // no-op: this.inner.onBeforeWrite is not called, preventing the spinner from starting
-    void this.inner;
-  }
-
   onAfterWrite(entry: ConfigEntry, destRelPath: string, error?: Error): void {
     if (error === undefined) {
       this.successes.push({ entry, destRelPath });
@@ -43,10 +37,12 @@ export class DryRunReporter {
     this.configSkips.push(entry);
   }
 
-  flush(): void {
+  flush(packName: string): void {
     const sortedSuccesses = [...this.successes].sort((a, b) => a.destRelPath.localeCompare(b.destRelPath));
     const sortedRejections = [...this.rejections].sort((a, b) => a.entry.getPath().localeCompare(b.entry.getPath()));
     const sortedSkips = [...this.configSkips].sort((a, b) => a.getPath().localeCompare(b.getPath()));
+
+    this.inner.onStart(packName);
 
     for (const entry of sortedSkips) {
       this.inner.onSkip(entry);

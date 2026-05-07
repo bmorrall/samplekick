@@ -15,6 +15,18 @@ const createEntry = (path: string): FileNode => ({
   getChildNodes: () => [],
 });
 
+const createEntryWithMeta = (path: string, packageName: string, sampleType: string): FileNode => ({
+  getPath: () => path,
+  getName: () => path.split("/").pop() ?? path,
+  getPackageName: () => packageName,
+  getSampleType: () => sampleType,
+  isSkipped: () => undefined,
+  isKeepStructure: () => undefined,
+  isFile: () => true,
+  getParentNode: () => undefined,
+  getChildNodes: () => [],
+});
+
 const createReporter = (): { reporter: SimpleExportReporter; getOutput: () => string } => {
   const stream = new PassThrough();
   const chunks: string[] = [];
@@ -38,6 +50,24 @@ const createPackReporter = (): { reporter: SimpleExportReporter; getOutput: () =
   const chunks: string[] = [];
   stream.on("data", (chunk: Buffer) => { chunks.push(chunk.toString()); });
   const reporter = new SimpleExportReporter(stream, false, "my-pack.zip");
+  const getOutput = (): string => chunks.join("");
+  return { reporter, getOutput };
+};
+
+const createQuietPackReporter = (): { reporter: SimpleExportReporter; getOutput: () => string } => {
+  const stream = new PassThrough();
+  const chunks: string[] = [];
+  stream.on("data", (chunk: Buffer) => { chunks.push(chunk.toString()); });
+  const reporter = new SimpleExportReporter(stream, true, "my-pack.zip");
+  const getOutput = (): string => chunks.join("");
+  return { reporter, getOutput };
+};
+
+const createOrganisedReporter = (): { reporter: SimpleExportReporter; getOutput: () => string } => {
+  const stream = new PassThrough();
+  const chunks: string[] = [];
+  stream.on("data", (chunk: Buffer) => { chunks.push(chunk.toString()); });
+  const reporter = new SimpleExportReporter(stream, false, "", true);
   const getOutput = (): string => chunks.join("");
   return { reporter, getOutput };
 };
@@ -67,24 +97,17 @@ describe("SimpleExportReporter", () => {
     });
   });
 
-  describe("onBeforeWrite", () => {
-    it("writes 'Exporting\u2026' on the first call", () => {
-      const { reporter, getOutput } = createReporter();
-      reporter.onBeforeWrite(createEntry("drums/kick.wav"), "loops/my-pack/kick.wav");
-      expect(getOutput()).toBe("Exporting\u2026\n");
-    });
-
-    it("only writes the header once", () => {
-      const { reporter, getOutput } = createReporter();
-      reporter.onBeforeWrite(createEntry("kick.wav"), "kick.wav");
-      reporter.onBeforeWrite(createEntry("snare.wav"), "snare.wav");
-      expect(getOutput()).toBe("Exporting\u2026\n");
-    });
-
-    it("includes the pack name when provided", () => {
+  describe("onStart", () => {
+    it("writes 'filename:' when a pack name is set", () => {
       const { reporter, getOutput } = createPackReporter();
-      reporter.onBeforeWrite(createEntry("kick.wav"), "kick.wav");
-      expect(getOutput()).toBe("Exporting my-pack.zip\u2026\n");
+      reporter.onStart("my-pack.zip");
+      expect(getOutput()).toBe("my-pack.zip:\n");
+    });
+
+    it("writes nothing when pack name is empty", () => {
+      const { reporter, getOutput } = createReporter();
+      reporter.onStart("");
+      expect(getOutput()).toBe("");
     });
   });
 
@@ -142,10 +165,10 @@ describe("SimpleExportReporter", () => {
   });
 
   describe("quiet mode", () => {
-    it("still writes the Exporting header on first onBeforeWrite", () => {
-      const { reporter, getOutput } = createQuietReporter();
-      reporter.onBeforeWrite(createEntry("kick.wav"), "kick.wav");
-      expect(getOutput()).toBe("Exporting\u2026\n");
+    it("still writes 'filename:' in quiet mode", () => {
+      const { reporter, getOutput } = createQuietPackReporter();
+      reporter.onStart("my-pack.zip");
+      expect(getOutput()).toBe("my-pack.zip:\n");
     });
 
     it("suppresses success lines in onAfterWrite", () => {
@@ -209,6 +232,60 @@ describe("SimpleExportReporter", () => {
       const { reporter, getOutput } = createReporter();
       reporter.onPreview(2, 1, 2);
       expect(getOutput()).toBe("Would export 2 files (1 entry rejected, 2 entries skipped)\n");
+    });
+  });
+
+  describe("organised summary", () => {
+    it("prints package total and sampleType breakdown after onComplete", () => {
+      const { reporter, getOutput } = createOrganisedReporter();
+      reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/kick.wav", "my-pack", "Drums"), "Drums/my-pack/kick.wav");
+      reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/snare.wav", "my-pack", "Drums"), "Drums/my-pack/snare.wav");
+      reporter.onAfterWrite(createEntryWithMeta("Synths/my-pack/synth.wav", "my-pack", "Synths"), "Synths/my-pack/synth.wav");
+      reporter.onComplete("/output");
+      const output = getOutput();
+      expect(output).toContain("my-pack: 3 samples\n");
+      expect(output).toContain("  Drums: 2 samples\n");
+      expect(output).toContain("  Synths: 1 sample\n");
+    });
+
+    it("sorts packages and sampleTypes alphabetically", () => {
+      const { reporter, getOutput } = createOrganisedReporter();
+      reporter.onAfterWrite(createEntryWithMeta("Synths/zebra/s.wav", "zebra", "Synths"), "Synths/zebra/s.wav");
+      reporter.onAfterWrite(createEntryWithMeta("Drums/alpha/k.wav", "alpha", "Drums"), "Drums/alpha/k.wav");
+      reporter.onAfterWrite(createEntryWithMeta("Bass/zebra/b.wav", "zebra", "Bass"), "Bass/zebra/b.wav");
+      reporter.onComplete("/output");
+      const output = getOutput();
+      expect(output.indexOf("alpha:")).toBeLessThan(output.indexOf("zebra:"));
+      expect(output.indexOf("  Bass:")).toBeLessThan(output.indexOf("  Synths:"));
+    });
+
+    it("does not print summary when organised is false", () => {
+      const { reporter, getOutput } = createReporter();
+      reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/kick.wav", "my-pack", "Drums"), "Drums/my-pack/kick.wav");
+      reporter.onComplete("/output");
+      expect(getOutput()).not.toContain("sample");
+    });
+
+    it("prints summary from onPreview in organised mode", () => {
+      const { reporter, getOutput } = createOrganisedReporter();
+      reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/kick.wav", "my-pack", "Drums"), "Drums/my-pack/kick.wav");
+      reporter.onPreview(1, 0, 0);
+      expect(getOutput()).toContain("my-pack: 1 sample\n");
+      expect(getOutput()).toContain("  Drums: 1 sample\n");
+    });
+
+    it("does not count error writes in the summary", () => {
+      const { reporter, getOutput } = createOrganisedReporter();
+      reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/kick.wav", "my-pack", "Drums"), "Drums/my-pack/kick.wav", new Error("fail"));
+      reporter.onComplete("/output");
+      expect(getOutput()).not.toContain("sample");
+    });
+
+    it("does not count non-audio files in the summary", () => {
+      const { reporter, getOutput } = createOrganisedReporter();
+      reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/patch.nki", "my-pack", "Drums"), "Drums/my-pack/patch.nki");
+      reporter.onComplete("/output");
+      expect(getOutput()).not.toContain("sample");
     });
   });
 });

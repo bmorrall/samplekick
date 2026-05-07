@@ -34,7 +34,7 @@ const defaultVersionRunner: FfmpegVersionRunner = async () =>
 export const getFfmpegVersion = async (runner: FfmpegVersionRunner = defaultVersionRunner): Promise<string> =>
   await runner();
 
-const AUDIO_EXTENSIONS = new Set([".wav", ".aiff", ".aif", ".mp3"]);
+export const AUDIO_EXTENSIONS = new Set([".wav", ".aiff", ".aif", ".mp3"]);
 
 export interface AudioConverterOptions {
   targetBitDepth: number;

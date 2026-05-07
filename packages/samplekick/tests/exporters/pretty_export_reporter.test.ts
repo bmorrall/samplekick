@@ -42,6 +42,24 @@ const createTTYReporter = (): { reporter: PrettyExportReporter; getOutput: () =>
   return { reporter, getOutput };
 };
 
+const createPackReporter = (): { reporter: PrettyExportReporter; getOutput: () => string } => {
+  const stream = new PassThrough();
+  const chunks: string[] = [];
+  stream.on("data", (chunk: Buffer) => { chunks.push(chunk.toString()); });
+  const reporter = new PrettyExportReporter(stream, chalk1, { packName: "my-pack.zip" });
+  const getOutput = (): string => chunks.join("");
+  return { reporter, getOutput };
+};
+
+const createQuietPackReporter = (): { reporter: PrettyExportReporter; getOutput: () => string } => {
+  const stream = new PassThrough();
+  const chunks: string[] = [];
+  stream.on("data", (chunk: Buffer) => { chunks.push(chunk.toString()); });
+  const reporter = new PrettyExportReporter(stream, chalk1, { quiet: true, packName: "my-pack.zip" });
+  const getOutput = (): string => chunks.join("");
+  return { reporter, getOutput };
+};
+
 describe("PrettyExportReporter", () => {
   describe("onInfo", () => {
     it("writes the message dimmed without dot or indent", () => {
@@ -70,6 +88,35 @@ describe("PrettyExportReporter", () => {
       const raw = getOutput();
       expect(raw).toContain("\x1B[31m");
       expect(stripAnsi(raw)).toBe("  ! Could not convert kick.wav: ffmpeg error\n");
+    });
+  });
+
+  describe("onStart", () => {
+    it("writes 'filename:' when a pack name is set", () => {
+      const { reporter, getOutput } = createPackReporter();
+      reporter.onStart("my-pack.zip");
+      expect(getOutput()).toBe("my-pack.zip:\n");
+    });
+
+    it("writes nothing when pack name is empty", () => {
+      const { reporter, getOutput } = createReporter();
+      reporter.onStart("");
+      expect(getOutput()).toBe("");
+    });
+
+    it("still writes 'filename:' in quiet mode", () => {
+      const { reporter, getOutput } = createQuietPackReporter();
+      reporter.onStart("my-pack.zip");
+      expect(getOutput()).toBe("my-pack.zip:\n");
+    });
+
+    it("writes 'filename:' on TTY", () => {
+      vi.useFakeTimers();
+      const { reporter, getOutput } = createTTYReporter();
+      reporter.onStart("my-pack.zip");
+      reporter.onComplete("/output/dir");
+      expect(stripAnsi(getOutput())).toContain("my-pack.zip:\n");
+      vi.useRealTimers();
     });
   });
 
