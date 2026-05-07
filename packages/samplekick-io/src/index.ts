@@ -21,6 +21,7 @@ export {
   SP404Mk2NameTransformer,
   TrimNameTransformer,
   GhosthackNameTransformer,
+  SquashNameTransformer,
 } from "./transformers";
 export { SourcePathStrategy } from "./path_strategies/source_path_strategy";
 export { OrganisedPathStrategy } from "./path_strategies/organised_path_strategy";
