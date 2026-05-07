@@ -17,7 +17,7 @@ const SPINNER_INTERVAL_MS = 80;
 
 export interface PrettyExportReporterOptions {
   quiet?: boolean;
-  packName?: string;
+  displayName?: string;
   organised?: boolean;
 }
 
@@ -26,7 +26,7 @@ export class PrettyExportReporter implements ExportReporter {
   private readonly chalk: ChalkInstance;
   private readonly quiet: boolean;
   private readonly isTTY: boolean;
-  private readonly packName: string;
+  private readonly displayName: string;
   private readonly organised: boolean;
   private totalCount = 0;
   private errorCount = 0;
@@ -41,7 +41,7 @@ export class PrettyExportReporter implements ExportReporter {
     this.chalk = chalkInstance;
     this.quiet = options.quiet ?? false;
     this.isTTY = "isTTY" in output && (output as { isTTY: unknown }).isTTY === true;
-    this.packName = options.packName ?? "";
+    this.displayName = options.displayName ?? "";
     this.organised = options.organised ?? false;
   }
 
@@ -70,7 +70,7 @@ export class PrettyExportReporter implements ExportReporter {
   }
 
   private drawSpinner(): void {
-    const { spinnerFrame, packName } = this;
+    const { spinnerFrame, displayName: packName } = this;
     const label = packName.length > 0 ? ` ${packName}` : "";
     this.output.write(`\x1b[2K\r  ${this.chalk.cyan(SPINNER_FRAMES[spinnerFrame % SPINNER_FRAMES.length])} Exporting${label}\u2026 (${this.totalCount} done)`);
   }
@@ -217,8 +217,8 @@ export class PrettyExportReporter implements ExportReporter {
       suffixParts.push(this.formatSkipped(this.skippedCount));
     }
     const suffix = suffixParts.length > 0 ? ` (${suffixParts.join(", ")})` : "";
-    this.output.write(`Exported ${totalPart} to ${dirPath}${suffix}\n`);
     this.printSummary();
+    this.output.write(`Exported ${totalPart} to ${dirPath}${suffix}\n`);
   }
 
   onPreview(successCount: number, rejectCount: number, skipCount: number): void {
@@ -232,7 +232,7 @@ export class PrettyExportReporter implements ExportReporter {
       parts.push(this.formatSkipped(skipCount));
     }
     const suffix = parts.length > 0 ? ` (${parts.join(", ")})` : "";
-    this.output.write(`Would export ${totalPart}${suffix}\n`);
     this.printSummary();
+    this.output.write(`Would export ${totalPart}${suffix}\n`);
   }
 }
