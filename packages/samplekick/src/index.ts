@@ -190,9 +190,12 @@ if (values.convert === true) {
   conversion = { targetBitDepth, targetSampleRate, ffmpegVersion };
 }
 
+const SEPARATOR_WIDTH = 40;
+const SEPARATOR = `\n${"-".repeat(SEPARATOR_WIDTH)}\n\n`;
+
 /* eslint-disable no-await-in-loop -- sequential per-file processing is intentional */
 for (const [zipIndex, zipPath] of zipPaths.entries()) {
-  if (zipIndex > 0) process.stdout.write("\n" + "-".repeat(40) + "\n\n");
+  if (zipIndex > 0) process.stdout.write(SEPARATOR);
 
   const dataSource = await ZipDataSource.fromFile(zipPath).catch((err: unknown) => {
     if (typeof err === "object" && err !== null && "code" in err && err.code === "ENOENT") {

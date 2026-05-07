@@ -217,8 +217,8 @@ export class PrettyExportReporter implements ExportReporter {
       suffixParts.push(this.formatSkipped(this.skippedCount));
     }
     const suffix = suffixParts.length > 0 ? ` (${suffixParts.join(", ")})` : "";
-    this.output.write(`Exported ${totalPart} to ${dirPath}${suffix}\n`);
     this.printSummary();
+    this.output.write(`Exported ${totalPart} to ${dirPath}${suffix}\n`);
   }
 
   onPreview(successCount: number, rejectCount: number, skipCount: number): void {
@@ -232,7 +232,7 @@ export class PrettyExportReporter implements ExportReporter {
       parts.push(this.formatSkipped(skipCount));
     }
     const suffix = parts.length > 0 ? ` (${parts.join(", ")})` : "";
-    this.output.write(`Would export ${totalPart}${suffix}\n`);
     this.printSummary();
+    this.output.write(`Would export ${totalPart}${suffix}\n`);
   }
 }
