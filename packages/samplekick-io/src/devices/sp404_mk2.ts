@@ -8,11 +8,30 @@ import { createPathLengthValidator } from "../validators";
 const MAX_NAME_LENGTH = 80;
 const MAX_PATH_LENGTH = 255;
 
+const SP404_ALLOWED_PUNCTUATION = new Set([
+  " ",
+  "-",
+  "_",
+  "!",
+  "&",
+  "(",
+  ")",
+  "+",
+  ",",
+  "=",
+  "@",
+  "[",
+  "]",
+  "{",
+  "}",
+  "'",
+]);
+
 export const SP404Mk2Preset: DevicePreset = {
   displayName: "Roland SP-404MKII",
   transforms: [
     createNormaliseAccentsTransformer,
-    createAllowedCharactersTransform,
+    createAllowedCharactersTransform(SP404_ALLOWED_PUNCTUATION),
     createTruncateNameTransformer(MAX_NAME_LENGTH),
   ],
   validators: [
