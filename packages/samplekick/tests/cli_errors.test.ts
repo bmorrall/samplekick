@@ -227,4 +227,13 @@ describe("samplekick CLI error handling", () => {
       await rm(tmpDir, { recursive: true });
     }
   });
+
+  it("exits with code 1 and prints a clean error when an unknown flag is passed", () => {
+    const result = spawnSync("node", [CLI_PATH, "--unknown-flag"], { encoding: "utf8" });
+
+    expect(result.stderr).toMatch(/^Error: /v);
+    expect(result.stderr).toContain("--unknown-flag");
+    expect(result.stderr).not.toContain("\n    at "); // no stack trace
+    expect(result.status).toBe(1);
+  });
 });
