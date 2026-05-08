@@ -26,6 +26,7 @@ const allowedPunctuation = new Set([
   "]",
   "{",
   "}",
+  "'",
 ]);
 
 const isAllowedCharacter = (character: string): boolean => {
@@ -53,6 +54,13 @@ const isAllowedCharacter = (character: string): boolean => {
 const normalizeAccents = (name: string): string =>
   name.normalize("NFD").replaceAll(/[\u0300-\u036f]/gv, "");
 
+const normalizeQuotes = (name: string): string =>
+  name
+    .replaceAll("\u2018", "'")
+    .replaceAll("\u2019", "'")
+    .replaceAll("\u201C", '"')
+    .replaceAll("\u201D", '"');
+
 const truncateSP404Mk2Name = (name: string): string => {
   if (name.length <= maxNameLength) {
     return name;
@@ -73,7 +81,7 @@ const truncateSP404Mk2Name = (name: string): string => {
 };
 
 const sp404Mk2StringTransformer: StringTransformer = (name: string): string => {
-  const normalizedName = normalizeAccents(name);
+  const normalizedName = normalizeQuotes(normalizeAccents(name));
   const finalDotIndex = normalizedName.lastIndexOf(".");
   let sanitizedName = "";
 

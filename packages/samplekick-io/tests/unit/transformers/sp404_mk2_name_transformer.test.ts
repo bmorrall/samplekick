@@ -28,6 +28,12 @@ describe("SP404Mk2NameTransformer", () => {
     expect(entry.setName).toHaveBeenCalledWith("parent [parent]");
   });
 
+  it("replaces curly apostrophes with straight single quotes", () => {
+    const entry = createTransformEntry({ name: "it\u2019s a sample.wav" });
+    SP404Mk2NameTransformer(singleEntryTransformSource(entry));
+    expect(entry.setName).toHaveBeenCalledWith("it's a sample.wav");
+  });
+
   it("preserves only the final extension dot", () => {
     const entry = createTransformEntry({ name: "kick.01.alt.wav" });
     SP404Mk2NameTransformer(singleEntryTransformSource(entry));
