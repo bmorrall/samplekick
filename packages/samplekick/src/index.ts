@@ -2,7 +2,7 @@
 import { createWriteStream } from "node:fs";
 import { mkdir } from "node:fs/promises";
 import { finished } from "node:stream/promises";
-import { basename, dirname, resolve } from "node:path";
+import { basename, dirname, join, resolve } from "node:path";
 import { parseArgs } from "node:util";
 import {
   AbletonProjectTransformer,
@@ -75,20 +75,23 @@ Arguments:
 
 Options:
   -o, --output <path>     Export samples to a directory
-  -a, --analyse           Analyse pack and save auto-config
-  -d, --device <name>     Apply a device preset
+                          Omit to preview changes without writing files
+  -a, --analyse           Analyse pack and save to the auto-config
+  -d, --device <name>     Apply device-specific transforms to sample names
   -c, --convert           Convert audio files to device format
       --allow-junk        Keep junk entries (e.g. __MACOSX, hidden files)
       --preserve-paths    Export to original source paths (skip organising)
-      --squash            Convert names to camelCase (applied after device transforms)
-      --debug             Print pack string representation to stdout
-                          without writing any files
-      --edit              Open the auto-config file in $VISUAL/$EDITOR
+      --squash            Convert names to camelCase after device transforms
+      --debug             Print the pack structure to stdout for inspection
+      --edit              Open the active config file in $VISUAL/$EDITOR
       --config <path>     Load a CSV config file to apply to the pack
       --write-config <path>
                           Write the pack config as CSV to a file
-      --dump-config       Print CSV config to stdout and exit
-      --verbose           Show inherited tags on all nodes in debug output
+      --dump-config       Print the pack config as CSV to stdout, with device
+                          and squash transforms applied
+      --bake              Save the transformed config as the auto-config so
+                          transforms are applied automatically on the next run
+      --verbose           Show skipped files, config paths, and inherited tags
       --quiet             Only show errors (suppress per-file success lines)
   -v, --version           Show version number
   -h, --help              Show this help message
@@ -97,6 +100,21 @@ Devices:
 ${deviceLines.join("\n")}
 `;
 };
+
+const SEPARATOR_WIDTH = 40;
+const SEPARATOR = `\n${"─".repeat(SEPARATOR_WIDTH)}\n\n`;
+
+const saveConfigToPath = async (registry: Registry, savePath: string, options: { explicit?: boolean } = {}): Promise<void> => {
+  await mkdir(dirname(savePath), { recursive: true });
+  const stream = createWriteStream(savePath);
+  new CsvConfigWriter(stream, { explicit: options.explicit }).writeConfig(registry);
+  await finished(stream).catch((err: unknown) => {
+    console.error(`Warning: could not save config to ${savePath}: ${err instanceof Error ? err.message : String(err)}`);
+  });
+};
+
+const buildAutoConfigPath = (registry: Registry, dataDir: string): string =>
+  join(dataDir, `${registry.getFingerprint()}.csv`);
 
 const { values, positionals } = parseArgs({
   args: process.argv.slice(CLI_ARG_START),
@@ -111,6 +129,7 @@ const { values, positionals } = parseArgs({
     "allow-junk": { type: "boolean" },
     "preserve-paths": { type: "boolean" },
     squash: { type: "boolean" },
+    bake: { type: "boolean" },
     debug: { type: "boolean" },
     edit: { type: "boolean" },
     verbose: { type: "boolean" },
@@ -194,9 +213,6 @@ if (values.convert === true) {
   conversion = { targetBitDepth, targetSampleRate, ffmpegVersion };
 }
 
-const SEPARATOR_WIDTH = 40;
-const SEPARATOR = `\n${"-".repeat(SEPARATOR_WIDTH)}\n\n`;
-
 /* eslint-disable no-await-in-loop -- sequential per-file processing is intentional */
 for (const [zipIndex, zipPath] of zipPaths.entries()) {
   if (zipIndex > 0) process.stdout.write(SEPARATOR);
@@ -265,13 +281,7 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
   });
 
   if (values.analyse === true && autoConfigPath !== undefined) {
-    const savePath = autoConfigPath;
-    await mkdir(dirname(savePath), { recursive: true });
-    const autoConfigStream = createWriteStream(savePath);
-    new CsvConfigWriter(autoConfigStream).writeConfig(registry);
-    await finished(autoConfigStream).catch((err: unknown) => {
-      console.error(`Warning: could not save config to ${savePath}: ${err instanceof Error ? err.message : String(err)}`);
-    });
+    await saveConfigToPath(registry, autoConfigPath);
   }
 
   if (devicePreset !== undefined) {
@@ -282,6 +292,10 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
 
   if (values.squash === true) {
     registry.applyTransform(SquashNameTransformer);
+  }
+
+  if (values.bake === true) {
+    await saveConfigToPath(registry, buildAutoConfigPath(registry, dataDir), { explicit: true });
   }
 
   registry.setPathStrategy(pathStrategy);
