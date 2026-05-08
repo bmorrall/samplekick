@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { createWriteStream } from "node:fs";
-import { Writable } from "node:stream";
+import type { Writable } from "node:stream";
 import { mkdir } from "node:fs/promises";
 import { finished } from "node:stream/promises";
 import { basename, dirname, join, resolve } from "node:path";
@@ -285,7 +285,7 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
     process.exit(1);
   });
 
-  if (values.analyse === true && autoConfigPath !== undefined) {
+  if (values.analyse === true && autoConfigPath !== undefined && values.bake !== true) {
     await saveConfigToPath(registry, autoConfigPath);
   }
 
@@ -297,10 +297,6 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
 
   if (values.squash === true) {
     registry.applyTransform(SquashNameTransformer);
-  }
-
-  if (values.bake === true) {
-    await saveConfigToPath(registry, buildAutoConfigPath(registry, dataDir), { explicit: true });
   }
 
   registry.setPathStrategy(pathStrategy);
@@ -343,8 +339,15 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
   }
 
   if (values["dump-config"] === true) {
-    saveConfigToStream(registry, process.stdout);
-  } else if (values.output === undefined) {
+    saveConfigToStream(registry, process.stdout, { explicit: values.bake === true });
+    process.exit(0);
+  }
+
+  if (values.bake === true) {
+    await saveConfigToPath(registry, buildAutoConfigPath(registry, dataDir), { explicit: true });
+  }
+
+  if (values.output === undefined) {
     const dryRun = new DryRunReporter(reporter);
     await registry.exportToDirectory(undefined, {
       onAfterWrite: (e, p, err) => { dryRun.onAfterWrite(e, p, err); },
