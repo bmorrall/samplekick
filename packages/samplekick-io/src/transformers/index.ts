@@ -11,6 +11,7 @@ export { createDirectorySampleTypeTransformer } from "./directory_sample_type_tr
 export { createSkipJunkTransformer } from "./skip_junk_transformer";
 export { createSP404Mk2NameTransformer } from "./sp404_mk2_name_transformer";
 export { createTrimNameTransformer } from "./trim_name_transformer";
+export { createNormaliseQuotesTransformer } from "./normalise_quotes_transformer";
 export { createTruncateNameTransformer } from "./truncate_name_transformer";
 export { createGhosthackNameTransformer } from "./ghosthack_name_transformer";
 export { createSquashNameTransformer } from "./squash_name_transformer";

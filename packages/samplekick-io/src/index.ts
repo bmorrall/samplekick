@@ -20,6 +20,7 @@ export {
   createSkipJunkTransformer,
   createSP404Mk2NameTransformer,
   createTrimNameTransformer,
+  createNormaliseQuotesTransformer,
   createTruncateNameTransformer,
   createGhosthackNameTransformer,
   createSquashNameTransformer,

@@ -62,6 +62,10 @@ describe("index exports", () => {
     expect(api.createTrimNameTransformer).toBeDefined();
   });
 
+  test("exports createNormaliseQuotesTransformer", () => {
+    expect(api.createNormaliseQuotesTransformer).toBeDefined();
+  });
+
   test("exports createTruncateNameTransformer", () => {
     expect(api.createTruncateNameTransformer).toBeDefined();
   });
@@ -115,6 +119,7 @@ describe("index exports", () => {
       "createSkipJunkTransformer",
       "createSP404Mk2NameTransformer",
       "createTrimNameTransformer",
+      "createNormaliseQuotesTransformer",
       "createTruncateNameTransformer",
       "createGhosthackNameTransformer",
       "createSquashNameTransformer",
