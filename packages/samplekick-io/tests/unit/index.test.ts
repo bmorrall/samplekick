@@ -90,8 +90,8 @@ describe("index exports", () => {
     expect(api.OrganisedPathStrategy).toBeDefined();
   });
 
-  test("exports PathLengthValidator", () => {
-    expect(api.PathLengthValidator).toBeDefined();
+  test("exports createPathLengthValidator", () => {
+    expect(api.createPathLengthValidator).toBeDefined();
   });
 
   test("only exposes runtime exports from the public index", () => {
@@ -120,7 +120,7 @@ describe("index exports", () => {
       "createSquashNameTransformer",
       "SourcePathStrategy",
       "OrganisedPathStrategy",
-      "PathLengthValidator",
+      "createPathLengthValidator",
       "SP404Mk2Preset",
       "DirtywaveM8Preset",
       "BIT_DEPTH_16",
