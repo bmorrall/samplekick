@@ -261,6 +261,16 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
     process.exit(1);
   });
 
+  if (values.analyse === true && autoConfigPath !== undefined) {
+    const savePath = autoConfigPath;
+    await mkdir(dirname(savePath), { recursive: true });
+    const autoConfigStream = createWriteStream(savePath);
+    new CsvConfigWriter(autoConfigStream).writeConfig(registry);
+    await finished(autoConfigStream).catch((err: unknown) => {
+      console.error(`Warning: could not save config to ${savePath}: ${err instanceof Error ? err.message : String(err)}`);
+    });
+  }
+
   if (devicePreset !== undefined) {
     for (const transform of devicePreset.transforms) {
       registry.applyTransform(transform);
@@ -284,16 +294,6 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
   if (values.debug === true) {
     console.log(registry.toString(values.verbose === true));
     process.exit(0);
-  }
-
-  if (values.analyse === true && autoConfigPath !== undefined) {
-    const savePath = autoConfigPath;
-    await mkdir(dirname(savePath), { recursive: true });
-    const autoConfigStream = createWriteStream(savePath);
-    new CsvConfigWriter(autoConfigStream).writeConfig(registry);
-    await finished(autoConfigStream).catch((err: unknown) => {
-      console.error(`Warning: could not save config to ${savePath}: ${err instanceof Error ? err.message : String(err)}`);
-    });
   }
 
   if (values.edit === true) {

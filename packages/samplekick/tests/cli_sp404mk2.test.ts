@@ -108,8 +108,7 @@ describe("SP-404MKII device preset", () => {
     }
   });
 
-  it("sanitizes non-ASCII filenames and exports to organised paths using sanitized auto-config paths", async () => {
-    const zipped = zipSync({
+  it("sanitizes non-ASCII filenames at export time; auto-config preserves original paths", async () => {    const zipped = zipSync({
       "Dr\u00fcms/sn\u00e2re.wav": strToU8("snare-data"),
     });
 
@@ -129,15 +128,13 @@ describe("SP-404MKII device preset", () => {
       expect(firstRun.stderr).toBe("");
       expect(firstRun.status).toBe(0);
 
-      // Auto-config preserves original paths and stores sanitized names in the name column.
-      // SP404Mk2NameTransformer also sanitizes packageName set by DefaultRootPackageNameTransformer.
       const [autoConfigFile] = await readdir(dataDir);
       const autoConfig = await readFile(join(dataDir, autoConfigFile), "utf8");
       expect(autoConfig).toBe([
         "path,name,packageName,sampleType,skip,keepPath",
-        ",test-pack.zip,test-pack,,,",
-        "Dr\u00fcms,Drums,,,,",
-        "Dr\u00fcms/sn\u00e2re.wav,snare.wav,,,,",
+        ",t\u00ebst-pack.zip,t\u00ebst-pack,,,",
+        "Dr\u00fcms,,,,,",
+        "Dr\u00fcms/sn\u00e2re.wav,,,,,",
       ].join("\n"));
 
       // Carry the auto-detected packageName forward; only add sampleType
@@ -157,6 +154,48 @@ describe("SP-404MKII device preset", () => {
       expect(result.stderr).toBe("");
       expect(result.status).toBe(0);
       expect(await readFile(join(outputDir, "Percussion/test-pack/snare.wav"), "utf8")).toBe("snare-data");
+    } finally {
+      await rm(tmpDir, { recursive: true });
+    }
+  });
+
+  it("applies device transforms to --dump-config output but not to --analyse auto-config", async () => {
+    const zipped = zipSync({
+      "Dr\u00fcms/sn\u00e2re.wav": strToU8("snare-data"),
+    });
+
+    const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
+    const zipPath = join(tmpDir, "t\u00ebst-pack.zip");
+    const dataDir = join(tmpDir, "data");
+
+    try {
+      await writeFile(zipPath, zipped);
+
+      // --analyse: auto-config preserves original (non-sanitized) paths and names
+      const analyseRun = spawnSync("node", [CLI_PATH, zipPath, "-a", "-d", "sp404mk2"], {
+        encoding: "utf8",
+        env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+      });
+      expect(analyseRun.stderr).toBe("");
+      expect(analyseRun.status).toBe(0);
+
+      const [autoConfigFile] = await readdir(dataDir);
+      const autoConfig = await readFile(join(dataDir, autoConfigFile), "utf8");
+      expect(autoConfig).toBe([
+        "path,name,packageName,sampleType,skip,keepPath",
+        ",t\u00ebst-pack.zip,t\u00ebst-pack,,,",
+        "Dr\u00fcms,,,,,",
+        "Dr\u00fcms/sn\u00e2re.wav,,,,,",
+      ].join("\n"));
+
+      // --dump-config: output reflects device-sanitized names
+      const dumpRun = spawnSync("node", [CLI_PATH, zipPath, "-d", "sp404mk2", "--dump-config"], {
+        encoding: "utf8",
+        env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+      });
+      expect(dumpRun.stderr).toBe("");
+      expect(dumpRun.status).toBe(0);
+      expect(dumpRun.stdout).toContain("Dr\u00fcms/sn\u00e2re.wav,snare.wav,,,,");
     } finally {
       await rm(tmpDir, { recursive: true });
     }
