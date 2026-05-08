@@ -41,4 +41,34 @@ describe("GhosthackNameTransformer", () => {
       await rm(tmpDir, { recursive: true });
     }
   });
+
+  it("converts underscores to spaces after normalising the Ghosthack prefix", async () => {
+    const zipped = zipSync({
+      "Ghosthack-SH_Impact_Mine/kick.wav": strToU8("kick-data"),
+    });
+
+    const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-analyse-"));
+    const zipPath = join(tmpDir, "test-pack.zip");
+    const dataDir = join(tmpDir, "data");
+
+    try {
+      await writeFile(zipPath, zipped);
+
+      const result = spawnSync(
+        "node",
+        [CLI_PATH, zipPath, "--analyse"],
+        { encoding: "utf8", env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir } },
+      );
+
+      expect(result.status).toBe(0);
+
+      const [configFile] = await readdir(dataDir);
+      const csv = await readFile(join(dataDir, configFile), "utf8");
+
+      const row = csv.split("\n").find((row) => row.startsWith("Ghosthack-SH_Impact_Mine,"));
+      expect(row).toContain("Ghosthack - SH Impact Mine");
+    } finally {
+      await rm(tmpDir, { recursive: true });
+    }
+  });
 });

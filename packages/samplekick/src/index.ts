@@ -245,11 +245,11 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
 
     // Name transforms: run after file transforms so locked entries are skipped
     registry.applyTransform(TrimNameTransformer);
+    registry.applyTransform(GhosthackNameTransformer);
     registry.applyTransform(NormaliseSpacesTransformer);
     registry.applyTransform(NormaliseBracketSpacingTransformer);
     registry.applyTransform(NormaliseCommaSpacingTransformer);
     registry.applyTransform(NormaliseHyphenTransformer);
-    registry.applyTransform(GhosthackNameTransformer);
 
     // Directory transforms: run after name transforms so folder names are normalised first
     registry.applyTransform(DirectorySampleTypeTransformer);
