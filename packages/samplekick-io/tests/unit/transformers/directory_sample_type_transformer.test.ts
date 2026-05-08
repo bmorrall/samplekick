@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { DirectorySampleTypeTransformer } from "../../../src";
+import { createDirectorySampleTypeTransformer } from "../../../src";
 import { createTransformEntryInHierarchy, singleEntryTransformSource } from "../../support";
 
-describe("DirectorySampleTypeTransformer", () => {
+describe("createDirectorySampleTypeTransformer", () => {
   describe('when the directory is named "Drums"', () => {
     it('sets sampleType to "Drums"', () => {
       const entry = createTransformEntryInHierarchy(
@@ -10,7 +10,7 @@ describe("DirectorySampleTypeTransformer", () => {
         { name: "Drums", isFile: false },
         [{ name: "kick.wav" }],
       );
-      DirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Drums");
     });
 
@@ -20,7 +20,7 @@ describe("DirectorySampleTypeTransformer", () => {
         { name: "Drum", isFile: false },
         [{ name: "kick.wav" }],
       );
-      DirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Drums");
     });
 
@@ -30,7 +30,7 @@ describe("DirectorySampleTypeTransformer", () => {
         { name: "drums", isFile: false },
         [{ name: "kick.wav" }],
       );
-      DirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Drums");
     });
 
@@ -40,7 +40,7 @@ describe("DirectorySampleTypeTransformer", () => {
         { name: "Drums", isFile: false, sampleType: "Custom" },
         [{ name: "kick.wav" }],
       );
-      DirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
     });
 
@@ -50,7 +50,7 @@ describe("DirectorySampleTypeTransformer", () => {
         { name: "Drums", isFile: false },
         [{ name: "kick.wav" }],
       );
-      DirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setKeepStructure).not.toHaveBeenCalled();
     });
   });
@@ -62,7 +62,7 @@ describe("DirectorySampleTypeTransformer", () => {
         { name: "Percussion", isFile: false },
         [{ name: "shaker.wav" }],
       );
-      DirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Percussion");
     });
 
@@ -72,7 +72,7 @@ describe("DirectorySampleTypeTransformer", () => {
         { name: "PERCUSSION", isFile: false },
         [{ name: "shaker.wav" }],
       );
-      DirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Percussion");
     });
 
@@ -82,7 +82,7 @@ describe("DirectorySampleTypeTransformer", () => {
         { name: "Perc", isFile: false },
         [{ name: "shaker.wav" }],
       );
-      DirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Percussion");
     });
 
@@ -92,7 +92,7 @@ describe("DirectorySampleTypeTransformer", () => {
         { name: "Percs", isFile: false },
         [{ name: "shaker.wav" }],
       );
-      DirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Percussion");
     });
   });
@@ -104,7 +104,7 @@ describe("DirectorySampleTypeTransformer", () => {
         { name: "Cymbals", isFile: false },
         [{ name: "cymbal.wav" }],
       );
-      DirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Cymbals");
     });
 
@@ -114,7 +114,7 @@ describe("DirectorySampleTypeTransformer", () => {
         { name: "Cymbal", isFile: false },
         [{ name: "cymbal.wav" }],
       );
-      DirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Cymbals");
     });
   });
@@ -126,7 +126,7 @@ describe("DirectorySampleTypeTransformer", () => {
         { name: "Claps", isFile: false },
         [{ name: "clap.wav" }],
       );
-      DirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Claps");
     });
 
@@ -136,7 +136,7 @@ describe("DirectorySampleTypeTransformer", () => {
         { name: "Clap", isFile: false },
         [{ name: "clap.wav" }],
       );
-      DirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Claps");
     });
   });
@@ -148,7 +148,7 @@ describe("DirectorySampleTypeTransformer", () => {
         { name: "Snares", isFile: false },
         [{ name: "snare.wav" }],
       );
-      DirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Snares");
     });
 
@@ -158,7 +158,7 @@ describe("DirectorySampleTypeTransformer", () => {
         { name: "Snare", isFile: false },
         [{ name: "snare.wav" }],
       );
-      DirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Snares");
     });
   });
@@ -170,7 +170,7 @@ describe("DirectorySampleTypeTransformer", () => {
         { name: "Hihats", isFile: false },
         [{ name: "hat.wav" }],
       );
-      DirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Hihats");
     });
 
@@ -180,7 +180,7 @@ describe("DirectorySampleTypeTransformer", () => {
         { name: "Hats", isFile: false },
         [{ name: "hat.wav" }],
       );
-      DirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Hihats");
     });
 
@@ -190,7 +190,7 @@ describe("DirectorySampleTypeTransformer", () => {
         { name: "Hi Hats", isFile: false },
         [{ name: "hat.wav" }],
       );
-      DirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Hihats");
     });
 
@@ -200,7 +200,7 @@ describe("DirectorySampleTypeTransformer", () => {
         { name: "Hi-Hats", isFile: false },
         [{ name: "hat.wav" }],
       );
-      DirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Hihats");
     });
 
@@ -210,7 +210,7 @@ describe("DirectorySampleTypeTransformer", () => {
         { name: "hihats", isFile: false },
         [{ name: "hat.wav" }],
       );
-      DirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Hihats");
     });
   });
@@ -222,7 +222,7 @@ describe("DirectorySampleTypeTransformer", () => {
         { name: "Kicks", isFile: false },
         [{ name: "kick.wav" }],
       );
-      DirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Kicks");
     });
 
@@ -232,7 +232,7 @@ describe("DirectorySampleTypeTransformer", () => {
         { name: "Kick", isFile: false },
         [{ name: "kick.wav" }],
       );
-      DirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Kicks");
     });
   });
@@ -244,7 +244,7 @@ describe("DirectorySampleTypeTransformer", () => {
         { name: "Rimshots", isFile: false },
         [{ name: "rimshot.wav" }],
       );
-      DirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Rimshots");
     });
 
@@ -254,7 +254,7 @@ describe("DirectorySampleTypeTransformer", () => {
         { name: "Rimshot", isFile: false },
         [{ name: "rimshot.wav" }],
       );
-      DirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Rimshots");
     });
   });
@@ -266,7 +266,7 @@ describe("DirectorySampleTypeTransformer", () => {
         { name: "Rides", isFile: false },
         [{ name: "ride.wav" }],
       );
-      DirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Rides");
     });
 
@@ -276,7 +276,7 @@ describe("DirectorySampleTypeTransformer", () => {
         { name: "Ride", isFile: false },
         [{ name: "ride.wav" }],
       );
-      DirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Rides");
     });
 
@@ -286,7 +286,7 @@ describe("DirectorySampleTypeTransformer", () => {
         { name: "rides", isFile: false },
         [{ name: "ride.wav" }],
       );
-      DirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Rides");
     });
   });
@@ -298,7 +298,7 @@ describe("DirectorySampleTypeTransformer", () => {
         { name: "Bonks", isFile: false },
         [{ name: "lead.wav" }],
       );
-      DirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
       expect(entry.setKeepStructure).not.toHaveBeenCalled();
     });
@@ -309,7 +309,7 @@ describe("DirectorySampleTypeTransformer", () => {
         { name: "Loop Stems & MIDI", isFile: false },
         [{ name: "loop.wav" }],
       );
-      DirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
       expect(entry.setKeepStructure).not.toHaveBeenCalled();
     });
@@ -323,7 +323,7 @@ describe("DirectorySampleTypeTransformer", () => {
         { name: "Harp", isFile: false },
         [{ name: "harp.wav" }],
       );
-      DirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Harp");
     });
 
@@ -333,7 +333,7 @@ describe("DirectorySampleTypeTransformer", () => {
         { name: "Harp Loops", isFile: false },
         [{ name: "harp.wav" }],
       );
-      DirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Harp Loops");
     });
   });
@@ -345,7 +345,7 @@ describe("DirectorySampleTypeTransformer", () => {
         { name: "Pads", isFile: false },
         [{ name: "pad.wav" }],
       );
-      DirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Pads");
     });
 
@@ -355,7 +355,7 @@ describe("DirectorySampleTypeTransformer", () => {
         { name: "Pad One Shots", isFile: false },
         [{ name: "pad.wav" }],
       );
-      DirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Pad One Shots");
     });
   });
@@ -367,7 +367,7 @@ describe("DirectorySampleTypeTransformer", () => {
         { name: "Cinematics", isFile: false },
         [{ name: "cinematic.wav" }],
       );
-      DirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Cinematic");
     });
 
@@ -377,7 +377,7 @@ describe("DirectorySampleTypeTransformer", () => {
         { name: "Cinematic", isFile: false },
         [{ name: "cinematic.wav" }],
       );
-      DirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Cinematic");
     });
 
@@ -387,7 +387,7 @@ describe("DirectorySampleTypeTransformer", () => {
         { name: "cinematics", isFile: false },
         [{ name: "cinematic.wav" }],
       );
-      DirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Cinematic");
     });
   });
@@ -399,7 +399,7 @@ describe("DirectorySampleTypeTransformer", () => {
         { name: "Drones", isFile: false },
         [{ name: "drone.wav" }],
       );
-      DirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Drones");
     });
 
@@ -409,7 +409,7 @@ describe("DirectorySampleTypeTransformer", () => {
         { name: "Drone", isFile: false },
         [{ name: "drone.wav" }],
       );
-      DirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Drones");
     });
 
@@ -419,7 +419,7 @@ describe("DirectorySampleTypeTransformer", () => {
         { name: "drones", isFile: false },
         [{ name: "drone.wav" }],
       );
-      DirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Drones");
     });
   });
@@ -431,7 +431,7 @@ describe("DirectorySampleTypeTransformer", () => {
         { name: "E-Piano", isFile: false },
         [{ name: "epiano.wav" }],
       );
-      DirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("E-Piano");
     });
 
@@ -441,7 +441,7 @@ describe("DirectorySampleTypeTransformer", () => {
         { name: "E-Piano Loops", isFile: false },
         [{ name: "epiano.wav" }],
       );
-      DirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("E-Piano Loops");
     });
   });

@@ -6,7 +6,7 @@ import type { Transform } from '../types';
  * extension, then marks the directory with sampleType "FL Studio Projects"
  * and keepStructure.
  */
-export const FLStudioProjectTransformer: Transform = (source) => {
+export const createFLStudioProjectTransformer :  Transform = (source) => {
   source.eachTransformEntry((entry) => {
     const children = entry.getChildNodes();
     if (children.length === 0) return;

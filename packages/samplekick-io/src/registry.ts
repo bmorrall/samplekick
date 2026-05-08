@@ -16,7 +16,7 @@ import type {
   TransformSource,
   ExportOptions,
   PostProcessor,
-  Validator,
+  Validate,
 } from "./types";
 
 const isLeafNode = (node: EntryNode): node is EntryNode & LeafNode =>
@@ -80,7 +80,7 @@ export class Registry implements FileSource, ConfigSource {
   private readonly rootNode: EntryNode;
   private pathStrategy: PathStrategy = SourcePathStrategy;
   private readonly postProcessors: PostProcessor[] = [];
-  private readonly validators: Validator[] = [];
+  private readonly validators: Validate[] = [];
   private readonly fingerprint: string;
 
   constructor(fileSource: FileSource) {
@@ -295,8 +295,8 @@ export class Registry implements FileSource, ConfigSource {
 
   // Validator methods
 
-  addValidator(validator: Validator): void {
-    this.validators.push(validator);
+  addValidator(validate: Validate): void {
+    this.validators.push(validate);
   }
 
   /**
@@ -344,8 +344,8 @@ export class Registry implements FileSource, ConfigSource {
       }
       seenDestPaths.add(destRelPath);
       const write = async (): Promise<void> => {
-        for (const validator of this.validators) {
-          const reason = validator.validate(destRelPath, node);
+        for (const validate of this.validators) {
+          const reason = validate(destRelPath, node);
           if (reason !== undefined) {
             options.onReject?.(node, reason);
             return;

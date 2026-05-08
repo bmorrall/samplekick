@@ -75,4 +75,4 @@ const sp404Mk2StringTransformer: StringTransformer = (name: string): string => {
   return sanitizedName;
 };
 
-export const SP404Mk2NameTransformer: Transform = createSanitiseNameTransformer(sp404Mk2StringTransformer);
+export const createSP404Mk2NameTransformer : Transform = createSanitiseNameTransformer(sp404Mk2StringTransformer);

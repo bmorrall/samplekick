@@ -1,1 +1,1 @@
-export { PathLengthValidator } from "./path_length_validator";
+export { createPathLengthValidator } from "./path_length_validator";

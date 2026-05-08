@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { Registry } from "../../src";
-import type { ConfigEntry, FileEntry, Validator } from "../../src";
+import type { ConfigEntry, FileEntry, Validate } from "../../src";
 import { createFileEntry, createFileSource } from "../support";
 
 const createCopyableEntry = (path: string): FileEntry => ({
@@ -8,13 +8,9 @@ const createCopyableEntry = (path: string): FileEntry => ({
   copyToPath: vi.fn<(path: string) => Promise<void>>(),
 });
 
-const createPassingValidator = (): Validator => ({
-  validate: vi.fn<Validator["validate"]>().mockReturnValue(undefined),
-});
+const createPassingValidator = (): Validate => vi.fn<Validate>().mockReturnValue(undefined);
 
-const createFailingValidator = (reason: string): Validator => ({
-  validate: vi.fn<Validator["validate"]>().mockReturnValue(reason),
-});
+const createFailingValidator = (reason: string): Validate => vi.fn<Validate>().mockReturnValue(reason);
 
 describe("Registry.addValidator", () => {
   it("calls copyToPath when validator passes", async () => {
@@ -82,7 +78,7 @@ describe("Registry.addValidator", () => {
 
     expect(onReject).toHaveBeenCalledOnce();
     expect(onReject).toHaveBeenCalledWith(expect.anything(), "first failure");
-    expect(second.validate).not.toHaveBeenCalled();
+    expect(second).not.toHaveBeenCalled();
   });
 
   it("runs validators in dry-run mode (dirPath undefined)", async () => {

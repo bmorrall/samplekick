@@ -7,7 +7,7 @@ import type { Transform } from '../types';
  * - ".fxp" (case-insensitive) → "Serum Presets"
  * - ".phaseplant" (case-insensitive) → "Phase Plant Presets"
  */
-export const KnownFileTypeTransformer: Transform = (source) => {
+export const createKnownFileTypeTransformer :  Transform = (source) => {
   source.eachTransformEntry((entry) => {
     if (entry.getSampleType() !== undefined) {
       return;

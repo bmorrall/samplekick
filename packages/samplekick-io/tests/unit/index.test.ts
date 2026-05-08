@@ -14,68 +14,68 @@ describe("index exports", () => {
     expect(api.JsonConfigReader).toBeDefined();
   });
 
-  test("exports DefaultRootPackageNameTransformer", () => {
-    expect(api.DefaultRootPackageNameTransformer).toBeDefined();
+  test("exports createDefaultRootPackageNameTransformer", () => {
+    expect(api.createDefaultRootPackageNameTransformer).toBeDefined();
   });
 
-  test("exports AbletonProjectTransformer", () => {
-    expect(api.AbletonProjectTransformer).toBeDefined();
+  test("exports createAbletonProjectTransformer", () => {
+    expect(api.createAbletonProjectTransformer).toBeDefined();
   });
 
-  test("exports FLStudioProjectTransformer", () => {
-    expect(api.FLStudioProjectTransformer).toBeDefined();
+  test("exports createFLStudioProjectTransformer", () => {
+    expect(api.createFLStudioProjectTransformer).toBeDefined();
   });
 
-  test("exports GhosthackNameTransformer", () => {
-    expect(api.GhosthackNameTransformer).toBeDefined();
+  test("exports createGhosthackNameTransformer", () => {
+    expect(api.createGhosthackNameTransformer).toBeDefined();
   });
 
-  test("exports SquashNameTransformer", () => {
-    expect(api.SquashNameTransformer).toBeDefined();
+  test("exports createSquashNameTransformer", () => {
+    expect(api.createSquashNameTransformer).toBeDefined();
   });
 
-  test("exports KnownFileTypeTransformer", () => {
-    expect(api.KnownFileTypeTransformer).toBeDefined();
+  test("exports createKnownFileTypeTransformer", () => {
+    expect(api.createKnownFileTypeTransformer).toBeDefined();
   });
 
-  test("exports NormaliseBracketSpacingTransformer", () => {
-    expect(api.NormaliseBracketSpacingTransformer).toBeDefined();
+  test("exports createNormaliseBracketSpacingTransformer", () => {
+    expect(api.createNormaliseBracketSpacingTransformer).toBeDefined();
   });
 
-  test("exports NormaliseCommaSpacingTransformer", () => {
-    expect(api.NormaliseCommaSpacingTransformer).toBeDefined();
+  test("exports createNormaliseCommaSpacingTransformer", () => {
+    expect(api.createNormaliseCommaSpacingTransformer).toBeDefined();
   });
 
-  test("exports ExpandRootPackageNameTransformer", () => {
-    expect(api.ExpandRootPackageNameTransformer).toBeDefined();
+  test("exports createExpandRootPackageNameTransformer", () => {
+    expect(api.createExpandRootPackageNameTransformer).toBeDefined();
   });
 
-  test("exports NormaliseHyphenTransformer", () => {
-    expect(api.NormaliseHyphenTransformer).toBeDefined();
+  test("exports createNormaliseHyphenTransformer", () => {
+    expect(api.createNormaliseHyphenTransformer).toBeDefined();
   });
 
-  test("exports NormaliseSpacesTransformer", () => {
-    expect(api.NormaliseSpacesTransformer).toBeDefined();
+  test("exports createNormaliseSpacesTransformer", () => {
+    expect(api.createNormaliseSpacesTransformer).toBeDefined();
   });
 
-  test("exports TrimNameTransformer", () => {
-    expect(api.TrimNameTransformer).toBeDefined();
+  test("exports createTrimNameTransformer", () => {
+    expect(api.createTrimNameTransformer).toBeDefined();
   });
 
   test("exports createTruncateNameTransformer", () => {
     expect(api.createTruncateNameTransformer).toBeDefined();
   });
 
-  test("exports SP404Mk2NameTransformer", () => {
-    expect(api.SP404Mk2NameTransformer).toBeDefined();
+  test("exports createSP404Mk2NameTransformer", () => {
+    expect(api.createSP404Mk2NameTransformer).toBeDefined();
   });
 
-  test("exports DirectorySampleTypeTransformer", () => {
-    expect(api.DirectorySampleTypeTransformer).toBeDefined();
+  test("exports createDirectorySampleTypeTransformer", () => {
+    expect(api.createDirectorySampleTypeTransformer).toBeDefined();
   });
 
-  test("exports SkipJunkTransformer", () => {
-    expect(api.SkipJunkTransformer).toBeDefined();
+  test("exports createSkipJunkTransformer", () => {
+    expect(api.createSkipJunkTransformer).toBeDefined();
   });
 
   test("exports ZipDataSource", () => {
@@ -90,8 +90,8 @@ describe("index exports", () => {
     expect(api.OrganisedPathStrategy).toBeDefined();
   });
 
-  test("exports PathLengthValidator", () => {
-    expect(api.PathLengthValidator).toBeDefined();
+  test("exports createPathLengthValidator", () => {
+    expect(api.createPathLengthValidator).toBeDefined();
   });
 
   test("only exposes runtime exports from the public index", () => {
@@ -102,25 +102,25 @@ describe("index exports", () => {
       "CsvConfigWriter",
       "CsvConfigReader",
       "ZipDataSource",
-      "AbletonProjectTransformer",
-      "DefaultRootPackageNameTransformer",
-      "DirectorySampleTypeTransformer",
-      "ExpandRootPackageNameTransformer",
-      "FLStudioProjectTransformer",
-      "KnownFileTypeTransformer",
-      "NormaliseBracketSpacingTransformer",
-      "NormaliseCommaSpacingTransformer",
-      "NormaliseHyphenTransformer",
-      "NormaliseSpacesTransformer",
-      "SkipJunkTransformer",
-      "SP404Mk2NameTransformer",
-      "TrimNameTransformer",
+      "createAbletonProjectTransformer",
+      "createDefaultRootPackageNameTransformer",
+      "createDirectorySampleTypeTransformer",
+      "createExpandRootPackageNameTransformer",
+      "createFLStudioProjectTransformer",
+      "createKnownFileTypeTransformer",
+      "createNormaliseBracketSpacingTransformer",
+      "createNormaliseCommaSpacingTransformer",
+      "createNormaliseHyphenTransformer",
+      "createNormaliseSpacesTransformer",
+      "createSkipJunkTransformer",
+      "createSP404Mk2NameTransformer",
+      "createTrimNameTransformer",
       "createTruncateNameTransformer",
-      "GhosthackNameTransformer",
-      "SquashNameTransformer",
+      "createGhosthackNameTransformer",
+      "createSquashNameTransformer",
       "SourcePathStrategy",
       "OrganisedPathStrategy",
-      "PathLengthValidator",
+      "createPathLengthValidator",
       "SP404Mk2Preset",
       "DirtywaveM8Preset",
       "BIT_DEPTH_16",

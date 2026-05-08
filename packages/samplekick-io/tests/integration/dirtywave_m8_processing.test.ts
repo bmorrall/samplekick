@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { OrganisedPathStrategy } from "../../src";
-import { DefaultRootPackageNameTransformer } from "../../src/transformers";
+import { createDefaultRootPackageNameTransformer } from "../../src/transformers";
 import { createZipRegistry } from "../support";
 import fs from "node:fs/promises";
 import os from "node:os";
@@ -15,7 +15,7 @@ describe("Dirtywave M8 end-to-end sample processing", () => {
     });
     registry.setPathStrategy(OrganisedPathStrategy);
 
-    registry.applyTransform(DefaultRootPackageNameTransformer);
+    registry.applyTransform(createDefaultRootPackageNameTransformer);
 
     registry.setSampleType("Percussion");
     registry.setSampleType("Drums", "Drums");

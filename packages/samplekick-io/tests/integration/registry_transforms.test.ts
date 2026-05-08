@@ -1,34 +1,34 @@
 import { describe, it, expect } from "vitest";
 import {
-  SP404Mk2NameTransformer,
+  createSP404Mk2NameTransformer,
   createTruncateNameTransformer,
-  DefaultRootPackageNameTransformer,
-  DirectorySampleTypeTransformer,
-  SkipJunkTransformer,
-  KnownFileTypeTransformer,
-  AbletonProjectTransformer,
-  FLStudioProjectTransformer,
-  NormaliseBracketSpacingTransformer,
-  NormaliseCommaSpacingTransformer,
-  GhosthackNameTransformer,
-  SquashNameTransformer,
-  ExpandRootPackageNameTransformer,
-  NormaliseHyphenTransformer,
-  NormaliseSpacesTransformer,
-  TrimNameTransformer,
+  createDefaultRootPackageNameTransformer,
+  createDirectorySampleTypeTransformer,
+  createSkipJunkTransformer,
+  createKnownFileTypeTransformer,
+  createAbletonProjectTransformer,
+  createFLStudioProjectTransformer,
+  createNormaliseBracketSpacingTransformer,
+  createNormaliseCommaSpacingTransformer,
+  createGhosthackNameTransformer,
+  createSquashNameTransformer,
+  createExpandRootPackageNameTransformer,
+  createNormaliseHyphenTransformer,
+  createNormaliseSpacesTransformer,
+  createTrimNameTransformer,
   OrganisedPathStrategy,
 } from "../../src";
 import { createRegistry, createFileEntry } from "../support";
 
 describe("Registry transforms", () => {
-  it("applies DefaultRootPackageNameTransformer to set package name on root node", () => {
+  it("applies createDefaultRootPackageNameTransformer to set package name on root node", () => {
     const registry = createRegistry("MyProject.zip", [
       createFileEntry({ path: "sub1/file1.wav" }),
       createFileEntry({ path: "sub1/file2.wav" }),
       createFileEntry({ path: "sub2/file3.wav" }),
       createFileEntry({ path: "file4.wav" }),
     ]);
-    registry.applyTransform(DefaultRootPackageNameTransformer);
+    registry.applyTransform(createDefaultRootPackageNameTransformer);
     expect(registry.toString()).toBe(
       [
         "MyProject.zip [pkg:MyProject]",
@@ -43,7 +43,7 @@ describe("Registry transforms", () => {
     );
   });
 
-  it("applies SP404Mk2NameTransformer to entry names as expected", () => {
+  it("applies createSP404Mk2NameTransformer to entry names as expected", () => {
     const registry = createRegistry("root", [
       createFileEntry({ path: "NáméWithÁccents.wav" }),
       createFileEntry({ path: "Invalid*Char?.mp3" }),
@@ -52,7 +52,7 @@ describe("Registry transforms", () => {
       }),
       createFileEntry({ path: "Valid_Name-OK!.aif" }),
     ]);
-    registry.applyTransform(SP404Mk2NameTransformer);
+    registry.applyTransform(createSP404Mk2NameTransformer);
     registry.applyTransform(createTruncateNameTransformer(80));
     expect(registry.toString()).toBe(
       [
@@ -84,14 +84,14 @@ describe("Registry transforms", () => {
     );
   });
 
-  it("does not rename entries inside a keepStructure folder when SP404Mk2NameTransformer is applied", () => {
+  it("does not rename entries inside a keepStructure folder when createSP404Mk2NameTransformer is applied", () => {
     const registry = createRegistry("root", [
       createFileEntry({ path: "Mÿ Prøject/Mÿ Prøject.als" }),
       createFileEntry({ path: "Mÿ Prøject/Sämples/kick.wav" }),
       createFileEntry({ path: "Drums/snâre.wav" }),
     ]);
-    registry.applyTransform(AbletonProjectTransformer);
-    registry.applyTransform(SP404Mk2NameTransformer);
+    registry.applyTransform(createAbletonProjectTransformer);
+    registry.applyTransform(createSP404Mk2NameTransformer);
     expect(registry.toString()).toBe(
       [
         "root",
@@ -106,14 +106,14 @@ describe("Registry transforms", () => {
     );
   });
 
-  it("applies SkipJunkTransformer to mark __MACOSX and hidden entries as skipped", () => {
+  it("applies createSkipJunkTransformer to mark __MACOSX and hidden entries as skipped", () => {
     const registry = createRegistry("root", [
       createFileEntry({ path: "__MACOSX/file1.wav" }),
       createFileEntry({ path: ".DS_Store" }),
       createFileEntry({ path: "sub1/file1.wav" }),
       createFileEntry({ path: "sub1/.hidden" }),
     ]);
-    registry.applyTransform(SkipJunkTransformer);
+    registry.applyTransform(createSkipJunkTransformer);
     expect(registry.toString()).toBe(
       [
         "root",
@@ -128,13 +128,13 @@ describe("Registry transforms", () => {
     );
   });
 
-  it("applies KnownFileTypeTransformer to set sampleType on .mid and .fxp files", () => {
+  it("applies createKnownFileTypeTransformer to set sampleType on .mid and .fxp files", () => {
     const registry = createRegistry("root", [
       createFileEntry({ path: "beats/groove.mid" }),
       createFileEntry({ path: "presets/bass.fxp" }),
       createFileEntry({ path: "samples/kick.wav" }),
     ]);
-    registry.applyTransform(KnownFileTypeTransformer);
+    registry.applyTransform(createKnownFileTypeTransformer);
     expect(registry.toString()).toBe(
       [
         "root",
@@ -149,13 +149,13 @@ describe("Registry transforms", () => {
     );
   });
 
-  it("applies AbletonProjectTransformer to tag Ableton project folders", () => {
+  it("applies createAbletonProjectTransformer to tag Ableton project folders", () => {
     const registry = createRegistry("root", [
       createFileEntry({ path: "My Project/My Project.als" }),
       createFileEntry({ path: "My Project/Samples/kick.wav" }),
       createFileEntry({ path: "samples/kick.wav" }),
     ]);
-    registry.applyTransform(AbletonProjectTransformer);
+    registry.applyTransform(createAbletonProjectTransformer);
     expect(registry.toString()).toBe(
       [
         "root",
@@ -170,13 +170,13 @@ describe("Registry transforms", () => {
     );
   });
 
-  it("applies FLStudioProjectTransformer to tag FL Studio project folders", () => {
+  it("applies createFLStudioProjectTransformer to tag FL Studio project folders", () => {
     const registry = createRegistry("root", [
       createFileEntry({ path: "My Beat/My Beat.flp" }),
       createFileEntry({ path: "My Beat/kick.wav" }),
       createFileEntry({ path: "samples/kick.wav" }),
     ]);
-    registry.applyTransform(FLStudioProjectTransformer);
+    registry.applyTransform(createFLStudioProjectTransformer);
     expect(registry.toString()).toBe(
       [
         "root",
@@ -190,7 +190,7 @@ describe("Registry transforms", () => {
     );
   });
 
-  it("applies NormaliseHyphenTransformer to fix hyphens touching adjacent words", () => {
+  it("applies createNormaliseHyphenTransformer to fix hyphens touching adjacent words", () => {
     const registry = createRegistry("root", [
       createFileEntry({ path: "Drums- Bass/kick.wav" }),
       createFileEntry({ path: "Kicks -Snares/snare.wav" }),
@@ -198,7 +198,7 @@ describe("Registry transforms", () => {
       createFileEntry({ path: "Drums-_Bass/kick.wav" }),
       createFileEntry({ path: "Kicks_-Snares/snare.wav" }),
     ]);
-    registry.applyTransform(NormaliseHyphenTransformer);
+    registry.applyTransform(createNormaliseHyphenTransformer);
     expect(registry.toString()).toBe(
       [
         "root",
@@ -217,12 +217,12 @@ describe("Registry transforms", () => {
     );
   });
 
-  it("applies NormaliseSpacesTransformer to collapse multiple spaces", () => {
+  it("applies createNormaliseSpacesTransformer to collapse multiple spaces", () => {
     const registry = createRegistry("root", [
       createFileEntry({ path: "Drums  Bass/kick.wav" }),
       createFileEntry({ path: "Hi Hats/hat.wav" }),
     ]);
-    registry.applyTransform(NormaliseSpacesTransformer);
+    registry.applyTransform(createNormaliseSpacesTransformer);
     expect(registry.toString()).toBe(
       [
         "root",
@@ -235,13 +235,13 @@ describe("Registry transforms", () => {
     );
   });
 
-  it("applies TrimNameTransformer to strip leading and trailing whitespace", () => {
+  it("applies createTrimNameTransformer to strip leading and trailing whitespace", () => {
     const registry = createRegistry("root", [
       createFileEntry({ path: " Kicks/kick.wav" }),
       createFileEntry({ path: "Snares /snare.wav" }),
       createFileEntry({ path: "hi-hats/hat.wav" }),
     ]);
-    registry.applyTransform(TrimNameTransformer);
+    registry.applyTransform(createTrimNameTransformer);
     expect(registry.toString()).toBe(
       [
         "root",
@@ -256,24 +256,24 @@ describe("Registry transforms", () => {
     );
   });
 
-  it("applies ExpandRootPackageNameTransformer to expand CamelCase packageName", () => {
+  it("applies createExpandRootPackageNameTransformer to expand CamelCase packageName", () => {
     const registry = createRegistry("CoolPack-v2.zip", [
       createFileEntry({ path: "Drums/kick.wav" }),
     ]);
-    registry.applyTransform(DefaultRootPackageNameTransformer);
-    registry.applyTransform(ExpandRootPackageNameTransformer);
+    registry.applyTransform(createDefaultRootPackageNameTransformer);
+    registry.applyTransform(createExpandRootPackageNameTransformer);
     registry.setSampleType("drums");
     registry.setPathStrategy(OrganisedPathStrategy);
     expect(registry.destinationPathFor("Drums/kick.wav")).toBe("drums/Cool Pack - v2/kick.wav");
   });
 
-  it("applies NormaliseBracketSpacingTransformer to fix spacing around all SP404 bracket types", () => {
+  it("applies createNormaliseBracketSpacingTransformer to fix spacing around all SP404 bracket types", () => {
     const registry = createRegistry("root", [
       createFileEntry({ path: "kick(hard)/sample.wav" }),
       createFileEntry({ path: "snare[soft]/sample.wav" }),
       createFileEntry({ path: "hi-hats{open}/sample.wav" }),
     ]);
-    registry.applyTransform(NormaliseBracketSpacingTransformer);
+    registry.applyTransform(createNormaliseBracketSpacingTransformer);
     expect(registry.toString()).toBe(
       [
         "root",
@@ -288,13 +288,13 @@ describe("Registry transforms", () => {
     );
   });
 
-  it("applies NormaliseCommaSpacingTransformer to fix spacing around commas", () => {
+  it("applies createNormaliseCommaSpacingTransformer to fix spacing around commas", () => {
     const registry = createRegistry("root", [
       createFileEntry({ path: "Hihat , Kicks and Claps/hat.wav" }),
       createFileEntry({ path: "Kicks ,Snares/kick.wav" }),
       createFileEntry({ path: "Hihat_,_Kicks_and_Claps/hat.wav" }),
     ]);
-    registry.applyTransform(NormaliseCommaSpacingTransformer);
+    registry.applyTransform(createNormaliseCommaSpacingTransformer);
     expect(registry.toString()).toBe(
       [
         "root",
@@ -309,7 +309,7 @@ describe("Registry transforms", () => {
     );
   });
 
-  it("applies DirectorySampleTypeTransformer to tag known sample-type directories", () => {
+  it("applies createDirectorySampleTypeTransformer to tag known sample-type directories", () => {
     const registry = createRegistry("root", [
       createFileEntry({ path: "Drums/kick.wav" }),
       createFileEntry({ path: "Drums/One Shots/snare.wav" }),
@@ -318,7 +318,7 @@ describe("Registry transforms", () => {
       createFileEntry({ path: "Loops/Drums/kick.wav" }),
       createFileEntry({ path: "Loops/Drums/Claps/clap.wav" }),
     ]);
-    registry.applyTransform(DirectorySampleTypeTransformer);
+    registry.applyTransform(createDirectorySampleTypeTransformer);
     expect(registry.toString()).toBe(
       [
         "root",
@@ -340,13 +340,13 @@ describe("Registry transforms", () => {
     );
   });
 
-  it("applies DirectorySampleTypeTransformer to tag unrecognised subdirectory names under known-type parents", () => {
+  it("applies createDirectorySampleTypeTransformer to tag unrecognised subdirectory names under known-type parents", () => {
     const registry = createRegistry("Pack.zip", [
       createFileEntry({ path: "Drum Loops/Latin/Loop Stems/loop.wav" }),
       createFileEntry({ path: "Melodies/Speed House/Loop Stems & MIDI/bass.wav" }),
       createFileEntry({ path: "Melodies/Sunset/Loop Stems & MIDI/reese.wav" }),
     ]);
-    registry.applyTransform(DirectorySampleTypeTransformer);
+    registry.applyTransform(createDirectorySampleTypeTransformer);
     expect(registry.toString()).toBe(
       [
         "Pack.zip",
@@ -366,12 +366,12 @@ describe("Registry transforms", () => {
     );
   });
 
-  it("applies DirectorySampleTypeTransformer to strip MIDI suffix from folder names", () => {
+  it("applies createDirectorySampleTypeTransformer to strip MIDI suffix from folder names", () => {
     const registry = createRegistry("Pack.zip", [
       createFileEntry({ path: "Drum Loops & MIDI/kick.wav" }),
       createFileEntry({ path: "Melodies/Speed House & MIDI/bass.wav" }),
     ]);
-    registry.applyTransform(DirectorySampleTypeTransformer);
+    registry.applyTransform(createDirectorySampleTypeTransformer);
     expect(registry.toString()).toBe(
       [
         "Pack.zip",
@@ -385,7 +385,7 @@ describe("Registry transforms", () => {
     );
   });
 
-  it("applies GhosthackNameTransformer to normalise Ghosthack prefixes", () => {
+  it("applies createGhosthackNameTransformer to normalise Ghosthack prefixes", () => {
     const registry = createRegistry("root", [
       createFileEntry({ path: "Ghosthack-Bass Loops/Ghosthack-Bass Loop 01.wav" }),
       createFileEntry({ path: "Ghosthack -Drum Hits/Ghosthack -Snare Hit.wav" }),
@@ -393,7 +393,7 @@ describe("Registry transforms", () => {
       createFileEntry({ path: "Ghosthack - Pads/Ghosthack - Pad 01.wav" }),
       createFileEntry({ path: "Other Pack/hat.wav" }),
     ]);
-    registry.applyTransform(GhosthackNameTransformer);
+    registry.applyTransform(createGhosthackNameTransformer);
     expect(registry.toString()).toBe(
       [
         "root",
@@ -412,7 +412,7 @@ describe("Registry transforms", () => {
     );
   });
 
-  it("applies SquashNameTransformer to convert names to camelCase", () => {
+  it("applies createSquashNameTransformer to convert names to camelCase", () => {
     const registry = createRegistry("root", [
       createFileEntry({ path: "Bass Loops/kick drum 01.wav" }),
       createFileEntry({ path: "Drum-Hits/Snare_hit.wav" }),
@@ -421,7 +421,7 @@ describe("Registry transforms", () => {
       createFileEntry({ path: "Other Pack/ride-cymbal.wav" }),
       createFileEntry({ path: "Other Pack/crash - cymbal.wav" }),
     ]);
-    registry.applyTransform(SquashNameTransformer);
+    registry.applyTransform(createSquashNameTransformer);
     expect(registry.toString()).toBe(
       [
         "root",

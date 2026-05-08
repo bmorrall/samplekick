@@ -213,7 +213,7 @@ function setFromCompound(entry: TransformEntry, nameLower: string): void {
  * (case-insensitive) and sets the sampleType on that directory.
  * Accepts both singular and plural forms (e.g. "Drum" and "Drums" both map to "Drums").
  */
-export const DirectorySampleTypeTransformer: Transform = (source) => {
+export const createDirectorySampleTypeTransformer: Transform = (source) => {
   source.eachTransformEntry((entry) => {
     if (entry.getOwnSampleType() !== undefined) return;
     if (entry.getChildNodes().length === 0) return;

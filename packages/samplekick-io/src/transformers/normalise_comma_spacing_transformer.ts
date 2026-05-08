@@ -6,4 +6,4 @@ const normaliseCommaSpacing: StringTransformer = (name: string): string =>
     match.includes("_") && !match.includes(" ") ? ",_" : ", "
   );
 
-export const NormaliseCommaSpacingTransformer: Transform = createSanitiseNameTransformer(normaliseCommaSpacing);
+export const createNormaliseCommaSpacingTransformer : Transform = createSanitiseNameTransformer(normaliseCommaSpacing);

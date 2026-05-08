@@ -7,26 +7,26 @@ export {
 } from "./configuration";
 export { ZipDataSource } from "./io";
 export {
-  AbletonProjectTransformer,
-  DefaultRootPackageNameTransformer,
-  DirectorySampleTypeTransformer,
-  ExpandRootPackageNameTransformer,
-  FLStudioProjectTransformer,
-  KnownFileTypeTransformer,
-  NormaliseBracketSpacingTransformer,
-  NormaliseCommaSpacingTransformer,
-  NormaliseHyphenTransformer,
-  NormaliseSpacesTransformer,
-  SkipJunkTransformer,
-  SP404Mk2NameTransformer,
-  TrimNameTransformer,
+  createAbletonProjectTransformer,
+  createDefaultRootPackageNameTransformer,
+  createDirectorySampleTypeTransformer,
+  createExpandRootPackageNameTransformer,
+  createFLStudioProjectTransformer,
+  createKnownFileTypeTransformer,
+  createNormaliseBracketSpacingTransformer,
+  createNormaliseCommaSpacingTransformer,
+  createNormaliseHyphenTransformer,
+  createNormaliseSpacesTransformer,
+  createSkipJunkTransformer,
+  createSP404Mk2NameTransformer,
+  createTrimNameTransformer,
   createTruncateNameTransformer,
-  GhosthackNameTransformer,
-  SquashNameTransformer,
+  createGhosthackNameTransformer,
+  createSquashNameTransformer,
 } from "./transformers";
 export { SourcePathStrategy } from "./path_strategies/source_path_strategy";
 export { OrganisedPathStrategy } from "./path_strategies/organised_path_strategy";
-export { PathLengthValidator } from "./validators";
+export { createPathLengthValidator } from "./validators";
 export { SP404Mk2Preset } from "./devices/sp404_mk2";
 export { DirtywaveM8Preset } from "./devices/dirtywave_m8";
 export { BIT_DEPTH_16, BIT_DEPTH_24, BIT_DEPTH_32, SAMPLE_RATE_44100, SAMPLE_RATE_48000, SAMPLE_RATE_96000, formatSampleRate, formatBitDepth } from "./audio_format";
@@ -46,5 +46,5 @@ export type {
   DevicePreset,
   ExportOptions,
   PostProcessor,
-  Validator,
+  Validate,
 } from "./types";
