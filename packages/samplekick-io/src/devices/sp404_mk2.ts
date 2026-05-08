@@ -1,5 +1,5 @@
 import type { DevicePreset } from "../types";
-import { createNormaliseAccentsTransformer } from "../transformers/normalise_accents_transformer";
+import { createStripAccentsTransform } from "../transformers/strip_accents_transformer";
 import { createAllowedCharactersTransform } from "../transformers/allowed_characters_transformer";
 import { createTruncateNameTransformer } from "../transformers/truncate_name_transformer";
 import { BIT_DEPTH_16, SAMPLE_RATE_48000 } from "../audio_format";
@@ -30,7 +30,7 @@ const SP404_ALLOWED_PUNCTUATION = new Set([
 export const SP404Mk2Preset: DevicePreset = {
   displayName: "Roland SP-404MKII",
   transforms: [
-    createNormaliseAccentsTransformer,
+    createStripAccentsTransform,
     createAllowedCharactersTransform(SP404_ALLOWED_PUNCTUATION),
     createTruncateNameTransformer(MAX_NAME_LENGTH),
   ],

@@ -18,7 +18,7 @@ export {
   createNormaliseHyphenTransformer,
   createNormaliseSpacesTransformer,
   createSkipJunkTransformer,
-  createNormaliseAccentsTransformer,
+  createStripAccentsTransform,
   createAllowedCharactersTransform,
   createTrimNameTransformer,
   createNormaliseQuotesTransformer,

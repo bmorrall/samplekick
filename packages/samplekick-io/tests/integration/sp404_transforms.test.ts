@@ -6,6 +6,22 @@ import {
 import { createRegistry, createFileEntry } from "../support";
 
 describe("SP-404MKII device preset transforms", () => {
+  it("preserves all SP-404 MkII supported punctuation characters", () => {
+    const registry = createRegistry("root", [
+      createFileEntry({ path: "A _-!&()+,=@[]{}'.wav" }),
+    ]);
+    for (const transform of SP404Mk2Preset.transforms) {
+      registry.applyTransform(transform);
+    }
+    expect(registry.toString()).toBe(
+      [
+        "root",
+        "└── A _-!&()+,=@[]{}'.wav [?]",
+        "",
+      ].join("\n"),
+    );
+  });
+
   it("sanitizes entry names when all preset transforms are applied in order", () => {
     const registry = createRegistry("root", [
       createFileEntry({ path: "NáméWithÁccents.wav" }),

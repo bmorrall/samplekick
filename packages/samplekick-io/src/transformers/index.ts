@@ -9,7 +9,7 @@ export { createNormaliseHyphenTransformer } from "./normalise_hyphen_transformer
 export { createNormaliseSpacesTransformer } from "./normalise_spaces_transformer";
 export { createDirectorySampleTypeTransformer } from "./directory_sample_type_transformer";
 export { createSkipJunkTransformer } from "./skip_junk_transformer";
-export { createNormaliseAccentsTransformer } from "./normalise_accents_transformer";
+export { createStripAccentsTransform } from "./strip_accents_transformer";
 export { createAllowedCharactersTransform } from "./allowed_characters_transformer";
 export { createTrimNameTransformer } from "./trim_name_transformer";
 export { createNormaliseQuotesTransformer } from "./normalise_quotes_transformer";

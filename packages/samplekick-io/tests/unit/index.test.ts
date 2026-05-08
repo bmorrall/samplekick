@@ -70,8 +70,8 @@ describe("index exports", () => {
     expect(api.createTruncateNameTransformer).toBeDefined();
   });
 
-  test("exports createNormaliseAccentsTransformer", () => {
-    expect(api.createNormaliseAccentsTransformer).toBeDefined();
+  test("exports createStripAccentsTransform", () => {
+    expect(api.createStripAccentsTransform).toBeDefined();
   });
 
   test("exports createAllowedCharactersTransform", () => {
@@ -121,7 +121,7 @@ describe("index exports", () => {
       "createNormaliseHyphenTransformer",
       "createNormaliseSpacesTransformer",
       "createSkipJunkTransformer",
-      "createNormaliseAccentsTransformer",
+      "createStripAccentsTransform",
       "createAllowedCharactersTransform",
       "createTrimNameTransformer",
       "createNormaliseQuotesTransformer",
