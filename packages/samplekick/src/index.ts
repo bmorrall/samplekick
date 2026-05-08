@@ -121,29 +121,37 @@ const saveConfigToPath = async (registry: Registry, savePath: string, options: {
 const buildAutoConfigPath = (registry: Registry, dataDir: string): string =>
   join(dataDir, `${registry.getFingerprint()}.csv`);
 
-const { values, positionals } = parseArgs({
-  args: process.argv.slice(CLI_ARG_START),
-  options: {
-    config: { type: "string" },
-    device: { type: "string", short: "d" },
-    output: { type: "string", short: "o" },
-    "write-config": { type: "string" },
-    "dump-config": { type: "boolean" },
-    convert: { type: "boolean", short: "c" },
-    analyse: { type: "boolean", short: "a" },
-    "allow-junk": { type: "boolean" },
-    "preserve-paths": { type: "boolean" },
-    squash: { type: "boolean" },
-    bake: { type: "boolean" },
-    debug: { type: "boolean" },
-    edit: { type: "boolean" },
-    verbose: { type: "boolean" },
-    quiet: { type: "boolean" },
-    version: { type: "boolean", short: "v" },
-    help: { type: "boolean", short: "h" },
-  },
-  allowPositionals: true,
-});
+// eslint-disable-next-line @typescript-eslint/init-declarations -- assigned in try/catch below
+let parseResult;
+try {
+  parseResult = parseArgs({
+    args: process.argv.slice(CLI_ARG_START),
+    options: {
+      config: { type: "string" },
+      device: { type: "string", short: "d" },
+      output: { type: "string", short: "o" },
+      "write-config": { type: "string" },
+      "dump-config": { type: "boolean" },
+      convert: { type: "boolean", short: "c" },
+      analyse: { type: "boolean", short: "a" },
+      "allow-junk": { type: "boolean" },
+      "preserve-paths": { type: "boolean" },
+      squash: { type: "boolean" },
+      bake: { type: "boolean" },
+      debug: { type: "boolean" },
+      edit: { type: "boolean" },
+      verbose: { type: "boolean" },
+      quiet: { type: "boolean" },
+      version: { type: "boolean", short: "v" },
+      help: { type: "boolean", short: "h" },
+    },
+    allowPositionals: true,
+  });
+} catch (err) {
+  console.error(`Error: ${err instanceof Error ? err.message : String(err)}`);
+  process.exit(1);
+}
+const { values, positionals } = parseResult;
 
 if (values.version === true) {
   console.log(packageJson.version);
