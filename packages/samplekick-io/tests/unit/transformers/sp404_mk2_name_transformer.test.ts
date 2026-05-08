@@ -1,6 +1,5 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { SP404Mk2NameTransformer } from "../../../src";
-import type { TransformEntry } from "../../../src";
 import { createTransformEntry, singleEntryTransformSource } from "../../support";
 
 describe("SP404Mk2NameTransformer", () => {
@@ -40,16 +39,10 @@ describe("SP404Mk2NameTransformer", () => {
     expect(entry.setName).toHaveBeenCalledWith("kick_01_alt.wav");
   });
 
-  it("truncates long names while preserving the extension", () => {
-    const entry = createTransformEntry({ name: `${"x".repeat(90)}.wav` });
+  it("leaves long names unsanitized (truncation is handled by createTruncateNameTransformer)", () => {
+    const entry = createTransformEntry({ name: `${"+".repeat(90)}.wav` });
     SP404Mk2NameTransformer(singleEntryTransformSource(entry));
-    expect(entry.setName).toHaveBeenCalledWith(`${"x".repeat(76)}.wav`);
-  });
-
-  it("truncates a long name with no extension to exactly 80 characters", () => {
-    const entry = createTransformEntry({ name: "x".repeat(90) });
-    SP404Mk2NameTransformer(singleEntryTransformSource(entry));
-    expect(entry.setName).toHaveBeenCalledWith("x".repeat(80));
+    expect(entry.setName).toHaveBeenCalledWith(`${"+".repeat(90)}.wav`);
   });
 
   it("only calls setName and no other setters when packageName and sampleType are absent", () => {
@@ -79,18 +72,5 @@ describe("SP404Mk2NameTransformer", () => {
     const entry = createTransformEntry({ name: "kick.wav", sampleType: "Drüms" });
     SP404Mk2NameTransformer(singleEntryTransformSource(entry));
     expect(entry.setSampleType).toHaveBeenCalledWith("Drums");
-  });
-
-  it("truncates to 80 characters when the extension is too long to preserve", () => {
-    let capturedName: string | undefined = undefined;
-    const entry: TransformEntry = {
-      ...createTransformEntry({ name: `x.${"e".repeat(90)}` }),
-      setName: vi.fn<(name: string | undefined) => void>((name) => {
-        capturedName = name;
-      }),
-    };
-    SP404Mk2NameTransformer(singleEntryTransformSource(entry));
-    expect(capturedName).toHaveLength(80);
-    expect(capturedName).toMatch(/^x\./v);
   });
 });

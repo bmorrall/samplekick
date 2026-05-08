@@ -7,8 +7,6 @@ const uppercaseACodePoint = 65;
 const uppercaseZCodePoint = 90;
 const lowercaseACodePoint = 97;
 const lowercaseZCodePoint = 122;
-const maxNameLength = 80;
-const notFoundIndex = -1;
 
 const allowedPunctuation = new Set([
   " ",
@@ -61,25 +59,6 @@ const normalizeQuotes = (name: string): string =>
     .replaceAll("\u201C", '"')
     .replaceAll("\u201D", '"');
 
-const truncateSP404Mk2Name = (name: string): string => {
-  if (name.length <= maxNameLength) {
-    return name;
-  }
-
-  const finalDotIndex = name.lastIndexOf(".");
-  if (finalDotIndex === notFoundIndex) {
-    return name.slice(0, maxNameLength);
-  }
-
-  const extension = name.slice(finalDotIndex);
-  if (extension.length >= maxNameLength) {
-    return name.slice(0, maxNameLength);
-  }
-
-  const basenameMaxLength = maxNameLength - extension.length;
-  return `${name.slice(0, basenameMaxLength)}${extension}`;
-};
-
 const sp404Mk2StringTransformer: StringTransformer = (name: string): string => {
   const normalizedName = normalizeQuotes(normalizeAccents(name));
   const finalDotIndex = normalizedName.lastIndexOf(".");
@@ -93,7 +72,7 @@ const sp404Mk2StringTransformer: StringTransformer = (name: string): string => {
     index += 1;
   }
 
-  return truncateSP404Mk2Name(sanitizedName);
+  return sanitizedName;
 };
 
 export const SP404Mk2NameTransformer: Transform = createSanitiseNameTransformer(sp404Mk2StringTransformer);

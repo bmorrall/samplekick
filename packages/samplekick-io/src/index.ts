@@ -20,6 +20,7 @@ export {
   SkipJunkTransformer,
   SP404Mk2NameTransformer,
   TrimNameTransformer,
+  createTruncateNameTransformer,
   GhosthackNameTransformer,
   SquashNameTransformer,
 } from "./transformers";

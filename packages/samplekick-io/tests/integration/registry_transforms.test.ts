@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import {
   SP404Mk2NameTransformer,
+  createTruncateNameTransformer,
   DefaultRootPackageNameTransformer,
   DirectorySampleTypeTransformer,
   SkipJunkTransformer,
@@ -52,6 +53,7 @@ describe("Registry transforms", () => {
       createFileEntry({ path: "Valid_Name-OK!.aif" }),
     ]);
     registry.applyTransform(SP404Mk2NameTransformer);
+    registry.applyTransform(createTruncateNameTransformer(80));
     expect(registry.toString()).toBe(
       [
         "root",
@@ -59,6 +61,24 @@ describe("Registry transforms", () => {
         "├── Invalid_Char_.mp3 [?] [renamed]",
         "├── ThisIsAVeryLongNameThatShouldBeTruncatedBecauseItIsWayTooLongToFitTheLimitOf.wav [?] [renamed]",
         "└── Valid_Name-OK!.aif [?]",
+        "",
+      ].join("\n"),
+    );
+  });
+
+  it("applies createTruncateNameTransformer to truncate names while preserving extensions", () => {
+    const registry = createRegistry("root", [
+      createFileEntry({ path: "short.wav" }),
+      createFileEntry({ path: `${"x".repeat(90)}.wav` }),
+      createFileEntry({ path: "x".repeat(90) }),
+    ]);
+    registry.applyTransform(createTruncateNameTransformer(80));
+    expect(registry.toString()).toBe(
+      [
+        "root",
+        `├── short.wav [?]`,
+        `├── ${"x".repeat(76)}.wav [?] [renamed]`,
+        `└── ${"x".repeat(80)} [?] [renamed]`,
         "",
       ].join("\n"),
     );
