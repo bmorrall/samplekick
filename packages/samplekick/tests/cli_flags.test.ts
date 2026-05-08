@@ -125,10 +125,10 @@ describe("samplekick CLI flags", () => {
 
       expect(result.stderr).toBe("");
       expect(result.stdout).toContain("Devices:");
-      expect(result.stdout).toContain("Roland SP-404MKII");
-      expect(result.stdout).toContain("sp404mk2");
-      expect(result.stdout).toContain("sp404");
-      expect(result.stdout).toContain("404");
+      expect(result.stdout).toContain("dirtywavem8             Dirtywave M8 (converts to 16-bit 44.1 kHz)");
+      expect(result.stdout).toContain("    dirtywave, m8");
+      expect(result.stdout).toContain("sp404mk2                Roland SP-404MKII (converts to 16-bit 48 kHz)");
+      expect(result.stdout).toContain("    sp404, 404");
 
       expect(result.status).toBe(0);
     });
