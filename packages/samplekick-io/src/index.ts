@@ -7,22 +7,22 @@ export {
 } from "./configuration";
 export { ZipDataSource } from "./io";
 export {
-  AbletonProjectTransformer,
-  DefaultRootPackageNameTransformer,
-  DirectorySampleTypeTransformer,
-  ExpandRootPackageNameTransformer,
-  FLStudioProjectTransformer,
-  KnownFileTypeTransformer,
-  NormaliseBracketSpacingTransformer,
-  NormaliseCommaSpacingTransformer,
-  NormaliseHyphenTransformer,
-  NormaliseSpacesTransformer,
-  SkipJunkTransformer,
-  SP404Mk2NameTransformer,
-  TrimNameTransformer,
+  createAbletonProjectTransformer,
+  createDefaultRootPackageNameTransformer,
+  createDirectorySampleTypeTransformer,
+  createExpandRootPackageNameTransformer,
+  createFLStudioProjectTransformer,
+  createKnownFileTypeTransformer,
+  createNormaliseBracketSpacingTransformer,
+  createNormaliseCommaSpacingTransformer,
+  createNormaliseHyphenTransformer,
+  createNormaliseSpacesTransformer,
+  createSkipJunkTransformer,
+  createSP404Mk2NameTransformer,
+  createTrimNameTransformer,
   createTruncateNameTransformer,
-  GhosthackNameTransformer,
-  SquashNameTransformer,
+  createGhosthackNameTransformer,
+  createSquashNameTransformer,
 } from "./transformers";
 export { SourcePathStrategy } from "./path_strategies/source_path_strategy";
 export { OrganisedPathStrategy } from "./path_strategies/organised_path_strategy";

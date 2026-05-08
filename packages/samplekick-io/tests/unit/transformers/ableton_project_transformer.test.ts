@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { AbletonProjectTransformer } from "../../../src";
+import { createAbletonProjectTransformer } from "../../../src";
 import { createTransformEntry, createTransformEntryInHierarchy, singleEntryTransformSource } from "../../support";
 
-describe("AbletonProjectTransformer", () => {
+describe("createAbletonProjectTransformer", () => {
   describe("when a directory has a .als child", () => {
     it("sets sampleType to Ableton Projects", () => {
       const entry = createTransformEntryInHierarchy(
@@ -10,7 +10,7 @@ describe("AbletonProjectTransformer", () => {
         { name: "My Project", isFile: false },
         [{ name: "My Project.als" }],
       );
-      AbletonProjectTransformer(singleEntryTransformSource(entry));
+      createAbletonProjectTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Ableton Projects");
     });
 
@@ -20,7 +20,7 @@ describe("AbletonProjectTransformer", () => {
         { name: "My Project", isFile: false },
         [{ name: "My Project.als" }],
       );
-      AbletonProjectTransformer(singleEntryTransformSource(entry));
+      createAbletonProjectTransformer(singleEntryTransformSource(entry));
       expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
     });
 
@@ -30,7 +30,7 @@ describe("AbletonProjectTransformer", () => {
         { name: "My Project", isFile: false },
         [{ name: "My Project.ALS" }],
       );
-      AbletonProjectTransformer(singleEntryTransformSource(entry));
+      createAbletonProjectTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Ableton Projects");
     });
   });
@@ -42,7 +42,7 @@ describe("AbletonProjectTransformer", () => {
         { name: "My Project", isFile: false },
         [{ name: "readme.txt" }],
       );
-      AbletonProjectTransformer(singleEntryTransformSource(entry));
+      createAbletonProjectTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
       expect(entry.setKeepStructure).not.toHaveBeenCalled();
     });
@@ -55,7 +55,7 @@ describe("AbletonProjectTransformer", () => {
         { name: "My Project", isFile: false },
         [{ name: "Ableton Folder Info" }],
       );
-      AbletonProjectTransformer(singleEntryTransformSource(entry));
+      createAbletonProjectTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Ableton Projects");
     });
 
@@ -65,7 +65,7 @@ describe("AbletonProjectTransformer", () => {
         { name: "My Project", isFile: false },
         [{ name: "Ableton Folder Info" }],
       );
-      AbletonProjectTransformer(singleEntryTransformSource(entry));
+      createAbletonProjectTransformer(singleEntryTransformSource(entry));
       expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
     });
 
@@ -75,7 +75,7 @@ describe("AbletonProjectTransformer", () => {
         { name: "My Project", isFile: false },
         [{ name: "ableton folder info" }],
       );
-      AbletonProjectTransformer(singleEntryTransformSource(entry));
+      createAbletonProjectTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
     });
   });
@@ -83,7 +83,7 @@ describe("AbletonProjectTransformer", () => {
   describe("when the entry has no children", () => {
     it("does not set sampleType or keepStructure", () => {
       const entry = createTransformEntry({ name: "My Project.als" });
-      AbletonProjectTransformer(singleEntryTransformSource(entry));
+      createAbletonProjectTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
       expect(entry.setKeepStructure).not.toHaveBeenCalled();
     });

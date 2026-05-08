@@ -6,4 +6,4 @@ const GHOSTHACK_PREFIX_RE = /^Ghosthack[\s_]*-?[\s_]*(?=\S)/iv;
 const normaliseGhosthackPrefix: StringTransformer = (name: string): string =>
   name.replace(GHOSTHACK_PREFIX_RE, "Ghosthack - ");
 
-export const GhosthackNameTransformer: Transform = createSanitiseNameTransformer(normaliseGhosthackPrefix);
+export const createGhosthackNameTransformer : Transform = createSanitiseNameTransformer(normaliseGhosthackPrefix);

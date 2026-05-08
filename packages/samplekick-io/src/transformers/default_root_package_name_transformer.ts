@@ -1,6 +1,6 @@
 import type { Transform } from '../types';
 
-export const DefaultRootPackageNameTransformer: Transform = (source) => {
+export const createDefaultRootPackageNameTransformer :  Transform = (source) => {
   source.eachTransformEntry((entry) => {
     if (entry.getParentNode() !== undefined) return;
     const name = entry.getName();

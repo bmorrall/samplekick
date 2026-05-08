@@ -6,7 +6,7 @@ import type { Transform } from '../types';
  * extension, then marks the directory with sampleType "Ableton Projects"
  * and keepStructure.
  */
-export const AbletonProjectTransformer: Transform = (source) => {
+export const createAbletonProjectTransformer :  Transform = (source) => {
   source.eachTransformEntry((entry) => {
     const children = entry.getChildNodes();
     if (children.length === 0) return;

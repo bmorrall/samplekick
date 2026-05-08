@@ -6,24 +6,24 @@ import { finished } from "node:stream/promises";
 import { basename, dirname, join, resolve } from "node:path";
 import { parseArgs } from "node:util";
 import {
-  AbletonProjectTransformer,
+  createAbletonProjectTransformer,
   CsvConfigWriter,
-  DefaultRootPackageNameTransformer,
-  DirectorySampleTypeTransformer,
-  ExpandRootPackageNameTransformer,
-  FLStudioProjectTransformer,
-  GhosthackNameTransformer,
-  SquashNameTransformer,
-  KnownFileTypeTransformer,
-  NormaliseBracketSpacingTransformer,
-  NormaliseCommaSpacingTransformer,
-  NormaliseHyphenTransformer,
-  NormaliseSpacesTransformer,
+  createDefaultRootPackageNameTransformer,
+  createDirectorySampleTypeTransformer,
+  createExpandRootPackageNameTransformer,
+  createFLStudioProjectTransformer,
+  createGhosthackNameTransformer,
+  createSquashNameTransformer,
+  createKnownFileTypeTransformer,
+  createNormaliseBracketSpacingTransformer,
+  createNormaliseCommaSpacingTransformer,
+  createNormaliseHyphenTransformer,
+  createNormaliseSpacesTransformer,
   OrganisedPathStrategy,
   Registry,
-  SkipJunkTransformer,
+  createSkipJunkTransformer,
   SourcePathStrategy,
-  TrimNameTransformer,
+  createTrimNameTransformer,
   ZipDataSource,
   SP404Mk2Preset,
   DirtywaveM8Preset,
@@ -269,29 +269,29 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
 
   if (values["allow-junk"] !== true) {
     // Junk transforms: mark OS metadata and hidden files as skipped
-    registry.applyTransform(SkipJunkTransformer);
+    registry.applyTransform(createSkipJunkTransformer);
   }
 
   if (values.analyse === true) {
     // File transforms: identify known file types and lock their folder structure
-    registry.applyTransform(KnownFileTypeTransformer);
-    registry.applyTransform(AbletonProjectTransformer);
-    registry.applyTransform(FLStudioProjectTransformer);
+    registry.applyTransform(createKnownFileTypeTransformer);
+    registry.applyTransform(createAbletonProjectTransformer);
+    registry.applyTransform(createFLStudioProjectTransformer);
 
     // Root transforms: derive and expand the package name from the zip filename
-    registry.applyTransform(DefaultRootPackageNameTransformer);
-    registry.applyTransform(ExpandRootPackageNameTransformer);
+    registry.applyTransform(createDefaultRootPackageNameTransformer);
+    registry.applyTransform(createExpandRootPackageNameTransformer);
 
     // Name transforms: run after file transforms so locked entries are skipped
-    registry.applyTransform(TrimNameTransformer);
-    registry.applyTransform(GhosthackNameTransformer);
-    registry.applyTransform(NormaliseSpacesTransformer);
-    registry.applyTransform(NormaliseBracketSpacingTransformer);
-    registry.applyTransform(NormaliseCommaSpacingTransformer);
-    registry.applyTransform(NormaliseHyphenTransformer);
+    registry.applyTransform(createTrimNameTransformer);
+    registry.applyTransform(createGhosthackNameTransformer);
+    registry.applyTransform(createNormaliseSpacesTransformer);
+    registry.applyTransform(createNormaliseBracketSpacingTransformer);
+    registry.applyTransform(createNormaliseCommaSpacingTransformer);
+    registry.applyTransform(createNormaliseHyphenTransformer);
 
     // Directory transforms: run after name transforms so folder names are normalised first
-    registry.applyTransform(DirectorySampleTypeTransformer);
+    registry.applyTransform(createDirectorySampleTypeTransformer);
   }
 
   const configPath = values.config === undefined ? undefined : resolve(values.config);
@@ -314,7 +314,7 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
   }
 
   if (values.squash === true) {
-    registry.applyTransform(SquashNameTransformer);
+    registry.applyTransform(createSquashNameTransformer);
   }
 
   registry.setPathStrategy(pathStrategy);

@@ -9,4 +9,4 @@ const normaliseSpaces: StringTransformer = (name: string): string => {
     .replaceAll(/_/gv, hasSpace ? " " : "_");
 };
 
-export const NormaliseSpacesTransformer: Transform = createSanitiseNameTransformer(normaliseSpaces);
+export const createNormaliseSpacesTransformer : Transform = createSanitiseNameTransformer(normaliseSpaces);

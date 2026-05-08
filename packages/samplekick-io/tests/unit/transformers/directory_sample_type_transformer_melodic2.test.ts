@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { DirectorySampleTypeTransformer } from "../../../src";
+import { createDirectorySampleTypeTransformer } from "../../../src";
 import { createTransformEntryInHierarchy, singleEntryTransformSource } from "../../support";
 
-describe("DirectorySampleTypeTransformer", () => {
+describe("createDirectorySampleTypeTransformer", () => {
   describe('when the directory is named "Melodic"', () => {
     it('sets sampleType to "Melodic"', () => {
       const entry = createTransformEntryInHierarchy(
@@ -10,7 +10,7 @@ describe("DirectorySampleTypeTransformer", () => {
         { name: "Melodic", isFile: false },
         [{ name: "lead.wav" }],
       );
-      DirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Melodic");
     });
 
@@ -20,7 +20,7 @@ describe("DirectorySampleTypeTransformer", () => {
         { name: "Melodic One Shots", isFile: false },
         [{ name: "lead.wav" }],
       );
-      DirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Melodic One Shots");
     });
 
@@ -30,7 +30,7 @@ describe("DirectorySampleTypeTransformer", () => {
         { name: "Melodic One-Shots", isFile: false },
         [{ name: "lead.wav" }],
       );
-      DirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Melodic One Shots");
     });
 
@@ -40,7 +40,7 @@ describe("DirectorySampleTypeTransformer", () => {
         { name: "Melodic Loops", isFile: false },
         [{ name: "lead.wav" }],
       );
-      DirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Melodic Loops");
     });
 
@@ -50,7 +50,7 @@ describe("DirectorySampleTypeTransformer", () => {
         { name: "melodic", isFile: false },
         [{ name: "lead.wav" }],
       );
-      DirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Melodic");
     });
   });
@@ -62,7 +62,7 @@ describe("DirectorySampleTypeTransformer", () => {
         { name: "Melodics", isFile: false },
         [{ name: "lead.wav" }],
       );
-      DirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Melodic");
     });
 
@@ -72,7 +72,7 @@ describe("DirectorySampleTypeTransformer", () => {
         { name: "Loops", isFile: false },
         [{ name: "lead.wav" }],
       );
-      DirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Melodic Loops");
     });
 
@@ -82,7 +82,7 @@ describe("DirectorySampleTypeTransformer", () => {
         { name: "One Shots", isFile: false },
         [{ name: "lead.wav" }],
       );
-      DirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Melodic One Shots");
     });
 
@@ -95,7 +95,7 @@ describe("DirectorySampleTypeTransformer", () => {
         { name: "Lofi", isFile: false },
         [{ name: "lead.wav" }],
       );
-      DirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Melodic Loops - Lofi");
     });
   });
