@@ -1,5 +1,6 @@
 import type { DevicePreset } from "../types";
-import { createSP404Mk2NameTransformer } from "../transformers/sp404_mk2_name_transformer";
+import { createNormaliseAccentsTransformer } from "../transformers/normalise_accents_transformer";
+import { createAllowedCharactersTransform } from "../transformers/allowed_characters_transformer";
 import { createTruncateNameTransformer } from "../transformers/truncate_name_transformer";
 import { BIT_DEPTH_16, SAMPLE_RATE_48000 } from "../audio_format";
 import { createPathLengthValidator } from "../validators";
@@ -10,7 +11,8 @@ const MAX_PATH_LENGTH = 255;
 export const SP404Mk2Preset: DevicePreset = {
   displayName: "Roland SP-404MKII",
   transforms: [
-    createSP404Mk2NameTransformer,
+    createNormaliseAccentsTransformer,
+    createAllowedCharactersTransform,
     createTruncateNameTransformer(MAX_NAME_LENGTH),
   ],
   validators: [

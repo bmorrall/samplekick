@@ -49,23 +49,12 @@ const isAllowedCharacter = (character: string): boolean => {
   );
 };
 
-const normalizeAccents = (name: string): string =>
-  name.normalize("NFD").replaceAll(/[\u0300-\u036f]/gv, "");
-
-const normalizeQuotes = (name: string): string =>
-  name
-    .replaceAll("\u2018", "'")
-    .replaceAll("\u2019", "'")
-    .replaceAll("\u201C", '"')
-    .replaceAll("\u201D", '"');
-
 const sp404Mk2StringTransformer: StringTransformer = (name: string): string => {
-  const normalizedName = normalizeQuotes(normalizeAccents(name));
-  const finalDotIndex = normalizedName.lastIndexOf(".");
+  const finalDotIndex = name.lastIndexOf(".");
   let sanitizedName = "";
 
   let index = 0;
-  for (const character of normalizedName) {
+  for (const character of name) {
     const isFinalDot = index === finalDotIndex;
     sanitizedName +=
       isFinalDot || isAllowedCharacter(character) ? character : "_";
@@ -75,4 +64,4 @@ const sp404Mk2StringTransformer: StringTransformer = (name: string): string => {
   return sanitizedName;
 };
 
-export const createSP404Mk2NameTransformer : Transform = createSanitiseNameTransformer(sp404Mk2StringTransformer);
+export const createAllowedCharactersTransform : Transform = createSanitiseNameTransformer(sp404Mk2StringTransformer);

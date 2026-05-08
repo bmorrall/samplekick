@@ -1,6 +1,5 @@
 import { describe, it, expect } from "vitest";
 import {
-  createSP404Mk2NameTransformer,
   createTruncateNameTransformer,
   createDefaultRootPackageNameTransformer,
   createDirectorySampleTypeTransformer,
@@ -44,29 +43,6 @@ describe("Registry transforms", () => {
     );
   });
 
-  it("applies createSP404Mk2NameTransformer to entry names as expected", () => {
-    const registry = createRegistry("root", [
-      createFileEntry({ path: "NáméWithÁccents.wav" }),
-      createFileEntry({ path: "Invalid*Char?.mp3" }),
-      createFileEntry({
-        path: "ThisIsAVeryLongNameThatShouldBeTruncatedBecauseItIsWayTooLongToFitTheLimitOfEightyCharacters.wav",
-      }),
-      createFileEntry({ path: "Valid_Name-OK!.aif" }),
-    ]);
-    registry.applyTransform(createSP404Mk2NameTransformer);
-    registry.applyTransform(createTruncateNameTransformer(80));
-    expect(registry.toString()).toBe(
-      [
-        "root",
-        "├── NameWithAccents.wav [?] [renamed]",
-        "├── Invalid_Char_.mp3 [?] [renamed]",
-        "├── ThisIsAVeryLongNameThatShouldBeTruncatedBecauseItIsWayTooLongToFitTheLimitOf.wav [?] [renamed]",
-        "└── Valid_Name-OK!.aif [?]",
-        "",
-      ].join("\n"),
-    );
-  });
-
   it("applies createTruncateNameTransformer to truncate names while preserving extensions", () => {
     const registry = createRegistry("root", [
       createFileEntry({ path: "short.wav" }),
@@ -80,28 +56,6 @@ describe("Registry transforms", () => {
         `├── short.wav [?]`,
         `├── ${"x".repeat(76)}.wav [?] [renamed]`,
         `└── ${"x".repeat(80)} [?] [renamed]`,
-        "",
-      ].join("\n"),
-    );
-  });
-
-  it("does not rename entries inside a keepStructure folder when createSP404Mk2NameTransformer is applied", () => {
-    const registry = createRegistry("root", [
-      createFileEntry({ path: "Mÿ Prøject/Mÿ Prøject.als" }),
-      createFileEntry({ path: "Mÿ Prøject/Sämples/kick.wav" }),
-      createFileEntry({ path: "Drums/snâre.wav" }),
-    ]);
-    registry.applyTransform(createAbletonProjectTransformer);
-    registry.applyTransform(createSP404Mk2NameTransformer);
-    expect(registry.toString()).toBe(
-      [
-        "root",
-        "┣━━ Mÿ Prøject [type:Ableton Projects]",
-        "┃   ├── Mÿ Prøject.als [?]",
-        "┃   └── Sämples",
-        "┃       └── kick.wav [?]",
-        "└── Drums",
-        "    └── snare.wav [?] [renamed]",
         "",
       ].join("\n"),
     );

@@ -70,8 +70,12 @@ describe("index exports", () => {
     expect(api.createTruncateNameTransformer).toBeDefined();
   });
 
-  test("exports createSP404Mk2NameTransformer", () => {
-    expect(api.createSP404Mk2NameTransformer).toBeDefined();
+  test("exports createNormaliseAccentsTransformer", () => {
+    expect(api.createNormaliseAccentsTransformer).toBeDefined();
+  });
+
+  test("exports createAllowedCharactersTransform", () => {
+    expect(api.createAllowedCharactersTransform).toBeDefined();
   });
 
   test("exports createDirectorySampleTypeTransformer", () => {
@@ -117,7 +121,8 @@ describe("index exports", () => {
       "createNormaliseHyphenTransformer",
       "createNormaliseSpacesTransformer",
       "createSkipJunkTransformer",
-      "createSP404Mk2NameTransformer",
+      "createNormaliseAccentsTransformer",
+      "createAllowedCharactersTransform",
       "createTrimNameTransformer",
       "createNormaliseQuotesTransformer",
       "createTruncateNameTransformer",
