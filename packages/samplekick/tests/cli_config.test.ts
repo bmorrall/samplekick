@@ -273,4 +273,62 @@ describe("samplekick CLI", () => {
       await rm(tmpDir, { recursive: true });
     }
   });
+
+  it("writes sparse CSV when --write-config is used without --bake", async () => {
+    const zipped = zipSync({
+      "Drums/kick.wav": strToU8("kick-data"),
+    });
+
+    const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
+    const zipPath = join(tmpDir, "test-pack.zip");
+    const configPath = join(tmpDir, "config.csv");
+
+    try {
+      await writeFile(zipPath, zipped);
+
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--write-config", configPath], {
+        encoding: "utf8",
+        env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
+      });
+
+      expect(result.stderr).toBe("");
+      expect(result.status).toBe(0);
+
+      const csv = await readFile(configPath, "utf8");
+      const fileRow = csv.trim().split("\n").find((row) => row.startsWith("Drums/kick.wav,"));
+      // name matching basename is omitted, boolean defaults are empty
+      expect(fileRow).toBe("Drums/kick.wav,,,,,");
+    } finally {
+      await rm(tmpDir, { recursive: true });
+    }
+  });
+
+  it("writes explicit CSV when --write-config is used with --bake", async () => {
+    const zipped = zipSync({
+      "Drums/kick.wav": strToU8("kick-data"),
+    });
+
+    const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
+    const zipPath = join(tmpDir, "test-pack.zip");
+    const configPath = join(tmpDir, "config.csv");
+
+    try {
+      await writeFile(zipPath, zipped);
+
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--write-config", configPath, "--bake"], {
+        encoding: "utf8",
+        env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
+      });
+
+      expect(result.stderr).toBe("");
+      expect(result.status).toBe(0);
+
+      const csv = await readFile(configPath, "utf8");
+      const fileRow = csv.trim().split("\n").find((row) => row.startsWith("Drums/kick.wav,"));
+      // name always written, false for unset booleans
+      expect(fileRow).toBe("Drums/kick.wav,kick.wav,,,false,false");
+    } finally {
+      await rm(tmpDir, { recursive: true });
+    }
+  });
 });

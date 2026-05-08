@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { createWriteStream } from "node:fs";
+import { Writable } from "node:stream";
 import { mkdir } from "node:fs/promises";
 import { finished } from "node:stream/promises";
 import { basename, dirname, join, resolve } from "node:path";
@@ -104,10 +105,14 @@ ${deviceLines.join("\n")}
 const SEPARATOR_WIDTH = 40;
 const SEPARATOR = `\n${"─".repeat(SEPARATOR_WIDTH)}\n\n`;
 
+const saveConfigToStream = (registry: Registry, stream: Writable, options: { explicit?: boolean } = {}): void => {
+  new CsvConfigWriter(stream, { explicit: options.explicit }).writeConfig(registry);
+};
+
 const saveConfigToPath = async (registry: Registry, savePath: string, options: { explicit?: boolean } = {}): Promise<void> => {
   await mkdir(dirname(savePath), { recursive: true });
   const stream = createWriteStream(savePath);
-  new CsvConfigWriter(stream, { explicit: options.explicit }).writeConfig(registry);
+  saveConfigToStream(registry, stream, options);
   await finished(stream).catch((err: unknown) => {
     console.error(`Warning: could not save config to ${savePath}: ${err instanceof Error ? err.message : String(err)}`);
   });
@@ -330,7 +335,7 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
   if (values["write-config"] !== undefined) {
     const writePath = resolve(values["write-config"]);
     const fileStream = createWriteStream(writePath);
-    new CsvConfigWriter(fileStream).writeConfig(registry);
+    saveConfigToStream(registry, fileStream, { explicit: values.bake === true });
     await finished(fileStream).catch((err: unknown) => {
       console.error(`Error: could not write to ${writePath}: ${err instanceof Error ? err.message : String(err)}`);
       process.exit(1);
@@ -338,7 +343,7 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
   }
 
   if (values["dump-config"] === true) {
-    new CsvConfigWriter(process.stdout).writeConfig(registry);
+    saveConfigToStream(registry, process.stdout);
   } else if (values.output === undefined) {
     const dryRun = new DryRunReporter(reporter);
     await registry.exportToDirectory(undefined, {
