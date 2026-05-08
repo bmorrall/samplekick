@@ -121,3 +121,33 @@ describe("CsvConfigWriter", () => {
     expect(lines[1]).toBe(",Renamed Library,library-pack,,,");
   });
 });
+
+describe("CsvConfigWriter { explicit: true }", () => {
+  it("writes all fields explicitly, including name matching basename and false for unset booleans", () => {
+    const stream = new PassThrough({ encoding: "utf8" });
+    const writer = new CsvConfigWriter(stream, { explicit: true });
+    const configSource = createConfigSource([
+      createConfigEntry({ path: "jazz/bebop/track01", name: "track01" }),
+      createConfigEntry({ path: "jazz/bebop/track02", name: "Alt Track", packageName: "jazz-pack", sampleType: "Bebop" }),
+    ]);
+
+    const output = captureOutput(writer, configSource, stream);
+    const lines = output.split("\n");
+
+    expect(lines[1]).toBe("jazz/bebop/track01,track01,,,false,false");
+    expect(lines[2]).toBe("jazz/bebop/track02,Alt Track,jazz-pack,Bebop,false,false");
+  });
+
+  it("still omits the name column and boolean defaults when not in explicit mode", () => {
+    const stream = new PassThrough({ encoding: "utf8" });
+    const writer = new CsvConfigWriter(stream);
+    const configSource = createConfigSource([
+      createConfigEntry({ path: "jazz/bebop/track01", name: "track01" }),
+    ]);
+
+    const output = captureOutput(writer, configSource, stream);
+    const lines = output.split("\n");
+
+    expect(lines[1]).toBe("jazz/bebop/track01,,,,,");
+  });
+});
