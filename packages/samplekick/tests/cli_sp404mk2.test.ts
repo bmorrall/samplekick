@@ -200,4 +200,33 @@ describe("SP-404MKII device preset", () => {
       await rm(tmpDir, { recursive: true });
     }
   });
+
+  it("rejects files whose relative path exceeds the 255 character limit", async () => {
+    // Each folder is 85 chars; SP-404 truncates names to 80 chars each.
+    // Path after truncation: a(80)/b(80)/c(80)/d(76).wav = 323 chars — over the 255 limit.
+    const zipped = zipSync({
+      [`${"a".repeat(85)}/${"b".repeat(85)}/${"c".repeat(85)}/${"d".repeat(76)}.wav`]: makeMinimalWav(),
+    });
+
+    const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
+    const zipPath = join(tmpDir, "test-pack.zip");
+    const outputDir = join(tmpDir, "output");
+
+    try {
+      await writeFile(zipPath, zipped);
+
+      const result = spawnSync(
+        "node",
+        [CLI_PATH, zipPath, "--device", "sp404mk2", "--preserve-paths", "-o", outputDir],
+        { encoding: "utf8", env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") } },
+      );
+
+      expect(result.stderr).toBe("");
+      expect(result.status).toBe(0);
+      expect(result.stdout).toContain("rejected:");
+      expect(result.stdout).toContain("path too long: 323 characters (max 255)");
+    } finally {
+      await rm(tmpDir, { recursive: true });
+    }
+  });
 });
