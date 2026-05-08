@@ -65,9 +65,14 @@ export type Transform = (source: TransformSource) => void;
 
 // Device Preset
 
+export interface Validator {
+  validate: (destRelPath: string, entry: ConfigEntry) => string | undefined;
+}
+
 export interface DevicePreset {
   displayName: string;
   transforms: readonly Transform[];
+  validators?: readonly Validator[];
   targetBitDepth?: number;
   targetSampleRate?: number;
 }
