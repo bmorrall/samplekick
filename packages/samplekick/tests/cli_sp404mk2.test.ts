@@ -137,10 +137,10 @@ describe("SP-404MKII device preset", () => {
         "Dr\u00fcms/sn\u00e2re.wav,,,,,",
       ].join("\n"));
 
-      // Carry the auto-detected packageName forward; only add sampleType
+      // Override packageName and add sampleType for the second run
       await writeFile(join(dataDir, autoConfigFile), [
         "path,name,packageName,sampleType,skip,keepPath",
-        ",test-pack.zip,test-pack,,,",
+        ",t\u00ebst-pack.zip,test-pack,,,",
         "Dr\u00fcms,,,Percussion,,",
       ].join("\n"));
 

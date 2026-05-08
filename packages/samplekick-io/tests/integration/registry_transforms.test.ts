@@ -10,6 +10,7 @@ import {
   NormaliseBracketSpacingTransformer,
   NormaliseCommaSpacingTransformer,
   GhosthackNameTransformer,
+  SquashNameTransformer,
   ExpandRootPackageNameTransformer,
   NormaliseHyphenTransformer,
   NormaliseSpacesTransformer,
@@ -386,6 +387,33 @@ describe("Registry transforms", () => {
         "│   └── Ghosthack - Pad 01.wav [?]",
         "└── Other Pack",
         "    └── hat.wav [?]",
+        "",
+      ].join("\n"),
+    );
+  });
+
+  it("applies SquashNameTransformer to convert names to camelCase", () => {
+    const registry = createRegistry("root", [
+      createFileEntry({ path: "Bass Loops/kick drum 01.wav" }),
+      createFileEntry({ path: "Drum-Hits/Snare_hit.wav" }),
+      createFileEntry({ path: "Other Pack/hat.wav" }),
+      createFileEntry({ path: "Other Pack/Open_Hat.wav" }),
+      createFileEntry({ path: "Other Pack/ride-cymbal.wav" }),
+      createFileEntry({ path: "Other Pack/crash - cymbal.wav" }),
+    ]);
+    registry.applyTransform(SquashNameTransformer);
+    expect(registry.toString()).toBe(
+      [
+        "root",
+        "├── BassLoops [renamed]",
+        "│   └── kickDrum01.wav [?] [renamed]",
+        "├── DrumHits [renamed]",
+        "│   └── SnareHit.wav [?] [renamed]",
+        "└── OtherPack [renamed]",
+        "    ├── hat.wav [?]",
+        "    ├── OpenHat.wav [?] [renamed]",
+        "    ├── rideCymbal.wav [?] [renamed]",
+        "    └── crashCymbal.wav [?] [renamed]",
         "",
       ].join("\n"),
     );

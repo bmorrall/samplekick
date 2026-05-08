@@ -30,6 +30,10 @@ describe("index exports", () => {
     expect(api.GhosthackNameTransformer).toBeDefined();
   });
 
+  test("exports SquashNameTransformer", () => {
+    expect(api.SquashNameTransformer).toBeDefined();
+  });
+
   test("exports KnownFileTypeTransformer", () => {
     expect(api.KnownFileTypeTransformer).toBeDefined();
   });
@@ -104,6 +108,7 @@ describe("index exports", () => {
       "SP404Mk2NameTransformer",
       "TrimNameTransformer",
       "GhosthackNameTransformer",
+      "SquashNameTransformer",
       "SourcePathStrategy",
       "OrganisedPathStrategy",
       "SP404Mk2Preset",

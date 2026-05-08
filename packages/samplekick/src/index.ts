@@ -12,6 +12,7 @@ import {
   ExpandRootPackageNameTransformer,
   FLStudioProjectTransformer,
   GhosthackNameTransformer,
+  SquashNameTransformer,
   KnownFileTypeTransformer,
   NormaliseBracketSpacingTransformer,
   NormaliseCommaSpacingTransformer,
@@ -79,6 +80,7 @@ Options:
   -c, --convert           Convert audio files to device format
       --allow-junk        Keep junk entries (e.g. __MACOSX, hidden files)
       --preserve-paths    Export to original source paths (skip organising)
+      --squash            Convert names to camelCase (applied after device transforms)
       --debug             Print pack string representation to stdout
                           without writing any files
       --edit              Open the auto-config file in $VISUAL/$EDITOR
@@ -108,6 +110,7 @@ const { values, positionals } = parseArgs({
     analyse: { type: "boolean", short: "a" },
     "allow-junk": { type: "boolean" },
     "preserve-paths": { type: "boolean" },
+    squash: { type: "boolean" },
     debug: { type: "boolean" },
     edit: { type: "boolean" },
     verbose: { type: "boolean" },
@@ -275,6 +278,10 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
     for (const transform of devicePreset.transforms) {
       registry.applyTransform(transform);
     }
+  }
+
+  if (values.squash === true) {
+    registry.applyTransform(SquashNameTransformer);
   }
 
   registry.setPathStrategy(pathStrategy);

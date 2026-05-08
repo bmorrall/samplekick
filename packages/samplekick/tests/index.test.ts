@@ -47,6 +47,7 @@ describe("samplekick CLI", () => {
           "  -c, --convert           Convert audio files to device format",
           "      --allow-junk        Keep junk entries (e.g. __MACOSX, hidden files)",
           "      --preserve-paths    Export to original source paths (skip organising)",
+          "      --squash            Convert names to camelCase (applied after device transforms)",
           "      --debug             Print pack string representation to stdout",
           "                          without writing any files",
           "      --edit              Open the auto-config file in $VISUAL/$EDITOR",
