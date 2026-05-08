@@ -11,10 +11,10 @@ const quoteCsvField = (value: string): string => {
   return value;
 };
 
-const serializeRow = (entry: ConfigEntry): string => {
+const serializeRow = (entry: ConfigEntry, explicit: boolean): string => {
   const name = entry.getName();
   const path = entry.getPath();
-  const nameField = name === getPathName(path) ? "" : quoteCsvField(name);
+  const nameField = !explicit && name === getPathName(path) ? "" : quoteCsvField(name);
   const packageName = entry.getPackageName() ?? "";
   const sampleType = entry.getSampleType() ?? "";
   const skipped = entry.isSkipped();
@@ -25,22 +25,29 @@ const serializeRow = (entry: ConfigEntry): string => {
     nameField,
     quoteCsvField(packageName),
     quoteCsvField(sampleType),
-    skipped === undefined ? "" : String(skipped),
-    keepStructure === undefined ? "" : String(keepStructure),
+    skipped === undefined ? (explicit ? "false" : "") : String(skipped),
+    keepStructure === undefined ? (explicit ? "false" : "") : String(keepStructure),
   ].join(",");
 };
 
+export interface CsvConfigWriterOptions {
+  /** When true, always writes the name column even if it matches the path basename. */
+  explicit?: boolean;
+}
+
 export class CsvConfigWriter implements ConfigWriter {
   private readonly stream: Writable;
+  private readonly explicit: boolean;
 
-  constructor(stream: Writable) {
+  constructor(stream: Writable, options: CsvConfigWriterOptions = {}) {
     this.stream = stream;
+    this.explicit = options.explicit ?? false;
   }
 
   writeConfig(configSource: ConfigSource): void {
     const rows: string[] = [CSV_HEADER];
     configSource.eachConfigEntry((entry) => {
-      rows.push(serializeRow(entry));
+      rows.push(serializeRow(entry, this.explicit));
     });
     this.stream.end(rows.join("\n"));
   }
