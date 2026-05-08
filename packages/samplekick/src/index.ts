@@ -26,6 +26,7 @@ import {
   TrimNameTransformer,
   ZipDataSource,
   SP404Mk2Preset,
+  DirtywaveM8Preset,
   formatSampleRate,
   formatBitDepth,
 } from "samplekick-io";
@@ -39,12 +40,15 @@ import type { ExportReporter } from "./exporters";
 import packageJson from "../package.json" with { type: "json" };
 
 const CLI_ARG_START = 2;
-const DEVICE_ALIAS_PAD_WIDTH = 24;
+const DEVICE_MAIN_ALIAS_PAD_WIDTH = 24;
 
 const DEVICE_PRESETS: Record<string, DevicePreset> = {
   sp404mk2: SP404Mk2Preset,
   sp404: SP404Mk2Preset,
   "404": SP404Mk2Preset,
+  dirtywavem8: DirtywaveM8Preset,
+  dirtywave: DirtywaveM8Preset,
+  m8: DirtywaveM8Preset,
 };
 
 const buildHelpText = (): string => {
@@ -55,15 +59,18 @@ const buildHelpText = (): string => {
   }
   const sorted = [...seen].sort((a, b) => a.displayName.localeCompare(b.displayName));
   for (const preset of sorted) {
-    const aliases = Object.entries(DEVICE_PRESETS)
+    const aliasList = Object.entries(DEVICE_PRESETS)
       .filter(([, p]) => p === preset)
       .map(([key]) => key)
-      .sort((a, b) => b.length - a.length)
-      .join(", ");
+      .sort((a, b) => b.length - a.length);
+    const [mainAlias = "", ...restAliases] = aliasList;
     const conversionSuffix = preset.targetBitDepth !== undefined && preset.targetSampleRate !== undefined
       ? ` (converts to ${formatBitDepth(preset.targetBitDepth)} ${formatSampleRate(preset.targetSampleRate)})`
       : "";
-    deviceLines.push(`  ${aliases.padEnd(DEVICE_ALIAS_PAD_WIDTH)}${preset.displayName}${conversionSuffix}`);
+    deviceLines.push(`  ${mainAlias.padEnd(DEVICE_MAIN_ALIAS_PAD_WIDTH)}${preset.displayName}${conversionSuffix}`);
+    if (restAliases.length > 0) {
+      deviceLines.push(`    ${restAliases.join(", ")}`);
+    }
   }
 
   return `\

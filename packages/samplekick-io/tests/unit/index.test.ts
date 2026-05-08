@@ -112,6 +112,7 @@ describe("index exports", () => {
       "SourcePathStrategy",
       "OrganisedPathStrategy",
       "SP404Mk2Preset",
+      "DirtywaveM8Preset",
       "BIT_DEPTH_16",
       "BIT_DEPTH_24",
       "BIT_DEPTH_32",

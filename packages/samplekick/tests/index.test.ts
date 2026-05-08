@@ -64,7 +64,10 @@ describe("samplekick CLI", () => {
           "  -h, --help              Show this help message",
           "",
           "Devices:",
-          "  sp404mk2, sp404, 404    Roland SP-404MKII (converts to 16-bit 48 kHz)",
+          "  dirtywavem8             Dirtywave M8 (converts to 16-bit 44.1 kHz)",
+          "    dirtywave, m8",
+          "  sp404mk2                Roland SP-404MKII (converts to 16-bit 48 kHz)",
+          "    sp404, 404",
         ].join("\n"),
       );
 
