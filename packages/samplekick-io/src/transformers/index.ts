@@ -11,5 +11,6 @@ export { DirectorySampleTypeTransformer } from "./directory_sample_type_transfor
 export { SkipJunkTransformer } from "./skip_junk_transformer";
 export { SP404Mk2NameTransformer } from "./sp404_mk2_name_transformer";
 export { TrimNameTransformer } from "./trim_name_transformer";
+export { createTruncateNameTransformer } from "./truncate_name_transformer";
 export { GhosthackNameTransformer } from "./ghosthack_name_transformer";
 export { SquashNameTransformer } from "./squash_name_transformer";

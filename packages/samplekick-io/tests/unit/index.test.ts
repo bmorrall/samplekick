@@ -62,6 +62,10 @@ describe("index exports", () => {
     expect(api.TrimNameTransformer).toBeDefined();
   });
 
+  test("exports createTruncateNameTransformer", () => {
+    expect(api.createTruncateNameTransformer).toBeDefined();
+  });
+
   test("exports SP404Mk2NameTransformer", () => {
     expect(api.SP404Mk2NameTransformer).toBeDefined();
   });
@@ -111,6 +115,7 @@ describe("index exports", () => {
       "SkipJunkTransformer",
       "SP404Mk2NameTransformer",
       "TrimNameTransformer",
+      "createTruncateNameTransformer",
       "GhosthackNameTransformer",
       "SquashNameTransformer",
       "SourcePathStrategy",
