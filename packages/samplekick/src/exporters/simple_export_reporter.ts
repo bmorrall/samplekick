@@ -1,7 +1,7 @@
 import { extname } from "node:path";
 import type { Writable } from "node:stream";
 import type { ConfigEntry, FileNode } from "samplekick-io";
-import { AUDIO_EXTENSIONS } from "../post_processors/audio_converter";
+import { AUDIO_EXTENSIONS } from "samplekick-io";
 import type { ExportReporter } from "./export_reporter";
 
 const countLeafNodes = (entry: FileNode): number => {

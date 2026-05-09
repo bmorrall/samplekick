@@ -11,6 +11,7 @@ import {
   createDefaultRootPackageNameTransformer,
   createDirectorySampleTypeTransformer,
   createExpandRootPackageNameTransformer,
+  createFlatPackPrefixTransformer,
   createFLStudioProjectTransformer,
   createGhosthackNameTransformer,
   createSquashNameTransformer,
@@ -297,6 +298,7 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
 
     // Directory transforms: run after name transforms so folder names are normalised first
     registry.applyTransform(createDirectorySampleTypeTransformer);
+    registry.applyTransform(createFlatPackPrefixTransformer);
   }
 
   const configPath = values.config === undefined ? undefined : resolve(values.config);
