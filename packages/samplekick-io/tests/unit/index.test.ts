@@ -94,6 +94,10 @@ describe("index exports", () => {
     expect(api.createDirectorySampleTypeTransformer).toBeDefined();
   });
 
+  test("exports createDrumSubcategoryTransformer", () => {
+    expect(api.createDrumSubcategoryTransformer).toBeDefined();
+  });
+
   test("exports createFlatPackPrefixTransformer", () => {
     expect(api.createFlatPackPrefixTransformer).toBeDefined();
   });
@@ -129,6 +133,7 @@ describe("index exports", () => {
       "createAbletonProjectTransformer",
       "createDefaultRootPackageNameTransformer",
       "createDirectorySampleTypeTransformer",
+      "createDrumSubcategoryTransformer",
       "createExpandRootPackageNameTransformer",
       "createFLStudioProjectTransformer",
       "createKnownFileTypeTransformer",
