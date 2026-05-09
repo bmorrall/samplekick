@@ -106,13 +106,26 @@ function setFromDashSeparatedName(entry: TransformEntry, nameLower: string): boo
   return true;
 }
 
-function setFromCompound(entry: TransformEntry, nameLower: string): void {
+function setFromCompound(entry: TransformEntry, nameLower: string): boolean {
   const sep = nameLower.includes(' and ') ? ' and ' : nameLower.includes(' & ') ? ' & ' : undefined;
-  if (sep === undefined) return;
+  if (sep === undefined) return false;
   const resolved = nameLower.split(sep).map(lookupStandalone);
   if (resolved.every((r): r is string => r !== undefined)) {
     entry.setSampleType(resolved.join(' and '));
+    return true;
   }
+  return false;
+}
+
+// Final fallback: split by ' - ' and set sampleType if exactly one segment matches
+// a known folder type. Handles brand-prefixed directories, e.g. "Brand - Drums" → "Drums".
+function setFromUniqueDashSegment(entry: TransformEntry, nameLower: string): void {
+  if (!nameLower.includes(DASH_SEP)) return;
+  const parts = nameLower.split(DASH_SEP);
+  const matches = parts.map(resolveStandaloneType).filter((t): t is string => t !== undefined);
+  if (matches.length !== 1) return;
+  const [sampleType] = matches;
+  entry.setSampleType(sampleType);
 }
 
 /**
@@ -131,6 +144,7 @@ export const createDirectorySampleTypeTransformer: Transform = (source) => {
     if (setFromDashSeparatedName(entry, nameLower)) return;
     if (setFromAncestorContext(entry, nameLower)) return;
     if (setFromStandalone(entry, nameLower)) return;
-    setFromCompound(entry, nameLower);
+    if (setFromCompound(entry, nameLower)) return;
+    setFromUniqueDashSegment(entry, nameLower);
   });
 };
