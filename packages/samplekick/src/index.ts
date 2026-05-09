@@ -21,6 +21,7 @@ import {
   createNormaliseCommaSpacingTransformer,
   createNormaliseHyphenSpacingTransformer,
   createNormaliseDashesTransformer,
+  createNormaliseBpmTagTransformer,
   createNormaliseSpacesTransformer,
   OrganisedPathStrategy,
   Registry,
@@ -279,6 +280,7 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
     registry.applyTransform(createTrimNameTransformer);
     registry.applyTransform(createNormaliseQuotesTransformer);
     registry.applyTransform(createNormaliseDashesTransformer);
+    registry.applyTransform(createNormaliseBpmTagTransformer);
 
     // File transforms: identify known file types and lock their folder structure
     registry.applyTransform(createKnownFileTypeTransformer);
