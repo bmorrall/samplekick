@@ -49,11 +49,13 @@ function resolveSegmentSuffix(segment: string): string | undefined {
 /**
  * DirectorySegmentSuffixTransformer
  * For directories that have not yet been assigned a sampleType, splits the
- * directory name by ' - ' and checks each segment for a known-type suffix
- * by progressively stripping leading words. If exactly one segment yields a
+ * directory name by ' - ' (treating the whole name as one segment when there
+ * is no separator) and checks each segment for a known-type suffix by
+ * progressively stripping leading words. If exactly one segment yields a
  * unique match, the directory is tagged with that type.
  * e.g. "Cymatics - Phoenix Vocal Loops" → segment "Phoenix Vocal Loops"
  *      → strip "Phoenix" → "Vocal Loops" → tags as "Vocal Loops".
+ * e.g. "Wet Percussion" → strip "Wet" → "Percussion" → tags as "Percussion".
  * Must run after createDirectoryChildNameTransformer.
  */
 export const createDirectorySegmentSuffixTransformer: Transform = (source) => {
@@ -62,9 +64,7 @@ export const createDirectorySegmentSuffixTransformer: Transform = (source) => {
     if (entry.getChildNodes().length === 0) return;
 
     const nameLower = entry.getName().toLowerCase();
-    if (!nameLower.includes(DASH_SEP)) return;
-
-    const parts = nameLower.split(DASH_SEP);
+    const parts = nameLower.includes(DASH_SEP) ? nameLower.split(DASH_SEP) : [nameLower];
     const matches = parts.map(resolveSegmentSuffix).filter((t): t is string => t !== undefined);
     if (matches.length !== 1) return;
     const [sampleType] = matches;

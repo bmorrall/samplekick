@@ -75,6 +75,15 @@ describe("createDirectorySegmentSuffixTransformer", () => {
       createDirectorySegmentSuffixTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
     });
+    it('tags "Wet Percussion" as "Percussion" by stripping the leading word', () => {
+      const entry = createTransformEntryInHierarchy(
+        [],
+        { name: "Wet Percussion", isFile: false },
+        [{ name: "perc.wav" }],
+      );
+      createDirectorySegmentSuffixTransformer(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("Percussion");
+    });
   });
 
   describe("when the condition is not met", () => {
@@ -99,12 +108,13 @@ describe("createDirectorySegmentSuffixTransformer", () => {
       expect(entry.setSampleType).not.toHaveBeenCalled();
     });
 
-    it("does not set sampleType when the name contains no ' - ' separator", () => {
+    it("does not set sampleType when no word-stripped suffix resolves to a known type", () => {
       const entry = createTransformEntryInHierarchy(
         [],
         { name: "Vocal Loops", isFile: false },
         [{ name: "loop.wav" }],
       );
+      // "Vocal Loops" → strip "Vocal" → "Loops" — "loops" is not a standalone type.
       createDirectorySegmentSuffixTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
     });
