@@ -90,6 +90,10 @@ describe("index exports", () => {
     expect(api.createAllowedCharactersTransform).toBeDefined();
   });
 
+  test("exports createDirectoryChildNameTransformer", () => {
+    expect(api.createDirectoryChildNameTransformer).toBeDefined();
+  });
+
   test("exports createDirectorySampleTypeTransformer", () => {
     expect(api.createDirectorySampleTypeTransformer).toBeDefined();
   });
@@ -136,6 +140,7 @@ describe("index exports", () => {
       "ZipDataSource",
       "createAbletonProjectTransformer",
       "createDefaultRootPackageNameTransformer",
+      "createDirectoryChildNameTransformer",
       "createDirectorySampleTypeTransformer",
       "createDirectorySubcategoryTransformer",
       "createDrumSubcategoryTransformer",
