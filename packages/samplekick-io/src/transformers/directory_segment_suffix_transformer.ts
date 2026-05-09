@@ -18,13 +18,26 @@ function resolveStandaloneType(nameLower: string): string | undefined {
   return undefined;
 }
 
+function resolveCompoundType(nameLower: string): string | undefined {
+  const sep = nameLower.includes(' and ') ? ' and ' : nameLower.includes(' & ') ? ' & ' : undefined;
+  if (sep === undefined) return undefined;
+  const resolved = nameLower.split(sep).map(lookupStandalone);
+  if (resolved.every((r): r is string => r !== undefined)) return resolved.join(' and ');
+  return undefined;
+}
+
+function resolveAnyType(nameLower: string): string | undefined {
+  return resolveStandaloneType(nameLower) ?? resolveCompoundType(nameLower);
+}
+
 // Strips leading words from a segment one at a time and resolves the remainder.
-// e.g. "Phoenix Vocal Loops" → "Vocal Loops" → "Vocal Loops".
+// e.g. "Phoenix Vocal Loops" → "Vocal Loops".
+// e.g. "Tonal Ambience & Textures" → "Ambience & Textures" → "Ambience and Textures".
 // Returns undefined if no suffix of the segment resolves to a known type.
 function resolveSegmentSuffix(segment: string): string | undefined {
   const words = segment.split(' ');
   for (let i = 1; i < words.length; i += 1) {
-    const type = resolveStandaloneType(words.slice(i).join(' '));
+    const type = resolveAnyType(words.slice(i).join(' '));
     if (type !== undefined) return type;
   }
   return undefined;

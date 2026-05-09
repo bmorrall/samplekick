@@ -34,6 +34,16 @@ describe("createDirectorySegmentSuffixTransformer", () => {
       expect(entry.setSampleType).toHaveBeenCalledWith("Vocals");
     });
 
+    it('tags "Cymatics - Galaxy Tonal Ambience & Textures" as "Ambience and Textures"', () => {
+      const entry = createTransformEntryInHierarchy(
+        [],
+        { name: "Cymatics - Galaxy Tonal Ambience & Textures", isFile: false },
+        [{ name: "sample.wav" }],
+      );
+      createDirectorySegmentSuffixTransformer(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("Ambience and Textures");
+    });
+
     it("matches case-insensitively", () => {
       const entry = createTransformEntryInHierarchy(
         [],
