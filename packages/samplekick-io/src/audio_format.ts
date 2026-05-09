@@ -1,3 +1,5 @@
+export const AUDIO_EXTENSIONS = new Set([".wav", ".aiff", ".aif", ".mp3"]);
+
 export const BIT_DEPTH_16 = 16;
 export const BIT_DEPTH_24 = 24;
 export const BIT_DEPTH_32 = 32;

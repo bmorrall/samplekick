@@ -3,7 +3,7 @@ import { rename, rm, unlink } from "node:fs/promises";
 import { basename, dirname, extname, join } from "node:path";
 import { promisify } from "node:util";
 import type { ConfigEntry, PostProcessor } from "samplekick-io";
-import { BIT_DEPTH_24, BIT_DEPTH_32, formatBitDepth, formatSampleRate } from "samplekick-io";
+import { AUDIO_EXTENSIONS, BIT_DEPTH_24, BIT_DEPTH_32, formatBitDepth, formatSampleRate } from "samplekick-io";
 
 const execFileAsync = promisify((
   file: string,
@@ -33,8 +33,6 @@ const defaultVersionRunner: FfmpegVersionRunner = async () =>
 
 export const getFfmpegVersion = async (runner: FfmpegVersionRunner = defaultVersionRunner): Promise<string> =>
   await runner();
-
-export const AUDIO_EXTENSIONS = new Set([".wav", ".aiff", ".aif", ".mp3"]);
 
 export interface AudioConverterOptions {
   targetBitDepth: number;

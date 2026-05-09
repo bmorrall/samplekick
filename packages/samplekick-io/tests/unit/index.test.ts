@@ -86,6 +86,10 @@ describe("index exports", () => {
     expect(api.createDirectorySampleTypeTransformer).toBeDefined();
   });
 
+  test("exports createFlatPackPrefixTransformer", () => {
+    expect(api.createFlatPackPrefixTransformer).toBeDefined();
+  });
+
   test("exports createSkipJunkTransformer", () => {
     expect(api.createSkipJunkTransformer).toBeDefined();
   });
@@ -131,6 +135,7 @@ describe("index exports", () => {
       "createTrimNameTransformer",
       "createNormaliseQuotesTransformer",
       "createTruncateNameTransformer",
+      "createFlatPackPrefixTransformer",
       "createGhosthackNameTransformer",
       "createSquashNameTransformer",
       "SourcePathStrategy",
@@ -146,6 +151,7 @@ describe("index exports", () => {
       "SAMPLE_RATE_96000",
       "formatSampleRate",
       "formatBitDepth",
+      "AUDIO_EXTENSIONS",
       "PathResult",
       "SkipResult",
     ]);
