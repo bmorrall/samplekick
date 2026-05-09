@@ -13,7 +13,7 @@ import {
   createGhosthackNameTransformer,
   createSquashNameTransformer,
   createExpandRootPackageNameTransformer,
-  createNormaliseHyphenTransformer,
+  createNormaliseHyphenSpacingTransformer,
   createNormaliseSpacesTransformer,
   createTrimNameTransformer,
   OrganisedPathStrategy,
@@ -145,7 +145,7 @@ describe("Registry transforms", () => {
     );
   });
 
-  it("applies createNormaliseHyphenTransformer to fix hyphens touching adjacent words", () => {
+  it("applies createNormaliseHyphenSpacingTransformer to fix hyphens touching adjacent words", () => {
     const registry = createRegistry("root", [
       createFileEntry({ path: "Drums- Bass/kick.wav" }),
       createFileEntry({ path: "Kicks -Snares/snare.wav" }),
@@ -153,7 +153,7 @@ describe("Registry transforms", () => {
       createFileEntry({ path: "Drums-_Bass/kick.wav" }),
       createFileEntry({ path: "Kicks_-Snares/snare.wav" }),
     ]);
-    registry.applyTransform(createNormaliseHyphenTransformer);
+    registry.applyTransform(createNormaliseHyphenSpacingTransformer);
     expect(registry.toString()).toBe(
       [
         "root",

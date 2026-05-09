@@ -50,8 +50,12 @@ describe("index exports", () => {
     expect(api.createExpandRootPackageNameTransformer).toBeDefined();
   });
 
-  test("exports createNormaliseHyphenTransformer", () => {
-    expect(api.createNormaliseHyphenTransformer).toBeDefined();
+  test("exports createNormaliseHyphenSpacingTransformer", () => {
+    expect(api.createNormaliseHyphenSpacingTransformer).toBeDefined();
+  });
+
+  test("exports createNormaliseDashesTransformer", () => {
+    expect(api.createNormaliseDashesTransformer).toBeDefined();
   });
 
   test("exports createNormaliseSpacesTransformer", () => {
@@ -118,7 +122,8 @@ describe("index exports", () => {
       "createKnownFileTypeTransformer",
       "createNormaliseBracketSpacingTransformer",
       "createNormaliseCommaSpacingTransformer",
-      "createNormaliseHyphenTransformer",
+      "createNormaliseHyphenSpacingTransformer",
+      "createNormaliseDashesTransformer",
       "createNormaliseSpacesTransformer",
       "createSkipJunkTransformer",
       "createStripAccentsTransform",
