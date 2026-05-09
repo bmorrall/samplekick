@@ -11,6 +11,7 @@ export { createNormaliseBpmTagTransformer } from "./normalise_bpm_tag_transforme
 export { createNormaliseKeyTagTransformer } from "./normalise_key_tag_transformer";
 export { createNormaliseSpacesTransformer } from "./normalise_spaces_transformer";
 export { createDirectorySampleTypeTransformer } from "./directory_sample_type_transformer";
+export { createDrumSubcategoryTransformer } from "./drum_subcategory_transformer";
 export { createSkipJunkTransformer } from "./skip_junk_transformer";
 export { createStripAccentsTransform } from "./strip_accents_transformer";
 export { createAllowedCharactersTransform } from "./allowed_characters_transformer";
