@@ -98,6 +98,10 @@ describe("index exports", () => {
     expect(api.createDirectorySampleTypeTransformer).toBeDefined();
   });
 
+  test("exports createDirectorySegmentSuffixTransformer", () => {
+    expect(api.createDirectorySegmentSuffixTransformer).toBeDefined();
+  });
+
   test("exports createDirectorySubcategoryTransformer", () => {
     expect(api.createDirectorySubcategoryTransformer).toBeDefined();
   });
@@ -142,6 +146,7 @@ describe("index exports", () => {
       "createDefaultRootPackageNameTransformer",
       "createDirectoryChildNameTransformer",
       "createDirectorySampleTypeTransformer",
+      "createDirectorySegmentSuffixTransformer",
       "createDirectorySubcategoryTransformer",
       "createDrumSubcategoryTransformer",
       "createExpandRootPackageNameTransformer",

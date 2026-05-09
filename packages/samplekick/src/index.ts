@@ -10,6 +10,7 @@ import {
   CsvConfigWriter,
   createDefaultRootPackageNameTransformer,
   createDirectorySampleTypeTransformer,
+  createDirectorySegmentSuffixTransformer,
   createDirectorySubcategoryTransformer,
   createDirectoryChildNameTransformer,
   createDrumSubcategoryTransformer,
@@ -309,6 +310,7 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
     registry.applyTransform(createDrumSubcategoryTransformer);
     registry.applyTransform(createDirectorySampleTypeTransformer);
     registry.applyTransform(createDirectoryChildNameTransformer);
+    registry.applyTransform(createDirectorySegmentSuffixTransformer);
     registry.applyTransform(createDirectorySubcategoryTransformer);
     registry.applyTransform(createFlatPackPrefixTransformer);
   }

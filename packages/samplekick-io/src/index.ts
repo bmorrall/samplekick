@@ -11,6 +11,7 @@ export {
   createDefaultRootPackageNameTransformer,
   createDirectoryChildNameTransformer,
   createDirectorySampleTypeTransformer,
+  createDirectorySegmentSuffixTransformer,
   createDirectorySubcategoryTransformer,
   createDrumSubcategoryTransformer,
   createExpandRootPackageNameTransformer,
