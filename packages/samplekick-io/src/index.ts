@@ -18,6 +18,7 @@ export {
   createNormaliseHyphenSpacingTransformer,
   createNormaliseDashesTransformer,
   createNormaliseBpmTagTransformer,
+  createNormaliseKeyTagTransformer,
   createNormaliseSpacesTransformer,
   createSkipJunkTransformer,
   createStripAccentsTransform,
