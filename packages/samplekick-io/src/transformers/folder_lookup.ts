@@ -68,6 +68,13 @@ export const lookupStandalone = (key: string): string | undefined => FOLDER_LOOK
 
 export const ONE_SHOT_LABELS = ['one shots', 'one-shots', 'oneshots'] as const;
 
+// e.g. "Drum Loops & MIDI" → "Drum Loops", "Drum Loops & Stems" → "Drum Loops".
+const STRIP_SUFFIX_RE = / (?:&|and) (?:midi|stems?)$/v;
+// e.g. "Drum Loops Collection" → "Drum Loops", "Hihat Bundle" → "Hihat".
+const STRIP_NOISE_SUFFIX_RE = /\s+(?:collection|bundle|pack|set|library)s?$/iv;
+export const stripIgnoredSuffix = (nameLower: string): string =>
+  nameLower.replace(STRIP_SUFFIX_RE, '').replace(STRIP_NOISE_SUFFIX_RE, '');
+
 export function isKnownTypeFolderName(name: string): boolean {
   const lower = name.toLowerCase();
   if (FOLDER_LOOKUP.has(lower)) return true;

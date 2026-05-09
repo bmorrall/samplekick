@@ -44,6 +44,16 @@ describe("createDirectorySegmentSuffixTransformer", () => {
       expect(entry.setSampleType).toHaveBeenCalledWith("Ambience and Textures");
     });
 
+    it('tags "Cymatics - Cyclone Ultimate Bass Collection" as "Bass" after stripping noise suffix', () => {
+      const entry = createTransformEntryInHierarchy(
+        [],
+        { name: "Cymatics - Cyclone Ultimate Bass Collection", isFile: false },
+        [{ name: "bass.wav" }],
+      );
+      createDirectorySegmentSuffixTransformer(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("Bass");
+    });
+
     it("matches case-insensitively", () => {
       const entry = createTransformEntryInHierarchy(
         [],

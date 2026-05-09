@@ -1,12 +1,5 @@
 import type { Transform, TransformEntry } from '../types';
-import { lookupPrefix, lookupStandalone, ONE_SHOT_LABELS, isKnownTypeFolderName } from './folder_lookup';
-
-// e.g. "Drum Loops & MIDI" → "Drum Loops", "Drum Loops & Stems" → "Drum Loops".
-const STRIP_SUFFIX_RE = / (?:&|and) (?:midi|stems?)$/v;
-// e.g. "Drum Loops Collection" → "Drum Loops", "Hihat Bundle" → "Hihat".
-const STRIP_NOISE_SUFFIX_RE = /\s+(?:collection|bundle|pack|set|library)s?$/iv;
-const stripIgnoredSuffix = (nameLower: string): string =>
-  nameLower.replace(STRIP_SUFFIX_RE, '').replace(STRIP_NOISE_SUFFIX_RE, '');
+import { lookupPrefix, lookupStandalone, ONE_SHOT_LABELS, isKnownTypeFolderName, stripIgnoredSuffix } from './folder_lookup';
 
 // Keys that prefer a subcategory type over their standalone type when under a known-type parent.
 // e.g. "808s" under "Drums" → "Drums - 808s" rather than the bare "808s".

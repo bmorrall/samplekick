@@ -1,5 +1,5 @@
 import type { Transform } from '../types';
-import { lookupPrefix, lookupStandalone, ONE_SHOT_LABELS } from './folder_lookup';
+import { lookupPrefix, lookupStandalone, ONE_SHOT_LABELS, stripIgnoredSuffix } from './folder_lookup';
 
 const DASH_SEP = ' - ';
 
@@ -31,11 +31,14 @@ function resolveAnyType(nameLower: string): string | undefined {
 }
 
 // Strips leading words from a segment one at a time and resolves the remainder.
+// Noise suffixes (e.g. "collection", "bundle") are stripped from the segment first.
 // e.g. "Phoenix Vocal Loops" → "Vocal Loops".
 // e.g. "Tonal Ambience & Textures" → "Ambience & Textures" → "Ambience and Textures".
+// e.g. "Cyclone Ultimate Bass Collection" → strip noise → "Cyclone Ultimate Bass" → "Bass".
 // Returns undefined if no suffix of the segment resolves to a known type.
 function resolveSegmentSuffix(segment: string): string | undefined {
-  const words = segment.split(' ');
+  const cleaned = stripIgnoredSuffix(segment);
+  const words = cleaned.split(' ');
   for (let i = 1; i < words.length; i += 1) {
     const type = resolveAnyType(words.slice(i).join(' '));
     if (type !== undefined) return type;
