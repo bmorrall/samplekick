@@ -14,6 +14,7 @@ import {
   createFLStudioProjectTransformer,
   createGhosthackNameTransformer,
   createSquashNameTransformer,
+  createNormaliseQuotesTransformer,
   createKnownFileTypeTransformer,
   createNormaliseBracketSpacingTransformer,
   createNormaliseCommaSpacingTransformer,
@@ -273,6 +274,9 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
   }
 
   if (values.analyse === true) {
+    registry.applyTransform(createTrimNameTransformer);
+    registry.applyTransform(createNormaliseQuotesTransformer);
+
     // File transforms: identify known file types and lock their folder structure
     registry.applyTransform(createKnownFileTypeTransformer);
     registry.applyTransform(createAbletonProjectTransformer);
@@ -283,7 +287,6 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
     registry.applyTransform(createExpandRootPackageNameTransformer);
 
     // Name transforms: run after file transforms so locked entries are skipped
-    registry.applyTransform(createTrimNameTransformer);
     registry.applyTransform(createGhosthackNameTransformer);
     registry.applyTransform(createNormaliseSpacesTransformer);
     registry.applyTransform(createNormaliseBracketSpacingTransformer);
@@ -308,7 +311,7 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
     for (const transform of devicePreset.transforms) {
       registry.applyTransform(transform);
     }
-    for (const validator of devicePreset.validators ?? []) {
+    for (const validator of devicePreset.validators) {
       registry.addValidator(validator);
     }
   }

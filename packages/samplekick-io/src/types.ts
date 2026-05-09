@@ -70,7 +70,7 @@ export type Validate = (destRelPath: string, entry: ConfigEntry) => string | und
 export interface DevicePreset {
   displayName: string;
   transforms: readonly Transform[];
-  validators?: readonly Validate[];
+  validators: readonly Validate[];
   targetBitDepth?: number;
   targetSampleRate?: number;
 }

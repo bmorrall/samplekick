@@ -10,6 +10,7 @@ import type {
   LeafNode,
   TransformEntry,
   TransformSource,
+  DevicePreset,
 } from "../src";
 import { Registry, ZipDataSource } from "../src";
 import { getPathName } from "../src/path_utils";
@@ -336,3 +337,15 @@ export const createRegistry = (
   files: FileEntry[],
   fingerprint?: string,
 ): Registry => new Registry(createFileSource(name, files, fingerprint));
+
+export const applyDeviceTransforms = (registry: Registry, preset: DevicePreset): void => {
+  for (const transform of preset.transforms) {
+    registry.applyTransform(transform);
+  }
+};
+
+export const applyDeviceValidators = (registry: Registry, preset: DevicePreset): void => {
+  for (const validator of preset.validators) {
+    registry.addValidator(validator);
+  }
+};

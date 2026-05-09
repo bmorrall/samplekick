@@ -62,12 +62,20 @@ describe("index exports", () => {
     expect(api.createTrimNameTransformer).toBeDefined();
   });
 
+  test("exports createNormaliseQuotesTransformer", () => {
+    expect(api.createNormaliseQuotesTransformer).toBeDefined();
+  });
+
   test("exports createTruncateNameTransformer", () => {
     expect(api.createTruncateNameTransformer).toBeDefined();
   });
 
-  test("exports createSP404Mk2NameTransformer", () => {
-    expect(api.createSP404Mk2NameTransformer).toBeDefined();
+  test("exports createStripAccentsTransform", () => {
+    expect(api.createStripAccentsTransform).toBeDefined();
+  });
+
+  test("exports createAllowedCharactersTransform", () => {
+    expect(api.createAllowedCharactersTransform).toBeDefined();
   });
 
   test("exports createDirectorySampleTypeTransformer", () => {
@@ -113,8 +121,10 @@ describe("index exports", () => {
       "createNormaliseHyphenTransformer",
       "createNormaliseSpacesTransformer",
       "createSkipJunkTransformer",
-      "createSP404Mk2NameTransformer",
+      "createStripAccentsTransform",
+      "createAllowedCharactersTransform",
       "createTrimNameTransformer",
+      "createNormaliseQuotesTransformer",
       "createTruncateNameTransformer",
       "createGhosthackNameTransformer",
       "createSquashNameTransformer",
