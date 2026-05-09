@@ -10,6 +10,7 @@ export {
   createAbletonProjectTransformer,
   createDefaultRootPackageNameTransformer,
   createDirectorySampleTypeTransformer,
+  createDirectorySubcategoryTransformer,
   createDrumSubcategoryTransformer,
   createExpandRootPackageNameTransformer,
   createFLStudioProjectTransformer,

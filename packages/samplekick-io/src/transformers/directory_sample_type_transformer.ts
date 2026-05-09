@@ -11,10 +11,6 @@ const stripIgnoredSuffix = (nameLower: string): string =>
 // Keys that prefer a subcategory type over their standalone type when under a known-type parent.
 // e.g. "808s" under "Drums" → "Drums - 808s" rather than the bare "808s".
 const SUBCATEGORY_PREFERRED_KEYS = new Set(['808', '808s', '909', '909s']);
-
-// Folder names ending with these suffixes should never be treated as a subcategory.
-// e.g. "Latin Stems" or "Loop Steps" under a known-type parent are excluded.
-const SUBCATEGORY_EXCLUDED_SUFFIX_RE = /(?:^| )(?:stems?|steps?)$/iv;
 const DASH_SEP = ' - ';
 
 const isOneShotLabel = (name: string): boolean =>
@@ -110,19 +106,6 @@ function setFromDashSeparatedName(entry: TransformEntry, nameLower: string): boo
   return true;
 }
 
-function setFromSubcategoryName(entry: TransformEntry): boolean {
-  const parent = entry.getParentNode();
-  if (parent === undefined) return false;
-  const parentSampleType = parent.getSampleType();
-  if (parentSampleType === undefined) return false;
-  if (!isKnownTypeFolderName(parentSampleType)) return false;
-  const displayName = entry.getName().replace(/ (?:&|and) (?:midi|stems?)$/iv, '');
-  if (SUBCATEGORY_EXCLUDED_SUFFIX_RE.test(displayName)) return false;
-  if (displayName.includes(' - ')) return false;
-  entry.setSampleType(`${parentSampleType} - ${displayName}`);
-  return true;
-}
-
 function setFromCompound(entry: TransformEntry, nameLower: string): void {
   const sep = nameLower.includes(' and ') ? ' and ' : nameLower.includes(' & ') ? ' & ' : undefined;
   if (sep === undefined) return;
@@ -149,7 +132,5 @@ export const createDirectorySampleTypeTransformer: Transform = (source) => {
     if (setFromAncestorContext(entry, nameLower)) return;
     if (setFromStandalone(entry, nameLower)) return;
     setFromCompound(entry, nameLower);
-    if (entry.getOwnSampleType() !== undefined) return;
-    setFromSubcategoryName(entry);
   });
 };

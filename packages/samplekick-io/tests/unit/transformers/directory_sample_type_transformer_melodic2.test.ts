@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createDirectorySampleTypeTransformer } from "../../../src";
+import { createDirectorySampleTypeTransformer, createDirectorySubcategoryTransformer } from "../../../src";
 import { createTransformEntryInHierarchy, singleEntryTransformSource } from "../../support";
 
 describe("createDirectorySampleTypeTransformer", () => {
@@ -96,6 +96,7 @@ describe("createDirectorySampleTypeTransformer", () => {
         [{ name: "lead.wav" }],
       );
       createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      createDirectorySubcategoryTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Melodic Loops - Lofi");
     });
   });

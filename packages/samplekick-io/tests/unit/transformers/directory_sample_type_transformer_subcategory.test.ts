@@ -24,24 +24,14 @@ describe("createDirectorySampleTypeTransformer", () => {
       expect(entry.setSampleType).toHaveBeenCalledWith("808s");
     });
 
-    it('sets sampleType to "Drums - 808s" when under a "Drums" parent', () => {
+    it('does not set sampleType when under a known-type parent', () => {
       const entry = createTransformEntryInHierarchy(
         [{ name: "Drums", sampleType: "Drums" }],
         { name: "808s", isFile: false },
         [{ name: "808.wav" }],
       );
       createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
-      expect(entry.setSampleType).toHaveBeenCalledWith("Drums - 808s");
-    });
-
-    it('sets sampleType to "Drum Loops - 808s" when under a "Drum Loops" parent', () => {
-      const entry = createTransformEntryInHierarchy(
-        [{ name: "Drum Loops", sampleType: "Drum Loops" }],
-        { name: "808s", isFile: false },
-        [{ name: "808.wav" }],
-      );
-      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
-      expect(entry.setSampleType).toHaveBeenCalledWith("Drum Loops - 808s");
+      expect(entry.setSampleType).not.toHaveBeenCalled();
     });
   });
 
@@ -66,48 +56,18 @@ describe("createDirectorySampleTypeTransformer", () => {
       expect(entry.setSampleType).toHaveBeenCalledWith("909s");
     });
 
-    it('sets sampleType to "Drums - 909s" when under a "Drums" parent', () => {
+    it('does not set sampleType when under a known-type parent', () => {
       const entry = createTransformEntryInHierarchy(
         [{ name: "Drums", sampleType: "Drums" }],
         { name: "909s", isFile: false },
         [{ name: "909.wav" }],
       );
       createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
-      expect(entry.setSampleType).toHaveBeenCalledWith("Drums - 909s");
-    });
-
-    it('sets sampleType to "Drum Loops - 909s" when under a "Drum Loops" parent', () => {
-      const entry = createTransformEntryInHierarchy(
-        [{ name: "Drum Loops", sampleType: "Drum Loops" }],
-        { name: "909s", isFile: false },
-        [{ name: "909.wav" }],
-      );
-      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
-      expect(entry.setSampleType).toHaveBeenCalledWith("Drum Loops - 909s");
+      expect(entry.setSampleType).not.toHaveBeenCalled();
     });
   });
 
   describe("when the directory is a direct child of a known-type parent", () => {
-    it('sets sampleType to "Drum Loops - Latin" for "Latin" under a "Drum Loops" parent', () => {
-      const entry = createTransformEntryInHierarchy(
-        [{ name: "Drum Loops", sampleType: "Drum Loops" }],
-        { name: "Latin", isFile: false },
-        [{ name: "loop.wav" }],
-      );
-      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
-      expect(entry.setSampleType).toHaveBeenCalledWith("Drum Loops - Latin");
-    });
-
-    it('sets sampleType to "Melodies - Speed House" for "Speed House" under a "Melodies" parent', () => {
-      const entry = createTransformEntryInHierarchy(
-        [{ name: "Melodies", sampleType: "Melodies" }],
-        { name: "Speed House", isFile: false },
-        [{ name: "loop.wav" }],
-      );
-      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
-      expect(entry.setSampleType).toHaveBeenCalledWith("Melodies - Speed House");
-    });
-
     it("does not set sampleType when the parent sampleType is already a subcategory", () => {
       const entry = createTransformEntryInHierarchy(
         [{ name: "Speed House", sampleType: "Melodies - Speed House" }],
@@ -180,16 +140,6 @@ describe("createDirectorySampleTypeTransformer", () => {
       expect(entry.setSampleType).toHaveBeenCalledWith("Drum Loops");
     });
 
-    it('strips MIDI suffix from subcategory label', () => {
-      const entry = createTransformEntryInHierarchy(
-        [{ name: "Melodies", sampleType: "Melodies" }],
-        { name: "Speed House & MIDI", isFile: false },
-        [{ name: "loop.wav" }],
-      );
-      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
-      expect(entry.setSampleType).toHaveBeenCalledWith("Melodies - Speed House");
-    });
-
     it('treats "Drum Loops & Stems" as "Drum Loops" for sampleType matching', () => {
       const entry = createTransformEntryInHierarchy(
         [],
@@ -200,15 +150,6 @@ describe("createDirectorySampleTypeTransformer", () => {
       expect(entry.setSampleType).toHaveBeenCalledWith("Drum Loops");
     });
 
-    it('strips Stems suffix from subcategory label', () => {
-      const entry = createTransformEntryInHierarchy(
-        [{ name: "Melodies", sampleType: "Melodies" }],
-        { name: "Speed House & Stems", isFile: false },
-        [{ name: "loop.wav" }],
-      );
-      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
-      expect(entry.setSampleType).toHaveBeenCalledWith("Melodies - Speed House");
-    });
   });
 
   describe("when the directory name is a compound of two known types", () => {

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { createDirectorySampleTypeTransformer } from "../../src";
+import { createDirectorySampleTypeTransformer, createDirectorySubcategoryTransformer } from "../../src";
 import { createRegistry, createFileEntry } from "../support";
 
 describe("DirectorySampleTypeTransformer integration", () => {
@@ -41,6 +41,7 @@ describe("DirectorySampleTypeTransformer integration", () => {
       createFileEntry({ path: "Melodies/Sunset/Loop Stems & MIDI/reese.wav" }),
     ]);
     registry.applyTransform(createDirectorySampleTypeTransformer);
+    registry.applyTransform(createDirectorySubcategoryTransformer);
     expect(registry.toString()).toBe(
       [
         "Pack.zip",
@@ -66,6 +67,7 @@ describe("DirectorySampleTypeTransformer integration", () => {
       createFileEntry({ path: "Melodies/Speed House & MIDI/bass.wav" }),
     ]);
     registry.applyTransform(createDirectorySampleTypeTransformer);
+    registry.applyTransform(createDirectorySubcategoryTransformer);
     expect(registry.toString()).toBe(
       [
         "Pack.zip",

@@ -10,6 +10,7 @@ import {
   CsvConfigWriter,
   createDefaultRootPackageNameTransformer,
   createDirectorySampleTypeTransformer,
+  createDirectorySubcategoryTransformer,
   createDrumSubcategoryTransformer,
   createExpandRootPackageNameTransformer,
   createFlatPackPrefixTransformer,
@@ -306,6 +307,7 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
     // Directory transforms: run after name transforms so folder names are normalised first
     registry.applyTransform(createDrumSubcategoryTransformer);
     registry.applyTransform(createDirectorySampleTypeTransformer);
+    registry.applyTransform(createDirectorySubcategoryTransformer);
     registry.applyTransform(createFlatPackPrefixTransformer);
   }
 
