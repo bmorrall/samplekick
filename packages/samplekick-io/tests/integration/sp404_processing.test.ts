@@ -4,7 +4,7 @@ import {
   SP404Mk2Preset,
 } from "../../src";
 import { createDefaultRootPackageNameTransformer } from "../../src/transformers";
-import { createZipRegistry } from "../support";
+import { createZipRegistry, applyDeviceTransforms, applyDeviceValidators } from "../support";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -21,6 +21,9 @@ describe("SP404 Mk2 end-to-end sample processing", () => {
     });
     registry.setPathStrategy(OrganisedPathStrategy);
 
+    // Set default package name based on root zip name (minus extension)
+    registry.applyTransform(createDefaultRootPackageNameTransformer);
+
     // Sanitize all node names for SP404 Mk2 compatibility:
     //   Drüms              → Drums
     //   kick-01 (main).wav → kick-01 (main).wav  (hyphen preserved)
@@ -29,12 +32,11 @@ describe("SP404 Mk2 end-to-end sample processing", () => {
     //   Backing Loops      → Backing Loops  (unchanged — space and letters are valid)
     //   synth-pad.wav      → synth-pad.wav  (hyphen preserved)
     //   bass-line.wav      → bass-line.wav  (hyphen preserved)
-    for (const transform of SP404Mk2Preset.transforms) {
-      registry.applyTransform(transform);
-    }
+    applyDeviceTransforms(registry, SP404Mk2Preset);
 
-    // Set default package name based on root zip name (minus extension)
-    registry.applyTransform(createDefaultRootPackageNameTransformer);
+    // Register SP404 Mk2 validators to enforce path length limits on export:
+    //   max path length is 255 characters
+    applyDeviceValidators(registry, SP404Mk2Preset);
 
     // Apply metadata and manual edits using original paths (paths are immutable)
     registry.setSampleType("Melodic Loops");

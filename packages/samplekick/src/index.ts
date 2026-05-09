@@ -311,7 +311,7 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
     for (const transform of devicePreset.transforms) {
       registry.applyTransform(transform);
     }
-    for (const validator of devicePreset.validators ?? []) {
+    for (const validator of devicePreset.validators) {
       registry.addValidator(validator);
     }
   }

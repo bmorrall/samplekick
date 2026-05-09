@@ -3,16 +3,14 @@ import {
   SP404Mk2Preset,
   createAbletonProjectTransformer,
 } from "../../src";
-import { createRegistry, createFileEntry } from "../support";
+import { createRegistry, createFileEntry, applyDeviceTransforms } from "../support";
 
 describe("SP-404MKII device preset transforms", () => {
   it("preserves all SP-404 MkII supported punctuation characters", () => {
     const registry = createRegistry("root", [
       createFileEntry({ path: "A _-!&()+,=@[]{}'.wav" }),
     ]);
-    for (const transform of SP404Mk2Preset.transforms) {
-      registry.applyTransform(transform);
-    }
+    applyDeviceTransforms(registry, SP404Mk2Preset);
     expect(registry.toString()).toBe(
       [
         "root",
@@ -31,9 +29,7 @@ describe("SP-404MKII device preset transforms", () => {
       }),
       createFileEntry({ path: "Valid_Name-OK!.aif" }),
     ]);
-    for (const transform of SP404Mk2Preset.transforms) {
-      registry.applyTransform(transform);
-    }
+    applyDeviceTransforms(registry, SP404Mk2Preset);
     expect(registry.toString()).toBe(
       [
         "root",
@@ -53,9 +49,7 @@ describe("SP-404MKII device preset transforms", () => {
       createFileEntry({ path: "Drums/snâre.wav" }),
     ]);
     registry.applyTransform(createAbletonProjectTransformer);
-    for (const transform of SP404Mk2Preset.transforms) {
-      registry.applyTransform(transform);
-    }
+    applyDeviceTransforms(registry, SP404Mk2Preset);
     expect(registry.toString()).toBe(
       [
         "root",
@@ -75,9 +69,7 @@ describe("SP-404MKII device preset transforms", () => {
       createFileEntry({ path: "kick.01.alt.wav" }),
       createFileEntry({ path: "snare.02.wav" }),
     ]);
-    for (const transform of SP404Mk2Preset.transforms) {
-      registry.applyTransform(transform);
-    }
+    applyDeviceTransforms(registry, SP404Mk2Preset);
     expect(registry.toString()).toBe(
       [
         "root",
@@ -94,9 +86,7 @@ describe("SP-404MKII device preset transforms", () => {
     ]);
     registry.setPackageName("kick.wav", "Påck Nàme");
     registry.setSampleType("kick.wav", "Drüms & Percüssion");
-    for (const transform of SP404Mk2Preset.transforms) {
-      registry.applyTransform(transform);
-    }
+    applyDeviceTransforms(registry, SP404Mk2Preset);
     expect(registry.toString()).toBe(
       [
         "root",

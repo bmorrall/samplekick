@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { OrganisedPathStrategy } from "../../src";
+import { OrganisedPathStrategy, DirtywaveM8Preset } from "../../src";
 import { createDefaultRootPackageNameTransformer } from "../../src/transformers";
-import { createZipRegistry } from "../support";
+import { createZipRegistry, applyDeviceTransforms, applyDeviceValidators } from "../support";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -16,6 +16,13 @@ describe("Dirtywave M8 end-to-end sample processing", () => {
     registry.setPathStrategy(OrganisedPathStrategy);
 
     registry.applyTransform(createDefaultRootPackageNameTransformer);
+
+    // Apply Dirtywave M8 transforms (none — all file names are valid as-is)
+    applyDeviceTransforms(registry, DirtywaveM8Preset);
+
+    // Register Dirtywave M8 validators to enforce path length limits on export:
+    //   max path length is 127 characters
+    applyDeviceValidators(registry, DirtywaveM8Preset);
 
     registry.setSampleType("Percussion");
     registry.setSampleType("Drums", "Drums");
