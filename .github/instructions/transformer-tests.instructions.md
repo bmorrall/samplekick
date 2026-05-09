@@ -26,10 +26,7 @@ Required cases:
 
 ### 2. Integration test — `packages/samplekick-io/tests/integration/`
 
-Add an `it(...)` block that applies the transformer to a real `Registry` (via `createRegistry` + `createFileEntry` from `tests/support.ts`) and asserts `registry.toString()` matches the expected tree string.
-
-- **Prefer adding to `registry_transforms.test.ts`** for straightforward cases.
-- **Create a dedicated file** (e.g. `normalise_dashes_transformer.test.ts`) if `registry_transforms.test.ts` would exceed **450 lines** — this is a hard ESLint `max-lines` limit.
+Create a dedicated file named `registry_<transformer_name>.test.ts` in `packages/samplekick-io/tests/integration/`. Apply the transformer to a real `Registry` (via `createRegistry` + `createFileEntry` from `tests/support.ts`) and assert `registry.toString()` matches the expected tree string. Use `describe("<TransformerName> integration", () => { ... })` as the outer block.
 
 ### 3. CLI integration test — `packages/samplekick/tests/cli_<transformer_name>.test.ts`
 
