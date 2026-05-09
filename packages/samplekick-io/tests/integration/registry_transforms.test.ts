@@ -426,8 +426,8 @@ describe("Registry transforms", () => {
     expect(registry.toString()).toBe(
       [
         "root [pkg:Sounds by Sunwarper - SP404 Pack, type:Packs]",
-        "├── 01 D4.wav [renamed]",
-        "├── 02 E4.wav [renamed]",
+        "├── Sounds by Sunwarper - 01 D4.wav [renamed]",
+        "├── Sounds by Sunwarper - 02 E4.wav [renamed]",
         "└── album.jpg",
         "",
       ].join("\n"),

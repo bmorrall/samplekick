@@ -24,6 +24,11 @@ function trimToLastSeparator(prefix: string): string | undefined {
   return prefix.slice(0, idx);
 }
 
+function firstSegment(s: string): string {
+  const idx = s.indexOf(SEPARATOR);
+  return idx === NOT_FOUND ? s : s.slice(0, idx);
+}
+
 function isAudioPath(path: string): boolean {
   const lower = path.toLowerCase();
   for (const ext of AUDIO_EXTENSIONS) {
@@ -40,13 +45,18 @@ function isAudioPath(path: string): boolean {
  * When detected:
  * - Sets packageName on the directory to the trimmed prefix.
  * - Sets sampleType to "Packs".
- * - Strips "prefix - " from the start of all children that carry it
- *   (audio and non-audio alike, e.g. licence PDFs), skipping keepStructure entries.
+ * - For each child that carries the full prefix, strips the prefix and prepends
+ *   the first segment (the vendor/artist name before the first " - ") so the
+ *   source is still identifiable, e.g.:
+ *   "Sounds by Sunwarper - SP404 Pack - 01 D4.wav"
+ *   → "Sounds by Sunwarper - 01 D4.wav"
+ *   When the prefix has only one segment (no nested " - "), children are stripped
+ *   without any prepend (same as the simple strip behaviour).
  */
 export const createFlatPackPrefixTransformer: Transform = (source) => {
-  // Map from parent path → strip prefix, populated in the first pass and consumed
-  // in the second pass where we have TransformEntry objects with setName.
-  const stripPrefixByParentPath = new Map<string, string>();
+  // Map from parent path → { strip, prepend }, populated in the first pass and
+  // consumed in the second pass where we have TransformEntry objects with setName.
+  const renameInfoByParentPath = new Map<string, { strip: string; prepend: string }>();
 
   source.eachTransformEntry((entry) => {
     if (entry.getOwnSampleType() !== undefined) return;
@@ -68,7 +78,10 @@ export const createFlatPackPrefixTransformer: Transform = (source) => {
     entry.setPackageName(prefix);
     entry.setSampleType('Packs');
 
-    stripPrefixByParentPath.set(entry.getPath(), `${prefix}${SEPARATOR}`);
+    const vendor = firstSegment(prefix);
+    const strip = `${prefix}${SEPARATOR}`;
+    const prepend = vendor === prefix ? '' : `${vendor}${SEPARATOR}`;
+    renameInfoByParentPath.set(entry.getPath(), { strip, prepend });
   });
 
   // Second pass: rename children using TransformEntry objects (which expose setName).
@@ -76,12 +89,12 @@ export const createFlatPackPrefixTransformer: Transform = (source) => {
     const parent = entry.getParentNode();
     if (parent === undefined) return;
 
-    const stripPrefix = stripPrefixByParentPath.get(parent.getPath());
-    if (stripPrefix === undefined) return;
+    const info = renameInfoByParentPath.get(parent.getPath());
+    if (info === undefined) return;
 
     const name = entry.getName();
-    if (name.startsWith(stripPrefix)) {
-      entry.setName(name.slice(stripPrefix.length));
+    if (name.startsWith(info.strip)) {
+      entry.setName(`${info.prepend}${name.slice(info.strip.length)}`);
     }
   });
 };

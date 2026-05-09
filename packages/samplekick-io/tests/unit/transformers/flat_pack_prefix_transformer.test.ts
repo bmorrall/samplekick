@@ -76,18 +76,29 @@ describe("createFlatPackPrefixTransformer", () => {
       expect(dir.setSampleType).toHaveBeenCalledWith("Packs");
     });
 
-    it("strips the shared prefix from all children that carry it", () => {
+    it("strips the shared prefix and prepends the first segment to each child", () => {
       const c1 = makeChild("Sounds by Sunwarper - SP404 Pack - 01 D4.wav");
       const c2 = makeChild("Sounds by Sunwarper - SP404 Pack - 02 E4.wav");
       const dir = makeDir([c1, c2]);
 
       createFlatPackPrefixTransformer(createFlatPackSource(dir, [c1, c2]));
 
-      expect(c1.setName).toHaveBeenCalledWith("01 D4.wav");
-      expect(c2.setName).toHaveBeenCalledWith("02 E4.wav");
+      expect(c1.setName).toHaveBeenCalledWith("Sounds by Sunwarper - 01 D4.wav");
+      expect(c2.setName).toHaveBeenCalledWith("Sounds by Sunwarper - 02 E4.wav");
     });
 
-    it("also strips the prefix from non-audio files that carry it", () => {
+    it("only strips (no prepend) when the prefix has a single segment", () => {
+      const c1 = makeChild("Pack - 01 kick.wav");
+      const c2 = makeChild("Pack - 02 snare.wav");
+      const dir = makeDir([c1, c2]);
+
+      createFlatPackPrefixTransformer(createFlatPackSource(dir, [c1, c2]));
+
+      expect(c1.setName).toHaveBeenCalledWith("01 kick.wav");
+      expect(c2.setName).toHaveBeenCalledWith("02 snare.wav");
+    });
+
+    it("also renames non-audio files that carry the prefix", () => {
       const c1 = makeChild("Sounds by Sunwarper - SP404 Pack - 01 D4.wav");
       const c2 = makeChild("Sounds by Sunwarper - SP404 Pack - 02 E4.wav");
       const c3 = makeChild("Sounds by Sunwarper - SP404 Pack - LICENSE.pdf");
@@ -95,7 +106,7 @@ describe("createFlatPackPrefixTransformer", () => {
 
       createFlatPackPrefixTransformer(createFlatPackSource(dir, [c1, c2, c3]));
 
-      expect(c3.setName).toHaveBeenCalledWith("LICENSE.pdf");
+      expect(c3.setName).toHaveBeenCalledWith("Sounds by Sunwarper - LICENSE.pdf");
     });
 
     it("does not strip the prefix from children that do not carry it", () => {
