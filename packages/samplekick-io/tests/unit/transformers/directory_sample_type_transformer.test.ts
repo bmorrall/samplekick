@@ -313,7 +313,48 @@ describe("createDirectorySampleTypeTransformer", () => {
       expect(entry.setSampleType).not.toHaveBeenCalled();
       expect(entry.setKeepStructure).not.toHaveBeenCalled();
     });
+  });
 
+  describe("when the directory name has a noise suffix", () => {
+    it('sets sampleType to "Drum Loops" for "Drum Loops Collection"', () => {
+      const entry = createTransformEntryInHierarchy(
+        [],
+        { name: "Drum Loops Collection", isFile: false },
+        [{ name: "loop.wav" }],
+      );
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("Drum Loops");
+    });
+
+    it('sets sampleType to "Hihats" for "Hihat Bundle"', () => {
+      const entry = createTransformEntryInHierarchy(
+        [],
+        { name: "Hihat Bundle", isFile: false },
+        [{ name: "hihat.wav" }],
+      );
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("Hihats");
+    });
+
+    it('sets sampleType to "Vocals" for "Vocals Library"', () => {
+      const entry = createTransformEntryInHierarchy(
+        [],
+        { name: "Vocals Library", isFile: false },
+        [{ name: "vox.wav" }],
+      );
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("Vocals");
+    });
+
+    it("matches noise suffix case-insensitively", () => {
+      const entry = createTransformEntryInHierarchy(
+        [],
+        { name: "Drum Loops COLLECTION", isFile: false },
+        [{ name: "loop.wav" }],
+      );
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("Drum Loops");
+    });
   });
 
   describe('when the directory is named "Harp"', () => {
