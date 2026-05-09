@@ -22,6 +22,7 @@ import {
   createNormaliseHyphenSpacingTransformer,
   createNormaliseDashesTransformer,
   createNormaliseBpmTagTransformer,
+  createNormaliseKeyTagTransformer,
   createNormaliseSpacesTransformer,
   OrganisedPathStrategy,
   Registry,
@@ -280,7 +281,6 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
     registry.applyTransform(createTrimNameTransformer);
     registry.applyTransform(createNormaliseQuotesTransformer);
     registry.applyTransform(createNormaliseDashesTransformer);
-    registry.applyTransform(createNormaliseBpmTagTransformer);
 
     // File transforms: identify known file types and lock their folder structure
     registry.applyTransform(createKnownFileTypeTransformer);
@@ -297,6 +297,10 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
     registry.applyTransform(createNormaliseBracketSpacingTransformer);
     registry.applyTransform(createNormaliseCommaSpacingTransformer);
     registry.applyTransform(createNormaliseHyphenSpacingTransformer);
+
+    // Tag transforms: normalise embedded BPM and key tags to canonical forms
+    registry.applyTransform(createNormaliseBpmTagTransformer);
+    registry.applyTransform(createNormaliseKeyTagTransformer);
 
     // Directory transforms: run after name transforms so folder names are normalised first
     registry.applyTransform(createDirectorySampleTypeTransformer);
