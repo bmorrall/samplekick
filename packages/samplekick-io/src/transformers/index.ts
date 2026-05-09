@@ -7,6 +7,7 @@ export { createNormaliseCommaSpacingTransformer } from "./normalise_comma_spacin
 export { createExpandRootPackageNameTransformer } from "./expand_root_package_name_transformer";
 export { createNormaliseHyphenSpacingTransformer } from "./normalise_hyphen_transformer";
 export { createNormaliseDashesTransformer } from "./normalise_dashes_transformer";
+export { createNormaliseBpmTagTransformer } from "./normalise_bpm_tag_transformer";
 export { createNormaliseSpacesTransformer } from "./normalise_spaces_transformer";
 export { createDirectorySampleTypeTransformer } from "./directory_sample_type_transformer";
 export { createSkipJunkTransformer } from "./skip_junk_transformer";

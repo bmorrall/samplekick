@@ -58,6 +58,10 @@ describe("index exports", () => {
     expect(api.createNormaliseDashesTransformer).toBeDefined();
   });
 
+  test("exports createNormaliseBpmTagTransformer", () => {
+    expect(api.createNormaliseBpmTagTransformer).toBeDefined();
+  });
+
   test("exports createNormaliseSpacesTransformer", () => {
     expect(api.createNormaliseSpacesTransformer).toBeDefined();
   });
@@ -128,6 +132,7 @@ describe("index exports", () => {
       "createNormaliseCommaSpacingTransformer",
       "createNormaliseHyphenSpacingTransformer",
       "createNormaliseDashesTransformer",
+      "createNormaliseBpmTagTransformer",
       "createNormaliseSpacesTransformer",
       "createSkipJunkTransformer",
       "createStripAccentsTransform",
