@@ -12,6 +12,10 @@ const countLeafNodes = (entry: FileNode): number => {
   return children.reduce((sum, child) => sum + countLeafNodes(child), 0);
 };
 
+const pluralise = (count: number, singular: string, plural: string): string => `${count} ${count === 1 ? singular : plural}`;
+const pluraliseFiles = (count: number): string => pluralise(count, "file", "files");
+const pluraliseSamples = (count: number): string => pluralise(count, "sample", "samples");
+
 const SPINNER_FRAMES = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];
 const SPINNER_INTERVAL_MS = 80;
 
@@ -30,11 +34,14 @@ export class PrettyExportReporter implements ExportReporter {
   private readonly organised: boolean;
   private totalCount = 0;
   private errorCount = 0;
-  private rejectedCount = 0;
+  private rejectedSampleCount = 0;
+  private rejectedFileCount = 0;
   private skippedCount = 0;
   private spinnerTimer: ReturnType<typeof setInterval> | undefined = undefined;
   private spinnerFrame = 0;
   private readonly packageSummary = new Map<string, Map<string, number>>();
+  private readonly packageNonSampleCount = new Map<string, number>();
+  private readonly packageTypeNonSampleCount = new Map<string, Map<string, number>>();
 
   constructor(output: Writable, chalkInstance: ChalkInstance = chalk, options: PrettyExportReporterOptions = {}) {
     this.output = output;
@@ -46,15 +53,28 @@ export class PrettyExportReporter implements ExportReporter {
   }
 
   private formatErrors(count: number): string {
-    return this.chalk.red(`${count} ${count === 1 ? "error" : "errors"}`);
+    return this.chalk.red(pluralise(count, "error", "errors"));
   }
 
-  private formatRejected(count: number): string {
-    return this.chalk.magenta(`${count} ${count === 1 ? "entry" : "entries"} rejected`);
+  private formatRejectedCounts(sampleCount: number, fileCount: number): string {
+    const samplePart = `${pluraliseSamples(sampleCount)} rejected`;
+    if (fileCount === 0) return this.chalk.magenta(samplePart);
+    const filePart = `${pluraliseFiles(fileCount)} rejected`;
+    return this.chalk.magenta(`${samplePart}, ${filePart}`);
   }
 
   private formatSkipped(count: number): string {
-    return this.chalk.dim(`${count} ${count === 1 ? "entry" : "entries"} skipped`);
+    return this.chalk.dim(`${pluralise(count, "entry", "entries")} skipped`);
+  }
+
+  private buildSuffix(errorCount: number, _rejectCount: number): string {
+    const parts: string[] = [];
+    if (errorCount > 0) parts.push(this.formatErrors(errorCount));
+    if (this.rejectedSampleCount > 0 || this.rejectedFileCount > 0) {
+      parts.push(this.formatRejectedCounts(this.rejectedSampleCount, this.rejectedFileCount));
+    }
+    if (this.skippedCount > 0) parts.push(this.formatSkipped(this.skippedCount));
+    return parts.length > 0 ? ` (${parts.join(", ")})` : "";
   }
 
   private formatDir(dir: string): string {
@@ -105,15 +125,27 @@ export class PrettyExportReporter implements ExportReporter {
     }
   }
 
+  private pkgTotal(types: Map<string, number> | undefined): number {
+    return types === undefined ? 0 : [...types.values()].reduce((a, b) => a + b, 0);
+  }
+
   private printSummary(): void {
-    if (!this.organised || this.packageSummary.size === 0) return;
+    const allPkgs = new Set([...this.packageSummary.keys(), ...this.packageNonSampleCount.keys()]);
+    if (!this.organised || allPkgs.size === 0) return;
     this.output.write('\n');
-    for (const [pkg, types] of [...this.packageSummary].sort(([a], [b]) => a.localeCompare(b))) {
-      const total = [...types.values()].reduce((a, b) => a + b, 0);
-      this.output.write(`${this.chalk.greenBright(pkg)}: ${total} ${total === 1 ? "sample" : "samples"}\n`);
+    for (const pkg of [...allPkgs].sort((a, b) => a.localeCompare(b))) {
+      const types = this.packageSummary.get(pkg);
+      const otherCount = this.packageNonSampleCount.get(pkg) ?? 0;
+      const total = this.pkgTotal(types);
+      const filePart = otherCount > 0 ? `, ${pluraliseFiles(otherCount)}` : "";
+      this.output.write(`${this.chalk.greenBright(pkg)}: ${pluraliseSamples(total)}${filePart}\n`);
+      if (types === undefined) continue;
+      const typeNonSamples = this.packageTypeNonSampleCount.get(pkg);
       for (const [type, count] of [...types].sort(([a], [b]) => a.localeCompare(b))) {
         if (type.length > 0) {
-          this.output.write(`  ${this.chalk.cyan(type)}: ${count} ${count === 1 ? "sample" : "samples"}\n`);
+          const fileCount = typeNonSamples?.get(type) ?? 0;
+          const filePart = fileCount > 0 ? `, ${pluraliseFiles(fileCount)}` : "";
+          this.output.write(`  ${this.chalk.cyan(type)}: ${pluraliseSamples(count)}${filePart}\n`);
         }
       }
     }
@@ -148,14 +180,21 @@ export class PrettyExportReporter implements ExportReporter {
 
   private trackSummary(entry: ConfigEntry, destRelPath: string): void {
     if (!this.organised) return;
-    if (!AUDIO_EXTENSIONS.has(extname(destRelPath).toLowerCase())) return;
     const pkg = entry.getPackageName();
+    if (pkg === undefined || pkg.length === 0) return;
+
+    const types = this.packageSummary.get(pkg) ?? new Map<string, number>();
     const type = entry.getSampleType() ?? "";
-    if (pkg !== undefined && pkg.length > 0) {
-      const types = this.packageSummary.get(pkg) ?? new Map<string, number>();
+    if (AUDIO_EXTENSIONS.has(extname(destRelPath).toLowerCase())) {
       types.set(type, (types.get(type) ?? 0) + 1);
-      this.packageSummary.set(pkg, types);
+    } else {
+      types.set(type, types.get(type) ?? 0);
+      this.packageNonSampleCount.set(pkg, (this.packageNonSampleCount.get(pkg) ?? 0) + 1);
+      const typeNonSamples = this.packageTypeNonSampleCount.get(pkg) ?? new Map<string, number>();
+      typeNonSamples.set(type, (typeNonSamples.get(type) ?? 0) + 1);
+      this.packageTypeNonSampleCount.set(pkg, typeNonSamples);
     }
+    this.packageSummary.set(pkg, types);
   }
 
   onAfterWrite(entry: ConfigEntry, destRelPath: string, error?: Error): void {
@@ -186,52 +225,34 @@ export class PrettyExportReporter implements ExportReporter {
   }
 
   onReject(entry: ConfigEntry, reason: string): void {
-    this.rejectedCount += 1;
+    const isAudio = AUDIO_EXTENSIONS.has(extname(entry.getPath()).toLowerCase());
+    if (isAudio) { this.rejectedSampleCount += 1; } else { this.rejectedFileCount += 1; }
     if (!this.quiet) {
       this.logLine(`${this.chalk.magenta("?")} ${entry.getPath()}\n    ${this.chalk.gray(`└── ${reason}`)}`);
     }
   }
 
   onSkip(entry: FileNode): void {
-    this.skippedCount += 1;
+    this.skippedCount += countLeafNodes(entry);
     if (!this.quiet) {
       const children = entry.getChildNodes();
       const count = children.length > 0 ? countLeafNodes(entry) : 0;
-      const suffix = count > 0 ? ` (${count} ${count === 1 ? "file" : "files"})` : "";
+      const suffix = count > 0 ? ` (${pluraliseFiles(count)})` : "";
       this.logLine(`${this.chalk.dim("-")} ${this.chalk.dim(`${entry.getPath()}${suffix}`)}`);
     }
   }
 
   onComplete(dirPath: string): void {
     this.stopSpinner();
-    const filePlural = this.totalCount === 1 ? "file" : "files";
-    const totalPart = `${this.totalCount} ${filePlural}`;
-    const suffixParts: string[] = [];
-    if (this.errorCount > 0) {
-      suffixParts.push(this.formatErrors(this.errorCount));
-    }
-    if (this.rejectedCount > 0) {
-      suffixParts.push(this.formatRejected(this.rejectedCount));
-    }
-    if (this.skippedCount > 0) {
-      suffixParts.push(this.formatSkipped(this.skippedCount));
-    }
-    const suffix = suffixParts.length > 0 ? ` (${suffixParts.join(", ")})` : "";
+    const totalPart = pluraliseFiles(this.totalCount);
+    const suffix = this.buildSuffix(this.errorCount, 0);
     this.printSummary();
     this.output.write(`Exported ${totalPart} to ${dirPath}${suffix}\n`);
   }
 
-  onPreview(successCount: number, rejectCount: number, skipCount: number): void {
-    const filePlural = successCount === 1 ? "file" : "files";
-    const totalPart = `${successCount} ${filePlural}`;
-    const parts: string[] = [];
-    if (rejectCount > 0) {
-      parts.push(this.formatRejected(rejectCount));
-    }
-    if (skipCount > 0) {
-      parts.push(this.formatSkipped(skipCount));
-    }
-    const suffix = parts.length > 0 ? ` (${parts.join(", ")})` : "";
+  onPreview(successCount: number, rejectCount: number, _skipCount: number): void {
+    const totalPart = pluraliseFiles(successCount);
+    const suffix = this.buildSuffix(0, 0);
     this.printSummary();
     this.output.write(`Would export ${totalPart}${suffix}\n`);
   }

@@ -226,7 +226,7 @@ describe("PrettyExportReporter", () => {
       reporter.onReject(createEntry("a.wav"), "Missing sampleType");
       reporter.onAfterWrite(createEntry("b.wav"), "b.wav");
       reporter.onComplete("/output/dir");
-      expect(stripAnsi(getOutput())).toContain("Exported 1 file to /output/dir (1 entry rejected)\n");
+      expect(stripAnsi(getOutput())).toContain("Exported 1 file to /output/dir (1 sample rejected)\n");
     });
 
     it("includes both error and reject counts when both occur", () => {
@@ -235,7 +235,23 @@ describe("PrettyExportReporter", () => {
       reporter.onReject(createEntry("b.wav"), "Missing packageName");
       reporter.onAfterWrite(createEntry("c.wav"), "c.wav");
       reporter.onComplete("/output/dir");
-      expect(stripAnsi(getOutput())).toContain("Exported 2 files to /output/dir (1 error, 1 entry rejected)\n");
+      expect(stripAnsi(getOutput())).toContain("Exported 2 files to /output/dir (1 error, 1 sample rejected)\n");
+    });
+
+    it("includes singular entry count when one entry is skipped", () => {
+      const { reporter, getOutput } = createReporter();
+      reporter.onSkip(createEntry("kick.wav"));
+      reporter.onComplete("/output/dir");
+      expect(stripAnsi(getOutput())).toContain("Exported 0 files to /output/dir (1 entry skipped)\n");
+    });
+
+    it("includes plural entry count when multiple entries are skipped", () => {
+      const { reporter, getOutput } = createReporter();
+      reporter.onSkip(createEntry("kick.wav"));
+      reporter.onSkip(createEntry("cover.jpg"));
+      reporter.onSkip(createEntry("notes.txt"));
+      reporter.onComplete("/output/dir");
+      expect(stripAnsi(getOutput())).toContain("Exported 0 files to /output/dir (3 entries skipped)\n");
     });
   });
 
@@ -400,32 +416,43 @@ describe("PrettyExportReporter", () => {
 
     it("includes reject count when rejections > 0", () => {
       const { reporter, getOutput } = createReporter();
+      reporter.onReject(createEntry("kick.wav"), "Missing sampleType");
       reporter.onPreview(2, 1, 0);
-      expect(stripAnsi(getOutput())).toBe("Would export 2 files (1 entry rejected)\n");
+      expect(stripAnsi(getOutput())).toContain("Would export 2 files (1 sample rejected)\n");
     });
 
-    it("uses plural 'entries' when reject count > 1", () => {
+    it("uses plural 'samples' when reject count > 1", () => {
       const { reporter, getOutput } = createReporter();
+      reporter.onReject(createEntry("kick.wav"), "Missing sampleType");
+      reporter.onReject(createEntry("snare.wav"), "Missing sampleType");
+      reporter.onReject(createEntry("hat.wav"), "Missing sampleType");
       reporter.onPreview(2, 3, 0);
-      expect(stripAnsi(getOutput())).toBe("Would export 2 files (3 entries rejected)\n");
+      expect(stripAnsi(getOutput())).toContain("Would export 2 files (3 samples rejected)\n");
     });
 
     it("includes skip count when skips > 0", () => {
       const { reporter, getOutput } = createReporter();
+      reporter.onSkip(createEntry("kick.wav"));
       reporter.onPreview(2, 0, 1);
-      expect(stripAnsi(getOutput())).toBe("Would export 2 files (1 entry skipped)\n");
+      expect(stripAnsi(getOutput())).toContain("Would export 2 files (1 entry skipped)\n");
     });
 
-    it("uses plural 'records' when skip count > 1", () => {
+    it("uses plural 'entries' when skip count > 1", () => {
       const { reporter, getOutput } = createReporter();
+      reporter.onSkip(createEntry("kick.wav"));
+      reporter.onSkip(createEntry("snare.wav"));
+      reporter.onSkip(createEntry("hat.wav"));
       reporter.onPreview(2, 0, 3);
-      expect(stripAnsi(getOutput())).toBe("Would export 2 files (3 entries skipped)\n");
+      expect(stripAnsi(getOutput())).toContain("Would export 2 files (3 entries skipped)\n");
     });
 
     it("includes both reject and skip counts", () => {
       const { reporter, getOutput } = createReporter();
+      reporter.onReject(createEntry("kick.wav"), "Missing sampleType");
+      reporter.onSkip(createEntry("snare.wav"));
+      reporter.onSkip(createEntry("hat.wav"));
       reporter.onPreview(2, 1, 2);
-      expect(stripAnsi(getOutput())).toBe("Would export 2 files (1 entry rejected, 2 entries skipped)\n");
+      expect(stripAnsi(getOutput())).toContain("Would export 2 files (1 sample rejected, 2 entries skipped)\n");
     });
   });
 });

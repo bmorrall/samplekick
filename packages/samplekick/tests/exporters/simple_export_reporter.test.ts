@@ -162,6 +162,22 @@ describe("SimpleExportReporter", () => {
       reporter.onComplete("/output/dir");
       expect(getOutput()).toContain("Exported 2 files to /output/dir (2 errors)\n");
     });
+
+    it("includes singular entry count when one entry is skipped", () => {
+      const { reporter, getOutput } = createReporter();
+      reporter.onSkip(createEntry("kick.wav"));
+      reporter.onComplete("/output/dir");
+      expect(getOutput()).toContain("Exported 0 files to /output/dir (1 entry skipped)\n");
+    });
+
+    it("includes plural entry count when multiple entries are skipped", () => {
+      const { reporter, getOutput } = createReporter();
+      reporter.onSkip(createEntry("kick.wav"));
+      reporter.onSkip(createEntry("cover.jpg"));
+      reporter.onSkip(createEntry("notes.txt"));
+      reporter.onComplete("/output/dir");
+      expect(getOutput()).toContain("Exported 0 files to /output/dir (3 entries skipped)\n");
+    });
   });
 
   describe("quiet mode", () => {
@@ -206,32 +222,43 @@ describe("SimpleExportReporter", () => {
 
     it("includes reject count when rejections > 0", () => {
       const { reporter, getOutput } = createReporter();
+      reporter.onReject(createEntry("kick.wav"), "Missing sampleType");
       reporter.onPreview(2, 1, 0);
-      expect(getOutput()).toBe("Would export 2 files (1 entry rejected)\n");
+      expect(getOutput()).toContain("Would export 2 files (1 sample rejected)\n");
     });
 
-    it("uses plural 'entries' when reject count > 1", () => {
+    it("uses plural 'samples' when reject count > 1", () => {
       const { reporter, getOutput } = createReporter();
+      reporter.onReject(createEntry("kick.wav"), "Missing sampleType");
+      reporter.onReject(createEntry("snare.wav"), "Missing sampleType");
+      reporter.onReject(createEntry("hat.wav"), "Missing sampleType");
       reporter.onPreview(2, 3, 0);
-      expect(getOutput()).toBe("Would export 2 files (3 entries rejected)\n");
+      expect(getOutput()).toContain("Would export 2 files (3 samples rejected)\n");
     });
 
     it("includes skip count when skips > 0", () => {
       const { reporter, getOutput } = createReporter();
+      reporter.onSkip(createEntry("kick.wav"));
       reporter.onPreview(2, 0, 1);
-      expect(getOutput()).toBe("Would export 2 files (1 entry skipped)\n");
+      expect(getOutput()).toContain("Would export 2 files (1 sample skipped)\n");
     });
 
-    it("uses plural 'records' when skip count > 1", () => {
+    it("uses plural 'samples' when skip count > 1", () => {
       const { reporter, getOutput } = createReporter();
+      reporter.onSkip(createEntry("kick.wav"));
+      reporter.onSkip(createEntry("snare.wav"));
+      reporter.onSkip(createEntry("hat.wav"));
       reporter.onPreview(2, 0, 3);
-      expect(getOutput()).toBe("Would export 2 files (3 entries skipped)\n");
+      expect(getOutput()).toContain("Would export 2 files (3 samples skipped)\n");
     });
 
     it("includes both reject and skip counts", () => {
       const { reporter, getOutput } = createReporter();
+      reporter.onReject(createEntry("kick.wav"), "Missing sampleType");
+      reporter.onSkip(createEntry("snare.wav"));
+      reporter.onSkip(createEntry("hat.wav"));
       reporter.onPreview(2, 1, 2);
-      expect(getOutput()).toBe("Would export 2 files (1 entry rejected, 2 entries skipped)\n");
+      expect(getOutput()).toContain("Would export 2 files (1 sample rejected, 2 samples skipped)\n");
     });
   });
 
@@ -281,11 +308,72 @@ describe("SimpleExportReporter", () => {
       expect(getOutput()).not.toContain("sample");
     });
 
-    it("does not count non-audio files in the summary", () => {
+    it("shows 0 samples and singular file count when package has only non-audio files", () => {
       const { reporter, getOutput } = createOrganisedReporter();
       reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/patch.nki", "my-pack", "Drums"), "Drums/my-pack/patch.nki");
       reporter.onComplete("/output");
-      expect(getOutput()).not.toContain("sample");
+      expect(getOutput()).toContain("my-pack: 0 samples, 1 file\n");
+    });
+
+    it("shows non-audio files count when package has non-audio files alongside samples", () => {
+      const { reporter, getOutput } = createOrganisedReporter();
+      reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/kick.wav", "my-pack", "Drums"), "Drums/my-pack/kick.wav");
+      reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/patch.nki", "my-pack", "Drums"), "Drums/my-pack/patch.nki");
+      reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/patch2.nki", "my-pack", "Drums"), "Drums/my-pack/patch2.nki");
+      reporter.onComplete("/output");
+      const output = getOutput();
+      expect(output).toContain("my-pack: 1 sample, 2 files\n");
+    });
+
+    it("uses singular 'file' when non-audio count is 1", () => {
+      const { reporter, getOutput } = createOrganisedReporter();
+      reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/kick.wav", "my-pack", "Drums"), "Drums/my-pack/kick.wav");
+      reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/patch.nki", "my-pack", "Drums"), "Drums/my-pack/patch.nki");
+      reporter.onComplete("/output");
+      expect(getOutput()).toContain("my-pack: 1 sample, 1 file\n");
+    });
+
+    it("shows non-audio file count on the type line when files exist for that type", () => {
+      const { reporter, getOutput } = createOrganisedReporter();
+      reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/kick.wav", "my-pack", "Drums"), "Drums/my-pack/kick.wav");
+      reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/patch.nki", "my-pack", "Drums"), "Drums/my-pack/patch.nki");
+      reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/patch2.nki", "my-pack", "Drums"), "Drums/my-pack/patch2.nki");
+      reporter.onComplete("/output");
+      expect(getOutput()).toContain("  Drums: 1 sample, 2 files\n");
+    });
+
+    it("uses singular 'file' on type line when non-audio count is 1", () => {
+      const { reporter, getOutput } = createOrganisedReporter();
+      reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/kick.wav", "my-pack", "Drums"), "Drums/my-pack/kick.wav");
+      reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/patch.nki", "my-pack", "Drums"), "Drums/my-pack/patch.nki");
+      reporter.onComplete("/output");
+      expect(getOutput()).toContain("  Drums: 1 sample, 1 file\n");
+    });
+
+    it("omits file count on type line when no non-audio files for that type", () => {
+      const { reporter, getOutput } = createOrganisedReporter();
+      reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/kick.wav", "my-pack", "Drums"), "Drums/my-pack/kick.wav");
+      reporter.onComplete("/output");
+      expect(getOutput()).toContain("  Drums: 1 sample\n");
+    });
+
+    it("shows correct file count per type when non-audio files span multiple types", () => {
+      const { reporter, getOutput } = createOrganisedReporter();
+      reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/kick.wav", "my-pack", "Drums"), "Drums/my-pack/kick.wav");
+      reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/patch.nki", "my-pack", "Drums"), "Drums/my-pack/patch.nki");
+      reporter.onAfterWrite(createEntryWithMeta("Synths/my-pack/synth.wav", "my-pack", "Synths"), "Synths/my-pack/synth.wav");
+      reporter.onComplete("/output");
+      const output = getOutput();
+      expect(output).toContain("  Drums: 1 sample, 1 file\n");
+      expect(output).toContain("  Synths: 1 sample\n");
+    });
+
+    it("shows 0 samples and file count when package has no audio files", () => {
+      const { reporter, getOutput } = createOrganisedReporter();
+      reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/patch.nki", "my-pack", "Drums"), "Drums/my-pack/patch.nki");
+      reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/patch2.nki", "my-pack", "Drums"), "Drums/my-pack/patch2.nki");
+      reporter.onComplete("/output");
+      expect(getOutput()).toContain("my-pack: 0 samples, 2 files\n");
     });
   });
 });
