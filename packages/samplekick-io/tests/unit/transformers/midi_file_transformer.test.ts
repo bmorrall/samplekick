@@ -1,0 +1,52 @@
+import { describe, expect, it } from "vitest";
+import { createMidiFileTransformer } from "../../../src";
+import { createTransformEntry, singleEntryTransformSource } from "../../support";
+
+describe("createMidiFileTransformer", () => {
+  describe("when the name ends with .mid", () => {
+    it("sets sampleType to MIDI", () => {
+      const entry = createTransformEntry({ name: "song.mid" });
+      createMidiFileTransformer(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("MIDI");
+      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+    });
+
+    it("sets sampleType to MIDI when extension is uppercase", () => {
+      const entry = createTransformEntry({ name: "song.MID" });
+      createMidiFileTransformer(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("MIDI");
+      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+    });
+
+    it("does not overwrite an existing sampleType", () => {
+      const entry = createTransformEntry({ name: "song.mid", sampleType: "custom" });
+      createMidiFileTransformer(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).not.toHaveBeenCalled();
+      expect(entry.setKeepStructure).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("when the path ends with .mid", () => {
+    it("sets sampleType to MIDI when name does not include extension", () => {
+      const entry = createTransformEntry({ name: "song", path: "midi/song.mid" });
+      createMidiFileTransformer(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("MIDI");
+      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+    });
+  });
+
+  describe("when the file is not a .mid file", () => {
+    it("does not set sampleType for .wav files", () => {
+      const entry = createTransformEntry({ name: "kick.wav" });
+      createMidiFileTransformer(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).not.toHaveBeenCalled();
+      expect(entry.setKeepStructure).not.toHaveBeenCalled();
+    });
+
+    it("does not set sampleType for files whose name merely contains .mid", () => {
+      const entry = createTransformEntry({ name: "midi_pack.zip" });
+      createMidiFileTransformer(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).not.toHaveBeenCalled();
+    });
+  });
+});

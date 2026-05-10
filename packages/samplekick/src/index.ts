@@ -22,6 +22,7 @@ import {
   createSquashNameTransformer,
   createNormaliseQuotesTransformer,
   createKnownFileTypeTransformer,
+  createMidiFileTransformer,
   createNormaliseBracketSpacingTransformer,
   createNormaliseCommaSpacingTransformer,
   createNormaliseHyphenSpacingTransformer,
@@ -288,6 +289,7 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
     registry.applyTransform(createNormaliseDashesTransformer);
 
     // File transforms: identify known file types and lock their folder structure
+    registry.applyTransform(createMidiFileTransformer);
     registry.applyTransform(createKnownFileTypeTransformer);
     registry.applyTransform(createArchiveFileTransformer);
     registry.applyTransform(createAbletonProjectTransformer);
