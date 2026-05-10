@@ -77,13 +77,13 @@ describe("PrettyExportReporter organised summary", () => {
     const { reporter, getOutput } = createNonOrganisedReporter();
     reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/kick.wav", "my-pack", "Drums"), "Drums/my-pack/kick.wav");
     reporter.onComplete("/output");
-    expect(stripAnsi(getOutput())).not.toContain("sample");
+    expect(stripAnsi(getOutput())).not.toContain("my-pack:");
   });
 
   it("prints summary from onPreview in organised mode", () => {
     const { reporter, getOutput } = createOrganisedReporter();
     reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/kick.wav", "my-pack", "Drums"), "Drums/my-pack/kick.wav");
-    reporter.onPreview(1, 0, 0);
+    reporter.onPreview();
     expect(stripAnsi(getOutput())).toContain("my-pack: 1 sample\n");
     expect(stripAnsi(getOutput())).toContain("  Drums: 1 sample\n");
   });
@@ -92,13 +92,76 @@ describe("PrettyExportReporter organised summary", () => {
     const { reporter, getOutput } = createOrganisedReporter();
     reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/kick.wav", "my-pack", "Drums"), "Drums/my-pack/kick.wav", new Error("fail"));
     reporter.onComplete("/output");
-    expect(stripAnsi(getOutput())).not.toContain("sample");
+    expect(stripAnsi(getOutput())).not.toContain("my-pack:");
   });
 
-  it("does not count non-audio files in the summary", () => {
+  it("shows 0 samples and singular file count when package has only non-audio files", () => {
     const { reporter, getOutput } = createOrganisedReporter();
     reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/patch.nki", "my-pack", "Drums"), "Drums/my-pack/patch.nki");
     reporter.onComplete("/output");
-    expect(stripAnsi(getOutput())).not.toContain("sample");
+    expect(stripAnsi(getOutput())).toContain("my-pack: 0 samples, 1 file\n");
+  });
+
+  it("shows non-audio files count when package has non-audio files alongside samples", () => {
+    const { reporter, getOutput } = createOrganisedReporter();
+    reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/kick.wav", "my-pack", "Drums"), "Drums/my-pack/kick.wav");
+    reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/patch.nki", "my-pack", "Drums"), "Drums/my-pack/patch.nki");
+    reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/patch2.nki", "my-pack", "Drums"), "Drums/my-pack/patch2.nki");
+    reporter.onComplete("/output");
+    const output = stripAnsi(getOutput());
+    expect(output).toContain("my-pack: 1 sample, 2 files\n");
+  });
+
+  it("uses singular 'file' when non-audio count is 1", () => {
+    const { reporter, getOutput } = createOrganisedReporter();
+    reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/kick.wav", "my-pack", "Drums"), "Drums/my-pack/kick.wav");
+    reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/patch.nki", "my-pack", "Drums"), "Drums/my-pack/patch.nki");
+    reporter.onComplete("/output");
+    const output = stripAnsi(getOutput());
+    expect(output).toContain("my-pack: 1 sample, 1 file\n");
+  });
+
+  it("shows non-audio file count on the type line when files exist for that type", () => {
+    const { reporter, getOutput } = createOrganisedReporter();
+    reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/kick.wav", "my-pack", "Drums"), "Drums/my-pack/kick.wav");
+    reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/patch.nki", "my-pack", "Drums"), "Drums/my-pack/patch.nki");
+    reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/patch2.nki", "my-pack", "Drums"), "Drums/my-pack/patch2.nki");
+    reporter.onComplete("/output");
+    expect(stripAnsi(getOutput())).toContain("  Drums: 1 sample, 2 files\n");
+  });
+
+  it("uses singular 'file' on type line when non-audio count is 1", () => {
+    const { reporter, getOutput } = createOrganisedReporter();
+    reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/kick.wav", "my-pack", "Drums"), "Drums/my-pack/kick.wav");
+    reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/patch.nki", "my-pack", "Drums"), "Drums/my-pack/patch.nki");
+    reporter.onComplete("/output");
+    expect(stripAnsi(getOutput())).toContain("  Drums: 1 sample, 1 file\n");
+  });
+
+  it("omits file count on type line when no non-audio files for that type", () => {
+    const { reporter, getOutput } = createOrganisedReporter();
+    reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/kick.wav", "my-pack", "Drums"), "Drums/my-pack/kick.wav");
+    reporter.onComplete("/output");
+    expect(stripAnsi(getOutput())).toContain("  Drums: 1 sample\n");
+  });
+
+  it("shows correct file count per type when non-audio files span multiple types", () => {
+    const { reporter, getOutput } = createOrganisedReporter();
+    reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/kick.wav", "my-pack", "Drums"), "Drums/my-pack/kick.wav");
+    reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/patch.nki", "my-pack", "Drums"), "Drums/my-pack/patch.nki");
+    reporter.onAfterWrite(createEntryWithMeta("Synths/my-pack/synth.wav", "my-pack", "Synths"), "Synths/my-pack/synth.wav");
+    reporter.onComplete("/output");
+    const output = stripAnsi(getOutput());
+    expect(output).toContain("  Drums: 1 sample, 1 file\n");
+    expect(output).toContain("  Synths: 1 sample\n");
+  });
+
+  it("shows 0 samples and file count when package has no audio files", () => {
+    const { reporter, getOutput } = createOrganisedReporter();
+    reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/patch.nki", "my-pack", "Drums"), "Drums/my-pack/patch.nki");
+    reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/patch2.nki", "my-pack", "Drums"), "Drums/my-pack/patch2.nki");
+    reporter.onComplete("/output");
+    const output = stripAnsi(getOutput());
+    expect(output).toContain("my-pack: 0 samples, 2 files\n");
   });
 });
