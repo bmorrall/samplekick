@@ -30,9 +30,12 @@ export const openConfigInEditor = (configPath: string, platform: NodeJS.Platform
   }
 };
 
-export const loadConfig = async (registry: Registry, configPath: string | undefined, dataDir: string): Promise<string | undefined> => {
+export const loadConfig = async (registry: Registry, configPath: string | undefined, dataDir: string, options: { skipAutoConfig?: boolean } = {}): Promise<string | undefined> => {
   if (configPath === undefined) {
     const autoConfigPath = join(dataDir, `${registry.getFingerprint()}.csv`);
+    if (options.skipAutoConfig === true) {
+      return autoConfigPath;
+    }
     const content = await readFile(autoConfigPath, "utf8").catch((err: unknown) => {
       if (typeof err === "object" && err !== null && "code" in err && err.code === "ENOENT") {
         return undefined;
