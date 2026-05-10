@@ -289,7 +289,6 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
     registry.applyTransform(createNormaliseDashesTransformer);
 
     // File transforms: identify known file types and lock their folder structure
-    registry.applyTransform(createMidiFileTransformer);
     registry.applyTransform(createKnownFileTypeTransformer);
     registry.applyTransform(createArchiveFileTransformer);
     registry.applyTransform(createAbletonProjectTransformer);
@@ -317,6 +316,9 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
     registry.applyTransform(createDirectorySubcategoryTransformer);
     registry.applyTransform(createDirectorySegmentSuffixTransformer);
     registry.applyTransform(createFlatPackPrefixTransformer);
+
+    // MIDI transforms: detect MIDI files after directory structure is resolved
+    registry.applyTransform(createMidiFileTransformer);
   }
 
   const configPath = values.config === undefined ? undefined : resolve(values.config);

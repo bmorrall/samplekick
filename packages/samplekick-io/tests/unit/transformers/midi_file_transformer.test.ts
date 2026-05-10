@@ -18,8 +18,15 @@ describe("createMidiFileTransformer", () => {
       expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
     });
 
-    it("does not overwrite an existing sampleType", () => {
-      const entry = createTransformEntry({ name: "song.mid", sampleType: "custom" });
+    it("prefixes an existing inherited sampleType with MIDI -", () => {
+      const entry = createTransformEntry({ name: "song.mid", sampleType: "Drum Loops" });
+      createMidiFileTransformer(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("MIDI - Drum Loops");
+      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+    });
+
+    it("does not modify an entry that already has keepStructure set", () => {
+      const entry = createTransformEntry({ name: "song.mid", keepStructure: true });
       createMidiFileTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
       expect(entry.setKeepStructure).not.toHaveBeenCalled();
