@@ -1,11 +1,13 @@
 import type { Transform } from '../types';
-import { ABLETON_PROJECTS, FL_STUDIO_PROJECTS } from './folder_lookup';
+import { ABLETON_PROJECTS, FL_STUDIO_PROJECTS, PHASE_PLANT_PRESETS, SERUM_PRESETS } from './folder_lookup';
 
 const ARCHIVE_TYPE = 'Archive';
 
 const PATH_TYPE_MAP = new Map<string, string>([
   ['ableton', ABLETON_PROJECTS],
   ['fl studio', FL_STUDIO_PROJECTS],
+  ['phase plant', PHASE_PLANT_PRESETS],
+  ['serum', SERUM_PRESETS],
 ]);
 
 function resolveArchiveSampleType(path: string): string {

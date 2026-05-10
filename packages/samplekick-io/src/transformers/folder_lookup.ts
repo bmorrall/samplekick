@@ -74,9 +74,12 @@ export const lookupStandalone = (key: string): string | undefined => FOLDER_LOOK
 
 export const ABLETON_PROJECTS = 'Ableton Projects' as const;
 export const FL_STUDIO_PROJECTS = 'FL Studio Projects' as const;
+export const PHASE_PLANT_PRESETS = 'Phase Plant Presets' as const;
+export const SERUM_PRESETS = 'Serum Presets' as const;
 
-// e.g. "Drum Loops & MIDI" → "Drum Loops", "Drum Loops & Stems" → "Drum Loops".
-const STRIP_SUFFIX_RE = / (?:&|and) (?:midi|stems?)$/v;
+// Strips trailing "Stems"/"MIDI" noise in all combinations:
+// e.g. "Various Stems" → "Various", "Trap Stems and MIDI" → "Trap", "Drum Loops & MIDI" → "Drum Loops".
+const STRIP_SUFFIX_RE = / (?:(?:(?:&|and) )?stems?(?:(?: (?:&|and) midi)?)|(?:&|and) midi)$/v;
 // e.g. "Drum Loops Collection" → "Drum Loops", "Hihat Bundle" → "Hihat".
 const STRIP_NOISE_SUFFIX_RE = /\s+(?:collection|bundle|pack|set|library)s?$/iv;
 export const stripIgnoredSuffix = (nameLower: string): string =>

@@ -64,6 +64,32 @@ describe("createArchiveFileTransformer", () => {
     });
   });
 
+  describe("when the path contains 'Serum'", () => {
+    it("sets sampleType to Serum Presets", () => {
+      const entry = createTransformEntryInHierarchy(
+        [{ name: "Serum" }],
+        { name: "patches.zip", path: "Serum/patches.zip" },
+        [],
+      );
+      createArchiveFileTransformer(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("Serum Presets");
+      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+    });
+  });
+
+  describe("when the path contains 'Phase Plant'", () => {
+    it("sets sampleType to Phase Plant Presets", () => {
+      const entry = createTransformEntryInHierarchy(
+        [{ name: "Phase Plant" }],
+        { name: "presets.zip", path: "Phase Plant/presets.zip" },
+        [],
+      );
+      createArchiveFileTransformer(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("Phase Plant Presets");
+      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+    });
+  });
+
   describe("when the path contains multiple recognised keywords", () => {
     it("falls back to Archive", () => {
       const entry = createTransformEntryInHierarchy(
