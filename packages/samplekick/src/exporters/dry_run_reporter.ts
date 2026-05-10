@@ -54,6 +54,6 @@ export class DryRunReporter {
       this.inner.onReject(entry, reason);
     }
 
-    this.inner.onPreview(sortedSuccesses.length, sortedRejections.length, sortedSkips.length);
+    this.inner.onPreview();
   }
 }

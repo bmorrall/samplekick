@@ -64,7 +64,7 @@ describe("samplekick CLI", () => {
       expect(await readFile(join(outputDir, "Drums/kick.wav"), "utf8")).toBe("kick-data");
 
       expect(result.stdout).toContain("Drums/kick.wav");
-      expect(result.stdout).toContain(`Exported 1 file to ${outputDir}`);
+      expect(result.stdout).toContain(`Exported 1 sample to ${outputDir}`);
 
       expect(result.status).toBe(0);
     } finally {

@@ -77,13 +77,13 @@ describe("PrettyExportReporter organised summary", () => {
     const { reporter, getOutput } = createNonOrganisedReporter();
     reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/kick.wav", "my-pack", "Drums"), "Drums/my-pack/kick.wav");
     reporter.onComplete("/output");
-    expect(stripAnsi(getOutput())).not.toContain("sample");
+    expect(stripAnsi(getOutput())).not.toContain("my-pack:");
   });
 
   it("prints summary from onPreview in organised mode", () => {
     const { reporter, getOutput } = createOrganisedReporter();
     reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/kick.wav", "my-pack", "Drums"), "Drums/my-pack/kick.wav");
-    reporter.onPreview(1, 0, 0);
+    reporter.onPreview();
     expect(stripAnsi(getOutput())).toContain("my-pack: 1 sample\n");
     expect(stripAnsi(getOutput())).toContain("  Drums: 1 sample\n");
   });
@@ -92,7 +92,7 @@ describe("PrettyExportReporter organised summary", () => {
     const { reporter, getOutput } = createOrganisedReporter();
     reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/kick.wav", "my-pack", "Drums"), "Drums/my-pack/kick.wav", new Error("fail"));
     reporter.onComplete("/output");
-    expect(stripAnsi(getOutput())).not.toContain("sample");
+    expect(stripAnsi(getOutput())).not.toContain("my-pack:");
   });
 
   it("shows 0 samples and singular file count when package has only non-audio files", () => {

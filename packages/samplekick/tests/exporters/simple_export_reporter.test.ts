@@ -145,14 +145,14 @@ describe("SimpleExportReporter", () => {
     it("writes 'Exported to <dirPath>' when there are no errors", () => {
       const { reporter, getOutput } = createReporter();
       reporter.onComplete("/output/dir");
-      expect(getOutput()).toBe("Exported 0 files to /output/dir\n");
+      expect(getOutput()).toBe("Exported 0 samples to /output/dir\n");
     });
 
     it("includes singular error count when there is 1 error", () => {
       const { reporter, getOutput } = createReporter();
       reporter.onAfterWrite(createEntry("a.wav"), "a.wav", new Error("fail"));
       reporter.onComplete("/output/dir");
-      expect(getOutput()).toContain("Exported 1 file to /output/dir (1 error)\n");
+      expect(getOutput()).toContain("Exported 1 sample to /output/dir (1 error)\n");
     });
 
     it("includes plural error count when there are multiple errors", () => {
@@ -160,14 +160,14 @@ describe("SimpleExportReporter", () => {
       reporter.onAfterWrite(createEntry("a.wav"), "a.wav", new Error("fail"));
       reporter.onAfterWrite(createEntry("b.wav"), "b.wav", new Error("fail"));
       reporter.onComplete("/output/dir");
-      expect(getOutput()).toContain("Exported 2 files to /output/dir (2 errors)\n");
+      expect(getOutput()).toContain("Exported 2 samples to /output/dir (2 errors)\n");
     });
 
     it("includes singular entry count when one entry is skipped", () => {
       const { reporter, getOutput } = createReporter();
       reporter.onSkip(createEntry("kick.wav"));
       reporter.onComplete("/output/dir");
-      expect(getOutput()).toContain("Exported 0 files to /output/dir (1 entry skipped)\n");
+      expect(getOutput()).toContain("Exported 0 samples to /output/dir (1 entry skipped)\n");
     });
 
     it("includes plural entry count when multiple entries are skipped", () => {
@@ -176,7 +176,7 @@ describe("SimpleExportReporter", () => {
       reporter.onSkip(createEntry("cover.jpg"));
       reporter.onSkip(createEntry("notes.txt"));
       reporter.onComplete("/output/dir");
-      expect(getOutput()).toContain("Exported 0 files to /output/dir (3 entries skipped)\n");
+      expect(getOutput()).toContain("Exported 0 samples to /output/dir (3 entries skipped)\n");
     });
   });
 
@@ -203,62 +203,73 @@ describe("SimpleExportReporter", () => {
       const { reporter, getOutput } = createQuietReporter();
       reporter.onAfterWrite(createEntry("kick.wav"), "kick.wav");
       reporter.onComplete("/output/dir");
-      expect(getOutput()).toBe("Exported 1 file to /output/dir\n");
+      expect(getOutput()).toBe("Exported 1 sample to /output/dir\n");
     });
   });
 
   describe("onPreview", () => {
-    it("writes 'Would export N files' with no counts", () => {
+    it("writes 'Would export 0 samples' with no suffix when nothing was written", () => {
       const { reporter, getOutput } = createReporter();
-      reporter.onPreview(3, 0, 0);
-      expect(getOutput()).toBe("Would export 3 files\n");
+      reporter.onPreview();
+      expect(getOutput()).toBe("Would export 0 samples\n");
     });
 
-    it("uses singular 'file' when count is 1", () => {
+    it("uses singular 'sample' when count is 1", () => {
       const { reporter, getOutput } = createReporter();
-      reporter.onPreview(1, 0, 0);
-      expect(getOutput()).toBe("Would export 1 file\n");
+      reporter.onAfterWrite(createEntry("a.wav"), "a.wav");
+      reporter.onPreview();
+      expect(getOutput()).toContain("Would export 1 sample\n");
     });
 
     it("includes reject count when rejections > 0", () => {
       const { reporter, getOutput } = createReporter();
+      reporter.onAfterWrite(createEntry("a.wav"), "a.wav");
+      reporter.onAfterWrite(createEntry("b.wav"), "b.wav");
       reporter.onReject(createEntry("kick.wav"), "Missing sampleType");
-      reporter.onPreview(2, 1, 0);
-      expect(getOutput()).toContain("Would export 2 files (1 sample rejected)\n");
+      reporter.onPreview();
+      expect(getOutput()).toContain("Would export 2 samples (1 sample rejected)\n");
     });
 
     it("uses plural 'samples' when reject count > 1", () => {
       const { reporter, getOutput } = createReporter();
+      reporter.onAfterWrite(createEntry("a.wav"), "a.wav");
+      reporter.onAfterWrite(createEntry("b.wav"), "b.wav");
       reporter.onReject(createEntry("kick.wav"), "Missing sampleType");
       reporter.onReject(createEntry("snare.wav"), "Missing sampleType");
       reporter.onReject(createEntry("hat.wav"), "Missing sampleType");
-      reporter.onPreview(2, 3, 0);
-      expect(getOutput()).toContain("Would export 2 files (3 samples rejected)\n");
+      reporter.onPreview();
+      expect(getOutput()).toContain("Would export 2 samples (3 samples rejected)\n");
     });
 
     it("includes skip count when skips > 0", () => {
       const { reporter, getOutput } = createReporter();
+      reporter.onAfterWrite(createEntry("a.wav"), "a.wav");
+      reporter.onAfterWrite(createEntry("b.wav"), "b.wav");
       reporter.onSkip(createEntry("kick.wav"));
-      reporter.onPreview(2, 0, 1);
-      expect(getOutput()).toContain("Would export 2 files (1 sample skipped)\n");
+      reporter.onPreview();
+      expect(getOutput()).toContain("Would export 2 samples (1 entry skipped)\n");
     });
 
-    it("uses plural 'samples' when skip count > 1", () => {
+    it("uses plural 'entries' when skip count > 1", () => {
       const { reporter, getOutput } = createReporter();
+      reporter.onAfterWrite(createEntry("a.wav"), "a.wav");
+      reporter.onAfterWrite(createEntry("b.wav"), "b.wav");
       reporter.onSkip(createEntry("kick.wav"));
       reporter.onSkip(createEntry("snare.wav"));
       reporter.onSkip(createEntry("hat.wav"));
-      reporter.onPreview(2, 0, 3);
-      expect(getOutput()).toContain("Would export 2 files (3 samples skipped)\n");
+      reporter.onPreview();
+      expect(getOutput()).toContain("Would export 2 samples (3 entries skipped)\n");
     });
 
     it("includes both reject and skip counts", () => {
       const { reporter, getOutput } = createReporter();
+      reporter.onAfterWrite(createEntry("a.wav"), "a.wav");
+      reporter.onAfterWrite(createEntry("b.wav"), "b.wav");
       reporter.onReject(createEntry("kick.wav"), "Missing sampleType");
       reporter.onSkip(createEntry("snare.wav"));
       reporter.onSkip(createEntry("hat.wav"));
-      reporter.onPreview(2, 1, 2);
-      expect(getOutput()).toContain("Would export 2 files (1 sample rejected, 2 samples skipped)\n");
+      reporter.onPreview();
+      expect(getOutput()).toContain("Would export 2 samples (1 sample rejected, 2 entries skipped)\n");
     });
   });
 
@@ -290,13 +301,13 @@ describe("SimpleExportReporter", () => {
       const { reporter, getOutput } = createReporter();
       reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/kick.wav", "my-pack", "Drums"), "Drums/my-pack/kick.wav");
       reporter.onComplete("/output");
-      expect(getOutput()).not.toContain("sample");
+      expect(getOutput()).not.toContain("my-pack:");
     });
 
     it("prints summary from onPreview in organised mode", () => {
       const { reporter, getOutput } = createOrganisedReporter();
       reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/kick.wav", "my-pack", "Drums"), "Drums/my-pack/kick.wav");
-      reporter.onPreview(1, 0, 0);
+      reporter.onPreview();
       expect(getOutput()).toContain("my-pack: 1 sample\n");
       expect(getOutput()).toContain("  Drums: 1 sample\n");
     });
@@ -305,7 +316,7 @@ describe("SimpleExportReporter", () => {
       const { reporter, getOutput } = createOrganisedReporter();
       reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/kick.wav", "my-pack", "Drums"), "Drums/my-pack/kick.wav", new Error("fail"));
       reporter.onComplete("/output");
-      expect(getOutput()).not.toContain("sample");
+      expect(getOutput()).not.toContain("my-pack:");
     });
 
     it("shows 0 samples and singular file count when package has only non-audio files", () => {

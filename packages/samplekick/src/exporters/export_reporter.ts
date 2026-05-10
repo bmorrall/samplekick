@@ -9,5 +9,5 @@ export interface ExportReporter extends ExportOptions {
   onSkip: (entry: FileNode) => void;
   onReject: (entry: ConfigEntry, reason: string) => void;
   onComplete: (dirPath: string) => void;
-  onPreview: (successCount: number, rejectCount: number, skipCount: number) => void;
+  onPreview: () => void;
 }

@@ -43,7 +43,7 @@ describe("dry-run (no -o flag)", () => {
       expect(snareIdx).toBeLessThan(hihatIdx);
 
       // Summary line
-      expect(result.stdout).toContain("Would export 3 files");
+      expect(result.stdout).toContain("Would export 3 samples");
 
       // No files written to disk
       await expect(stat(dataDir)).rejects.toThrow();
