@@ -267,6 +267,16 @@ describe("createDirectorySampleTypeTransformer", () => {
       expect(entry.setSampleType).toHaveBeenCalledWith("Drum Loops");
     });
 
+    it('sets sampleType to "One Shots" for "BONUS 3 - One Shots"', () => {
+      const entry = createTransformEntryInHierarchy(
+        [],
+        { name: "BONUS 3 - One Shots", isFile: false },
+        [{ name: "kick.wav" }],
+      );
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("One Shots");
+    });
+
     it("does not set sampleType when multiple segments match a known type", () => {
       const entry = createTransformEntryInHierarchy(
         [],

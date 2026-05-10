@@ -4,6 +4,7 @@ const AMBIENCE_KEYS = ['ambience', 'ambiences', 'ambient'] as const;
 const DRUM_AND_BASS_KEYS = ['drum and bass', 'drum n bass', 'drum & bass', 'dnb', 'd&b'] as const;
 const HIHAT_KEYS = ['hat', 'hats', 'hi hat', 'hi hats', 'hihat', 'hihats', 'hi-hat', 'hi-hats'] as const;
 const KEYBOARD_KEYS = ['key', 'keys', 'keyboard', 'keyboards'] as const;
+export const ONE_SHOT_LABELS = ['one shot', 'one shots', 'one-shot', 'one-shots', 'oneshots'] as const;
 const PERCUSSION_KEYS = ['percussion', 'percussions', 'perc', 'percs'] as const;
 
 export const FOLDER_LOOKUP = new Map<string, FolderEntry>([
@@ -34,10 +35,12 @@ export const FOLDER_LOOKUP = new Map<string, FolderEntry>([
   ['kick',      { prefix: 'Kick',       standalone: 'Kicks'      }],
   ['kicks',     { prefix: 'Kick',       standalone: 'Kicks'      }],
   ...KEYBOARD_KEYS.map((k): [string, FolderEntry] => [k, { prefix: 'Keys',       standalone: 'Keys'       }]),
+  ['loops',     { prefix: 'Loops',      standalone: 'Loops'      }],
   ['melody',    { prefix: 'Melody',     standalone: 'Melodies'   }],
   ['melodies',  { prefix: 'Melody',     standalone: 'Melodies'   }],
   ['melodic',   { prefix: 'Melodic',    standalone: 'Melodic'    }],
   ['melodics',  { prefix: 'Melodic',    standalone: 'Melodic'    }],
+  ...ONE_SHOT_LABELS.map((k): [string, FolderEntry] => [k, { prefix: 'One Shot', standalone: 'One Shots' }]),
   ...PERCUSSION_KEYS.map((k): [string, FolderEntry] => [k, { prefix: 'Percussion', standalone: 'Percussion' }]),
   ['rimshot',   { prefix: 'Rimshot',    standalone: 'Rimshots'   }],
   ['rimshots',  { prefix: 'Rimshot',    standalone: 'Rimshots'   }],
@@ -67,8 +70,6 @@ export const FOLDER_LOOKUP = new Map<string, FolderEntry>([
 
 export const lookupPrefix = (key: string): string | undefined => FOLDER_LOOKUP.get(key)?.prefix;
 export const lookupStandalone = (key: string): string | undefined => FOLDER_LOOKUP.get(key)?.standalone;
-
-export const ONE_SHOT_LABELS = ['one shot', 'one shots', 'one-shot', 'one-shots', 'oneshots'] as const;
 
 // e.g. "Drum Loops & MIDI" → "Drum Loops", "Drum Loops & Stems" → "Drum Loops".
 const STRIP_SUFFIX_RE = / (?:&|and) (?:midi|stems?)$/v;

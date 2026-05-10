@@ -7,8 +7,6 @@ const MIN_SEGMENT_WORDS = 2;
 function resolveStandaloneType(nameLower: string): string | undefined {
   const standalone = lookupStandalone(nameLower);
   if (standalone !== undefined) return standalone;
-  if (nameLower === 'loops') return 'Loops';
-  if ((ONE_SHOT_LABELS as readonly string[]).includes(nameLower)) return 'One Shots';
   if (nameLower.endsWith(' loops')) {
     const prefix = lookupPrefix(nameLower.slice(0, -' loops'.length));
     if (prefix !== undefined) return `${prefix} Loops`;
