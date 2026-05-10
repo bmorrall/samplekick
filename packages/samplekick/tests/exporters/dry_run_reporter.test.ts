@@ -36,7 +36,7 @@ describe("DryRunReporter", () => {
     dryRun.onAfterWrite(createEntry("z.wav"), "z.wav");
     dryRun.onAfterWrite(createEntry("a.wav"), "a.wav");
     dryRun.onAfterWrite(createEntry("m.wav"), "m.wav");
-    dryRun.flush("");
+    dryRun.flush();
 
     expect(inner.onAfterWrite).toHaveBeenNthCalledWith(1, expect.anything(), "a.wav");
     expect(inner.onAfterWrite).toHaveBeenNthCalledWith(2, expect.anything(), "m.wav");
@@ -54,7 +54,7 @@ describe("DryRunReporter", () => {
     dryRun.onReject(createEntry("a.wav"), "Missing packageName");
     dryRun.onAfterWrite(createEntry("b.wav"), "b.wav");
     dryRun.onSkip(createEntry("c.wav"));
-    dryRun.flush("");
+    dryRun.flush();
 
     expect(order).toEqual(["skip:c.wav", "success:b.wav", "reject:a.wav"]);
   });
@@ -66,7 +66,7 @@ describe("DryRunReporter", () => {
     dryRun.onReject(createEntry("z.wav"), "reason");
     dryRun.onReject(createEntry("a.wav"), "reason");
     dryRun.onReject(createEntry("m.wav"), "reason");
-    dryRun.flush("");
+    dryRun.flush();
 
     const rejectPaths = vi.mocked(inner.onReject).mock.calls.map(([e]) => e.getPath());
     expect(rejectPaths).toEqual(["a.wav", "m.wav", "z.wav"]);
@@ -79,7 +79,7 @@ describe("DryRunReporter", () => {
     dryRun.onAfterWrite(createEntry("a.wav"), "a.wav");
     dryRun.onAfterWrite(createEntry("b.wav"), "b.wav");
     dryRun.onReject(createEntry("c.wav"), "Missing packageName");
-    dryRun.flush("");
+    dryRun.flush();
 
     expect(inner.onPreview).toHaveBeenCalled();
   });
@@ -87,7 +87,7 @@ describe("DryRunReporter", () => {
   it("flush calls onPreview when nothing was collected", () => {
     const inner = createInner();
     const dryRun = new DryRunReporter(inner);
-    dryRun.flush("");
+    dryRun.flush();
     expect(inner.onPreview).toHaveBeenCalled();
   });
 
@@ -106,7 +106,7 @@ describe("DryRunReporter", () => {
     const dryRun = new DryRunReporter(inner);
 
     dryRun.onAfterWrite(createEntry("a.wav"), "a.wav", new Error("fail"));
-    dryRun.flush("");
+    dryRun.flush();
 
     expect(inner.onPreview).toHaveBeenCalled();
   });
@@ -118,7 +118,7 @@ describe("DryRunReporter", () => {
     dryRun.onSkip(createEntry("z.wav"));
     dryRun.onSkip(createEntry("a.wav"));
     dryRun.onSkip(createEntry("m.wav"));
-    dryRun.flush("");
+    dryRun.flush();
 
     const skipPaths = vi.mocked(inner.onSkip).mock.calls.map(([e]) => e.getPath());
     expect(skipPaths).toEqual(["a.wav", "m.wav", "z.wav"]);
@@ -131,22 +131,8 @@ describe("DryRunReporter", () => {
     dryRun.onAfterWrite(createEntry("a.wav"), "a.wav");
     dryRun.onSkip(createEntry("b.wav"));
     dryRun.onSkip(createEntry("c.wav"));
-    dryRun.flush("test.zip");
+    dryRun.flush();
 
     expect(inner.onPreview).toHaveBeenCalled();
-  });
-
-  it("flush calls inner.onStart with packName before replaying entries", () => {
-    const inner = createInner();
-    const dryRun = new DryRunReporter(inner);
-    const callOrder: string[] = [];
-    vi.mocked(inner.onStart).mockImplementation(() => { callOrder.push("onStart"); });
-    vi.mocked(inner.onAfterWrite).mockImplementation(() => { callOrder.push("onAfterWrite"); });
-
-    dryRun.onAfterWrite(createEntry("a.wav"), "a.wav");
-    dryRun.flush("test.zip");
-
-    expect(inner.onStart).toHaveBeenCalledWith("test.zip");
-    expect(callOrder[0]).toBe("onStart");
   });
 });

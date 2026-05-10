@@ -37,12 +37,10 @@ export class DryRunReporter {
     this.configSkips.push(entry);
   }
 
-  flush(zipPath: string): void {
+  flush(): void {
     const sortedSuccesses = [...this.successes].sort((a, b) => a.destRelPath.localeCompare(b.destRelPath));
     const sortedRejections = [...this.rejections].sort((a, b) => a.entry.getPath().localeCompare(b.entry.getPath()));
     const sortedSkips = [...this.configSkips].sort((a, b) => a.getPath().localeCompare(b.getPath()));
-
-    this.inner.onStart(zipPath);
 
     for (const entry of sortedSkips) {
       this.inner.onSkip(entry);

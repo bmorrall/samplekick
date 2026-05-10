@@ -248,6 +248,12 @@ if (values.convert === true) {
 for (const [zipIndex, zipPath] of zipPaths.entries()) {
   if (zipIndex > 0) process.stdout.write(SEPARATOR);
 
+  const reporter: ExportReporter = chalk.level > 0
+    ? new PrettyExportReporter(process.stdout, chalk, { quiet: values.quiet === true, displayName: basename(zipPath), organised: values["preserve-paths"] !== true })
+    : new SimpleExportReporter(process.stdout, values.quiet === true, basename(zipPath), values["preserve-paths"] !== true);
+
+  reporter.onStart(zipPath);
+
   const dataSource = await ZipDataSource.fromFile(zipPath).catch((err: unknown) => {
     if (typeof err === "object" && err !== null && "code" in err && err.code === "ENOENT") {
       console.error(`Error: file not found: ${zipPath}`);
@@ -261,10 +267,6 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
   });
 
   const registry = new Registry(dataSource);
-
-  const reporter: ExportReporter = chalk.level > 0
-    ? new PrettyExportReporter(process.stdout, chalk, { quiet: values.quiet === true, displayName: basename(zipPath), organised: values["preserve-paths"] !== true })
-    : new SimpleExportReporter(process.stdout, values.quiet === true, basename(zipPath), values["preserve-paths"] !== true);
 
   // Debug messages are suppressed unless --verbose is passed
   const debugLog = values.verbose === true ? reporter.onDebug.bind(reporter) : undefined;
@@ -402,10 +404,9 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
       console.error(`Error: ${err instanceof Error ? err.message : String(err)}`);
       process.exit(1);
     });
-    dryRun.flush(zipPath);
+    dryRun.flush();
   } else {
     const destPath = resolve(values.output);
-    reporter.onStart(zipPath);
     await registry.exportToDirectory(destPath, {
       onBeforeWrite: (e, p) => { reporter.onBeforeWrite?.(e, p); },
       onAfterWrite: (e, p, err) => { reporter.onAfterWrite(e, p, err); },
