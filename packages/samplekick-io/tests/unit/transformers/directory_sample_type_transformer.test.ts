@@ -368,7 +368,7 @@ describe("createDirectorySampleTypeTransformer", () => {
     it("does not set sampleType when the parent is also unrecognised", () => {
       const entry = createTransformEntryInHierarchy(
         [{ name: "Latin" }],
-        { name: "Loop Stems & MIDI", isFile: false },
+        { name: "Latin Stems & MIDI", isFile: false },
         [{ name: "loop.wav" }],
       );
       createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
@@ -378,6 +378,16 @@ describe("createDirectorySampleTypeTransformer", () => {
   });
 
   describe("when the directory name has a noise suffix", () => {
+    it('sets sampleType to "Loops" for "Loop Stems & MIDI"', () => {
+      const entry = createTransformEntryInHierarchy(
+        [],
+        { name: "Loop Stems & MIDI", isFile: false },
+        [{ name: "loop.wav" }],
+      );
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("Loops");
+    });
+
     it('sets sampleType to "Drum Loops" for "Drum Loops Collection"', () => {
       const entry = createTransformEntryInHierarchy(
         [],
