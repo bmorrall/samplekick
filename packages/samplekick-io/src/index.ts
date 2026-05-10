@@ -17,6 +17,7 @@ export {
   createDrumSubcategoryTransformer,
   createExpandRootPackageNameTransformer,
   createFLStudioProjectTransformer,
+  createSP404Mk2ProjectTransformer,
   createKnownFileTypeTransformer,
   createMidiFileTransformer,
   createNormaliseBracketSpacingTransformer,

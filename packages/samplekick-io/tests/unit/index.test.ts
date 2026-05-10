@@ -30,6 +30,10 @@ describe("index exports", () => {
     expect(api.createFLStudioProjectTransformer).toBeDefined();
   });
 
+  test("exports createSP404Mk2ProjectTransformer", () => {
+    expect(api.createSP404Mk2ProjectTransformer).toBeDefined();
+  });
+
   test("exports createGhosthackNameTransformer", () => {
     expect(api.createGhosthackNameTransformer).toBeDefined();
   });
@@ -160,6 +164,7 @@ describe("index exports", () => {
       "createDrumSubcategoryTransformer",
       "createExpandRootPackageNameTransformer",
       "createFLStudioProjectTransformer",
+      "createSP404Mk2ProjectTransformer",
       "createKnownFileTypeTransformer",
       "createMidiFileTransformer",
       "createNormaliseBracketSpacingTransformer",
