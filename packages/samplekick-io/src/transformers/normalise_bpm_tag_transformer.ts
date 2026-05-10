@@ -9,7 +9,8 @@ import { createSanitiseNameTransformer } from "./sanitise_name_transformer";
 const BPM_RE = /(?<!\d)(?<numBefore>\d{2,3})[_ ]?bpm|bpm[_ ]?(?<numAfter>\d{2,3})(?!\d)/giv;
 
 function bpmReplacer(_match: string, numBefore: string | undefined, numAfter: string | undefined): string {
-  const num = numBefore ?? numAfter ?? "";
+  const raw = numBefore ?? numAfter ?? "0";
+  const num = parseInt(raw, 10).toString();
   return `${num}bpm`;
 }
 

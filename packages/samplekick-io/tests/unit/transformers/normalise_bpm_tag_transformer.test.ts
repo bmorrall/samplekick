@@ -43,6 +43,12 @@ describe("createNormaliseBpmTagTransformer", () => {
     });
   });
 
+  it("strips leading zeros from BPM number (080 => 80bpm)", () => {
+    const entry = createTransformEntry({ name: "Drums 080BPM.wav" });
+    createNormaliseBpmTagTransformer(singleEntryTransformSource(entry));
+    expect(entry.setName).toHaveBeenCalledWith("Drums 80bpm.wav");
+  });
+
   it("leaves an already canonical 120bpm unchanged", () => {
     const entry = createTransformEntry({ name: "Drums 120bpm.wav" });
     createNormaliseBpmTagTransformer(singleEntryTransformSource(entry));
