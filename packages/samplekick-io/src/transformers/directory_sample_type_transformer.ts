@@ -117,6 +117,10 @@ function setFromCompound(entry: TransformEntry, nameLower: string): boolean {
 
 // Final fallback: split by ' - ' and set sampleType if exactly one segment matches
 // a known folder type. Handles brand-prefixed directories, e.g. "Brand - Drums" → "Drums".
+function hasKnownAncestorType(entry: TransformEntry): boolean {
+  return entry.getParentNode()?.getSampleType() !== undefined;
+}
+
 function setFromUniqueDashSegment(entry: TransformEntry, nameLower: string): void {
   if (!nameLower.includes(DASH_SEP)) return;
   const parts = nameLower.split(DASH_SEP);
@@ -124,6 +128,18 @@ function setFromUniqueDashSegment(entry: TransformEntry, nameLower: string): voi
   if (matches.length !== 1) return;
   const [sampleType] = matches;
   entry.setSampleType(sampleType);
+}
+
+// If stripping changed the name to a pure loop/one-shot label (e.g. "Loop Stems & MIDI" → "loop"),
+// only tag as Loops/One Shots when no ancestor already has a known sampleType.
+function setFromStrippedLoopLabel(entry: TransformEntry, originalNameLower: string, nameLower: string): boolean {
+  if (nameLower === originalNameLower) return false;
+  const isLoop = isLoopLabel(nameLower);
+  if (!isLoop && !isOneShotLabel(nameLower)) return false;
+  if (!hasKnownAncestorType(entry)) {
+    entry.setSampleType(isLoop ? 'Loops' : 'One Shots');
+  }
+  return true;
 }
 
 /**
@@ -137,9 +153,11 @@ export const createDirectorySampleTypeTransformer: Transform = (source) => {
     if (entry.getOwnSampleType() !== undefined) return;
     if (entry.getChildNodes().length === 0) return;
 
-    const nameLower = stripIgnoredSuffix(entry.getName().toLowerCase());
+    const originalNameLower = entry.getName().toLowerCase();
+    const nameLower = stripIgnoredSuffix(originalNameLower);
     if (setFromPrefixedName(entry, nameLower)) return;
     if (setFromDashSeparatedName(entry, nameLower)) return;
+    if (setFromStrippedLoopLabel(entry, originalNameLower, nameLower)) return;
     if (setFromAncestorContext(entry, nameLower)) return;
     if (setFromStandalone(entry, nameLower)) return;
     if (setFromCompound(entry, nameLower)) return;

@@ -78,6 +78,16 @@ describe("createDirectorySampleTypeTransformer", () => {
       expect(entry.setSampleType).not.toHaveBeenCalled();
     });
 
+    it("does not set sampleType for Loop Stems & MIDI when the parent sampleType is a top-level known type", () => {
+      const entry = createTransformEntryInHierarchy(
+        [{ name: "Melodies", sampleType: "Melodies" }],
+        { name: "Loop Stems & MIDI", isFile: false },
+        [{ name: "loop.wav" }],
+      );
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).not.toHaveBeenCalled();
+    });
+
     it("does not set sampleType when the parent has a custom user-defined sampleType", () => {
       const entry = createTransformEntryInHierarchy(
         [{ name: "My Custom Folder", sampleType: "Custom Type" }],
