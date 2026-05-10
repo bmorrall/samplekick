@@ -67,7 +67,7 @@ describe("createDirectorySampleTypeTransformer", () => {
     });
   });
 
-  describe('when the directory is named "Ambience" or "Ambient"', () => {
+  describe('when the directory is named "Ambience"', () => {
     it('sets sampleType to "Ambience" for "Ambiences"', () => {
       const entry = createTransformEntryInHierarchy(
         [],
@@ -88,24 +88,24 @@ describe("createDirectorySampleTypeTransformer", () => {
       expect(entry.setSampleType).toHaveBeenCalledWith("Ambience");
     });
 
-    it('sets sampleType to "Ambience" for "Ambient"', () => {
+    it("matches case-insensitively", () => {
       const entry = createTransformEntryInHierarchy(
         [],
-        { name: "Ambient", isFile: false },
+        { name: "AMBIENCES", isFile: false },
         [{ name: "rain.wav" }],
       );
       createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Ambience");
     });
 
-    it("matches case-insensitively", () => {
+    it('does not match "Ambient"', () => {
       const entry = createTransformEntryInHierarchy(
         [],
-        { name: "AMBIENT", isFile: false },
+        { name: "Ambient", isFile: false },
         [{ name: "rain.wav" }],
       );
       createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
-      expect(entry.setSampleType).toHaveBeenCalledWith("Ambience");
+      expect(entry.setSampleType).not.toHaveBeenCalled();
     });
   });
 

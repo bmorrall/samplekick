@@ -1,6 +1,6 @@
 export interface FolderEntry { prefix: string | undefined; standalone: string }
 
-const AMBIENCE_KEYS = ['ambience', 'ambiences', 'ambient'] as const;
+const AMBIENCE_KEYS = ['ambience', 'ambiences'] as const;
 const DRUM_AND_BASS_KEYS = ['drum and bass', 'drum n bass', 'drum & bass', 'dnb', 'd&b'] as const;
 const HIHAT_KEYS = ['hat', 'hats', 'hi hat', 'hi hats', 'hihat', 'hihats', 'hi-hat', 'hi-hats'] as const;
 const KEYBOARD_KEYS = ['key', 'keys', 'keyboard', 'keyboards'] as const;
