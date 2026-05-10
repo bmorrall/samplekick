@@ -205,6 +205,16 @@ describe("createDirectorySampleTypeTransformer", () => {
       expect(entry.setSampleType).toHaveBeenCalledWith("Drum Loops - Latin");
     });
 
+    it('normalises the suffix when it is a known type, e.g. "Kicks - Drum & Bass" → "Kicks - Drum and Bass"', () => {
+      const entry = createTransformEntryInHierarchy(
+        [],
+        { name: "Kicks - Drum & Bass", isFile: false },
+        [{ name: "kick.wav" }],
+      );
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("Kicks - Drum and Bass");
+    });
+
     it("matches case-insensitively on the prefix", () => {
       const entry = createTransformEntryInHierarchy(
         [],

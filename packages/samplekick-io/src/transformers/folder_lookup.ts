@@ -1,6 +1,7 @@
 export interface FolderEntry { prefix: string; standalone: string }
 
 const AMBIENCE_KEYS = ['ambience', 'ambiences', 'ambient'] as const;
+const DRUM_AND_BASS_KEYS = ['drum and bass', 'drum n bass', 'drum & bass', 'dnb', 'd&b'] as const;
 const HIHAT_KEYS = ['hat', 'hats', 'hi hat', 'hi hats', 'hihat', 'hihats', 'hi-hat', 'hi-hats'] as const;
 const KEYBOARD_KEYS = ['key', 'keys', 'keyboard', 'keyboards'] as const;
 const PERCUSSION_KEYS = ['percussion', 'percussions', 'perc', 'percs'] as const;
@@ -25,6 +26,7 @@ export const FOLDER_LOOKUP = new Map<string, FolderEntry>([
   ['cymbals',   { prefix: 'Cymbal',     standalone: 'Cymbals'    }],
   ['drum',      { prefix: 'Drum',       standalone: 'Drums'      }],
   ['drums',     { prefix: 'Drum',       standalone: 'Drums'      }],
+  ...DRUM_AND_BASS_KEYS.map((k): [string, FolderEntry] => [k, { prefix: 'Drum and Bass', standalone: 'Drum and Bass' }]),
   ['e-piano',   { prefix: 'E-Piano',    standalone: 'E-Piano'    }],
   ...HIHAT_KEYS.map((k): [string, FolderEntry] => [k, { prefix: 'Hihat',      standalone: 'Hihats'     }]),
   ['harp',      { prefix: 'Harp',       standalone: 'Harp'       }],
