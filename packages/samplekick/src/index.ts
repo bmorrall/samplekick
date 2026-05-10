@@ -28,6 +28,7 @@ import {
   createNormaliseCommaSpacingTransformer,
   createNormaliseHyphenSpacingTransformer,
   createNormaliseDashesTransformer,
+  createStripFormatHintsTransformer,
   createNormaliseBpmTagTransformer,
   createNormaliseKeyTagTransformer,
   createNormaliseSpacesTransformer,
@@ -326,6 +327,7 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
     registry.applyTransform(createNormaliseBracketSpacingTransformer);
     registry.applyTransform(createNormaliseCommaSpacingTransformer);
     registry.applyTransform(createNormaliseHyphenSpacingTransformer);
+    registry.applyTransform(createStripFormatHintsTransformer);
 
     // Tag transforms: normalise embedded BPM and key tags to canonical forms
     registry.applyTransform(createNormaliseBpmTagTransformer);
