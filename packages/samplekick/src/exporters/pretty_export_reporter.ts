@@ -95,7 +95,9 @@ export class PrettyExportReporter implements ExportReporter {
   private drawSpinner(): void {
     const { spinnerFrame, displayName: packName } = this;
     const label = packName.length > 0 ? ` ${packName}` : "";
-    this.output.write(`\x1b[2K\r  ${this.chalk.cyan(SPINNER_FRAMES[spinnerFrame % SPINNER_FRAMES.length])} Exporting${label}\u2026 (${this.totalSampleCount + this.totalFileCount} done)`);
+    const done = this.totalSampleCount + this.totalFileCount;
+    const verb = done === 0 ? "Analysing" : "Exporting";
+    this.output.write(`\x1b[2K\r  ${this.chalk.cyan(SPINNER_FRAMES[spinnerFrame % SPINNER_FRAMES.length])} ${verb}${label}\u2026${done === 0 ? "" : ` (${done} done)`}`);
   }
 
   private startSpinner(): void {
@@ -161,6 +163,7 @@ export class PrettyExportReporter implements ExportReporter {
     if (packName.length > 0) {
       this.output.write(`${packName}:\n`);
     }
+    this.startSpinner();
   }
 
   onInfo(message: string): void {
@@ -255,6 +258,7 @@ export class PrettyExportReporter implements ExportReporter {
   }
 
   onPreview(): void {
+    this.stopSpinner();
     const totalPart = formatTotal(this.totalSampleCount, this.totalFileCount);
     const suffix = this.buildSuffix();
     this.printSummary();
