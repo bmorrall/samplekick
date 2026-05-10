@@ -80,4 +80,21 @@ describe("DirectorySampleTypeTransformer integration", () => {
       ].join("\n"),
     );
   });
+
+  it("applies compound-tail resolution and subcategory tagging for brand-prefixed packs ending with a known type", () => {
+    const registry = createRegistry("root", [
+      createFileEntry({ path: "Brand - Sci-Fi Horror FX & Foley/Alien Technology/alarm.wav" }),
+    ]);
+    registry.applyTransform(createDirectorySampleTypeTransformer);
+    registry.applyTransform(createDirectorySubcategoryTransformer);
+    expect(registry.toString()).toBe(
+      [
+        "root",
+        "└── Brand - Sci-Fi Horror FX & Foley [type:Foley]",
+        "    └── Alien Technology [type:Foley - Alien Technology]",
+        "        └── alarm.wav [?]",
+        "",
+      ].join("\n"),
+    );
+  });
 });

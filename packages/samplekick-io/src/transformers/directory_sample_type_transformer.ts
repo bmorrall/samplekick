@@ -88,6 +88,19 @@ function resolveStandaloneType(nameLower: string): string | undefined {
     const prefix = lookupPrefix(nameLower.slice(0, -suffix.length));
     if (prefix !== undefined) return `${prefix} One Shots`;
   }
+  // Compound-tail fallback: when a " & "/" and "-joined name has only its last segment as a
+  // known standalone type (and no preceding segment is also known), return that type.
+  // e.g. "Sci-Fi Horror FX & Foley" → "Foley" (preceding "sci-fi horror fx" is not in the lookup).
+  // Avoids simplifying when multiple parts are known, e.g. "FX & Foley" has "fx" → "Sound FX" as well.
+  const compoundSep = nameLower.includes(' & ') ? ' & ' : nameLower.includes(' and ') ? ' and ' : undefined;
+  if (compoundSep !== undefined) {
+    const parts = nameLower.split(compoundSep);
+    const lastPart = parts.at(-1);
+    const lastType = lastPart !== undefined ? lookupStandalone(lastPart) : undefined;
+    if (lastType !== undefined && !parts.slice(0, -1).some((p) => lookupStandalone(p) !== undefined)) {
+      return lastType;
+    }
+  }
   return undefined;
 }
 

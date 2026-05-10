@@ -67,4 +67,34 @@ describe("DirectorySubcategoryTransformer", () => {
       await rm(tmpDir, { recursive: true });
     }
   });
+
+  it('tags "Alien Technology" under a brand-prefixed "FX & Foley" pack as "Foley - Alien Technology"', async () => {
+    const zipped = zipSync({
+      "Ghosthack x Boom - Sci-Fi Horror FX & Foley/Alien Technology/alarm.wav": strToU8("data"),
+    });
+
+    const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-dir-subcategory-"));
+    const zipPath = join(tmpDir, "test-pack.zip");
+    const dataDir = join(tmpDir, "data");
+
+    try {
+      await writeFile(zipPath, zipped);
+
+      const result = spawnSync(
+        "node",
+        [CLI_PATH, zipPath, "--analyse"],
+        { encoding: "utf8", env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir } },
+      );
+
+      expect(result.status).toBe(0);
+
+      const [configFile] = await readdir(dataDir);
+      const csv = await readFile(join(dataDir, configFile), "utf8");
+
+      const row = csv.split("\n").find((r) => r.startsWith("Ghosthack x Boom - Sci-Fi Horror FX & Foley/Alien Technology,"));
+      expect(row).toBe("Ghosthack x Boom - Sci-Fi Horror FX & Foley/Alien Technology,,,Foley - Alien Technology,,");
+    } finally {
+      await rm(tmpDir, { recursive: true });
+    }
+  });
 });
