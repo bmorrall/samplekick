@@ -22,6 +22,10 @@ describe("index exports", () => {
     expect(api.createAbletonProjectTransformer).toBeDefined();
   });
 
+  test("exports createArchiveFileTransformer", () => {
+    expect(api.createArchiveFileTransformer).toBeDefined();
+  });
+
   test("exports createFLStudioProjectTransformer", () => {
     expect(api.createFLStudioProjectTransformer).toBeDefined();
   });
@@ -143,6 +147,7 @@ describe("index exports", () => {
       "CsvConfigReader",
       "ZipDataSource",
       "createAbletonProjectTransformer",
+      "createArchiveFileTransformer",
       "createDefaultRootPackageNameTransformer",
       "createDirectoryChildNameTransformer",
       "createDirectorySampleTypeTransformer",

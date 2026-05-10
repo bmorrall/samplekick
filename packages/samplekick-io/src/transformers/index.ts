@@ -1,4 +1,5 @@
 export { createAbletonProjectTransformer } from "./ableton_project_transformer";
+export { createArchiveFileTransformer } from "./archive_file_transformer";
 export { createDefaultRootPackageNameTransformer } from "./default_root_package_name_transformer";
 export { createFLStudioProjectTransformer } from "./fl_studio_project_transformer";
 export { createKnownFileTypeTransformer } from "./known_file_type_transformer";

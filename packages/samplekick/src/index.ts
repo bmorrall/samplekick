@@ -7,6 +7,7 @@ import { basename, dirname, join, resolve } from "node:path";
 import { parseArgs } from "node:util";
 import {
   createAbletonProjectTransformer,
+  createArchiveFileTransformer,
   CsvConfigWriter,
   createDefaultRootPackageNameTransformer,
   createDirectorySampleTypeTransformer,
@@ -288,6 +289,7 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
 
     // File transforms: identify known file types and lock their folder structure
     registry.applyTransform(createKnownFileTypeTransformer);
+    registry.applyTransform(createArchiveFileTransformer);
     registry.applyTransform(createAbletonProjectTransformer);
     registry.applyTransform(createFLStudioProjectTransformer);
 
