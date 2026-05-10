@@ -32,7 +32,7 @@ describe("NormaliseSpacesTransformer", () => {
       const csv = await readFile(join(dataDir, configFile), "utf8");
 
       const drumsRow = csv.split("\n").find((row) => row.startsWith("Drums  Bass,"));
-      expect(drumsRow).toBe("Drums  Bass,Drums Bass,,,,");
+      expect(drumsRow).toBe("Drums  Bass,Drums Bass,,Bass,,");
     } finally {
       await rm(tmpDir, { recursive: true });
     }

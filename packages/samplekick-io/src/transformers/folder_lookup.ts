@@ -66,7 +66,7 @@ export const FOLDER_LOOKUP = new Map<string, FolderEntry>([
 export const lookupPrefix = (key: string): string | undefined => FOLDER_LOOKUP.get(key)?.prefix;
 export const lookupStandalone = (key: string): string | undefined => FOLDER_LOOKUP.get(key)?.standalone;
 
-export const ONE_SHOT_LABELS = ['one shots', 'one-shots', 'oneshots'] as const;
+export const ONE_SHOT_LABELS = ['one shot', 'one shots', 'one-shot', 'one-shots', 'oneshots'] as const;
 
 // e.g. "Drum Loops & MIDI" → "Drum Loops", "Drum Loops & Stems" → "Drum Loops".
 const STRIP_SUFFIX_RE = / (?:&|and) (?:midi|stems?)$/v;

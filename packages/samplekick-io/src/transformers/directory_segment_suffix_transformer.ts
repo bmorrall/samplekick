@@ -2,10 +2,13 @@ import type { Transform } from '../types';
 import { lookupPrefix, lookupStandalone, ONE_SHOT_LABELS, stripIgnoredSuffix } from './folder_lookup';
 
 const DASH_SEP = ' - ';
+const MIN_SEGMENT_WORDS = 2;
 
 function resolveStandaloneType(nameLower: string): string | undefined {
   const standalone = lookupStandalone(nameLower);
   if (standalone !== undefined) return standalone;
+  if (nameLower === 'loops') return 'Loops';
+  if ((ONE_SHOT_LABELS as readonly string[]).includes(nameLower)) return 'One Shots';
   if (nameLower.endsWith(' loops')) {
     const prefix = lookupPrefix(nameLower.slice(0, -' loops'.length));
     if (prefix !== undefined) return `${prefix} Loops`;
@@ -32,13 +35,19 @@ function resolveAnyType(nameLower: string): string | undefined {
 
 // Strips leading words from a segment one at a time and resolves the remainder.
 // Noise suffixes (e.g. "collection", "bundle") are stripped from the segment first.
+// Empty words (from double spaces) are filtered out before processing.
+// Requires the first (prefix) word to be purely alphabetic — this rejects segments
+// where normalisation has left punctuation in a word (e.g. "Kicks, Snares" → "kicks,").
 // e.g. "Phoenix Vocal Loops" → "Vocal Loops".
 // e.g. "Tonal Ambience & Textures" → "Ambience & Textures" → "Ambience and Textures".
 // e.g. "Cyclone Ultimate Bass Collection" → strip noise → "Cyclone Ultimate Bass" → "Bass".
 // Returns undefined if no suffix of the segment resolves to a known type.
+const ALPHA_RE = /^[a-z]+$/v;
 function resolveSegmentSuffix(segment: string): string | undefined {
   const cleaned = stripIgnoredSuffix(segment);
-  const words = cleaned.split(' ');
+  const words = cleaned.split(' ').filter((w) => w.length > 0);
+  if (words.length < MIN_SEGMENT_WORDS) return undefined;
+  if (!ALPHA_RE.test(words[0])) return undefined;
   for (let i = 1; i < words.length; i += 1) {
     const type = resolveAnyType(words.slice(i).join(' '));
     if (type !== undefined) return type;

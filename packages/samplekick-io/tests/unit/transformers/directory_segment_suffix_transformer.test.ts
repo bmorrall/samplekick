@@ -54,6 +54,16 @@ describe("createDirectorySegmentSuffixTransformer", () => {
       expect(entry.setSampleType).toHaveBeenCalledWith("Bass");
     });
 
+    it('tags "Cymatics - Imperium Analog One Shot Collection" as "One Shots" via singular form', () => {
+      const entry = createTransformEntryInHierarchy(
+        [],
+        { name: "Cymatics - Imperium Analog One Shot Collection", isFile: false },
+        [{ name: "hit.wav" }],
+      );
+      createDirectorySegmentSuffixTransformer(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("One Shots");
+    });
+
     it("matches case-insensitively", () => {
       const entry = createTransformEntryInHierarchy(
         [],
@@ -84,6 +94,15 @@ describe("createDirectorySegmentSuffixTransformer", () => {
       createDirectorySegmentSuffixTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Percussion");
     });
+    it('tags "Brand - My Loops" as "Loops" via bare loops standalone', () => {
+      const entry = createTransformEntryInHierarchy(
+        [],
+        { name: "Brand - My Loops", isFile: false },
+        [{ name: "loop.wav" }],
+      );
+      createDirectorySegmentSuffixTransformer(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("Loops");
+    });
   });
 
   describe("when the condition is not met", () => {
@@ -108,13 +127,23 @@ describe("createDirectorySegmentSuffixTransformer", () => {
       expect(entry.setSampleType).not.toHaveBeenCalled();
     });
 
+    it("does not set sampleType when the first word contains punctuation (e.g. comma-normalised name)", () => {
+      const entry = createTransformEntryInHierarchy(
+        [],
+        { name: "Kicks, Snares", isFile: false },
+        [{ name: "hit.wav" }],
+      );
+      // "kicks," has a comma — not a valid alphabetic prefix.
+      createDirectorySegmentSuffixTransformer(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).not.toHaveBeenCalled();
+    });
+
     it("does not set sampleType when no word-stripped suffix resolves to a known type", () => {
       const entry = createTransformEntryInHierarchy(
         [],
-        { name: "Vocal Loops", isFile: false },
+        { name: "My Unknown Folder", isFile: false },
         [{ name: "loop.wav" }],
       );
-      // "Vocal Loops" → strip "Vocal" → "Loops" — "loops" is not a standalone type.
       createDirectorySegmentSuffixTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
     });
