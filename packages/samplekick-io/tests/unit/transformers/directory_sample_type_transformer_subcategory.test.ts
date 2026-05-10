@@ -150,6 +150,26 @@ describe("createDirectorySampleTypeTransformer", () => {
       expect(entry.setSampleType).toHaveBeenCalledWith("Drum Loops");
     });
 
+    it('sets "Melody Loops - Trap" for "Melody Loops - Trap Stems and MIDI"', () => {
+      const entry = createTransformEntryInHierarchy(
+        [],
+        { name: "Melody Loops - Trap Stems and MIDI", isFile: false },
+        [{ name: "loop.wav" }],
+      );
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("Melody Loops - Trap");
+    });
+
+    it('sets "Drum Loops - Various" for "Drum Loops - Various Stems"', () => {
+      const entry = createTransformEntryInHierarchy(
+        [],
+        { name: "Drum Loops - Various Stems", isFile: false },
+        [{ name: "loop.wav" }],
+      );
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("Drum Loops - Various");
+    });
+
   });
 
   describe("when the directory name is a compound of two known types", () => {

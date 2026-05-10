@@ -98,7 +98,8 @@ function setFromDashSeparatedName(entry: TransformEntry, nameLower: string): boo
   if (prefixType === undefined) return false;
   const suffixLower = nameLower.slice(sepIdx + DASH_SEP.length);
   const resolvedSuffix = resolveStandaloneType(suffixLower);
-  const suffix = resolvedSuffix ?? entry.getName().slice(sepIdx + DASH_SEP.length);
+  const rawSuffix = entry.getName().slice(sepIdx + DASH_SEP.length);
+  const suffix = resolvedSuffix ?? rawSuffix.slice(0, suffixLower.length);
   entry.setSampleType(`${prefixType} - ${suffix}`);
   return true;
 }

@@ -1,4 +1,5 @@
 import type { Transform } from '../types';
+import { PHASE_PLANT_PRESETS, SERUM_PRESETS } from './folder_lookup';
 
 /**
  * KnownFileTypeTransformer
@@ -20,10 +21,10 @@ export const createKnownFileTypeTransformer :  Transform = (source) => {
       entry.setSampleType('MIDI');
       entry.setKeepStructure(true);
     } else if (name.endsWith('.fxp') || path.endsWith('.fxp')) {
-      entry.setSampleType('Serum Presets');
+      entry.setSampleType(SERUM_PRESETS);
       entry.setKeepStructure(true);
     } else if (name.endsWith('.phaseplant') || path.endsWith('.phaseplant')) {
-      entry.setSampleType('Phase Plant Presets');
+      entry.setSampleType(PHASE_PLANT_PRESETS);
       entry.setKeepStructure(true);
     }
   });

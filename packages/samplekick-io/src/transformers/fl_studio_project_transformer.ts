@@ -1,4 +1,5 @@
 import type { Transform } from '../types';
+import { FL_STUDIO_PROJECTS } from './folder_lookup';
 
 /**
  * FLStudioProjectTransformer
@@ -16,7 +17,7 @@ export const createFLStudioProjectTransformer :  Transform = (source) => {
     );
 
     if (hasFlp) {
-      entry.setSampleType('FL Studio Projects');
+      entry.setSampleType(FL_STUDIO_PROJECTS);
       entry.setKeepStructure(true);
     }
   });

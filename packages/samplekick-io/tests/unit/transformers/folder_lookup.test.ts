@@ -142,6 +142,22 @@ describe("stripIgnoredSuffix", () => {
     expect(stripIgnoredSuffix("drum loops and midi")).toBe("drum loops");
   });
 
+  it('strips "Stems and MIDI" as a unit', () => {
+    expect(stripIgnoredSuffix("melody loops - trap stems and midi")).toBe("melody loops - trap");
+  });
+
+  it('strips "Stems & MIDI" as a unit', () => {
+    expect(stripIgnoredSuffix("melody loops - trap stems & midi")).toBe("melody loops - trap");
+  });
+
+  it('strips bare "Stems" suffix', () => {
+    expect(stripIgnoredSuffix("drum loops - various stems")).toBe("drum loops - various");
+  });
+
+  it('strips "& Stems" suffix', () => {
+    expect(stripIgnoredSuffix("drum loops & stems")).toBe("drum loops");
+  });
+
   it('strips noise words like "Collection"', () => {
     expect(stripIgnoredSuffix("drum loops collection")).toBe("drum loops");
   });
