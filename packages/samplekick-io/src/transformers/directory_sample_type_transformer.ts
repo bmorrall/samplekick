@@ -1,13 +1,13 @@
 import type { Transform, TransformEntry } from '../types';
-import { lookupPrefix, lookupStandalone, ONE_SHOT_LABELS, isKnownTypeFolderName, stripIgnoredSuffix } from './folder_lookup';
+import { lookupPrefix, lookupStandalone, LOOP_LABELS, ONE_SHOT_LABELS, isKnownTypeFolderName, stripIgnoredSuffix } from './folder_lookup';
 
 // Keys that prefer a subcategory type over their standalone type when under a known-type parent.
 // e.g. "808s" under "Drums" → "Drums - 808s" rather than the bare "808s".
 const SUBCATEGORY_PREFERRED_KEYS = new Set(['808', '808s', '909', '909s']);
 const DASH_SEP = ' - ';
 
-const isOneShotLabel = (name: string): boolean =>
-  (ONE_SHOT_LABELS as readonly string[]).includes(name);
+const isLoopLabel = (name: string): boolean => (LOOP_LABELS as readonly string[]).includes(name);
+const isOneShotLabel = (name: string): boolean => (ONE_SHOT_LABELS as readonly string[]).includes(name);
 
 function findAncestorPrefix(entry: TransformEntry): string | undefined {
   let ancestor = entry.getParentNode();
@@ -23,7 +23,7 @@ function findAncestorLoopsContext(entry: TransformEntry): 'loops' | 'one shots' 
   let ancestor = entry.getParentNode();
   while (ancestor !== undefined) {
     const ancestorName = ancestor.getName().toLowerCase();
-    if (ancestorName === 'loops') return 'loops';
+    if (isLoopLabel(ancestorName)) return 'loops';
     if (isOneShotLabel(ancestorName)) return 'one shots';
     ancestor = ancestor.getParentNode();
   }
@@ -31,8 +31,9 @@ function findAncestorLoopsContext(entry: TransformEntry): 'loops' | 'one shots' 
 }
 
 function setFromPrefixedName(entry: TransformEntry, nameLower: string): boolean {
-  if (nameLower.endsWith(' loops')) {
-    const prefix = lookupPrefix(nameLower.slice(0, -' loops'.length));
+  const loopSuffix = LOOP_LABELS.map((l) => ` ${l}`).find((s) => nameLower.endsWith(s));
+  if (loopSuffix !== undefined) {
+    const prefix = lookupPrefix(nameLower.slice(0, -loopSuffix.length));
     if (prefix !== undefined) { entry.setSampleType(`${prefix} Loops`); return true; }
   }
   const suffix = ONE_SHOT_LABELS.map((l) => ` ${l}`).find((s) => nameLower.endsWith(s));
@@ -44,7 +45,7 @@ function setFromPrefixedName(entry: TransformEntry, nameLower: string): boolean 
 }
 
 function setFromAncestorContext(entry: TransformEntry, nameLower: string): boolean {
-  const isLoops = nameLower === 'loops';
+  const isLoops = isLoopLabel(nameLower);
   const isOneShot = !isLoops && isOneShotLabel(nameLower);
   if (isLoops || isOneShot) {
     const label = isLoops ? 'Loops' : 'One Shots';
@@ -77,8 +78,9 @@ function setFromStandalone(entry: TransformEntry, nameLower: string): boolean {
 function resolveStandaloneType(nameLower: string): string | undefined {
   const standalone = lookupStandalone(nameLower);
   if (standalone !== undefined) return standalone;
-  if (nameLower.endsWith(' loops')) {
-    const prefix = lookupPrefix(nameLower.slice(0, -' loops'.length));
+  const loopSuffix = LOOP_LABELS.map((l) => ` ${l}`).find((s) => nameLower.endsWith(s));
+  if (loopSuffix !== undefined) {
+    const prefix = lookupPrefix(nameLower.slice(0, -loopSuffix.length));
     if (prefix !== undefined) return `${prefix} Loops`;
   }
   const suffix = ONE_SHOT_LABELS.map((l) => ` ${l}`).find((s) => nameLower.endsWith(s));

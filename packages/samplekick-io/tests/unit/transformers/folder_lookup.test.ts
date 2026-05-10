@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   FOLDER_LOOKUP,
+  LOOP_LABELS,
   ONE_SHOT_LABELS,
   isKnownTypeFolderName,
   lookupPrefix,
@@ -19,8 +20,10 @@ describe("FOLDER_LOOKUP", () => {
       expect(lookupStandalone("unknown")).toBeUndefined();
     });
 
-    it('returns "Loops" for "loops"', () => {
-      expect(lookupStandalone("loops")).toBe("Loops");
+    it('returns "Loops" for all LOOP_LABELS', () => {
+      for (const label of LOOP_LABELS) {
+        expect(lookupStandalone(label), label).toBe("Loops");
+      }
     });
 
     it('returns "One Shots" for all ONE_SHOT_LABELS', () => {
@@ -47,8 +50,10 @@ describe("FOLDER_LOOKUP", () => {
       expect(lookupPrefix("unknown")).toBeUndefined();
     });
 
-    it('returns undefined for "loops" (no compound prefix)', () => {
-      expect(lookupPrefix("loops")).toBeUndefined();
+    it('returns undefined for all LOOP_LABELS (no compound prefix)', () => {
+      for (const label of LOOP_LABELS) {
+        expect(lookupPrefix(label), label).toBeUndefined();
+      }
     });
 
     it('returns undefined for all ONE_SHOT_LABELS (no compound prefix)', () => {
@@ -89,8 +94,10 @@ describe("isKnownTypeFolderName", () => {
     expect(isKnownTypeFolderName("kicks")).toBe(true);
   });
 
-  it('returns true for "Loops"', () => {
-    expect(isKnownTypeFolderName("Loops")).toBe(true);
+it('returns true for all LOOP_LABELS forms', () => {
+      for (const label of LOOP_LABELS) {
+        expect(isKnownTypeFolderName(label), label).toBe(true);
+      }
   });
 
   it('returns true for "One Shots" and all one-shot label forms', () => {

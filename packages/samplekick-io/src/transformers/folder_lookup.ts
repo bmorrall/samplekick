@@ -4,6 +4,7 @@ const AMBIENCE_KEYS = ['ambience', 'ambiences', 'ambient'] as const;
 const DRUM_AND_BASS_KEYS = ['drum and bass', 'drum n bass', 'drum & bass', 'dnb', 'd&b'] as const;
 const HIHAT_KEYS = ['hat', 'hats', 'hi hat', 'hi hats', 'hihat', 'hihats', 'hi-hat', 'hi-hats'] as const;
 const KEYBOARD_KEYS = ['key', 'keys', 'keyboard', 'keyboards'] as const;
+export const LOOP_LABELS = ['loops'] as const;
 export const ONE_SHOT_LABELS = ['one shot', 'one shots', 'one-shot', 'one-shots', 'oneshots'] as const;
 const PERCUSSION_KEYS = ['percussion', 'percussions', 'perc', 'percs'] as const;
 
@@ -35,7 +36,7 @@ export const FOLDER_LOOKUP = new Map<string, FolderEntry>([
   ['kick',      { prefix: 'Kick',       standalone: 'Kicks'      }],
   ['kicks',     { prefix: 'Kick',       standalone: 'Kicks'      }],
   ...KEYBOARD_KEYS.map((k): [string, FolderEntry] => [k, { prefix: 'Keys',       standalone: 'Keys'       }]),
-  ['loops',     { prefix: undefined,    standalone: 'Loops'      }],
+  ...LOOP_LABELS.map((k): [string, FolderEntry] => [k, { prefix: undefined, standalone: 'Loops' }]),
   ['melody',    { prefix: 'Melody',     standalone: 'Melodies'   }],
   ['melodies',  { prefix: 'Melody',     standalone: 'Melodies'   }],
   ['melodic',   { prefix: 'Melodic',    standalone: 'Melodic'    }],
@@ -81,8 +82,9 @@ export const stripIgnoredSuffix = (nameLower: string): string =>
 export function isKnownTypeFolderName(name: string): boolean {
   const lower = name.toLowerCase();
   if (FOLDER_LOOKUP.has(lower)) return true;
-  if (lower.endsWith(' loops')) return lookupPrefix(lower.slice(0, -' loops'.length)) !== undefined;
-  const suffix = ONE_SHOT_LABELS.map((l) => ` ${l}`).find((s) => lower.endsWith(s));
-  if (suffix !== undefined) return lookupPrefix(lower.slice(0, -suffix.length)) !== undefined;
+  const loopSuffix = LOOP_LABELS.map((l) => ` ${l}`).find((s) => lower.endsWith(s));
+  if (loopSuffix !== undefined) return lookupPrefix(lower.slice(0, -loopSuffix.length)) !== undefined;
+  const oneShotSuffix = ONE_SHOT_LABELS.map((l) => ` ${l}`).find((s) => lower.endsWith(s));
+  if (oneShotSuffix !== undefined) return lookupPrefix(lower.slice(0, -oneShotSuffix.length)) !== undefined;
   return false;
 }

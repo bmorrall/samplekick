@@ -1,5 +1,5 @@
 import type { Transform } from '../types';
-import { lookupPrefix, lookupStandalone, ONE_SHOT_LABELS, stripIgnoredSuffix } from './folder_lookup';
+import { lookupPrefix, lookupStandalone, LOOP_LABELS, ONE_SHOT_LABELS, stripIgnoredSuffix } from './folder_lookup';
 
 const DASH_SEP = ' - ';
 const MIN_SEGMENT_WORDS = 2;
@@ -7,8 +7,9 @@ const MIN_SEGMENT_WORDS = 2;
 function resolveStandaloneType(nameLower: string): string | undefined {
   const standalone = lookupStandalone(nameLower);
   if (standalone !== undefined) return standalone;
-  if (nameLower.endsWith(' loops')) {
-    const prefix = lookupPrefix(nameLower.slice(0, -' loops'.length));
+  const loopSuffix = LOOP_LABELS.map((l) => ` ${l}`).find((s) => nameLower.endsWith(s));
+  if (loopSuffix !== undefined) {
+    const prefix = lookupPrefix(nameLower.slice(0, -loopSuffix.length));
     if (prefix !== undefined) return `${prefix} Loops`;
   }
   const suffix = ONE_SHOT_LABELS.map((l) => ` ${l}`).find((s) => nameLower.endsWith(s));
