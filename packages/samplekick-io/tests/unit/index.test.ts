@@ -90,8 +90,20 @@ describe("index exports", () => {
     expect(api.createAllowedCharactersTransform).toBeDefined();
   });
 
+  test("exports createDirectoryChildNameTransformer", () => {
+    expect(api.createDirectoryChildNameTransformer).toBeDefined();
+  });
+
   test("exports createDirectorySampleTypeTransformer", () => {
     expect(api.createDirectorySampleTypeTransformer).toBeDefined();
+  });
+
+  test("exports createDirectorySegmentSuffixTransformer", () => {
+    expect(api.createDirectorySegmentSuffixTransformer).toBeDefined();
+  });
+
+  test("exports createDirectorySubcategoryTransformer", () => {
+    expect(api.createDirectorySubcategoryTransformer).toBeDefined();
   });
 
   test("exports createDrumSubcategoryTransformer", () => {
@@ -132,7 +144,10 @@ describe("index exports", () => {
       "ZipDataSource",
       "createAbletonProjectTransformer",
       "createDefaultRootPackageNameTransformer",
+      "createDirectoryChildNameTransformer",
       "createDirectorySampleTypeTransformer",
+      "createDirectorySegmentSuffixTransformer",
+      "createDirectorySubcategoryTransformer",
       "createDrumSubcategoryTransformer",
       "createExpandRootPackageNameTransformer",
       "createFLStudioProjectTransformer",
