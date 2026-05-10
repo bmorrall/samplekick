@@ -18,6 +18,7 @@ export {
   createExpandRootPackageNameTransformer,
   createFLStudioProjectTransformer,
   createKnownFileTypeTransformer,
+  createMidiFileTransformer,
   createNormaliseBracketSpacingTransformer,
   createNormaliseCommaSpacingTransformer,
   createNormaliseHyphenSpacingTransformer,

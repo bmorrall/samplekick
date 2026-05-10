@@ -4,7 +4,6 @@ import { PHASE_PLANT_PRESETS, SERUM_PRESETS } from './folder_lookup';
 /**
  * KnownFileTypeTransformer
  * Sets sampleType based on the file extension when it has not already been set.
- * - ".mid" (case-insensitive) → "MIDI"
  * - ".fxp" (case-insensitive) → "Serum Presets"
  * - ".phaseplant" (case-insensitive) → "Phase Plant Presets"
  */
@@ -17,10 +16,7 @@ export const createKnownFileTypeTransformer :  Transform = (source) => {
     const name = entry.getName().toLowerCase();
     const path = entry.getPath().toLowerCase();
 
-    if (name.endsWith('.mid') || path.endsWith('.mid')) {
-      entry.setSampleType('MIDI');
-      entry.setKeepStructure(true);
-    } else if (name.endsWith('.fxp') || path.endsWith('.fxp')) {
+    if (name.endsWith('.fxp') || path.endsWith('.fxp')) {
       entry.setSampleType(SERUM_PRESETS);
       entry.setKeepStructure(true);
     } else if (name.endsWith('.phaseplant') || path.endsWith('.phaseplant')) {

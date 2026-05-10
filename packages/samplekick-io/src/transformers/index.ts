@@ -3,6 +3,7 @@ export { createArchiveFileTransformer } from "./archive_file_transformer";
 export { createDefaultRootPackageNameTransformer } from "./default_root_package_name_transformer";
 export { createFLStudioProjectTransformer } from "./fl_studio_project_transformer";
 export { createKnownFileTypeTransformer } from "./known_file_type_transformer";
+export { createMidiFileTransformer } from "./midi_file_transformer";
 export { createNormaliseBracketSpacingTransformer } from "./normalise_bracket_spacing_transformer";
 export { createNormaliseCommaSpacingTransformer } from "./normalise_comma_spacing_transformer";
 export { createExpandRootPackageNameTransformer } from "./expand_root_package_name_transformer";

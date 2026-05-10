@@ -42,6 +42,10 @@ describe("index exports", () => {
     expect(api.createKnownFileTypeTransformer).toBeDefined();
   });
 
+  test("exports createMidiFileTransformer", () => {
+    expect(api.createMidiFileTransformer).toBeDefined();
+  });
+
   test("exports createNormaliseBracketSpacingTransformer", () => {
     expect(api.createNormaliseBracketSpacingTransformer).toBeDefined();
   });
@@ -157,6 +161,7 @@ describe("index exports", () => {
       "createExpandRootPackageNameTransformer",
       "createFLStudioProjectTransformer",
       "createKnownFileTypeTransformer",
+      "createMidiFileTransformer",
       "createNormaliseBracketSpacingTransformer",
       "createNormaliseCommaSpacingTransformer",
       "createNormaliseHyphenSpacingTransformer",
