@@ -110,6 +110,7 @@ Options:
                           and squash transforms applied
       --bake              Save the transformed config as the auto-config so
                           transforms are applied automatically on the next run
+      --rebuild           Ignore the auto-config and analyse from scratch
       --verbose           Show skipped files, config paths, and inherited tags
       --quiet             Only show errors (suppress per-file success lines)
   -v, --version           Show version number
@@ -156,6 +157,7 @@ try {
       "preserve-paths": { type: "boolean" },
       squash: { type: "boolean" },
       bake: { type: "boolean" },
+      rebuild: { type: "boolean" },
       debug: { type: "boolean" },
       edit: { type: "boolean" },
       verbose: { type: "boolean" },
@@ -326,7 +328,7 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
   }
 
   const configPath = values.config === undefined ? undefined : resolve(values.config);
-  const autoConfigPath = await loadConfig(registry, configPath, dataDir).catch((err: unknown) => {
+  const autoConfigPath = await loadConfig(registry, configPath, dataDir, { skipAutoConfig: values.rebuild === true }).catch((err: unknown) => {
     console.error(err instanceof Error ? err.message : String(err));
     process.exit(1);
   });
