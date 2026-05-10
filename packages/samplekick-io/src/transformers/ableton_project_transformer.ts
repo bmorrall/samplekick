@@ -1,4 +1,5 @@
 import type { Transform } from '../types';
+import { ABLETON_PROJECTS } from './folder_lookup';
 
 /**
  * AbletonProjectTransformer
@@ -20,7 +21,7 @@ export const createAbletonProjectTransformer :  Transform = (source) => {
     );
 
     if (hasAls || hasAbletonFolderInfo) {
-      entry.setSampleType('Ableton Projects');
+      entry.setSampleType(ABLETON_PROJECTS);
       entry.setKeepStructure(true);
     }
   });

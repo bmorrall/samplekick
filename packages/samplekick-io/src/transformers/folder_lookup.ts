@@ -72,6 +72,9 @@ export const FOLDER_LOOKUP = new Map<string, FolderEntry>([
 export const lookupPrefix = (key: string): string | undefined => FOLDER_LOOKUP.get(key)?.prefix;
 export const lookupStandalone = (key: string): string | undefined => FOLDER_LOOKUP.get(key)?.standalone;
 
+export const ABLETON_PROJECTS = 'Ableton Projects' as const;
+export const FL_STUDIO_PROJECTS = 'FL Studio Projects' as const;
+
 // e.g. "Drum Loops & MIDI" → "Drum Loops", "Drum Loops & Stems" → "Drum Loops".
 const STRIP_SUFFIX_RE = / (?:&|and) (?:midi|stems?)$/v;
 // e.g. "Drum Loops Collection" → "Drum Loops", "Hihat Bundle" → "Hihat".
