@@ -345,26 +345,37 @@ describe("PrettyExportReporter", () => {
       vi.useRealTimers();
     });
 
-    it("draws spinner on first onBeforeWrite", () => {
+    it("draws 'Analysing' spinner on onStart", () => {
       vi.useFakeTimers();
       const { reporter, getOutput } = createTTYReporter();
-      reporter.onBeforeWrite(createEntry("kick.wav"), "kick.wav");
+      reporter.onStart("my-pack.zip");
       reporter.onComplete("/output/dir");
       const raw = getOutput();
       expect(raw).toContain("\x1b[2K\r");
-      expect(stripAnsi(raw)).toContain("Exporting my-pack.zip\u2026 (0 done)");
+      expect(stripAnsi(raw)).toContain("Analysing my-pack.zip\u2026");
+    });
+
+    it("draws 'Exporting' spinner after first write", () => {
+      vi.useFakeTimers();
+      const { reporter, getOutput } = createTTYReporter();
+      reporter.onStart("my-pack.zip");
+      reporter.onAfterWrite(createEntry("kick.wav"), "kick.wav");
+      reporter.onComplete("/output/dir");
+      const raw = getOutput();
+      expect(raw).toContain("\x1b[2K\r");
+      expect(stripAnsi(raw)).toContain("Exporting my-pack.zip\u2026 (1 done)");
     });
 
     it("clears spinner and logs above it on onDebug", () => {
       vi.useFakeTimers();
       const { reporter, getOutput } = createTTYReporter();
-      reporter.onBeforeWrite(createEntry("kick.wav"), "kick.wav");
+      reporter.onStart("my-pack.zip");
       const { length: afterSpinner } = getOutput();
       reporter.onDebug("debug message");
       const debugOutput = getOutput().slice(afterSpinner);
       expect(debugOutput.startsWith("\x1b[2K\r")).toBe(true);
       expect(stripAnsi(debugOutput)).toContain("· debug message\n");
-      expect(stripAnsi(debugOutput)).toContain("Exporting my-pack.zip\u2026 (0 done)");
+      expect(stripAnsi(debugOutput)).toContain("Analysing my-pack.zip\u2026");
       reporter.onComplete("/output/dir");
     });
 
@@ -398,6 +409,14 @@ describe("PrettyExportReporter", () => {
       reporter.onBeforeWrite(createEntry("kick.wav"), "kick.wav");
       reporter.onComplete("/output/dir");
       expect(stripAnsi(getOutput())).toContain("Exported 0 samples to /output/dir\n");
+    });
+
+    it("clears spinner line on onPreview", () => {
+      vi.useFakeTimers();
+      const { reporter, getOutput } = createTTYReporter();
+      reporter.onStart("my-pack.zip");
+      reporter.onPreview();
+      expect(stripAnsi(getOutput())).toContain("Would export 0 samples\n");
     });
   });
 

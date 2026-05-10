@@ -252,7 +252,9 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
     ? new PrettyExportReporter(process.stdout, chalk, { quiet: values.quiet === true, displayName: basename(zipPath), organised: values["preserve-paths"] !== true })
     : new SimpleExportReporter(process.stdout, values.quiet === true, basename(zipPath), values["preserve-paths"] !== true);
 
-  reporter.onStart(zipPath);
+  if (values.debug !== true && values["dump-config"] !== true) {
+    reporter.onStart(zipPath);
+  }
 
   const dataSource = await ZipDataSource.fromFile(zipPath).catch((err: unknown) => {
     if (typeof err === "object" && err !== null && "code" in err && err.code === "ENOENT") {
