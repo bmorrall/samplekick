@@ -18,6 +18,7 @@ import {
   createExpandRootPackageNameTransformer,
   createFlatPackPrefixTransformer,
   createFLStudioProjectTransformer,
+  createSP404Mk2ProjectTransformer,
   createGhosthackNameTransformer,
   createSquashNameTransformer,
   createNormaliseQuotesTransformer,
@@ -313,6 +314,7 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
     registry.applyTransform(createArchiveFileTransformer);
     registry.applyTransform(createAbletonProjectTransformer);
     registry.applyTransform(createFLStudioProjectTransformer);
+    registry.applyTransform(createSP404Mk2ProjectTransformer);
 
     // Root transforms: derive and expand the package name from the zip filename
     registry.applyTransform(createDefaultRootPackageNameTransformer);
