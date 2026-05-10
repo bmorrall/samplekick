@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { createWriteStream } from "node:fs";
-import type { Writable } from "node:stream";
+import { Writable } from "node:stream";
 import { mkdir } from "node:fs/promises";
 import { finished } from "node:stream/promises";
 import { basename, dirname, join, resolve } from "node:path";
@@ -123,6 +123,20 @@ ${deviceLines.join("\n")}
 
 const SEPARATOR_WIDTH = 40;
 const SEPARATOR = `\n${"─".repeat(SEPARATOR_WIDTH)}\n\n`;
+
+const makeSafeStdout = (stream: NodeJS.WriteStream): Writable => {
+  let broken = false;
+  stream.on("error", (err: NodeJS.ErrnoException) => {
+    if (err.code === "EPIPE") { broken = true; return; }
+    throw err;
+  });
+  return new Writable({
+    write(chunk: Buffer, _encoding: BufferEncoding, callback: () => void) {
+      if (!broken) stream.write(chunk);
+      callback();
+    },
+  });
+};
 
 const saveConfigToStream = (registry: Registry, stream: Writable, options: { explicit?: boolean } = {}): void => {
   new CsvConfigWriter(stream, { explicit: options.explicit }).writeConfig(registry);
@@ -252,7 +266,7 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
 
   const reporter: ExportReporter = chalk.level > 0
     ? new PrettyExportReporter(process.stdout, chalk, { quiet: values.quiet === true, displayName: basename(zipPath), organised: values["preserve-paths"] !== true })
-    : new SimpleExportReporter(process.stdout, values.quiet === true, basename(zipPath), values["preserve-paths"] !== true);
+    : new SimpleExportReporter(makeSafeStdout(process.stdout), values.quiet === true, basename(zipPath), values["preserve-paths"] !== true);
 
   if (values.debug !== true && values["dump-config"] !== true) {
     reporter.onStart(zipPath);
