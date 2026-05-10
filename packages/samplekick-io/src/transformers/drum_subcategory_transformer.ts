@@ -1,4 +1,5 @@
 import type { Transform, TransformEntry } from '../types';
+import { stripIgnoredSuffix } from './folder_lookup';
 
 const DRUM_KEYS = ['drum', 'drums'] as const;
 const DASH_SEP = ' - ';
@@ -21,6 +22,29 @@ function hasDrumAncestor(entry: TransformEntry): boolean {
   return false;
 }
 
+function resolveDrumSubcategoryType(segment: string): string | undefined {
+  for (const drumKey of DRUM_KEYS) {
+    const spacePrefix = `${drumKey} `;
+    if (segment.startsWith(spacePrefix)) {
+      const label = SUBCATEGORY_MAP.get(segment.slice(spacePrefix.length));
+      if (label !== undefined) return `Drum ${label}`;
+    }
+    const dashPrefix = `${drumKey}${DASH_SEP}`;
+    if (segment.startsWith(dashPrefix)) {
+      const label = SUBCATEGORY_MAP.get(segment.slice(dashPrefix.length));
+      if (label !== undefined) return `Drum ${label}`;
+    }
+  }
+  return undefined;
+}
+
+function setFromUniqueDashSegment(entry: TransformEntry, nameLower: string): void {
+  if (!nameLower.includes(DASH_SEP)) return;
+  const parts = nameLower.split(DASH_SEP);
+  const matches = parts.map(resolveDrumSubcategoryType).filter((t): t is string => t !== undefined);
+  if (matches.length === 1) entry.setSampleType(matches[0]);
+}
+
 /**
  * DrumSubcategoryTransformer
  * Recognises drum-specific subcategory folders (Fills, Breaks) and sets their
@@ -35,7 +59,7 @@ export const createDrumSubcategoryTransformer: Transform = (source) => {
     if (entry.getOwnSampleType() !== undefined) return;
     if (entry.getChildNodes().length === 0) return;
 
-    const nameLower = entry.getName().toLowerCase();
+    const nameLower = stripIgnoredSuffix(entry.getName().toLowerCase());
 
     // "Fills" / "Breaks" directly under a Drum(s) folder
     const bareLabel = SUBCATEGORY_MAP.get(nameLower);
@@ -66,5 +90,7 @@ export const createDrumSubcategoryTransformer: Transform = (source) => {
         }
       }
     }
+
+    setFromUniqueDashSegment(entry, nameLower);
   });
 };

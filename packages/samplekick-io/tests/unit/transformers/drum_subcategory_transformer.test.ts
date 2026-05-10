@@ -188,6 +188,26 @@ describe("createDrumSubcategoryTransformer", () => {
       createDrumSubcategoryTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Drum Breaks");
     });
+
+    it('sets sampleType to "Drum Breaks" for a brand-prefixed form "Cymatics - SESSIONS - Drum Breaks"', () => {
+      const entry = createTransformEntryInHierarchy(
+        [],
+        { name: "Cymatics - SESSIONS - Drum Breaks", isFile: false },
+        [{ name: "break.wav" }],
+      );
+      createDrumSubcategoryTransformer(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("Drum Breaks");
+    });
+
+    it('sets sampleType to "Drum Breaks" for a noise-suffixed form "Drum Break Collection"', () => {
+      const entry = createTransformEntryInHierarchy(
+        [],
+        { name: "Drum Break Collection", isFile: false },
+        [{ name: "break.wav" }],
+      );
+      createDrumSubcategoryTransformer(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("Drum Breaks");
+    });
   });
 
   describe('when the directory is named "Breaks" under a Drums parent', () => {
