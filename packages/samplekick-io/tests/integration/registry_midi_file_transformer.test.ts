@@ -8,7 +8,7 @@ describe("MidiFileTransformer integration", () => {
       createFileEntry({ path: "beats/groove.mid" }),
       createFileEntry({ path: "samples/kick.wav" }),
     ]);
-    registry.applyTransform(createMidiFileTransformer);
+    registry.applyTransform(createMidiFileTransformer());
     expect(registry.toString()).toBe(
       [
         "root",
@@ -26,8 +26,8 @@ describe("MidiFileTransformer integration", () => {
       createFileEntry({ path: "Drum Loops/groove.mid" }),
       createFileEntry({ path: "Drum Loops/kick.wav" }),
     ]);
-    registry.applyTransform(createDirectorySampleTypeTransformer);
-    registry.applyTransform(createMidiFileTransformer);
+    registry.applyTransform(createDirectorySampleTypeTransformer());
+    registry.applyTransform(createMidiFileTransformer());
     expect(registry.toString()).toBe(
       [
         "Pack.zip",
@@ -43,9 +43,9 @@ describe("MidiFileTransformer integration", () => {
     const registry = createRegistry("Pack.zip", [
       createFileEntry({ path: "Melodies/MIDI/groove.mid" }),
     ]);
-    registry.applyTransform(createDirectorySampleTypeTransformer);
-    registry.applyTransform(createDirectorySubcategoryTransformer);
-    registry.applyTransform(createMidiFileTransformer);
+    registry.applyTransform(createDirectorySampleTypeTransformer());
+    registry.applyTransform(createDirectorySubcategoryTransformer());
+    registry.applyTransform(createMidiFileTransformer());
     expect(registry.toString()).toBe(
       [
         "Pack.zip",

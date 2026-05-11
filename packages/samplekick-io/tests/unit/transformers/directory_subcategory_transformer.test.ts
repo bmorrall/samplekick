@@ -10,7 +10,8 @@ describe("createDirectorySubcategoryTransformer", () => {
         { name: "808s", isFile: false },
         [{ name: "808.wav" }],
       );
-      createDirectorySubcategoryTransformer(singleEntryTransformSource(entry));
+      const transformer = createDirectorySubcategoryTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Drums - 808s");
     });
 
@@ -20,7 +21,8 @@ describe("createDirectorySubcategoryTransformer", () => {
         { name: "808s", isFile: false },
         [{ name: "808.wav" }],
       );
-      createDirectorySubcategoryTransformer(singleEntryTransformSource(entry));
+      const transformer = createDirectorySubcategoryTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Drum Loops - 808s");
     });
 
@@ -30,7 +32,8 @@ describe("createDirectorySubcategoryTransformer", () => {
         { name: "909s", isFile: false },
         [{ name: "909.wav" }],
       );
-      createDirectorySubcategoryTransformer(singleEntryTransformSource(entry));
+      const transformer = createDirectorySubcategoryTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Drums - 909s");
     });
 
@@ -40,7 +43,8 @@ describe("createDirectorySubcategoryTransformer", () => {
         { name: "909s", isFile: false },
         [{ name: "909.wav" }],
       );
-      createDirectorySubcategoryTransformer(singleEntryTransformSource(entry));
+      const transformer = createDirectorySubcategoryTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Drum Loops - 909s");
     });
 
@@ -50,7 +54,8 @@ describe("createDirectorySubcategoryTransformer", () => {
         { name: "Latin", isFile: false },
         [{ name: "loop.wav" }],
       );
-      createDirectorySubcategoryTransformer(singleEntryTransformSource(entry));
+      const transformer = createDirectorySubcategoryTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Drum Loops - Latin");
     });
 
@@ -60,7 +65,8 @@ describe("createDirectorySubcategoryTransformer", () => {
         { name: "Speed House", isFile: false },
         [{ name: "melody.wav" }],
       );
-      createDirectorySubcategoryTransformer(singleEntryTransformSource(entry));
+      const transformer = createDirectorySubcategoryTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Melodies - Speed House");
     });
 
@@ -70,7 +76,8 @@ describe("createDirectorySubcategoryTransformer", () => {
         { name: "Speed House & MIDI", isFile: false },
         [{ name: "melody.wav" }],
       );
-      createDirectorySubcategoryTransformer(singleEntryTransformSource(entry));
+      const transformer = createDirectorySubcategoryTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Melodies - Speed House");
     });
 
@@ -80,7 +87,8 @@ describe("createDirectorySubcategoryTransformer", () => {
         { name: "Latin & Stems", isFile: false },
         [{ name: "loop.wav" }],
       );
-      createDirectorySubcategoryTransformer(singleEntryTransformSource(entry));
+      const transformer = createDirectorySubcategoryTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Drum Loops - Latin");
     });
   });
@@ -92,7 +100,8 @@ describe("createDirectorySubcategoryTransformer", () => {
         { name: "Latin", isFile: false, sampleType: "Custom" },
         [{ name: "loop.wav" }],
       );
-      createDirectorySubcategoryTransformer(singleEntryTransformSource(entry));
+      const transformer = createDirectorySubcategoryTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
     });
   });
@@ -104,7 +113,8 @@ describe("createDirectorySubcategoryTransformer", () => {
         { name: "Latin", isFile: false },
         [{ name: "loop.wav" }],
       );
-      createDirectorySubcategoryTransformer(singleEntryTransformSource(entry));
+      const transformer = createDirectorySubcategoryTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
       expect(entry.setKeepStructure).not.toHaveBeenCalled();
     });
@@ -115,7 +125,8 @@ describe("createDirectorySubcategoryTransformer", () => {
         { name: "Loop Stems", isFile: false },
         [{ name: "loop.wav" }],
       );
-      createDirectorySubcategoryTransformer(singleEntryTransformSource(entry));
+      const transformer = createDirectorySubcategoryTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
       expect(entry.setKeepStructure).not.toHaveBeenCalled();
     });
@@ -126,7 +137,8 @@ describe("createDirectorySubcategoryTransformer", () => {
         { name: "Loop Steps", isFile: false },
         [{ name: "loop.wav" }],
       );
-      createDirectorySubcategoryTransformer(singleEntryTransformSource(entry));
+      const transformer = createDirectorySubcategoryTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
       expect(entry.setKeepStructure).not.toHaveBeenCalled();
     });
@@ -137,7 +149,8 @@ describe("createDirectorySubcategoryTransformer", () => {
         { name: "MIDI", isFile: false },
         [{ name: "track.mid" }],
       );
-      createDirectorySubcategoryTransformer(singleEntryTransformSource(entry));
+      const transformer = createDirectorySubcategoryTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
       expect(entry.setKeepStructure).not.toHaveBeenCalled();
     });
@@ -148,7 +161,8 @@ describe("createDirectorySubcategoryTransformer", () => {
         { name: "Drum MIDI", isFile: false },
         [{ name: "track.mid" }],
       );
-      createDirectorySubcategoryTransformer(singleEntryTransformSource(entry));
+      const transformer = createDirectorySubcategoryTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
       expect(entry.setKeepStructure).not.toHaveBeenCalled();
     });
@@ -159,7 +173,8 @@ describe("createDirectorySubcategoryTransformer", () => {
         { name: "MIDI", isFile: false },
         [{ name: "track.mid" }],
       );
-      createDirectorySubcategoryTransformer(singleEntryTransformSource(entry));
+      const transformer = createDirectorySubcategoryTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
       expect(entry.setKeepStructure).not.toHaveBeenCalled();
     });
@@ -170,7 +185,8 @@ describe("createDirectorySubcategoryTransformer", () => {
         { name: "Drum Loops - Latin", isFile: false },
         [{ name: "loop.wav" }],
       );
-      createDirectorySubcategoryTransformer(singleEntryTransformSource(entry));
+      const transformer = createDirectorySubcategoryTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
       expect(entry.setKeepStructure).not.toHaveBeenCalled();
     });
@@ -181,7 +197,8 @@ describe("createDirectorySubcategoryTransformer", () => {
         { name: "Latin", isFile: false },
         [{ name: "loop.wav" }],
       );
-      createDirectorySubcategoryTransformer(singleEntryTransformSource(entry));
+      const transformer = createDirectorySubcategoryTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
       expect(entry.setKeepStructure).not.toHaveBeenCalled();
     });

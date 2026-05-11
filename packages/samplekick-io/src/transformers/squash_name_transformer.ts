@@ -10,4 +10,5 @@ const squashToCamelCase: StringTransformer = (name: string): string => {
     .join("");
 };
 
-export const createSquashNameTransformer : Transform = createSanitiseNameTransformer(squashToCamelCase);
+const _singleton: Transform = createSanitiseNameTransformer(squashToCamelCase);
+export const createSquashNameTransformer = (): Transform => _singleton;

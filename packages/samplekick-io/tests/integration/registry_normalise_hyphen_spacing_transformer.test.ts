@@ -11,7 +11,7 @@ describe("NormaliseHyphenSpacingTransformer integration", () => {
       createFileEntry({ path: "Drums-_Bass/kick.wav" }),
       createFileEntry({ path: "Kicks_-Snares/snare.wav" }),
     ]);
-    registry.applyTransform(createNormaliseHyphenSpacingTransformer);
+    registry.applyTransform(createNormaliseHyphenSpacingTransformer());
     expect(registry.toString()).toBe(
       [
         "root",

@@ -8,4 +8,5 @@ const normaliseQuotes = (name: string): string =>
     .replaceAll("\u201C", '"')
     .replaceAll("\u201D", '"');
 
-export const createNormaliseQuotesTransformer: Transform = createSanitiseNameTransformer(normaliseQuotes);
+const _singleton: Transform = createSanitiseNameTransformer(normaliseQuotes);
+export const createNormaliseQuotesTransformer = (): Transform => _singleton;

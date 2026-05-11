@@ -7,13 +7,17 @@ applyTo: "packages/samplekick-io/src/transformers/**"
 ## Core type
 
 ```ts
-type Transform = (source: TransformSource) => void;
+interface Transform {
+  transform: (source: TransformSource) => void;
+}
 ```
 
-All transformers are functions that accept a `TransformSource` and return `void`. Always export the transformer as a `const`:
+All transformers are objects implementing the `Transform` interface. Always export the transformer as a `const`:
 
 ```ts
-export const createMyTransformer: Transform = (source) => { … };
+export const createMyTransformer: Transform = {
+  transform: (source) => { … },
+};
 ```
 
 The `create` prefix is used even for singleton transforms (no factory function needed unless the transformer is parameterised, e.g. `createTruncateNameTransformer(maxLength)`).
@@ -59,26 +63,28 @@ export const createMyTransformer: Transform = createSanitiseNameTransformer(myFn
 When a transformer needs to **inspect directory structure** (first pass) and **rename children** (second pass), use a `Map` to bridge the two passes:
 
 ```ts
-export const createMyTransformer: Transform = (source) => {
-  const actionByParentPath = new Map<string, string>();
+export const createMyTransformer: Transform = {
+  transform: (source) => {
+    const actionByParentPath = new Map<string, string>();
 
-  // Pass 1: read structure, populate the map
-  source.eachTransformEntry((entry) => {
-    // guard: root only, or other structural checks
-    if (entry.getParentNode() !== undefined) return;
-    // … inspect entry.getChildNodes() …
-    // call entry.setSampleType / setPackageName / setKeepStructure as needed
-    actionByParentPath.set(entry.getPath(), someValue);
-  });
+    // Pass 1: read structure, populate the map
+    source.eachTransformEntry((entry) => {
+      // guard: root only, or other structural checks
+      if (entry.getParentNode() !== undefined) return;
+      // … inspect entry.getChildNodes() …
+      // call entry.setSampleType / setPackageName / setKeepStructure as needed
+      actionByParentPath.set(entry.getPath(), someValue);
+    });
 
-  // Pass 2: rename children using TransformEntry objects
-  source.eachTransformModification((entry) => {
-    const parent = entry.getParentNode();
-    if (parent === undefined) return;
-    const value = actionByParentPath.get(parent.getPath());
-    if (value === undefined) return;
-    // … entry.setName(…) …
-  });
+    // Pass 2: rename children using TransformEntry objects
+    source.eachTransformModification((entry) => {
+      const parent = entry.getParentNode();
+      if (parent === undefined) return;
+      const value = actionByParentPath.get(parent.getPath());
+      if (value === undefined) return;
+      // … entry.setName(…) …
+    });
+  },
 };
 ```
 

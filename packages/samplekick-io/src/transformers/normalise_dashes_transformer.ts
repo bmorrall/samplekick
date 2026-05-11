@@ -8,4 +8,5 @@ const DASH_RE = /[–—―‒﹘－]/gv;
 const normaliseDashes: StringTransformer = (name: string): string =>
   name.replace(DASH_RE, "-");
 
-export const createNormaliseDashesTransformer: Transform = createSanitiseNameTransformer(normaliseDashes);
+const _singleton: Transform = createSanitiseNameTransformer(normaliseDashes);
+export const createNormaliseDashesTransformer = (): Transform => _singleton;

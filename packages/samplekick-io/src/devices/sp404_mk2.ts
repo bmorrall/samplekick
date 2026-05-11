@@ -30,7 +30,7 @@ const SP404_ALLOWED_PUNCTUATION = new Set([
 export const SP404Mk2Preset: DevicePreset = {
   displayName: "Roland SP-404MKII",
   transforms: [
-    createStripAccentsTransform,
+    createStripAccentsTransform(),
     createAllowedCharactersTransform(SP404_ALLOWED_PUNCTUATION),
     createTruncateNameTransformer(MAX_NAME_LENGTH),
   ],

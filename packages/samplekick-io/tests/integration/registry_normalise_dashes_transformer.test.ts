@@ -9,7 +9,7 @@ describe("NormaliseDashesTransformer integration", () => {
       createFileEntry({ path: "Hi—Hats/hat.wav" }),
       createFileEntry({ path: "Normal-Folder/snare.wav" }),
     ]);
-    registry.applyTransform(createNormaliseDashesTransformer);
+    registry.applyTransform(createNormaliseDashesTransformer());
     expect(registry.toString()).toBe(
       [
         "root",

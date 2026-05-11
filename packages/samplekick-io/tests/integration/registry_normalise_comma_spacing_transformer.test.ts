@@ -9,7 +9,7 @@ describe("NormaliseCommaSpacingTransformer integration", () => {
       createFileEntry({ path: "Kicks ,Snares/kick.wav" }),
       createFileEntry({ path: "Hihat_,_Kicks_and_Claps/hat.wav" }),
     ]);
-    registry.applyTransform(createNormaliseCommaSpacingTransformer);
+    registry.applyTransform(createNormaliseCommaSpacingTransformer());
     expect(registry.toString()).toBe(
       [
         "root",

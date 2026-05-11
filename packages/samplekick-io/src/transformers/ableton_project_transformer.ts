@@ -7,22 +7,24 @@ import { ABLETON_PROJECTS } from './folder_lookup';
  * extension, then marks the directory with sampleType "Ableton Projects"
  * and keepStructure.
  */
-export const createAbletonProjectTransformer :  Transform = (source) => {
-  source.eachTransformEntry((entry) => {
-    const children = entry.getChildNodes();
-    if (children.length === 0) return;
+const _singleton: Transform = {
+  transform: (source) => {
+    source.eachTransformEntry((entry) => {
+      const children = entry.getChildNodes();
+      if (children.length === 0) return;
 
-    const hasAls = children.some((child) =>
-      child.getName().toLowerCase().endsWith('.als'),
-    );
+      const hasAls = children.some((child) =>
+        child.getName().toLowerCase().endsWith('.als'),
+      );
 
-    const hasAbletonFolderInfo = children.some(
-      (child) => child.getName() === 'Ableton Folder Info',
-    );
+      const hasAbletonFolderInfo = children.some(
+        (child) => child.getName() === 'Ableton Folder Info',
+      );
 
-    if (hasAls || hasAbletonFolderInfo) {
-      entry.setSampleType(ABLETON_PROJECTS);
-      entry.setKeepStructure(true);
-    }
-  });
-};
+      if (hasAls || hasAbletonFolderInfo) {
+        entry.setSampleType(ABLETON_PROJECTS);
+        entry.setKeepStructure(true);
+      }
+    });
+  },
+};export const createAbletonProjectTransformer = (): Transform => _singleton;

@@ -11,7 +11,7 @@ describe("DrumSubcategoryTransformer integration", () => {
       createFileEntry({ path: "Drum - Breaks/break.wav" }),
       createFileEntry({ path: "Percussion/Fills/shaker.wav" }),
     ]);
-    registry.applyTransform(createDrumSubcategoryTransformer);
+    registry.applyTransform(createDrumSubcategoryTransformer());
     expect(registry.toString()).toBe(
       [
         "root",
@@ -37,8 +37,8 @@ describe("DrumSubcategoryTransformer integration", () => {
       createFileEntry({ path: "Drum - Fills/fill.wav" }),
       createFileEntry({ path: "Drums - Breaks/break.wav" }),
     ]);
-    registry.applyTransform(createDrumSubcategoryTransformer);
-    registry.applyTransform(createDirectorySampleTypeTransformer);
+    registry.applyTransform(createDrumSubcategoryTransformer());
+    registry.applyTransform(createDirectorySampleTypeTransformer());
     expect(registry.toString()).toBe(
       [
         "root",
@@ -55,8 +55,8 @@ describe("DrumSubcategoryTransformer integration", () => {
     const registry = createRegistry("root", [
       createFileEntry({ path: "Drums/Fills/fill.wav" }),
     ]);
-    registry.applyTransform(createDrumSubcategoryTransformer);
-    registry.applyTransform(createDirectorySampleTypeTransformer);
+    registry.applyTransform(createDrumSubcategoryTransformer());
+    registry.applyTransform(createDirectorySampleTypeTransformer());
     expect(registry.toString()).toBe(
       [
         "root",

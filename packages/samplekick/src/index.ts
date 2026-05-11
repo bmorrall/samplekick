@@ -302,47 +302,47 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
 
   if (values["allow-junk"] !== true) {
     // Junk transforms: mark OS metadata and hidden files as skipped
-    registry.applyTransform(createSkipJunkTransformer);
+    registry.applyTransform(createSkipJunkTransformer());
   }
 
   if (values.analyse === true) {
-    registry.applyTransform(createTrimNameTransformer);
-    registry.applyTransform(createNormaliseQuotesTransformer);
-    registry.applyTransform(createNormaliseDashesTransformer);
+    registry.applyTransform(createTrimNameTransformer());
+    registry.applyTransform(createNormaliseQuotesTransformer());
+    registry.applyTransform(createNormaliseDashesTransformer());
 
     // File transforms: identify known file types and lock their folder structure
-    registry.applyTransform(createKnownFileTypeTransformer);
-    registry.applyTransform(createArchiveFileTransformer);
-    registry.applyTransform(createAbletonProjectTransformer);
-    registry.applyTransform(createFLStudioProjectTransformer);
-    registry.applyTransform(createSP404Mk2ProjectTransformer);
+    registry.applyTransform(createKnownFileTypeTransformer());
+    registry.applyTransform(createArchiveFileTransformer());
+    registry.applyTransform(createAbletonProjectTransformer());
+    registry.applyTransform(createFLStudioProjectTransformer());
+    registry.applyTransform(createSP404Mk2ProjectTransformer());
 
     // Root transforms: derive and expand the package name from the zip filename
-    registry.applyTransform(createDefaultRootPackageNameTransformer);
-    registry.applyTransform(createExpandRootPackageNameTransformer);
+    registry.applyTransform(createDefaultRootPackageNameTransformer());
+    registry.applyTransform(createExpandRootPackageNameTransformer());
 
     // Name transforms: run after file transforms so locked entries are skipped
-    registry.applyTransform(createGhosthackNameTransformer);
-    registry.applyTransform(createNormaliseSpacesTransformer);
-    registry.applyTransform(createNormaliseBracketSpacingTransformer);
-    registry.applyTransform(createNormaliseCommaSpacingTransformer);
-    registry.applyTransform(createNormaliseHyphenSpacingTransformer);
-    registry.applyTransform(createStripFormatHintsTransformer);
+    registry.applyTransform(createGhosthackNameTransformer());
+    registry.applyTransform(createNormaliseSpacesTransformer());
+    registry.applyTransform(createNormaliseBracketSpacingTransformer());
+    registry.applyTransform(createNormaliseCommaSpacingTransformer());
+    registry.applyTransform(createNormaliseHyphenSpacingTransformer());
+    registry.applyTransform(createStripFormatHintsTransformer());
 
     // Tag transforms: normalise embedded BPM and key tags to canonical forms
-    registry.applyTransform(createNormaliseBpmTagTransformer);
-    registry.applyTransform(createNormaliseKeyTagTransformer);
+    registry.applyTransform(createNormaliseBpmTagTransformer());
+    registry.applyTransform(createNormaliseKeyTagTransformer());
 
     // Directory transforms: run after name transforms so folder names are normalised first
-    registry.applyTransform(createDrumSubcategoryTransformer);
-    registry.applyTransform(createDirectorySampleTypeTransformer);
-    registry.applyTransform(createDirectoryChildNameTransformer);
-    registry.applyTransform(createDirectorySubcategoryTransformer);
-    registry.applyTransform(createDirectorySegmentSuffixTransformer);
-    registry.applyTransform(createFlatPackPrefixTransformer);
+    registry.applyTransform(createDrumSubcategoryTransformer());
+    registry.applyTransform(createDirectorySampleTypeTransformer());
+    registry.applyTransform(createDirectoryChildNameTransformer());
+    registry.applyTransform(createDirectorySubcategoryTransformer());
+    registry.applyTransform(createDirectorySegmentSuffixTransformer());
+    registry.applyTransform(createFlatPackPrefixTransformer());
 
     // MIDI transforms: detect MIDI files after directory structure is resolved
-    registry.applyTransform(createMidiFileTransformer);
+    registry.applyTransform(createMidiFileTransformer());
   }
 
   const configPath = values.config === undefined ? undefined : resolve(values.config);
@@ -365,7 +365,7 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
   }
 
   if (values.squash === true) {
-    registry.applyTransform(createSquashNameTransformer);
+    registry.applyTransform(createSquashNameTransformer());
   }
 
   registry.setPathStrategy(pathStrategy);

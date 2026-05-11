@@ -10,7 +10,7 @@ describe("DefaultRootPackageNameTransformer integration", () => {
       createFileEntry({ path: "sub2/file3.wav" }),
       createFileEntry({ path: "file4.wav" }),
     ]);
-    registry.applyTransform(createDefaultRootPackageNameTransformer);
+    registry.applyTransform(createDefaultRootPackageNameTransformer());
     expect(registry.toString()).toBe(
       [
         "MyProject.zip [pkg:MyProject]",

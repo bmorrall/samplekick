@@ -11,8 +11,8 @@ describe("ExpandRootPackageNameTransformer integration", () => {
     const registry = createRegistry("CoolPack-v2.zip", [
       createFileEntry({ path: "Drums/kick.wav" }),
     ]);
-    registry.applyTransform(createDefaultRootPackageNameTransformer);
-    registry.applyTransform(createExpandRootPackageNameTransformer);
+    registry.applyTransform(createDefaultRootPackageNameTransformer());
+    registry.applyTransform(createExpandRootPackageNameTransformer());
     registry.setSampleType("drums");
     registry.setPathStrategy(OrganisedPathStrategy);
     expect(registry.destinationPathFor("Drums/kick.wav")).toBe("drums/Cool Pack - v2/kick.wav");

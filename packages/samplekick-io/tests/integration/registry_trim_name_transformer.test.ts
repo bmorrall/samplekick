@@ -9,7 +9,7 @@ describe("TrimNameTransformer integration", () => {
       createFileEntry({ path: "Snares /snare.wav" }),
       createFileEntry({ path: "hi-hats/hat.wav" }),
     ]);
-    registry.applyTransform(createTrimNameTransformer);
+    registry.applyTransform(createTrimNameTransformer());
     expect(registry.toString()).toBe(
       [
         "root",

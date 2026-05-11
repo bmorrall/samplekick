@@ -28,16 +28,19 @@ function resolveArchiveSampleType(path: string): string {
  * are preserved as-is. If the path contains exactly one recognised keyword
  * (e.g. "Ableton", "FL Studio"), a more specific sampleType is used instead.
  */
-export const createArchiveFileTransformer: Transform = (source) => {
-  source.eachTransformEntry((entry) => {
-    if (entry.getSampleType() !== undefined) return;
-    if (entry.getParentNode() === undefined) return; // skip the root archive
+const _singleton: Transform = {
+  transform: (source) => {
+    source.eachTransformEntry((entry) => {
+      if (entry.getSampleType() !== undefined) return;
+      if (entry.getParentNode() === undefined) return; // skip the root archive
 
-    const path = entry.getPath().toLowerCase();
+      const path = entry.getPath().toLowerCase();
 
-    if (path.endsWith('.zip')) {
-      entry.setSampleType(resolveArchiveSampleType(entry.getPath()));
-      entry.setKeepStructure(true);
-    }
-  });
+      if (path.endsWith('.zip')) {
+        entry.setSampleType(resolveArchiveSampleType(entry.getPath()));
+        entry.setKeepStructure(true);
+      }
+    });
+  },
 };
+export const createArchiveFileTransformer = (): Transform => _singleton;

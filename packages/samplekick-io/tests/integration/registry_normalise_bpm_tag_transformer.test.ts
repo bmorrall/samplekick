@@ -9,7 +9,7 @@ describe("NormaliseBpmTagTransformer integration", () => {
       createFileEntry({ path: "Bass - BPM 90/bass.wav" }),
       createFileEntry({ path: "Keys/piano.wav" }),
     ]);
-    registry.applyTransform(createNormaliseBpmTagTransformer);
+    registry.applyTransform(createNormaliseBpmTagTransformer());
     expect(registry.toString()).toBe(
       [
         "root",

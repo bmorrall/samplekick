@@ -30,10 +30,12 @@ function trySetSubcategory(entry: TransformEntry): boolean {
  * e.g. "Latin" under "Drum Loops" → "Drum Loops - Latin".
  * Must run after createDirectorySampleTypeTransformer.
  */
-export const createDirectorySubcategoryTransformer: Transform = (source) => {
-  source.eachTransformEntry((entry) => {
-    if (entry.getOwnSampleType() !== undefined) return;
-    if (entry.getChildNodes().length === 0) return;
-    trySetSubcategory(entry);
-  });
-};
+const _singleton: Transform = {
+  transform: (source) => {
+    source.eachTransformEntry((entry) => {
+      if (entry.getOwnSampleType() !== undefined) return;
+      if (entry.getChildNodes().length === 0) return;
+      trySetSubcategory(entry);
+    });
+  },
+};export const createDirectorySubcategoryTransformer = (): Transform => _singleton;

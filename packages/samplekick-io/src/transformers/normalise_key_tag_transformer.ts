@@ -18,4 +18,5 @@ function keyTagReplacer(_match: string, root: string, quality: string): string {
 const normaliseKeyTag: StringTransformer = (name: string): string =>
   name.replace(KEY_RE, keyTagReplacer);
 
-export const createNormaliseKeyTagTransformer: Transform = createSanitiseNameTransformer(normaliseKeyTag);
+const _singleton: Transform = createSanitiseNameTransformer(normaliseKeyTag);
+export const createNormaliseKeyTagTransformer = (): Transform => _singleton;

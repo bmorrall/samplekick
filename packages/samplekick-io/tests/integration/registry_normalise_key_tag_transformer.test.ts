@@ -9,7 +9,7 @@ describe("NormaliseKeyTagTransformer integration", () => {
       createFileEntry({ path: "Bass F# Minor/bass.wav" }),
       createFileEntry({ path: "Drums/kick.wav" }),
     ]);
-    registry.applyTransform(createNormaliseKeyTagTransformer);
+    registry.applyTransform(createNormaliseKeyTagTransformer());
     expect(registry.toString()).toBe(
       [
         "root",

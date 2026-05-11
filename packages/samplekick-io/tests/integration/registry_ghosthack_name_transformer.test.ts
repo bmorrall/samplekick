@@ -11,7 +11,7 @@ describe("GhosthackNameTransformer integration", () => {
       createFileEntry({ path: "Ghosthack - Pads/Ghosthack - Pad 01.wav" }),
       createFileEntry({ path: "Other Pack/hat.wav" }),
     ]);
-    registry.applyTransform(createGhosthackNameTransformer);
+    registry.applyTransform(createGhosthackNameTransformer());
     expect(registry.toString()).toBe(
       [
         "root",

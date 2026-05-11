@@ -10,7 +10,7 @@ describe("SkipJunkTransformer integration", () => {
       createFileEntry({ path: "sub1/file1.wav" }),
       createFileEntry({ path: "sub1/.hidden" }),
     ]);
-    registry.applyTransform(createSkipJunkTransformer);
+    registry.applyTransform(createSkipJunkTransformer());
     expect(registry.toString()).toBe(
       [
         "root",

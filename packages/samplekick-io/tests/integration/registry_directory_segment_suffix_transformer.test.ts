@@ -13,7 +13,7 @@ describe("DirectorySegmentSuffixTransformer integration", () => {
       createFileEntry({ path: "Brand - My Drum Loops/kick.wav" }),
       createFileEntry({ path: "Label - Unknown Category/hit.wav" }),
     ]);
-    registry.applyTransform(createDirectorySegmentSuffixTransformer);
+    registry.applyTransform(createDirectorySegmentSuffixTransformer());
     expect(registry.toString()).toBe(
       [
         "Pack.zip",
@@ -32,9 +32,9 @@ describe("DirectorySegmentSuffixTransformer integration", () => {
     const registry = createRegistry("Pack.zip", [
       createFileEntry({ path: "Cymatics - Phoenix Vocal Loops/Latin/loop.wav" }),
     ]);
-    registry.applyTransform(createDirectorySampleTypeTransformer);
-    registry.applyTransform(createDirectorySegmentSuffixTransformer);
-    registry.applyTransform(createDirectorySubcategoryTransformer);
+    registry.applyTransform(createDirectorySampleTypeTransformer());
+    registry.applyTransform(createDirectorySegmentSuffixTransformer());
+    registry.applyTransform(createDirectorySubcategoryTransformer());
     expect(registry.toString()).toBe(
       [
         "Pack.zip",
@@ -50,7 +50,7 @@ describe("DirectorySegmentSuffixTransformer integration", () => {
     const registry = createRegistry("Pack.zip", [
       createFileEntry({ path: "Brand - Signature Vocals - Phoenix Drum Loops/sample.wav" }),
     ]);
-    registry.applyTransform(createDirectorySegmentSuffixTransformer);
+    registry.applyTransform(createDirectorySegmentSuffixTransformer());
     expect(registry.toString()).toBe(
       [
         "Pack.zip",

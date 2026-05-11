@@ -48,7 +48,7 @@ describe("SP-404MKII device preset transforms", () => {
       createFileEntry({ path: "Mÿ Prøject/Sämples/kick.wav" }),
       createFileEntry({ path: "Drums/snâre.wav" }),
     ]);
-    registry.applyTransform(createAbletonProjectTransformer);
+    registry.applyTransform(createAbletonProjectTransformer());
     applyDeviceTransforms(registry, SP404Mk2Preset);
     expect(registry.toString()).toBe(
       [

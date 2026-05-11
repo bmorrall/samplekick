@@ -22,7 +22,7 @@ describe("SP404 Mk2 end-to-end sample processing", () => {
     registry.setPathStrategy(OrganisedPathStrategy);
 
     // Set default package name based on root zip name (minus extension)
-    registry.applyTransform(createDefaultRootPackageNameTransformer);
+    registry.applyTransform(createDefaultRootPackageNameTransformer());
 
     // Sanitize all node names for SP404 Mk2 compatibility:
     //   Drüms              → Drums

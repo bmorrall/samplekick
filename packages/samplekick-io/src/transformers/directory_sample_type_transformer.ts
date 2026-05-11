@@ -165,19 +165,21 @@ function setFromStrippedLoopLabel(entry: TransformEntry, originalNameLower: stri
  * (case-insensitive) and sets the sampleType on that directory.
  * Accepts both singular and plural forms (e.g. "Drum" and "Drums" both map to "Drums").
  */
-export const createDirectorySampleTypeTransformer: Transform = (source) => {
-  source.eachTransformEntry((entry) => {
-    if (entry.getOwnSampleType() !== undefined) return;
-    if (entry.getChildNodes().length === 0) return;
+const _singleton: Transform = {
+  transform: (source) => {
+    source.eachTransformEntry((entry) => {
+      if (entry.getOwnSampleType() !== undefined) return;
+      if (entry.getChildNodes().length === 0) return;
 
-    const originalNameLower = entry.getName().toLowerCase();
-    const nameLower = stripIgnoredSuffix(originalNameLower);
-    if (setFromPrefixedName(entry, nameLower)) return;
-    if (setFromDashSeparatedName(entry, nameLower)) return;
-    if (setFromStrippedLoopLabel(entry, originalNameLower, nameLower)) return;
-    if (setFromAncestorContext(entry, nameLower)) return;
-    if (setFromStandalone(entry, nameLower)) return;
-    if (setFromCompound(entry, nameLower)) return;
-    setFromUniqueDashSegment(entry, nameLower);
-  });
-};
+      const originalNameLower = entry.getName().toLowerCase();
+      const nameLower = stripIgnoredSuffix(originalNameLower);
+      if (setFromPrefixedName(entry, nameLower)) return;
+      if (setFromDashSeparatedName(entry, nameLower)) return;
+      if (setFromStrippedLoopLabel(entry, originalNameLower, nameLower)) return;
+      if (setFromAncestorContext(entry, nameLower)) return;
+      if (setFromStandalone(entry, nameLower)) return;
+      if (setFromCompound(entry, nameLower)) return;
+      setFromUniqueDashSegment(entry, nameLower);
+    });
+  },
+};export const createDirectorySampleTypeTransformer = (): Transform => _singleton;

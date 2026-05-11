@@ -9,7 +9,7 @@ describe("NormaliseQuotesTransformer integration", () => {
       createFileEntry({ path: "\u201CSynths\u201D/pad.wav" }),
       createFileEntry({ path: "Drums/snare.wav" }),
     ]);
-    registry.applyTransform(createNormaliseQuotesTransformer);
+    registry.applyTransform(createNormaliseQuotesTransformer());
     expect(registry.toString()).toBe(
       [
         "root",

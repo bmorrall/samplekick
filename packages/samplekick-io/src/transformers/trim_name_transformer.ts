@@ -3,4 +3,5 @@ import { createSanitiseNameTransformer } from "./sanitise_name_transformer";
 
 const trimName: StringTransformer = (name: string): string => name.trim();
 
-export const createTrimNameTransformer : Transform = createSanitiseNameTransformer(trimName);
+const _singleton: Transform = createSanitiseNameTransformer(trimName);
+export const createTrimNameTransformer = (): Transform => _singleton;

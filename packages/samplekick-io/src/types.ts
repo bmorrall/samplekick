@@ -61,7 +61,9 @@ export interface TransformSource {
   eachTransformModification: (fn: (entry: TransformEntry) => void) => void;
 }
 
-export type Transform = (source: TransformSource) => void;
+export interface Transform {
+  transform: (source: TransformSource) => void;
+}
 
 // Device Preset
 

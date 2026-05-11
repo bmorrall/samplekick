@@ -6,4 +6,5 @@ const normaliseHyphenSpacing: StringTransformer = (name: string): string =>
     match.includes("_") && !match.includes(" ") ? "_-_" : " - "
   );
 
-export const createNormaliseHyphenSpacingTransformer : Transform = createSanitiseNameTransformer(normaliseHyphenSpacing);
+const _singleton: Transform = createSanitiseNameTransformer(normaliseHyphenSpacing);
+export const createNormaliseHyphenSpacingTransformer = (): Transform => _singleton;

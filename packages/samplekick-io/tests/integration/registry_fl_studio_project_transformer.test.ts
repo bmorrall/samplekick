@@ -9,7 +9,7 @@ describe("FLStudioProjectTransformer integration", () => {
       createFileEntry({ path: "My Beat/kick.wav" }),
       createFileEntry({ path: "samples/kick.wav" }),
     ]);
-    registry.applyTransform(createFLStudioProjectTransformer);
+    registry.applyTransform(createFLStudioProjectTransformer());
     expect(registry.toString()).toBe(
       [
         "root",

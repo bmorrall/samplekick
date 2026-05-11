@@ -8,7 +8,7 @@ describe("NormaliseSpacesTransformer integration", () => {
       createFileEntry({ path: "Drums  Bass/kick.wav" }),
       createFileEntry({ path: "Hi Hats/hat.wav" }),
     ]);
-    registry.applyTransform(createNormaliseSpacesTransformer);
+    registry.applyTransform(createNormaliseSpacesTransformer());
     expect(registry.toString()).toBe(
       [
         "root",
