@@ -117,7 +117,7 @@ Options:
   -d, --device <name>     Apply device-specific transforms to sample names
   -c, --convert           Convert audio files to device format
       --allow-junk        Keep junk entries (e.g. __MACOSX, hidden files)
-      --keep-parents      Preserve parent folders for all directories with files
+  -p, --keep-parents      Preserve parent folders for all directories with files
       --preserve-paths    Export to original source paths (skip organising)
       --squash            Convert names to camelCase after device transforms
       --debug             Print the pack structure to stdout for inspection
@@ -204,7 +204,7 @@ try {
       analyse: { type: "boolean", short: "a" },
       "allow-junk": { type: "boolean" },
       "preserve-paths": { type: "boolean" },
-      "keep-parents": { type: "boolean" },
+      "keep-parents": { type: "boolean", short: "p" },
       sanitise: { type: "boolean", short: "s" },
       squash: { type: "boolean" },
       bake: { type: "boolean" },
