@@ -175,4 +175,39 @@ describe("KeepParentsTransformer", () => {
       await rm(tmpDir, { recursive: true });
     }
   });
+
+  it("saves the auto-config with keepPath=true when -p shorthand is passed", async () => {
+    const zipped = zipSync({
+      "Kicks/kick.wav": strToU8("kick-data"),
+      "Snares/snare.wav": strToU8("snare-data"),
+    });
+
+    const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-keep-parents-"));
+    const zipPath = join(tmpDir, "test-pack.zip");
+    const dataDir = join(tmpDir, "data");
+
+    try {
+      await writeFile(zipPath, zipped);
+
+      const result = spawnSync("node", [CLI_PATH, zipPath, "-p"], {
+        encoding: "utf8",
+        env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+      });
+
+      expect(result.status).toBe(0);
+
+      const [configFile] = await readdir(dataDir);
+      const csv = await readFile(join(dataDir, configFile), "utf8");
+      expect(csv).toBe(
+        [
+          "path,keepPath,name,packageName,sampleType,skip",
+          ",,test-pack.zip,test-pack,Packs,",
+          "Kicks,true,,,,",
+          "Snares,true,,,,",
+        ].join("\n"),
+      );
+    } finally {
+      await rm(tmpDir, { recursive: true });
+    }
+  });
 });
