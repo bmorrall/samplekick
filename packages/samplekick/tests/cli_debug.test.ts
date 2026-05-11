@@ -14,8 +14,8 @@ describe("--debug flag", () => {
       "Loops/bass.wav": strToU8("bass-data"),
     });
     const config = [
-      "path,name,packageName,sampleType,skip,keepPath",
-      "Drums/kick.wav,kick_01.wav,,,,",
+      "path,keepPath,name,packageName,sampleType,skip",
+      "Drums/kick.wav,,kick_01.wav,,,",
     ].join("\n");
 
     const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
@@ -54,9 +54,9 @@ describe("--debug flag", () => {
       "Loops/bass.wav": strToU8("bass-data"),
     });
     const config = [
-      "path,name,packageName,sampleType,skip,keepPath",
-      "Drums,,my-pack,Percussion,,",
-      "Drums/kick.wav,kick_01.wav,,,,",
+      "path,keepPath,name,packageName,sampleType,skip",
+      "Drums,,,my-pack,Percussion,",
+      "Drums/kick.wav,,kick_01.wav,,,",
     ].join("\n");
 
     const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));

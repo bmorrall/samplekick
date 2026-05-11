@@ -40,7 +40,7 @@ describe("samplekick CLI", () => {
 
       const fileContent = await readFile(configPath, "utf8");
       expect(fileContent).toContain(
-        "path,name,packageName,sampleType,skip,keepPath",
+        "path,keepPath,name,packageName,sampleType,skip",
       );
       expect(fileContent).toContain("Drums/kick.wav");
       expect(fileContent).toContain("Loops/bass.wav");
@@ -84,7 +84,7 @@ describe("samplekick CLI", () => {
       expect(result.stderr).toBe("");
       const fileContent = await readFile(configPath, "utf8");
       expect(fileContent).toContain(
-        "path,name,packageName,sampleType,skip,keepPath",
+        "path,keepPath,name,packageName,sampleType,skip",
       );
       expect(fileContent).toContain("Drums/kick.wav");
 
@@ -108,9 +108,9 @@ describe("samplekick CLI", () => {
     });
 
     const config = [
-      "path,name,packageName,sampleType,skip,keepPath",
-      "Drums/kick.wav,My Kick.wav,,,,",
-      "Loops/bass.wav,,,,true,",
+      "path,keepPath,name,packageName,sampleType,skip",
+      "Drums/kick.wav,,My Kick.wav,,,",
+      "Loops/bass.wav,,,,,true",
     ].join("\n");
 
     const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
@@ -157,8 +157,8 @@ describe("samplekick CLI", () => {
     });
 
     const config = [
-      "path,name,packageName,sampleType,skip,keepPath",
-      "Loops,,,,true,",
+      "path,keepPath,name,packageName,sampleType,skip",
+      "Loops,,,,,true",
     ].join("\n");
 
     const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
@@ -203,7 +203,7 @@ describe("samplekick CLI", () => {
     });
 
     const config = [
-      "path,name,packageName,sampleType,skip,keepPath",
+      "path,keepPath,name,packageName,sampleType,skip",
       "Drums/kick.wav,,Percussion,,,",
     ].join("\n");
 
@@ -319,7 +319,7 @@ describe("samplekick CLI", () => {
         .split("\n")
         .find((row) => row.startsWith("Drums/kick.wav,"));
       // name always written, false for unset booleans
-      expect(fileRow).toBe("Drums/kick.wav,kick.wav,,,false,false");
+      expect(fileRow).toBe("Drums/kick.wav,false,kick.wav,,,false");
     } finally {
       await rm(tmpDir, { recursive: true });
     }
@@ -356,7 +356,7 @@ describe("samplekick CLI", () => {
       expect(paths).toContain("Drums/kick.wav");
 
       const macosxRow = rows.find((row) => row.startsWith("__MACOSX,"));
-      expect(macosxRow?.split(",")[4]).toBe("true");
+      expect(macosxRow?.split(",")[5]).toBe("true");
     } finally {
       await rm(tmpDir, { recursive: true });
     }
@@ -465,7 +465,7 @@ describe("samplekick CLI", () => {
         .split("\n")
         .find((row) => row.startsWith("Drums/kick.wav,"));
       // name always written, false for unset booleans
-      expect(fileRow).toBe("Drums/kick.wav,kick.wav,,,false,false");
+      expect(fileRow).toBe("Drums/kick.wav,false,kick.wav,,,false");
     } finally {
       await rm(tmpDir, { recursive: true });
     }

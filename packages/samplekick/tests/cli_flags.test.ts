@@ -130,8 +130,8 @@ describe("samplekick CLI flags", () => {
       });
 
       const config = [
-        "path,name,packageName,sampleType,skip,keepPath",
-        "Dr\u00fcms/kick.wav,custom.wav,,,,",
+        "path,keepPath,name,packageName,sampleType,skip",
+        "Dr\u00fcms/kick.wav,,custom.wav,,,",
       ].join("\n");
 
       const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));

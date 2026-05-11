@@ -131,8 +131,8 @@ describe("samplekick CLI", () => {
       expect(result.stderr).toBe("");
       const lines = result.stdout.trim().split("\n");
       expect(lines).toHaveLength(7);
-      expect(lines[1]).toBe(",test-pack.zip,,,,");
-      expect(lines[2]).toBe(".DS_Store,,,,true,");
+      expect(lines[1]).toBe(",,test-pack.zip,,,");
+      expect(lines[2]).toBe(".DS_Store,,,,,true");
       expect(lines[3]).toBe("Drums,,,,,");
       expect(lines[4]).toBe("Drums/kick.wav,,,,,");
       expect(lines[5]).toBe("Loops,,,,,");

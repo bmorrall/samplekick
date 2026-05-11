@@ -2,7 +2,7 @@ import type { Writable } from "node:stream";
 import type { ConfigSource, ConfigEntry, ConfigWriter } from "../types";
 import { getPathName } from "../path_utils";
 
-export const CSV_HEADER = "path,name,packageName,sampleType,skip,keepPath";
+export const CSV_HEADER = "path,keepPath,name,packageName,sampleType,skip";
 
 const quoteCsvField = (value: string): string => {
   if (value.includes(",") || value.includes('"') || value.includes("\n")) {
@@ -23,15 +23,15 @@ const serializeRow = (entry: ConfigEntry, explicit: boolean): string => {
 
   return [
     quoteCsvField(path),
-    nameField,
-    quoteCsvField(packageName),
-    quoteCsvField(sampleType),
-    skipped === undefined ? (explicit ? "false" : "") : String(skipped),
     keepStructure === undefined
       ? explicit
         ? "false"
         : ""
       : String(keepStructure),
+    nameField,
+    quoteCsvField(packageName),
+    quoteCsvField(sampleType),
+    skipped === undefined ? (explicit ? "false" : "") : String(skipped),
   ].join(",");
 };
 

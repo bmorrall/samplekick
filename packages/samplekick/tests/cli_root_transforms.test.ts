@@ -23,7 +23,7 @@ describe("root transforms (--analyse)", () => {
       const [configFile] = await readdir(dataDir);
       const csv = await readFile(join(dataDir, configFile), "utf8");
       const rootRow = csv.split("\n").find((row) => row.startsWith(","));
-      expect(rootRow).toBe(",mypack.zip,mypack,,,");
+      expect(rootRow).toBe(",,mypack.zip,mypack,,");
     } finally {
       await rm(tmpDir, { recursive: true });
     }
@@ -45,7 +45,7 @@ describe("root transforms (--analyse)", () => {
       const csv = await readFile(join(dataDir, configFile), "utf8");
       // Name stays as zip filename; packageName is expanded
       const rootRow = csv.split("\n").find((row) => row.startsWith(","));
-      expect(rootRow).toBe(",CoolPack-v2.zip,Cool Pack - v2,,,");
+      expect(rootRow).toBe(",,CoolPack-v2.zip,Cool Pack - v2,,");
     } finally {
       await rm(tmpDir, { recursive: true });
     }

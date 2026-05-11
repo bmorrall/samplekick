@@ -40,11 +40,11 @@ describe("SP-404MKII device preset", () => {
       const autoConfig = await readFile(join(dataDir, autoConfigFile), "utf8");
       expect(autoConfig).toBe(
         [
-          "path,name,packageName,sampleType,skip,keepPath",
-          ",test-pack.zip,test-pack,,,",
-          "Drums,,,Drums,,",
+          "path,keepPath,name,packageName,sampleType,skip",
+          ",,test-pack.zip,test-pack,,",
+          "Drums,,,,Drums,",
           "Drums/kick.wav,,,,,",
-          "Loops,,,Loops,,",
+          "Loops,,,,Loops,",
           "Loops/bass.wav,,,,,",
         ].join("\n"),
       );
@@ -53,12 +53,12 @@ describe("SP-404MKII device preset", () => {
       await writeFile(
         join(dataDir, autoConfigFile),
         [
-          "path,name,packageName,sampleType,skip,keepPath",
-          ",test-pack.zip,my-pack,,,",
-          "Drums,,,Percussion,,",
+          "path,keepPath,name,packageName,sampleType,skip",
+          ",,test-pack.zip,my-pack,,",
+          "Drums,,,,Percussion,",
           "Drums/kick.wav,,,,,",
-          "Loops,,,Loops,,",
-          "Loops/bass.wav,,,Loops - Bass,,",
+          "Loops,,,,Loops,",
+          "Loops/bass.wav,,,,Loops - Bass,",
         ].join("\n"),
       );
 
@@ -180,8 +180,8 @@ describe("SP-404MKII device preset", () => {
       const autoConfig = await readFile(join(dataDir, autoConfigFile), "utf8");
       expect(autoConfig).toBe(
         [
-          "path,name,packageName,sampleType,skip,keepPath",
-          ",t\u00ebst-pack.zip,t\u00ebst-pack,,,",
+          "path,keepPath,name,packageName,sampleType,skip",
+          ",,t\u00ebst-pack.zip,t\u00ebst-pack,,",
           "Dr\u00fcms,,,,,",
           "Dr\u00fcms/sn\u00e2re.wav,,,,,",
         ].join("\n"),
@@ -191,9 +191,9 @@ describe("SP-404MKII device preset", () => {
       await writeFile(
         join(dataDir, autoConfigFile),
         [
-          "path,name,packageName,sampleType,skip,keepPath",
-          ",t\u00ebst-pack.zip,test-pack,,,",
-          "Dr\u00fcms,,,Percussion,,",
+          "path,keepPath,name,packageName,sampleType,skip",
+          ",,t\u00ebst-pack.zip,test-pack,,",
+          "Dr\u00fcms,,,,Percussion,",
         ].join("\n"),
       );
 
@@ -248,8 +248,8 @@ describe("SP-404MKII device preset", () => {
       const autoConfig = await readFile(join(dataDir, autoConfigFile), "utf8");
       expect(autoConfig).toBe(
         [
-          "path,name,packageName,sampleType,skip,keepPath",
-          ",t\u00ebst-pack.zip,t\u00ebst-pack,,,",
+          "path,keepPath,name,packageName,sampleType,skip",
+          ",,t\u00ebst-pack.zip,t\u00ebst-pack,,",
           "Dr\u00fcms,,,,,",
           "Dr\u00fcms/sn\u00e2re.wav,,,,,",
         ].join("\n"),
@@ -267,7 +267,7 @@ describe("SP-404MKII device preset", () => {
       expect(dumpRun.stderr).toBe("");
       expect(dumpRun.status).toBe(0);
       expect(dumpRun.stdout).toContain(
-        "Dr\u00fcms/sn\u00e2re.wav,snare.wav,,,,",
+        "Dr\u00fcms/sn\u00e2re.wav,,snare.wav,,,",
       );
     } finally {
       await rm(tmpDir, { recursive: true });

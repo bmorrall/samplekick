@@ -47,8 +47,8 @@ describe("auto-persist config", () => {
       await writeFile(
         autoConfigPath,
         [
-          "path,name,packageName,sampleType,skip,keepPath",
-          "Drums/kick.wav,custom_kick.wav,,,,",
+          "path,keepPath,name,packageName,sampleType,skip",
+          "Drums/kick.wav,,custom_kick.wav,,,",
         ].join("\n"),
       );
 
@@ -94,8 +94,8 @@ describe("auto-persist config", () => {
   it("does not auto-save when --config is passed", async () => {
     const zipped = zipSync({ "Drums/kick.wav": strToU8("kick-data") });
     const config = [
-      "path,name,packageName,sampleType,skip,keepPath",
-      "Drums/kick.wav,explicit.wav,,,,",
+      "path,keepPath,name,packageName,sampleType,skip",
+      "Drums/kick.wav,,explicit.wav,,,",
     ].join("\n");
 
     const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
@@ -142,8 +142,8 @@ describe("auto-persist config", () => {
       await writeFile(
         autoConfigPath,
         [
-          "path,name,packageName,sampleType,skip,keepPath",
-          "Drums/kick.wav,custom_kick.wav,,,,",
+          "path,keepPath,name,packageName,sampleType,skip",
+          "Drums/kick.wav,,custom_kick.wav,,,",
         ].join("\n"),
       );
 

@@ -32,7 +32,7 @@ describe("FLStudioProjectTransformer", () => {
       const csv = await readFile(join(dataDir, configFile), "utf8");
 
       const dirRow = csv.split("\n").find((row) => row.startsWith("My Beat,"));
-      expect(dirRow).toBe("My Beat,,,FL Studio Projects,,true");
+      expect(dirRow).toBe("My Beat,true,,,FL Studio Projects,");
     } finally {
       await rm(tmpDir, { recursive: true });
     }
