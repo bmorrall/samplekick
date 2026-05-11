@@ -10,6 +10,20 @@ Every transformer must be accompanied by tests at all three levels.
 
 ### 1. Unit test — `packages/samplekick-io/tests/unit/transformers/<name>.test.ts`
 
+Call the factory once and assign it to a `const` before the `describe` block (module-level singleton), then call `.transform()` on it:
+
+```ts
+const transformer = createMyTransformer();
+
+describe("createMyTransformer", () => {
+  it("…", () => {
+    transformer.transform(singleEntryTransformSource(entry));
+  });
+});
+```
+
+Never call the factory and `.transform()` inline in the same expression (`createMyTransformer().transform(…)`).
+
 Test the transformer in isolation using helpers from `tests/support.ts`:
 
 - `createTransformEntry(opts)` — creates a single mock `TransformEntry` with `vi.fn()` spies on all setters.
