@@ -65,4 +65,34 @@ describe("createFLStudioProjectTransformer", () => {
       expect(entry.setKeepStructure).not.toHaveBeenCalled();
     });
   });
+
+  describe("when tagSampleType is false", () => {
+    it("sets keepStructure but not sampleType for .flp directories", () => {
+      const entry = createTransformEntryInHierarchy(
+        [],
+        { name: "My Beat", isFile: false },
+        [{ name: "My Beat.flp" }],
+      );
+      const transformer = createFLStudioProjectTransformer({
+        tagSampleType: false,
+      });
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+      expect(entry.setSampleType).not.toHaveBeenCalled();
+    });
+
+    it("does not call setKeepStructure when no .flp child is present", () => {
+      const entry = createTransformEntryInHierarchy(
+        [],
+        { name: "My Beat", isFile: false },
+        [{ name: "readme.txt" }],
+      );
+      const transformer = createFLStudioProjectTransformer({
+        tagSampleType: false,
+      });
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setKeepStructure).not.toHaveBeenCalled();
+      expect(entry.setSampleType).not.toHaveBeenCalled();
+    });
+  });
 });

@@ -8,6 +8,39 @@ import { describe, expect, it } from "vitest";
 const CLI_PATH = resolve(import.meta.dirname, "../dist/index.mjs");
 
 describe("AbletonProjectTransformer", () => {
+  it("sets keepStructure without sampleType when run with --sanitise only", async () => {
+    const zipped = zipSync({
+      "My Project/My Project.als": strToU8("als-data"),
+      "My Project/Samples/kick.wav": strToU8("kick-data"),
+    });
+
+    const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-sanitise-"));
+    const zipPath = join(tmpDir, "test-pack.zip");
+    const dataDir = join(tmpDir, "data");
+
+    try {
+      await writeFile(zipPath, zipped);
+
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--sanitise"], {
+        encoding: "utf8",
+        env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+      });
+
+      expect(result.status).toBe(0);
+
+      const [configFile] = await readdir(dataDir);
+      const csv = await readFile(join(dataDir, configFile), "utf8");
+
+      // keepPath should be true (structure locked) but sampleType should be absent
+      const dirRow = csv
+        .split("\n")
+        .find((row) => row.startsWith("My Project,"));
+      expect(dirRow).toBe("My Project,true,,,,");
+    } finally {
+      await rm(tmpDir, { recursive: true });
+    }
+  });
+
   it("tags Ableton project folders with sampleType and keepStructure in the auto-config", async () => {
     const zipped = zipSync({
       "My Project/My Project.als": strToU8("als-data"),

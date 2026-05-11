@@ -32,7 +32,7 @@ describe("createArchiveFileTransformer", () => {
       expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
     });
 
-    it("does not overwrite an existing sampleType", () => {
+    it("does not overwrite an existing sampleType but still sets keepStructure", () => {
       const entry = createTransformEntryInHierarchy(
         [{ name: "extras" }],
         { name: "pack.zip", path: "extras/pack.zip", sampleType: "custom" },
@@ -41,7 +41,7 @@ describe("createArchiveFileTransformer", () => {
       const transformer = createArchiveFileTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
-      expect(entry.setKeepStructure).not.toHaveBeenCalled();
+      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
     });
   });
 
@@ -135,6 +135,45 @@ describe("createArchiveFileTransformer", () => {
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
       expect(entry.setKeepStructure).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("when tagSampleType is false", () => {
+    it("sets keepStructure but not sampleType for .zip files", () => {
+      const entry = createTransformEntryInHierarchy(
+        [{ name: "extras" }],
+        { name: "pack.zip", path: "extras/pack.zip" },
+        [],
+      );
+      const transformer = createArchiveFileTransformer({
+        tagSampleType: false,
+      });
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+      expect(entry.setSampleType).not.toHaveBeenCalled();
+    });
+
+    it("does not call setKeepStructure for non-.zip files", () => {
+      const entry = createTransformEntry({ name: "kick.wav" });
+      const transformer = createArchiveFileTransformer({
+        tagSampleType: false,
+      });
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setKeepStructure).not.toHaveBeenCalled();
+      expect(entry.setSampleType).not.toHaveBeenCalled();
+    });
+
+    it("does not call setKeepStructure for the root node", () => {
+      const entry = createTransformEntry({
+        name: "pack.zip",
+        path: "pack.zip",
+      });
+      const transformer = createArchiveFileTransformer({
+        tagSampleType: false,
+      });
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setKeepStructure).not.toHaveBeenCalled();
+      expect(entry.setSampleType).not.toHaveBeenCalled();
     });
   });
 });

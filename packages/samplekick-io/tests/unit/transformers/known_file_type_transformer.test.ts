@@ -23,7 +23,7 @@ describe("createKnownFileTypeTransformer", () => {
       expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
     });
 
-    it("does not overwrite an existing sampleType", () => {
+    it("does not overwrite an existing sampleType but still sets keepStructure", () => {
       const entry = createTransformEntry({
         name: "patch.fxp",
         sampleType: "custom",
@@ -31,7 +31,7 @@ describe("createKnownFileTypeTransformer", () => {
       const transformer = createKnownFileTypeTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
-      expect(entry.setKeepStructure).not.toHaveBeenCalled();
+      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
     });
   });
 
@@ -52,7 +52,7 @@ describe("createKnownFileTypeTransformer", () => {
       expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
     });
 
-    it("does not overwrite an existing sampleType", () => {
+    it("does not overwrite an existing sampleType but still sets keepStructure", () => {
       const entry = createTransformEntry({
         name: "patch.phaseplant",
         sampleType: "custom",
@@ -60,7 +60,7 @@ describe("createKnownFileTypeTransformer", () => {
       const transformer = createKnownFileTypeTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
-      expect(entry.setKeepStructure).not.toHaveBeenCalled();
+      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
     });
 
     it("sets sampleType when extension is on the path", () => {
@@ -88,6 +88,38 @@ describe("createKnownFileTypeTransformer", () => {
       const entry = createTransformEntry({ name: "song.mid" });
       const transformer = createKnownFileTypeTransformer();
       transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("when tagSampleType is false", () => {
+    it("sets keepStructure but not sampleType for .fxp files", () => {
+      const entry = createTransformEntry({ name: "patch.fxp" });
+      const transformer = createKnownFileTypeTransformer({
+        tagSampleType: false,
+      });
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+      expect(entry.setSampleType).not.toHaveBeenCalled();
+    });
+
+    it("sets keepStructure but not sampleType for .phaseplant files", () => {
+      const entry = createTransformEntry({ name: "patch.phaseplant" });
+      const transformer = createKnownFileTypeTransformer({
+        tagSampleType: false,
+      });
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+      expect(entry.setSampleType).not.toHaveBeenCalled();
+    });
+
+    it("does not call setKeepStructure for non-matching files", () => {
+      const entry = createTransformEntry({ name: "kick.wav" });
+      const transformer = createKnownFileTypeTransformer({
+        tagSampleType: false,
+      });
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setKeepStructure).not.toHaveBeenCalled();
       expect(entry.setSampleType).not.toHaveBeenCalled();
     });
   });

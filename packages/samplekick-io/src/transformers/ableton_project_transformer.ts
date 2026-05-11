@@ -1,7 +1,16 @@
 import type { Transform } from "../types";
 import { ABLETON_PROJECTS } from "./folder_lookup";
 
-const _singleton: Transform = {
+/**
+ * AbletonProjectTransformer
+ * Detects Ableton Live project folders by looking for a child with a ".als"
+ * extension, then marks the directory with sampleType "Ableton Projects"
+ * and keepStructure.
+ * Pass `{ tagSampleType: false }` to lock the folder structure without tagging.
+ */
+export const createAbletonProjectTransformer = ({
+  tagSampleType = true,
+}: { tagSampleType?: boolean } = {}): Transform => ({
   transform: (source) => {
     source.eachTransformEntry((entry) => {
       const children = entry.getChildNodes();
@@ -16,16 +25,9 @@ const _singleton: Transform = {
       );
 
       if (hasAls || hasAbletonFolderInfo) {
-        entry.setSampleType(ABLETON_PROJECTS);
+        if (tagSampleType) entry.setSampleType(ABLETON_PROJECTS);
         entry.setKeepStructure(true);
       }
     });
   },
-};
-/**
- * AbletonProjectTransformer
- * Detects Ableton Live project folders by looking for a child with a ".als"
- * extension, then marks the directory with sampleType "Ableton Projects"
- * and keepStructure.
- */
-export const createAbletonProjectTransformer = (): Transform => _singleton;
+});

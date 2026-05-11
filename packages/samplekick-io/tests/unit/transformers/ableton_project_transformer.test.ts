@@ -100,4 +100,34 @@ describe("createAbletonProjectTransformer", () => {
       expect(entry.setKeepStructure).not.toHaveBeenCalled();
     });
   });
+
+  describe("when tagSampleType is false", () => {
+    it("sets keepStructure but not sampleType for .als directories", () => {
+      const entry = createTransformEntryInHierarchy(
+        [],
+        { name: "My Project", isFile: false },
+        [{ name: "My Project.als" }],
+      );
+      const transformer = createAbletonProjectTransformer({
+        tagSampleType: false,
+      });
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+      expect(entry.setSampleType).not.toHaveBeenCalled();
+    });
+
+    it("does not call setKeepStructure when no .als child is present", () => {
+      const entry = createTransformEntryInHierarchy(
+        [],
+        { name: "My Project", isFile: false },
+        [{ name: "readme.txt" }],
+      );
+      const transformer = createAbletonProjectTransformer({
+        tagSampleType: false,
+      });
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setKeepStructure).not.toHaveBeenCalled();
+      expect(entry.setSampleType).not.toHaveBeenCalled();
+    });
+  });
 });
