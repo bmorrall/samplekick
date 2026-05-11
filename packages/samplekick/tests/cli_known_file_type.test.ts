@@ -34,11 +34,11 @@ describe("KnownFileTypeTransformer", () => {
       const midRow = csv.split("\n").find((row) => row.includes("groove.mid"));
       expect(midRow).toBeDefined();
       // sampleType column (index 3) should be "MIDI"
-      expect(midRow?.split(",")[3]).toBe("MIDI");
+      expect(midRow?.split(",")[4]).toBe("MIDI");
 
       const wavRow = csv.split("\n").find((row) => row.includes("kick.wav"));
       expect(wavRow).toBeDefined();
-      expect(wavRow?.split(",")[3]).toBe("");
+      expect(wavRow?.split(",")[4]).toBe("");
     } finally {
       await rm(tmpDir, { recursive: true });
     }
@@ -68,7 +68,7 @@ describe("KnownFileTypeTransformer", () => {
 
       const fxpRow = csv.split("\n").find((row) => row.includes("bass.fxp"));
       expect(fxpRow).toBeDefined();
-      expect(fxpRow?.split(",")[3]).toBe("Serum Presets");
+      expect(fxpRow?.split(",")[4]).toBe("Serum Presets");
     } finally {
       await rm(tmpDir, { recursive: true });
     }
@@ -97,7 +97,7 @@ describe("KnownFileTypeTransformer", () => {
       const csv = await readFile(join(dataDir, configFile), "utf8");
 
       const midRow = csv.split("\n").find((row) => row.includes("groove.mid"));
-      expect(midRow?.split(",")[3]).toBe("MIDI - Melodies");
+      expect(midRow?.split(",")[4]).toBe("MIDI - Melodies");
     } finally {
       await rm(tmpDir, { recursive: true });
     }

@@ -30,7 +30,7 @@ describe("CsvConfigWriter", () => {
     const writer = new CsvConfigWriter(stream);
 
     expect(captureOutput(writer, createConfigSource([]), stream)).toBe(
-      "path,name,packageName,sampleType,skip,keepPath",
+      "path,keepPath,name,packageName,sampleType,skip",
     );
   });
 
@@ -55,9 +55,9 @@ describe("CsvConfigWriter", () => {
     const lines = output.split("\n");
 
     expect(lines).toHaveLength(3);
-    expect(lines[0]).toBe("path,name,packageName,sampleType,skip,keepPath");
+    expect(lines[0]).toBe("path,keepPath,name,packageName,sampleType,skip");
     expect(lines[1]).toBe(
-      "jazz/bebop/track01,Alt Track 01,jazz-pack,Bebop,true,true",
+      "jazz/bebop/track01,true,Alt Track 01,jazz-pack,Bebop,true",
     );
     expect(lines[2]).toBe("rock/track01,,,,,");
   });
@@ -85,7 +85,7 @@ describe("CsvConfigWriter", () => {
     const output = captureOutput(writer, configSource, stream);
     const lines = output.split("\n");
 
-    expect(lines[1]).toBe('jazz/track01,"Jazz, Bebop",,,,');
+    expect(lines[1]).toBe('jazz/track01,,"Jazz, Bebop",,,');
   });
 
   it("quotes fields that contain double quotes", () => {
@@ -98,7 +98,7 @@ describe("CsvConfigWriter", () => {
     const output = captureOutput(writer, configSource, stream);
     const lines = output.split("\n");
 
-    expect(lines[1]).toBe('jazz/track01,"Jazz ""Bebop"" Track",,,,');
+    expect(lines[1]).toBe('jazz/track01,,"Jazz ""Bebop"" Track",,,');
   });
 
   it("serializes the root node for a registry even without overrides", () => {
@@ -110,7 +110,7 @@ describe("CsvConfigWriter", () => {
     const lines = output.split("\n");
 
     expect(lines).toHaveLength(2);
-    expect(lines[1]).toBe(",library,,,,");
+    expect(lines[1]).toBe(",,library,,,");
   });
 
   it("serializes root node changes when present on a registry", () => {
@@ -124,7 +124,7 @@ describe("CsvConfigWriter", () => {
     const lines = output.split("\n");
 
     expect(lines).toHaveLength(2);
-    expect(lines[1]).toBe(",Renamed Library,library-pack,,,");
+    expect(lines[1]).toBe(",,Renamed Library,library-pack,,");
   });
 });
 
@@ -145,9 +145,9 @@ describe("CsvConfigWriter { explicit: true }", () => {
     const output = captureOutput(writer, configSource, stream);
     const lines = output.split("\n");
 
-    expect(lines[1]).toBe("jazz/bebop/track01,track01,,,false,false");
+    expect(lines[1]).toBe("jazz/bebop/track01,false,track01,,,false");
     expect(lines[2]).toBe(
-      "jazz/bebop/track02,Alt Track,jazz-pack,Bebop,false,false",
+      "jazz/bebop/track02,false,Alt Track,jazz-pack,Bebop,false",
     );
   });
 

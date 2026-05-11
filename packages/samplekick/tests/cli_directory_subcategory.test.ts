@@ -33,7 +33,7 @@ describe("DirectorySubcategoryTransformer", () => {
       const row = csv
         .split("\n")
         .find((r) => r.startsWith("Drum Loops/Latin,"));
-      expect(row).toBe("Drum Loops/Latin,,,Drum Loops - Latin,,");
+      expect(row).toBe("Drum Loops/Latin,,,,Drum Loops - Latin,");
     } finally {
       await rm(tmpDir, { recursive: true });
     }
@@ -99,7 +99,7 @@ describe("DirectorySubcategoryTransformer", () => {
           ),
         );
       expect(row).toBe(
-        "Ghosthack x Boom - Sci-Fi Horror FX & Foley/Alien Technology,,,Foley - Alien Technology,,",
+        "Ghosthack x Boom - Sci-Fi Horror FX & Foley/Alien Technology,,,,Foley - Alien Technology,",
       );
     } finally {
       await rm(tmpDir, { recursive: true });

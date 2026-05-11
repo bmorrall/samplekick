@@ -27,9 +27,9 @@ describe("CsvConfigReader", () => {
     const reader = new CsvConfigReader(
       Readable.from([
         [
-          "path,name,packageName,sampleType,skip,keepPath",
-          "jazz/bebop/track01,Alt Track 01,jazz-pack,Bebop,true,true",
-          "rock/track01,,,,false,false",
+          "path,keepPath,name,packageName,sampleType,skip",
+          "jazz/bebop/track01,true,Alt Track 01,jazz-pack,Bebop,true",
+          "rock/track01,false,,,,false",
         ].join("\n"),
       ]),
     );
@@ -54,7 +54,7 @@ describe("CsvConfigReader", () => {
 
   it("does not call the callback when there are no data rows", () => {
     const reader = new CsvConfigReader(
-      Readable.from(["path,name,packageName,sampleType,skip,keepPath"]),
+      Readable.from(["path,keepPath,name,packageName,sampleType,skip"]),
     );
     const fn = vi.fn<(entry: ConfigEntry) => void>();
 
@@ -76,7 +76,7 @@ describe("CsvConfigReader", () => {
     const reader = new CsvConfigReader(
       Readable.from([
         [
-          "path,name,packageName,sampleType,skip,keepPath",
+          "path,keepPath,name,packageName,sampleType,skip",
           "jazz/track01,,,,,",
         ].join("\n"),
       ]),
@@ -98,7 +98,7 @@ describe("CsvConfigReader", () => {
     const reader = new CsvConfigReader(
       Readable.from([
         [
-          "path,name,packageName,sampleType,skip,keepPath",
+          "path,keepPath,name,packageName,sampleType,skip",
           "jazz/track01,,,,,",
         ].join("\n"),
       ]),
@@ -114,8 +114,8 @@ describe("CsvConfigReader", () => {
     const reader = new CsvConfigReader(
       Readable.from([
         [
-          "path,name,packageName,sampleType,skip,keepPath",
-          "jazz/track01,Custom Name,,,,",
+          "path,keepPath,name,packageName,sampleType,skip",
+          "jazz/track01,,Custom Name,,,",
         ].join("\n"),
       ]),
     );
@@ -130,8 +130,8 @@ describe("CsvConfigReader", () => {
     const reader = new CsvConfigReader(
       Readable.from([
         [
-          "path,name,packageName,sampleType,skip,keepPath",
-          'jazz/track01,"Jazz, Bebop",,,,',
+          "path,keepPath,name,packageName,sampleType,skip",
+          'jazz/track01,,"Jazz, Bebop",,,',
         ].join("\n"),
       ]),
     );
@@ -146,8 +146,8 @@ describe("CsvConfigReader", () => {
     const reader = new CsvConfigReader(
       Readable.from([
         [
-          "path,name,packageName,sampleType,skip,keepPath",
-          'jazz/track01,"Jazz ""Bebop"" Track",,,,',
+          "path,keepPath,name,packageName,sampleType,skip",
+          'jazz/track01,,"Jazz ""Bebop"" Track",,,',
         ].join("\n"),
       ]),
     );
@@ -162,8 +162,8 @@ describe("CsvConfigReader", () => {
     const reader = new CsvConfigReader(
       Readable.from([
         [
-          "path,name,packageName,sampleType,skip,keepPath",
-          "jazz/track01,,,,,yes",
+          "path,keepPath,name,packageName,sampleType,skip",
+          "jazz/track01,yes,,,,,",
         ].join("\n"),
       ]),
     );
@@ -179,8 +179,8 @@ describe("CsvConfigReader", () => {
     const reader = new CsvConfigReader(
       Readable.from([
         [
-          "path,name,packageName,sampleType,skip,keepPath",
-          "jazz/track01,,,,t,f",
+          "path,keepPath,name,packageName,sampleType,skip",
+          "jazz/track01,f,,,,t",
         ].join("\n"),
       ]),
     );
@@ -196,8 +196,8 @@ describe("CsvConfigReader", () => {
     const reader = new CsvConfigReader(
       Readable.from([
         [
-          "path,name,packageName,sampleType,skip,keepPath",
-          "jazz/track01,,,,1,0",
+          "path,keepPath,name,packageName,sampleType,skip",
+          "jazz/track01,0,,,,1",
         ].join("\n"),
       ]),
     );

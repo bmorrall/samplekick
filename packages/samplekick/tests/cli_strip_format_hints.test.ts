@@ -35,13 +35,13 @@ describe("StripFormatHintsTransformer", () => {
       const rows = csv.split("\n");
 
       expect(rows.find((r) => r.startsWith("Samples (WAV),"))).toBe(
-        "Samples (WAV),Samples,,,,",
+        "Samples (WAV),,Samples,,,",
       );
       expect(rows.find((r) => r.startsWith("Drums - 24bit,"))).toBe(
-        "Drums - 24bit,Drums,,Drums,,",
+        "Drums - 24bit,,Drums,,Drums,",
       );
       expect(rows.find((r) => r.startsWith("Bass - 44.1kHz,"))).toBe(
-        "Bass - 44.1kHz,Bass,,Bass,,",
+        "Bass - 44.1kHz,,Bass,,Bass,",
       );
       expect(rows.find((r) => r.startsWith("Loops [STEMS],"))).toBe(
         "Loops [STEMS],,,,,",
