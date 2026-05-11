@@ -60,7 +60,11 @@ export {
   formatBitDepth,
   AUDIO_EXTENSIONS,
 } from "./audio_format";
-export { SAMPLE_TYPE_PACKS } from "./sample_types";
+export {
+  SAMPLE_TYPE_PACKS,
+  SAMPLE_TYPE_LOOPS,
+  SAMPLE_TYPE_ONE_SHOTS,
+} from "./sample_types";
 export { PathResult, SkipResult } from "./types";
 export type {
   PathStrategy,

@@ -428,6 +428,29 @@ describe("PrettyExportReporter", () => {
       expect(raw).toContain("\x1B[95m"); // magentaBright — Packs sampleType
     });
 
+    it(`colours "Loops" sampleType with yellowBright`, () => {
+      const { reporter, getOutput } = createOrganisedReporter();
+      reporter.onAfterWrite(createEntry("kick.wav"), "Loops/my-pack/kick.wav");
+      const raw = getOutput();
+      expect(stripAnsi(raw)).toBe(
+        "  ✓ kick.wav\n    └── Loops/my-pack/kick.wav\n",
+      );
+      expect(raw).toContain("\x1B[93m"); // yellowBright — Loops sampleType
+    });
+
+    it(`colours "One Shots" sampleType with yellowBright`, () => {
+      const { reporter, getOutput } = createOrganisedReporter();
+      reporter.onAfterWrite(
+        createEntry("kick.wav"),
+        "One Shots/my-pack/kick.wav",
+      );
+      const raw = getOutput();
+      expect(stripAnsi(raw)).toBe(
+        "  ✓ kick.wav\n    └── One Shots/my-pack/kick.wav\n",
+      );
+      expect(raw).toContain("\x1B[93m"); // yellowBright — One Shots sampleType
+    });
+
     it("does not apply organised colouring when organised is false", () => {
       const { reporter, getOutput } = createReporter();
       reporter.onAfterWrite(
