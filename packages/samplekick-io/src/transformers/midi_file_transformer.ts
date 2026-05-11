@@ -2,13 +2,6 @@ import type { Transform } from "../types";
 
 const MIDI_PREFIX = "MIDI";
 
-/**
- * MidiFileTransformer
- * Detects MIDI files by the ".mid" extension and sets sampleType to "MIDI"
- * with keepStructure enabled. If the entry already has an inherited sampleType
- * (e.g. "Drum Loops" from a parent directory), the type is prefixed:
- * "MIDI - Drum Loops". Entries with keepStructure already set are skipped.
- */
 const _singleton: Transform = {
   transform: (source) => {
     source.eachTransformEntry((entry) => {
@@ -29,4 +22,11 @@ const _singleton: Transform = {
     });
   },
 };
+/**
+ * MidiFileTransformer
+ * Detects MIDI files by the ".mid" extension and sets sampleType to "MIDI"
+ * with keepStructure enabled. If the entry already has an inherited sampleType
+ * (e.g. "Drum Loops" from a parent directory), the type is prefixed:
+ * "MIDI - Drum Loops". Entries with keepStructure already set are skipped.
+ */
 export const createMidiFileTransformer = (): Transform => _singleton;

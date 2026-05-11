@@ -39,22 +39,6 @@ function isAudioPath(path: string): boolean {
   return false;
 }
 
-/**
- * FlatPackPrefixTransformer
- * Detects a flat directory (only file children, no sub-directories) where audio
- * files share a common name prefix containing at least one " - " separator.
- *
- * When detected:
- * - Sets packageName on the directory to the trimmed prefix.
- * - Sets sampleType to "Packs".
- * - For each child that carries the full prefix, strips the prefix and prepends
- *   the first segment (the vendor/artist name before the first " - ") so the
- *   source is still identifiable, e.g.:
- *   "Sounds by Sunwarper - SP404 Pack - 01 D4.wav"
- *   → "Sounds by Sunwarper - 01 D4.wav"
- *   When the prefix has only one segment (no nested " - "), children are stripped
- *   without any prepend (same as the simple strip behaviour).
- */
 const _singleton: Transform = {
   transform: (source) => {
     // Map from parent path → { strip, prepend }, populated in the first pass and
@@ -109,4 +93,20 @@ const _singleton: Transform = {
     });
   },
 };
+/**
+ * FlatPackPrefixTransformer
+ * Detects a flat directory (only file children, no sub-directories) where audio
+ * files share a common name prefix containing at least one " - " separator.
+ *
+ * When detected:
+ * - Sets packageName on the directory to the trimmed prefix.
+ * - Sets sampleType to "Packs".
+ * - For each child that carries the full prefix, strips the prefix and prepends
+ *   the first segment (the vendor/artist name before the first " - ") so the
+ *   source is still identifiable, e.g.:
+ *   "Sounds by Sunwarper - SP404 Pack - 01 D4.wav"
+ *   → "Sounds by Sunwarper - 01 D4.wav"
+ *   When the prefix has only one segment (no nested " - "), children are stripped
+ *   without any prepend (same as the simple strip behaviour).
+ */
 export const createFlatPackPrefixTransformer = (): Transform => _singleton;

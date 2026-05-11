@@ -50,15 +50,6 @@ function setFromUniqueDashSegment(
   if (matches.length === 1) entry.setSampleType(matches[0]);
 }
 
-/**
- * DrumSubcategoryTransformer
- * Recognises drum-specific subcategory folders (Fills, Breaks) and sets their
- * sampleType to the canonical "Drum Fills" / "Drum Breaks" form. Handles:
- *   - Bare folder names ("Fills", "Breaks") under a Drum / Drums ancestor.
- *   - Space-prefixed forms ("Drum Fills", "Drums Fill").
- *   - Dash-separated forms ("Drum - Fills", "Drums - Breaks").
- * Case-insensitive. Does not overwrite an existing sampleType.
- */
 const _singleton: Transform = {
   transform: (source) => {
     source.eachTransformEntry((entry) => {
@@ -101,4 +92,13 @@ const _singleton: Transform = {
     });
   },
 };
+/**
+ * DrumSubcategoryTransformer
+ * Recognises drum-specific subcategory folders (Fills, Breaks) and sets their
+ * sampleType to the canonical "Drum Fills" / "Drum Breaks" form. Handles:
+ *   - Bare folder names ("Fills", "Breaks") under a Drum / Drums ancestor.
+ *   - Space-prefixed forms ("Drum Fills", "Drums Fill").
+ *   - Dash-separated forms ("Drum - Fills", "Drums - Breaks").
+ * Case-insensitive. Does not overwrite an existing sampleType.
+ */
 export const createDrumSubcategoryTransformer = (): Transform => _singleton;

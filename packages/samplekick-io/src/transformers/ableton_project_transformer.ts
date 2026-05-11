@@ -1,12 +1,6 @@
 import type { Transform } from "../types";
 import { ABLETON_PROJECTS } from "./folder_lookup";
 
-/**
- * AbletonProjectTransformer
- * Detects Ableton Live project folders by looking for a child with a ".als"
- * extension, then marks the directory with sampleType "Ableton Projects"
- * and keepStructure.
- */
 const _singleton: Transform = {
   transform: (source) => {
     source.eachTransformEntry((entry) => {
@@ -28,4 +22,10 @@ const _singleton: Transform = {
     });
   },
 };
+/**
+ * AbletonProjectTransformer
+ * Detects Ableton Live project folders by looking for a child with a ".als"
+ * extension, then marks the directory with sampleType "Ableton Projects"
+ * and keepStructure.
+ */
 export const createAbletonProjectTransformer = (): Transform => _singleton;

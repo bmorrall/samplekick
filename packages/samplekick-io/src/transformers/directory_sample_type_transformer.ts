@@ -220,12 +220,6 @@ function setFromStrippedLoopLabel(
   return true;
 }
 
-/**
- * DirectorySampleTypeTransformer
- * Detects directories whose names match a known sampleType keyword
- * (case-insensitive) and sets the sampleType on that directory.
- * Accepts both singular and plural forms (e.g. "Drum" and "Drums" both map to "Drums").
- */
 const _singleton: Transform = {
   transform: (source) => {
     source.eachTransformEntry((entry) => {
@@ -244,4 +238,10 @@ const _singleton: Transform = {
     });
   },
 };
+/**
+ * DirectorySampleTypeTransformer
+ * Detects directories whose names match a known sampleType keyword
+ * (case-insensitive) and sets the sampleType on that directory.
+ * Accepts both singular and plural forms (e.g. "Drum" and "Drums" both map to "Drums").
+ */
 export const createDirectorySampleTypeTransformer = (): Transform => _singleton;
