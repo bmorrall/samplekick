@@ -2,6 +2,7 @@ import { PassThrough } from "node:stream";
 import { describe, expect, it } from "vitest";
 import { Chalk } from "chalk";
 import type { FileNode } from "samplekick-io";
+import { SAMPLE_TYPE_PACKS } from "samplekick-io";
 import { PrettyExportReporter } from "../../src/exporters/pretty_export_reporter";
 
 const chalk1 = new Chalk({ level: 1 });
@@ -90,6 +91,21 @@ describe("PrettyExportReporter organised summary", () => {
     const raw = getOutput();
     expect(raw).toContain("\x1B[92m"); // greenBright — package name
     expect(raw).toContain("\x1B[36m"); // cyan — sampleType
+  });
+
+  it(`colours "${SAMPLE_TYPE_PACKS}" sampleType with magentaBright`, () => {
+    const { reporter, getOutput } = createOrganisedReporter();
+    reporter.onAfterWrite(
+      createEntryWithMeta(
+        "Packs/my-pack/kick.wav",
+        "my-pack",
+        SAMPLE_TYPE_PACKS,
+      ),
+      "Packs/my-pack/kick.wav",
+    );
+    reporter.onComplete("/output");
+    const raw = getOutput();
+    expect(raw).toContain("\x1B[95m"); // magentaBright — Packs sampleType
   });
 
   it("sorts packages and sampleTypes alphabetically", () => {

@@ -418,6 +418,16 @@ describe("PrettyExportReporter", () => {
       expect(raw).toContain("\x1B[92m"); // greenBright — packageName
     });
 
+    it(`colours "Packs" sampleType (folder 1) with magentaBright`, () => {
+      const { reporter, getOutput } = createOrganisedReporter();
+      reporter.onAfterWrite(createEntry("kick.wav"), "Packs/my-pack/kick.wav");
+      const raw = getOutput();
+      expect(stripAnsi(raw)).toBe(
+        "  ✓ kick.wav\n    └── Packs/my-pack/kick.wav\n",
+      );
+      expect(raw).toContain("\x1B[95m"); // magentaBright — Packs sampleType
+    });
+
     it("does not apply organised colouring when organised is false", () => {
       const { reporter, getOutput } = createReporter();
       reporter.onAfterWrite(
