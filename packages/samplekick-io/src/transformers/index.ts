@@ -26,6 +26,7 @@ export { createTrimNameTransformer } from "./trim_name_transformer";
 export { createNormaliseQuotesTransformer } from "./normalise_quotes_transformer";
 export { createTruncateNameTransformer } from "./truncate_name_transformer";
 export { createFlatPackPrefixTransformer } from "./flat_pack_prefix_transformer";
+export { createCymaticsNameTransformer } from "./cymatics_name_transformer";
 export { createGhosthackNameTransformer } from "./ghosthack_name_transformer";
 export { createSquashNameTransformer } from "./squash_name_transformer";
 export { createStripFormatHintsTransformer } from "./strip_format_hints_transformer";

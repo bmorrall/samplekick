@@ -134,6 +134,10 @@ describe("index exports", () => {
     expect(api.createDrumSubcategoryTransformer).toBeDefined();
   });
 
+  test("exports createCymaticsNameTransformer", () => {
+    expect(api.createCymaticsNameTransformer).toBeDefined();
+  });
+
   test("exports createFlatPackPrefixTransformer", () => {
     expect(api.createFlatPackPrefixTransformer).toBeDefined();
   });
@@ -194,6 +198,7 @@ describe("index exports", () => {
       "createNormaliseQuotesTransformer",
       "createTruncateNameTransformer",
       "createFlatPackPrefixTransformer",
+      "createCymaticsNameTransformer",
       "createGhosthackNameTransformer",
       "createSquashNameTransformer",
       "createStripFormatHintsTransformer",
