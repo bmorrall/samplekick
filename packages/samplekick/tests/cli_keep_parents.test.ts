@@ -1,0 +1,178 @@
+import { spawnSync } from "node:child_process";
+import {
+  mkdtemp,
+  readFile,
+  readdir,
+  rm,
+  stat,
+  writeFile,
+} from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join, resolve } from "node:path";
+import { zipSync, strToU8 } from "fflate";
+import { describe, expect, it } from "vitest";
+
+const CLI_PATH = resolve(import.meta.dirname, "../dist/index.mjs");
+
+describe("KeepParentsTransformer", () => {
+  it("sets keepPath=true on directories that have files when --keep-parents is passed", async () => {
+    const zipped = zipSync({
+      "Kicks/kick.wav": strToU8("kick-data"),
+      "Snares/snare.wav": strToU8("snare-data"),
+    });
+
+    const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-keep-parents-"));
+    const zipPath = join(tmpDir, "test-pack.zip");
+    const dataDir = join(tmpDir, "data");
+    const outputDir = join(tmpDir, "output");
+
+    try {
+      await writeFile(zipPath, zipped);
+
+      const result = spawnSync(
+        "node",
+        [CLI_PATH, zipPath, "--analyse", "--keep-parents", "-o", outputDir],
+        {
+          encoding: "utf8",
+          env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+        },
+      );
+
+      expect(result.status).toBe(0);
+
+      const [configFile] = await readdir(dataDir);
+      const csv = await readFile(join(dataDir, configFile), "utf8");
+      expect(csv).toBe(
+        [
+          "path,keepPath,name,packageName,sampleType,skip",
+          ",,test-pack.zip,test-pack,,",
+          "Kicks,true,,,Kicks,",
+          "Snares,true,,,Snares,",
+        ].join("\n"),
+      );
+
+      expect(
+        (
+          await stat(join(outputDir, "Kicks/test-pack/Kicks/kick.wav"))
+        ).isFile(),
+      ).toBe(true);
+      expect(
+        (
+          await stat(join(outputDir, "Snares/test-pack/Snares/snare.wav"))
+        ).isFile(),
+      ).toBe(true);
+    } finally {
+      await rm(tmpDir, { recursive: true });
+    }
+  });
+
+  it("does not set keepPath on directories when --keep-parents is not passed", async () => {
+    const zipped = zipSync({
+      "Kicks/kick.wav": strToU8("kick-data"),
+    });
+
+    const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-keep-parents-"));
+    const zipPath = join(tmpDir, "test-pack.zip");
+    const dataDir = join(tmpDir, "data");
+
+    try {
+      await writeFile(zipPath, zipped);
+
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--analyse"], {
+        encoding: "utf8",
+        env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+      });
+
+      expect(result.status).toBe(0);
+
+      const [configFile] = await readdir(dataDir);
+      const csv = await readFile(join(dataDir, configFile), "utf8");
+      expect(csv).toBe(
+        [
+          "path,keepPath,name,packageName,sampleType,skip",
+          ",,test-pack.zip,test-pack,,",
+          "Kicks,,,,Kicks,",
+          "Kicks/kick.wav,,,,,",
+        ].join("\n"),
+      );
+    } finally {
+      await rm(tmpDir, { recursive: true });
+    }
+  });
+
+  it("saves the auto-config with keepPath=true when --keep-parents is passed without --analyse", async () => {
+    const zipped = zipSync({
+      "Kicks/kick.wav": strToU8("kick-data"),
+      "Snares/snare.wav": strToU8("snare-data"),
+    });
+
+    const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-keep-parents-"));
+    const zipPath = join(tmpDir, "test-pack.zip");
+    const dataDir = join(tmpDir, "data");
+
+    try {
+      await writeFile(zipPath, zipped);
+
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--keep-parents"], {
+        encoding: "utf8",
+        env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+      });
+
+      expect(result.status).toBe(0);
+
+      const [configFile] = await readdir(dataDir);
+      const csv = await readFile(join(dataDir, configFile), "utf8");
+      expect(csv).toBe(
+        [
+          "path,keepPath,name,packageName,sampleType,skip",
+          ",,test-pack.zip,,,",
+          "Kicks,true,,,,",
+          "Snares,true,,,,",
+        ].join("\n"),
+      );
+    } finally {
+      await rm(tmpDir, { recursive: true });
+    }
+  });
+
+  it("only sets keepPath on directories with direct file children, leaving ancestor directories unset", async () => {
+    const zipped = zipSync({
+      "Guitar Pack/samples/guitar_stuff/guitar.wav": strToU8("guitar-data"),
+      "Guitar Pack/samples/readme.txt": strToU8("readme-data"),
+    });
+
+    const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-keep-parents-"));
+    const zipPath = join(tmpDir, "test-pack.zip");
+    const dataDir = join(tmpDir, "data");
+
+    try {
+      await writeFile(zipPath, zipped);
+
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--keep-parents"], {
+        encoding: "utf8",
+        env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+      });
+
+      expect(result.status).toBe(0);
+
+      const [configFile] = await readdir(dataDir);
+      const csv = await readFile(join(dataDir, configFile), "utf8");
+      expect(csv).toBe(
+        [
+          "path,keepPath,name,packageName,sampleType,skip",
+          ",,test-pack.zip,,,",
+          // Guitar Pack has no direct file children — appears without keepPath
+          // so it can be individually toggled in the config
+          "Guitar Pack,,,,,",
+          // samples has readme.txt directly, so keepPath=true
+          "Guitar Pack/samples,true,,,,",
+          // guitar_stuff has its own keepPath=true so it also appears,
+          // allowing it to be toggled independently
+          "Guitar Pack/samples/guitar_stuff,true,,,,",
+        ].join("\n"),
+      );
+    } finally {
+      await rm(tmpDir, { recursive: true });
+    }
+  });
+});

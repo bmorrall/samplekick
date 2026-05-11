@@ -35,6 +35,7 @@ import {
   createNormaliseSpacesTransformer,
   OrganisedPathStrategy,
   Registry,
+  createKeepParentsTransformer,
   createSkipJunkTransformer,
   SourcePathStrategy,
   createTrimNameTransformer,
@@ -112,6 +113,7 @@ Options:
   -d, --device <name>     Apply device-specific transforms to sample names
   -c, --convert           Convert audio files to device format
       --allow-junk        Keep junk entries (e.g. __MACOSX, hidden files)
+      --keep-parents      Preserve parent folders for all directories with files
       --preserve-paths    Export to original source paths (skip organising)
       --squash            Convert names to camelCase after device transforms
       --debug             Print the pack structure to stdout for inspection
@@ -197,6 +199,7 @@ try {
       analyse: { type: "boolean", short: "a" },
       "allow-junk": { type: "boolean" },
       "preserve-paths": { type: "boolean" },
+      "keep-parents": { type: "boolean" },
       squash: { type: "boolean" },
       bake: { type: "boolean" },
       rebuild: { type: "boolean" },
@@ -418,6 +421,10 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
     registry.applyTransform(createMidiFileTransformer());
   }
 
+  if (values["keep-parents"] === true) {
+    registry.applyTransform(createKeepParentsTransformer());
+  }
+
   const configPath =
     values.config === undefined ? undefined : resolve(values.config);
   const autoConfigPath = await loadConfig(registry, configPath, dataDir, {
@@ -428,7 +435,7 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
   });
 
   if (
-    values.analyse === true &&
+    (values.analyse === true || values["keep-parents"] === true) &&
     autoConfigPath !== undefined &&
     values.bake !== true
   ) {
