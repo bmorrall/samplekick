@@ -2,17 +2,23 @@ import type { StringTransformer, Transform } from "../types";
 import { createSanitiseNameTransformer } from "./sanitise_name_transformer";
 
 // Matches key tags of the form "<root>[_ ]?<quality>", e.g.:
-//   "C Major", "C_major", "Cmajor", "C maj", "F# Minor", "Db_min"
+//   "C Major", "C_major", "Cmajor", "C maj", "F# Minor", "Db_min", "Gsus2", "G_sus4"
 // Root: A–G with optional sharp (#) or flat (b) accidental.
-// Quality: major, minor, maj, min (case-insensitive).
+// Quality: major, minor, maj, min, sus2, sus4 (case-insensitive).
 // Lookbehind (?<![a-zA-Z]) prevents matching note letters inside words (e.g. "grab min").
 // Lookahead (?![a-zA-Z]) prevents partial-word matches (e.g. "Cmajority").
 const KEY_RE =
-  /(?<![a-zA-Z])(?<root>[A-G][#b]?)[_ ]?(?<quality>major|minor|maj|min)(?![a-zA-Z])/giv;
+  /(?<![a-zA-Z])(?<root>[A-G][#b]?)[_ ]?(?<quality>major|minor|maj|min|sus[24])(?![a-zA-Z])/giv;
 
 function keyTagReplacer(_match: string, root: string, quality: string): string {
   const normRoot = root[0].toUpperCase() + root.slice(1);
-  const normQuality = quality.toLowerCase().startsWith("maj") ? "maj" : "min";
+  const q = quality.toLowerCase();
+  let normQuality: string = q;
+  if (q.startsWith("maj")) {
+    normQuality = "maj";
+  } else if (q.startsWith("min")) {
+    normQuality = "min";
+  }
   return `${normRoot}${normQuality}`;
 }
 

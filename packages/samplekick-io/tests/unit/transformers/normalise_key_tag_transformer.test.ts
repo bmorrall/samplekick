@@ -105,6 +105,43 @@ describe("createNormaliseKeyTagTransformer", () => {
     });
   });
 
+  describe("sus quality", () => {
+    it("normalises G sus2 (spaced) to Gsus2", () => {
+      const entry = createTransformEntry({ name: "Loop G sus2.wav" });
+      const transformer = createNormaliseKeyTagTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setName).toHaveBeenCalledWith("Loop Gsus2.wav");
+    });
+
+    it("normalises G_sus2 (underscore) to Gsus2", () => {
+      const entry = createTransformEntry({ name: "Loop G_sus2.wav" });
+      const transformer = createNormaliseKeyTagTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setName).toHaveBeenCalledWith("Loop Gsus2.wav");
+    });
+
+    it("normalises Gsus2 (no separator) to Gsus2 unchanged", () => {
+      const entry = createTransformEntry({ name: "Loop Gsus2.wav" });
+      const transformer = createNormaliseKeyTagTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setName).toHaveBeenCalledWith("Loop Gsus2.wav");
+    });
+
+    it("normalises G sus4 (spaced) to Gsus4", () => {
+      const entry = createTransformEntry({ name: "Loop G sus4.wav" });
+      const transformer = createNormaliseKeyTagTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setName).toHaveBeenCalledWith("Loop Gsus4.wav");
+    });
+
+    it("uppercases a lowercase root in sus quality", () => {
+      const entry = createTransformEntry({ name: "Loop g sus2.wav" });
+      const transformer = createNormaliseKeyTagTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setName).toHaveBeenCalledWith("Loop Gsus2.wav");
+    });
+  });
+
   it("normalises packageName when the entry has one", () => {
     const entry = createTransformEntry({
       name: "kick.wav",
