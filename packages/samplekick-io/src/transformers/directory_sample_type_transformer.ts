@@ -75,6 +75,23 @@ function setFromStandalone(entry: TransformEntry, nameLower: string): boolean {
   return true;
 }
 
+// Compound-tail fallback: when a " & "/" and "-joined name has only its last segment as a
+// known standalone type (and no preceding segment is also known), return that type.
+// e.g. "Sci-Fi Horror FX & Foley" → "Foley" (preceding "sci-fi horror fx" is not in the lookup).
+// Avoids simplifying when multiple parts are known, e.g. "FX & Foley" has "fx" → "Sound FX" as well.
+function resolveCompoundTailType(nameLower: string): string | undefined {
+  const compoundSep = nameLower.includes(' & ') ? ' & ' : nameLower.includes(' and ') ? ' and ' : undefined;
+  if (compoundSep === undefined) return undefined;
+  const parts = nameLower.split(compoundSep);
+  const lastPart = parts.pop();
+  if (lastPart === undefined) return undefined;
+  const lastType = lookupStandalone(lastPart);
+  if (lastType !== undefined && parts.every((p) => lookupStandalone(p) === undefined)) {
+    return lastType;
+  }
+  return undefined;
+}
+
 function resolveStandaloneType(nameLower: string): string | undefined {
   const standalone = lookupStandalone(nameLower);
   if (standalone !== undefined) return standalone;
@@ -88,7 +105,7 @@ function resolveStandaloneType(nameLower: string): string | undefined {
     const prefix = lookupPrefix(nameLower.slice(0, -suffix.length));
     if (prefix !== undefined) return `${prefix} One Shots`;
   }
-  return undefined;
+  return resolveCompoundTailType(nameLower);
 }
 
 function setFromDashSeparatedName(entry: TransformEntry, nameLower: string): boolean {

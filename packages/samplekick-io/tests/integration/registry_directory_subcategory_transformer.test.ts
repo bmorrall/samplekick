@@ -69,6 +69,23 @@ describe("DirectorySubcategoryTransformer integration", () => {
     );
   });
 
+  it("does not tag a MIDI child directory as a subcategory under a known-type parent", () => {
+    const registry = createRegistry("Pack.zip", [
+      createFileEntry({ path: "Melodies/MIDI/track.mid" }),
+    ]);
+    registry.applyTransform(createDirectorySampleTypeTransformer);
+    registry.applyTransform(createDirectorySubcategoryTransformer);
+    expect(registry.toString()).toBe(
+      [
+        "Pack.zip",
+        "└── Melodies [type:Melodies]",
+        "    └── MIDI",
+        "        └── track.mid [?]",
+        "",
+      ].join("\n"),
+    );
+  });
+
   it("resolves subcategory-preferred keys (808s/909s) using the parent type derived from the folder name", () => {
     const registry = createRegistry("Pack.zip", [
       createFileEntry({ path: "Drums/808s/808.wav" }),

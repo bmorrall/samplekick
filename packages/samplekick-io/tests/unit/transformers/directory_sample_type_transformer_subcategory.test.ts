@@ -327,6 +327,26 @@ describe("createDirectorySampleTypeTransformer", () => {
       createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
     });
+
+    it('sets sampleType to "Foley" when the suffix is a compound ending with a known type (compound-tail)', () => {
+      const entry = createTransformEntryInHierarchy(
+        [],
+        { name: "Brand - Sci-Fi Horror FX & Foley", isFile: false },
+        [{ name: "coin.wav" }],
+      );
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("Foley");
+    });
+
+    it("does not set sampleType when multiple compound parts in the suffix are known types", () => {
+      const entry = createTransformEntryInHierarchy(
+        [],
+        { name: "Brand - FX & Foley", isFile: false },
+        [{ name: "coin.wav" }],
+      );
+      createDirectorySampleTypeTransformer(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).not.toHaveBeenCalled();
+    });
   });
 
   describe('when the directory name ends with "Stems"', () => {

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { createMidiFileTransformer, createDirectorySampleTypeTransformer } from "../../src";
+import { createMidiFileTransformer, createDirectorySampleTypeTransformer, createDirectorySubcategoryTransformer } from "../../src";
 import { createRegistry, createFileEntry } from "../support";
 
 describe("MidiFileTransformer integration", () => {
@@ -34,6 +34,24 @@ describe("MidiFileTransformer integration", () => {
         "└── Drum Loops [type:Drum Loops]",
         "    ┣━━ groove.mid [?] [type:MIDI - Drum Loops]",
         "    └── kick.wav [?]",
+        "",
+      ].join("\n"),
+    );
+  });
+
+  it("inherits the ancestor sampleType when nested under a transparent MIDI directory — avoids double-prefix", () => {
+    const registry = createRegistry("Pack.zip", [
+      createFileEntry({ path: "Melodies/MIDI/groove.mid" }),
+    ]);
+    registry.applyTransform(createDirectorySampleTypeTransformer);
+    registry.applyTransform(createDirectorySubcategoryTransformer);
+    registry.applyTransform(createMidiFileTransformer);
+    expect(registry.toString()).toBe(
+      [
+        "Pack.zip",
+        "└── Melodies [type:Melodies]",
+        "    └── MIDI",
+        "        ┗━━ groove.mid [?] [type:MIDI - Melodies]",
         "",
       ].join("\n"),
     );

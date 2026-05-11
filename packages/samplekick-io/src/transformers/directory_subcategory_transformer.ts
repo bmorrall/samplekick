@@ -4,8 +4,10 @@ import { isKnownTypeFolderName } from './folder_lookup';
 const STRIP_MIDI_STEMS_RE = / (?:&|and) (?:midi|stems?)$/iv;
 
 // Folder names ending with these suffixes should never be treated as a subcategory.
-// e.g. "Latin Stems" or "Loop Steps" under a known-type parent are excluded.
-const SUBCATEGORY_EXCLUDED_SUFFIX_RE = /(?:^| )(?:stems?|steps?)$/iv;
+// e.g. "Latin Stems", "Loop Steps", or bare "MIDI" under a known-type parent are excluded.
+// MIDI directories are always transparent: the MidiFileTransformer computes the correct
+// sampleType from the ancestor context, avoiding "Melodies - MIDI" → "MIDI - Melodies - MIDI".
+const SUBCATEGORY_EXCLUDED_SUFFIX_RE = /(?:^| )(?:stems?|steps?|midi)$/iv;
 
 function trySetSubcategory(entry: TransformEntry): boolean {
   const parent = entry.getParentNode();
