@@ -153,7 +153,7 @@ describe("--bake flag", () => {
       expect(csv).toBe(
         [
           "path,keepPath,name,packageName,sampleType,skip",
-          ",false,test-pack.zip,test-pack,,false", // root: name is zip filename; packageName derived from it
+          ",false,test-pack.zip,test-pack,Packs,false", // root: name is zip filename; packageName derived from it
           "Drums,false,Drums,,Drums,false", // directory: sampleType set by analyse
           "Drums/kick.wav,false,kick.wav,,,false", // file: name locked in explicitly
         ].join("\n"),

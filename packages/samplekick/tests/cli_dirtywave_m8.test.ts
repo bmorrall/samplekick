@@ -40,7 +40,7 @@ describe("Dirtywave M8 device preset", () => {
       expect(autoConfig).toBe(
         [
           "path,keepPath,name,packageName,sampleType,skip",
-          ",,test-pack.zip,test-pack,,",
+          ",,test-pack.zip,test-pack,Packs,",
           "Drums,,,,Drums,",
           "Drums/kick.wav,,,,,",
           "Loops,,,,Loops,",

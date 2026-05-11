@@ -166,6 +166,7 @@ export class Registry implements FileSource, ConfigSource {
             getName: () => node.getName(),
             getPackageName: () => node.getOwnPackageName(),
             getSampleType: () => node.getOwnSampleType(),
+            getOwnPackageName: () => node.getOwnPackageName(),
             getOwnSampleType: () => node.getOwnSampleType(),
             isSkipped: () => node.getOwnSkipped(),
             isKeepStructure: () => node.getOwnKeepStructure(),

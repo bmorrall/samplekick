@@ -72,6 +72,8 @@ export const createTransformEntry = (opts: {
   // istanbul ignore next
   getSampleType: () => opts.sampleType,
   // istanbul ignore next
+  getOwnPackageName: () => opts.packageName,
+  // istanbul ignore next
   getOwnSampleType: () => opts.sampleType,
   // istanbul ignore next
   isSkipped: () => opts.skipped,
@@ -169,6 +171,8 @@ export const createTransformEntryInHierarchy = (
     getPackageName: () => part.packageName,
     // istanbul ignore next
     getSampleType: () => part.sampleType,
+    // istanbul ignore next
+    getOwnPackageName: () => part.packageName,
     // istanbul ignore next
     getOwnSampleType: () => part.sampleType,
     // istanbul ignore next

@@ -45,7 +45,7 @@ describe("KeepParentsTransformer", () => {
       expect(csv).toBe(
         [
           "path,keepPath,name,packageName,sampleType,skip",
-          ",,test-pack.zip,test-pack,,",
+          ",,test-pack.zip,test-pack,Packs,",
           "Kicks,true,,,Kicks,",
           "Snares,true,,,Snares,",
         ].join("\n"),
@@ -66,7 +66,7 @@ describe("KeepParentsTransformer", () => {
     }
   });
 
-  it("does not set keepPath on directories when --keep-parents is not passed", async () => {
+  it("sets keepPath=true on directories with files when --analyse is passed without --keep-parents", async () => {
     const zipped = zipSync({
       "Kicks/kick.wav": strToU8("kick-data"),
     });
@@ -90,7 +90,7 @@ describe("KeepParentsTransformer", () => {
       expect(csv).toBe(
         [
           "path,keepPath,name,packageName,sampleType,skip",
-          ",,test-pack.zip,test-pack,,",
+          ",,test-pack.zip,test-pack,Packs,",
           "Kicks,,,,Kicks,",
           "Kicks/kick.wav,,,,,",
         ].join("\n"),
@@ -125,7 +125,7 @@ describe("KeepParentsTransformer", () => {
       expect(csv).toBe(
         [
           "path,keepPath,name,packageName,sampleType,skip",
-          ",,test-pack.zip,,,",
+          ",,test-pack.zip,test-pack,Packs,",
           "Kicks,true,,,,",
           "Snares,true,,,,",
         ].join("\n"),
@@ -160,7 +160,7 @@ describe("KeepParentsTransformer", () => {
       expect(csv).toBe(
         [
           "path,keepPath,name,packageName,sampleType,skip",
-          ",,test-pack.zip,,,",
+          ",,test-pack.zip,test-pack,Packs,",
           // Guitar Pack has no direct file children — appears without keepPath
           // so it can be individually toggled in the config
           "Guitar Pack,,,,,",

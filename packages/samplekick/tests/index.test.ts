@@ -48,6 +48,7 @@ describe("samplekick CLI", () => {
           "  -o, --output <path>     Export samples to a directory",
           "                          Omit to preview changes without writing files",
           "  -a, --analyse           Analyse pack and save to the auto-config",
+          "  -s, --sanitise          Normalise entry names (trim, spacing, dashes, tags)",
           "  -d, --device <name>     Apply device-specific transforms to sample names",
           "  -c, --convert           Convert audio files to device format",
           "      --allow-junk        Keep junk entries (e.g. __MACOSX, hidden files)",
