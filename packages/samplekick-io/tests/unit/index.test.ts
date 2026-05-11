@@ -162,6 +162,14 @@ describe("index exports", () => {
     expect(api.createPathLengthValidator).toBeDefined();
   });
 
+  test("exports createNoPacksValidator", () => {
+    expect(api.createNoPacksValidator).toBeDefined();
+  });
+
+  test("exports SAMPLE_TYPE_PACKS", () => {
+    expect(api.SAMPLE_TYPE_PACKS).toBe("Packs");
+  });
+
   test("only exposes runtime exports from the public index", () => {
     expect(Object.keys(api)).toEqual([
       "Registry",
@@ -206,6 +214,7 @@ describe("index exports", () => {
       "SourcePathStrategy",
       "OrganisedPathStrategy",
       "createPathLengthValidator",
+      "createNoPacksValidator",
       "SP404Mk2Preset",
       "DirtywaveM8Preset",
       "BIT_DEPTH_16",
@@ -217,6 +226,7 @@ describe("index exports", () => {
       "formatSampleRate",
       "formatBitDepth",
       "AUDIO_EXTENSIONS",
+      "SAMPLE_TYPE_PACKS",
       "PathResult",
       "SkipResult",
     ]);

@@ -65,6 +65,7 @@ describe("samplekick CLI", () => {
           "      --bake              Save the transformed config as the auto-config so",
           "                          transforms are applied automatically on the next run",
           "      --rebuild           Ignore the auto-config and analyse from scratch",
+          '      --no-packs          Reject files tagged as Packs (sampleType = "Packs")',
           "      --verbose           Show skipped files, config paths, and inherited tags",
           "      --quiet             Only show errors (suppress per-file success lines)",
           "  -v, --version           Show version number",

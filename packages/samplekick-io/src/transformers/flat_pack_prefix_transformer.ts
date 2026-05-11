@@ -1,5 +1,6 @@
 import type { Transform } from "../types";
 import { AUDIO_EXTENSIONS } from "../audio_format";
+import { SAMPLE_TYPE_PACKS } from "../sample_types";
 
 const SEPARATOR = " - ";
 const NOT_FOUND = -1;
@@ -70,7 +71,7 @@ const _singleton: Transform = {
       if (prefix === undefined || prefix.length === 0) return;
 
       entry.setPackageName(prefix);
-      entry.setSampleType("Packs");
+      entry.setSampleType(SAMPLE_TYPE_PACKS);
 
       const vendor = firstSegment(prefix);
       const strip = `${prefix}${SEPARATOR}`;

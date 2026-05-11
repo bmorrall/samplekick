@@ -3,7 +3,7 @@ import type { Writable } from "node:stream";
 import type { ChalkInstance } from "chalk";
 import chalk from "chalk";
 import type { ConfigEntry, FileNode } from "samplekick-io";
-import { AUDIO_EXTENSIONS } from "samplekick-io";
+import { AUDIO_EXTENSIONS, SAMPLE_TYPE_PACKS } from "samplekick-io";
 import type { ExportReporter } from "./export_reporter";
 
 const countLeafNodes = (entry: FileNode): number => {
@@ -100,6 +100,16 @@ export class PrettyExportReporter implements ExportReporter {
     return parts.length > 0 ? ` (${parts.join(", ")})` : "";
   }
 
+  private formatSampleType(type: string): string {
+    return type === SAMPLE_TYPE_PACKS
+      ? this.chalk.magentaBright(type)
+      : this.chalk.cyan(type);
+  }
+
+  private formatPackageName(name: string): string {
+    return this.chalk.greenBright(name);
+  }
+
   private formatDir(dir: string): string {
     if (!this.organised) {
       return this.chalk.gray(dir);
@@ -107,8 +117,8 @@ export class PrettyExportReporter implements ExportReporter {
     const segments = dir.split("/");
     return segments
       .map((seg, i) => {
-        if (i === 0) return this.chalk.cyan(seg);
-        if (i === 1) return this.chalk.greenBright(seg);
+        if (i === 0) return this.formatSampleType(seg);
+        if (i === 1) return this.formatPackageName(seg);
         return this.chalk.gray(seg);
       })
       .join(this.chalk.gray("/"));
@@ -176,7 +186,7 @@ export class PrettyExportReporter implements ExportReporter {
         const filePart =
           counts.files > 0 ? `, ${pluraliseFiles(counts.files)}` : "";
         this.output.write(
-          `  ${this.chalk.cyan(type)}: ${pluraliseSamples(counts.samples)}${filePart}\n`,
+          `  ${this.formatSampleType(type)}: ${pluraliseSamples(counts.samples)}${filePart}\n`,
         );
       }
     }
@@ -192,7 +202,7 @@ export class PrettyExportReporter implements ExportReporter {
       const fileTotal = this.pkgFileTotal(types);
       const filePart = fileTotal > 0 ? `, ${pluraliseFiles(fileTotal)}` : "";
       this.output.write(
-        `${this.chalk.greenBright(pkg)}: ${pluraliseSamples(total)}${filePart}\n`,
+        `${this.formatPackageName(pkg)}: ${pluraliseSamples(total)}${filePart}\n`,
       );
       this.printPkgTypes(types);
     }
