@@ -10,7 +10,7 @@ describe("createFLStudioProjectTransformer", () => {
         { name: "My Beat", isFile: false },
         [{ name: "My Beat.flp" }],
       );
-      createFLStudioProjectTransformer(singleEntryTransformSource(entry));
+      createFLStudioProjectTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("FL Studio Projects");
     });
 
@@ -20,7 +20,7 @@ describe("createFLStudioProjectTransformer", () => {
         { name: "My Beat", isFile: false },
         [{ name: "My Beat.flp" }],
       );
-      createFLStudioProjectTransformer(singleEntryTransformSource(entry));
+      createFLStudioProjectTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
     });
 
@@ -30,7 +30,7 @@ describe("createFLStudioProjectTransformer", () => {
         { name: "My Beat", isFile: false },
         [{ name: "My Beat.FLP" }],
       );
-      createFLStudioProjectTransformer(singleEntryTransformSource(entry));
+      createFLStudioProjectTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("FL Studio Projects");
     });
   });
@@ -42,7 +42,7 @@ describe("createFLStudioProjectTransformer", () => {
         { name: "My Beat", isFile: false },
         [{ name: "readme.txt" }],
       );
-      createFLStudioProjectTransformer(singleEntryTransformSource(entry));
+      createFLStudioProjectTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
       expect(entry.setKeepStructure).not.toHaveBeenCalled();
     });
@@ -51,7 +51,7 @@ describe("createFLStudioProjectTransformer", () => {
   describe("when the entry has no children", () => {
     it("does not set sampleType or keepStructure", () => {
       const entry = createTransformEntry({ name: "My Beat.flp" });
-      createFLStudioProjectTransformer(singleEntryTransformSource(entry));
+      createFLStudioProjectTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
       expect(entry.setKeepStructure).not.toHaveBeenCalled();
     });

@@ -10,7 +10,7 @@ describe("createDrumSubcategoryTransformer", () => {
         { name: "Drum Fills", isFile: false },
         [{ name: "fill.wav" }],
       );
-      createDrumSubcategoryTransformer(singleEntryTransformSource(entry));
+      createDrumSubcategoryTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Drum Fills");
     });
 
@@ -20,7 +20,7 @@ describe("createDrumSubcategoryTransformer", () => {
         { name: "Drum Fill", isFile: false },
         [{ name: "fill.wav" }],
       );
-      createDrumSubcategoryTransformer(singleEntryTransformSource(entry));
+      createDrumSubcategoryTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Drum Fills");
     });
 
@@ -30,7 +30,7 @@ describe("createDrumSubcategoryTransformer", () => {
         { name: "Drums Fills", isFile: false },
         [{ name: "fill.wav" }],
       );
-      createDrumSubcategoryTransformer(singleEntryTransformSource(entry));
+      createDrumSubcategoryTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Drum Fills");
     });
 
@@ -40,7 +40,7 @@ describe("createDrumSubcategoryTransformer", () => {
         { name: "Drum - Fills", isFile: false },
         [{ name: "fill.wav" }],
       );
-      createDrumSubcategoryTransformer(singleEntryTransformSource(entry));
+      createDrumSubcategoryTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Drum Fills");
     });
 
@@ -50,7 +50,7 @@ describe("createDrumSubcategoryTransformer", () => {
         { name: "Drums - Fills", isFile: false },
         [{ name: "fill.wav" }],
       );
-      createDrumSubcategoryTransformer(singleEntryTransformSource(entry));
+      createDrumSubcategoryTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Drum Fills");
     });
 
@@ -60,7 +60,7 @@ describe("createDrumSubcategoryTransformer", () => {
         { name: "drum fills", isFile: false },
         [{ name: "fill.wav" }],
       );
-      createDrumSubcategoryTransformer(singleEntryTransformSource(entry));
+      createDrumSubcategoryTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Drum Fills");
     });
 
@@ -70,7 +70,7 @@ describe("createDrumSubcategoryTransformer", () => {
         { name: "Drum Fills", isFile: false, sampleType: "Custom" },
         [{ name: "fill.wav" }],
       );
-      createDrumSubcategoryTransformer(singleEntryTransformSource(entry));
+      createDrumSubcategoryTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
     });
 
@@ -80,7 +80,7 @@ describe("createDrumSubcategoryTransformer", () => {
         { name: "Drum Fills", isFile: false },
         [{ name: "fill.wav" }],
       );
-      createDrumSubcategoryTransformer(singleEntryTransformSource(entry));
+      createDrumSubcategoryTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setKeepStructure).not.toHaveBeenCalled();
     });
   });
@@ -92,7 +92,7 @@ describe("createDrumSubcategoryTransformer", () => {
         { name: "Fills", isFile: false },
         [{ name: "fill.wav" }],
       );
-      createDrumSubcategoryTransformer(singleEntryTransformSource(entry));
+      createDrumSubcategoryTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Drum Fills");
     });
 
@@ -102,7 +102,7 @@ describe("createDrumSubcategoryTransformer", () => {
         { name: "Fill", isFile: false },
         [{ name: "fill.wav" }],
       );
-      createDrumSubcategoryTransformer(singleEntryTransformSource(entry));
+      createDrumSubcategoryTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Drum Fills");
     });
 
@@ -112,7 +112,7 @@ describe("createDrumSubcategoryTransformer", () => {
         { name: "Fills", isFile: false },
         [{ name: "fill.wav" }],
       );
-      createDrumSubcategoryTransformer(singleEntryTransformSource(entry));
+      createDrumSubcategoryTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Drum Fills");
     });
 
@@ -122,7 +122,7 @@ describe("createDrumSubcategoryTransformer", () => {
         { name: "fills", isFile: false },
         [{ name: "fill.wav" }],
       );
-      createDrumSubcategoryTransformer(singleEntryTransformSource(entry));
+      createDrumSubcategoryTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Drum Fills");
     });
 
@@ -132,7 +132,7 @@ describe("createDrumSubcategoryTransformer", () => {
         { name: "Fills", isFile: false },
         [{ name: "fill.wav" }],
       );
-      createDrumSubcategoryTransformer(singleEntryTransformSource(entry));
+      createDrumSubcategoryTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
       expect(entry.setKeepStructure).not.toHaveBeenCalled();
     });
@@ -145,7 +145,7 @@ describe("createDrumSubcategoryTransformer", () => {
         { name: "Drum Breaks", isFile: false },
         [{ name: "break.wav" }],
       );
-      createDrumSubcategoryTransformer(singleEntryTransformSource(entry));
+      createDrumSubcategoryTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Drum Breaks");
     });
 
@@ -155,7 +155,7 @@ describe("createDrumSubcategoryTransformer", () => {
         { name: "Drum Break", isFile: false },
         [{ name: "break.wav" }],
       );
-      createDrumSubcategoryTransformer(singleEntryTransformSource(entry));
+      createDrumSubcategoryTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Drum Breaks");
     });
 
@@ -165,7 +165,7 @@ describe("createDrumSubcategoryTransformer", () => {
         { name: "Drum - Breaks", isFile: false },
         [{ name: "break.wav" }],
       );
-      createDrumSubcategoryTransformer(singleEntryTransformSource(entry));
+      createDrumSubcategoryTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Drum Breaks");
     });
 
@@ -175,7 +175,7 @@ describe("createDrumSubcategoryTransformer", () => {
         { name: "Drums - Breaks", isFile: false },
         [{ name: "break.wav" }],
       );
-      createDrumSubcategoryTransformer(singleEntryTransformSource(entry));
+      createDrumSubcategoryTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Drum Breaks");
     });
 
@@ -185,7 +185,7 @@ describe("createDrumSubcategoryTransformer", () => {
         { name: "DRUM BREAKS", isFile: false },
         [{ name: "break.wav" }],
       );
-      createDrumSubcategoryTransformer(singleEntryTransformSource(entry));
+      createDrumSubcategoryTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Drum Breaks");
     });
 
@@ -195,7 +195,7 @@ describe("createDrumSubcategoryTransformer", () => {
         { name: "Cymatics - SESSIONS - Drum Breaks", isFile: false },
         [{ name: "break.wav" }],
       );
-      createDrumSubcategoryTransformer(singleEntryTransformSource(entry));
+      createDrumSubcategoryTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Drum Breaks");
     });
 
@@ -205,7 +205,7 @@ describe("createDrumSubcategoryTransformer", () => {
         { name: "Drum Break Collection", isFile: false },
         [{ name: "break.wav" }],
       );
-      createDrumSubcategoryTransformer(singleEntryTransformSource(entry));
+      createDrumSubcategoryTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Drum Breaks");
     });
   });
@@ -217,7 +217,7 @@ describe("createDrumSubcategoryTransformer", () => {
         { name: "Breaks", isFile: false },
         [{ name: "break.wav" }],
       );
-      createDrumSubcategoryTransformer(singleEntryTransformSource(entry));
+      createDrumSubcategoryTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Drum Breaks");
     });
 
@@ -227,7 +227,7 @@ describe("createDrumSubcategoryTransformer", () => {
         { name: "Break", isFile: false },
         [{ name: "break.wav" }],
       );
-      createDrumSubcategoryTransformer(singleEntryTransformSource(entry));
+      createDrumSubcategoryTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Drum Breaks");
     });
   });
@@ -239,7 +239,7 @@ describe("createDrumSubcategoryTransformer", () => {
         { name: "Fills", isFile: false },
         [{ name: "fill.wav" }],
       );
-      createDrumSubcategoryTransformer(singleEntryTransformSource(entry));
+      createDrumSubcategoryTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
       expect(entry.setKeepStructure).not.toHaveBeenCalled();
     });
@@ -250,7 +250,7 @@ describe("createDrumSubcategoryTransformer", () => {
         { name: "Drums", isFile: false },
         [{ name: "kick.wav" }],
       );
-      createDrumSubcategoryTransformer(singleEntryTransformSource(entry));
+      createDrumSubcategoryTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
       expect(entry.setKeepStructure).not.toHaveBeenCalled();
     });

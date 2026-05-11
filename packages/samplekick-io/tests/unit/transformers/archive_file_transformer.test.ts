@@ -10,7 +10,7 @@ describe("createArchiveFileTransformer", () => {
         { name: "pack.zip", path: "extras/pack.zip" },
         [],
       );
-      createArchiveFileTransformer(singleEntryTransformSource(entry));
+      createArchiveFileTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Archive");
       expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
     });
@@ -21,7 +21,7 @@ describe("createArchiveFileTransformer", () => {
         { name: "pack.ZIP", path: "extras/pack.ZIP" },
         [],
       );
-      createArchiveFileTransformer(singleEntryTransformSource(entry));
+      createArchiveFileTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Archive");
       expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
     });
@@ -32,7 +32,7 @@ describe("createArchiveFileTransformer", () => {
         { name: "pack.zip", path: "extras/pack.zip", sampleType: "custom" },
         [],
       );
-      createArchiveFileTransformer(singleEntryTransformSource(entry));
+      createArchiveFileTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
       expect(entry.setKeepStructure).not.toHaveBeenCalled();
     });
@@ -45,7 +45,7 @@ describe("createArchiveFileTransformer", () => {
         { name: "My Set.zip", path: "Ableton/My Set.zip" },
         [],
       );
-      createArchiveFileTransformer(singleEntryTransformSource(entry));
+      createArchiveFileTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Ableton Projects");
       expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
     });
@@ -58,7 +58,7 @@ describe("createArchiveFileTransformer", () => {
         { name: "My Song.zip", path: "FL Studio/My Song.zip" },
         [],
       );
-      createArchiveFileTransformer(singleEntryTransformSource(entry));
+      createArchiveFileTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("FL Studio Projects");
       expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
     });
@@ -71,7 +71,7 @@ describe("createArchiveFileTransformer", () => {
         { name: "patches.zip", path: "Serum/patches.zip" },
         [],
       );
-      createArchiveFileTransformer(singleEntryTransformSource(entry));
+      createArchiveFileTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Serum Presets");
       expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
     });
@@ -84,7 +84,7 @@ describe("createArchiveFileTransformer", () => {
         { name: "presets.zip", path: "Phase Plant/presets.zip" },
         [],
       );
-      createArchiveFileTransformer(singleEntryTransformSource(entry));
+      createArchiveFileTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Phase Plant Presets");
       expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
     });
@@ -97,7 +97,7 @@ describe("createArchiveFileTransformer", () => {
         { name: "pack.zip", path: "Ableton FL Studio/pack.zip" },
         [],
       );
-      createArchiveFileTransformer(singleEntryTransformSource(entry));
+      createArchiveFileTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Archive");
     });
   });
@@ -105,7 +105,7 @@ describe("createArchiveFileTransformer", () => {
   describe("when the path does not end with .zip", () => {
     it("does not set sampleType", () => {
       const entry = createTransformEntry({ name: "kick.wav" });
-      createArchiveFileTransformer(singleEntryTransformSource(entry));
+      createArchiveFileTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
       expect(entry.setKeepStructure).not.toHaveBeenCalled();
     });
@@ -115,7 +115,7 @@ describe("createArchiveFileTransformer", () => {
     it("does not set sampleType even if the path ends with .zip", () => {
       // Root node has no parent - it is the archive being processed, not an embedded one
       const entry = createTransformEntry({ name: "pack.zip", path: "pack.zip" });
-      createArchiveFileTransformer(singleEntryTransformSource(entry));
+      createArchiveFileTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
       expect(entry.setKeepStructure).not.toHaveBeenCalled();
     });

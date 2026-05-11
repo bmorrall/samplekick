@@ -66,16 +66,18 @@ function resolveSegmentSuffix(segment: string): string | undefined {
  * e.g. "Wet Percussion" → strip "Wet" → "Percussion" → tags as "Percussion".
  * Must run after all other directory transformers.
  */
-export const createDirectorySegmentSuffixTransformer: Transform = (source) => {
-  source.eachTransformEntry((entry) => {
-    if (entry.getOwnSampleType() !== undefined) return;
-    if (entry.getChildNodes().length === 0) return;
+export const createDirectorySegmentSuffixTransformer: Transform = {
+  transform: (source) => {
+    source.eachTransformEntry((entry) => {
+      if (entry.getOwnSampleType() !== undefined) return;
+      if (entry.getChildNodes().length === 0) return;
 
-    const nameLower = entry.getName().toLowerCase();
-    const parts = nameLower.includes(DASH_SEP) ? nameLower.split(DASH_SEP) : [nameLower];
-    const matches = parts.map(resolveSegmentSuffix).filter((t): t is string => t !== undefined);
-    if (matches.length !== 1) return;
-    const [sampleType] = matches;
-    entry.setSampleType(sampleType);
-  });
+      const nameLower = entry.getName().toLowerCase();
+      const parts = nameLower.includes(DASH_SEP) ? nameLower.split(DASH_SEP) : [nameLower];
+      const matches = parts.map(resolveSegmentSuffix).filter((t): t is string => t !== undefined);
+      if (matches.length !== 1) return;
+      const [sampleType] = matches;
+      entry.setSampleType(sampleType);
+    });
+  },
 };

@@ -10,7 +10,7 @@ describe("createDirectorySegmentSuffixTransformer", () => {
         { name: "Cymatics - Phoenix Vocal Loops", isFile: false },
         [{ name: "loop.wav" }],
       );
-      createDirectorySegmentSuffixTransformer(singleEntryTransformSource(entry));
+      createDirectorySegmentSuffixTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Vocal Loops");
     });
 
@@ -20,7 +20,7 @@ describe("createDirectorySegmentSuffixTransformer", () => {
         { name: "Brand - My Drum Loops", isFile: false },
         [{ name: "loop.wav" }],
       );
-      createDirectorySegmentSuffixTransformer(singleEntryTransformSource(entry));
+      createDirectorySegmentSuffixTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Drum Loops");
     });
 
@@ -30,7 +30,7 @@ describe("createDirectorySegmentSuffixTransformer", () => {
         { name: "Label - Signature Vocals", isFile: false },
         [{ name: "vocal.wav" }],
       );
-      createDirectorySegmentSuffixTransformer(singleEntryTransformSource(entry));
+      createDirectorySegmentSuffixTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Vocals");
     });
 
@@ -40,7 +40,7 @@ describe("createDirectorySegmentSuffixTransformer", () => {
         { name: "Cymatics - Galaxy Tonal Ambience & Textures", isFile: false },
         [{ name: "sample.wav" }],
       );
-      createDirectorySegmentSuffixTransformer(singleEntryTransformSource(entry));
+      createDirectorySegmentSuffixTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Ambience and Textures");
     });
 
@@ -50,7 +50,7 @@ describe("createDirectorySegmentSuffixTransformer", () => {
         { name: "Cymatics - Cyclone Ultimate Bass Collection", isFile: false },
         [{ name: "bass.wav" }],
       );
-      createDirectorySegmentSuffixTransformer(singleEntryTransformSource(entry));
+      createDirectorySegmentSuffixTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Bass");
     });
 
@@ -60,7 +60,7 @@ describe("createDirectorySegmentSuffixTransformer", () => {
         { name: "Cymatics - Imperium Analog One Shot Collection", isFile: false },
         [{ name: "hit.wav" }],
       );
-      createDirectorySegmentSuffixTransformer(singleEntryTransformSource(entry));
+      createDirectorySegmentSuffixTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("One Shots");
     });
 
@@ -70,7 +70,7 @@ describe("createDirectorySegmentSuffixTransformer", () => {
         { name: "cymatics - phoenix vocal loops", isFile: false },
         [{ name: "loop.wav" }],
       );
-      createDirectorySegmentSuffixTransformer(singleEntryTransformSource(entry));
+      createDirectorySegmentSuffixTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Vocal Loops");
     });
   });
@@ -82,7 +82,7 @@ describe("createDirectorySegmentSuffixTransformer", () => {
         { name: "Cymatics - Phoenix Vocal Loops", isFile: false, sampleType: "Loops" },
         [{ name: "loop.wav" }],
       );
-      createDirectorySegmentSuffixTransformer(singleEntryTransformSource(entry));
+      createDirectorySegmentSuffixTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
     });
     it('tags "Wet Percussion" as "Percussion" by stripping the leading word', () => {
@@ -91,7 +91,7 @@ describe("createDirectorySegmentSuffixTransformer", () => {
         { name: "Wet Percussion", isFile: false },
         [{ name: "perc.wav" }],
       );
-      createDirectorySegmentSuffixTransformer(singleEntryTransformSource(entry));
+      createDirectorySegmentSuffixTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Percussion");
     });
     it('tags "Brand - My Loops" as "Loops" via bare loops standalone', () => {
@@ -100,7 +100,7 @@ describe("createDirectorySegmentSuffixTransformer", () => {
         { name: "Brand - My Loops", isFile: false },
         [{ name: "loop.wav" }],
       );
-      createDirectorySegmentSuffixTransformer(singleEntryTransformSource(entry));
+      createDirectorySegmentSuffixTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Loops");
     });
   });
@@ -112,7 +112,7 @@ describe("createDirectorySegmentSuffixTransformer", () => {
         { name: "Cymatics - Nebula Collection", isFile: false },
         [{ name: "sample.wav" }],
       );
-      createDirectorySegmentSuffixTransformer(singleEntryTransformSource(entry));
+      createDirectorySegmentSuffixTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
     });
 
@@ -122,7 +122,7 @@ describe("createDirectorySegmentSuffixTransformer", () => {
         { name: "Brand - Signature Vocals - Phoenix Drum Loops", isFile: false },
         [{ name: "sample.wav" }],
       );
-      createDirectorySegmentSuffixTransformer(singleEntryTransformSource(entry));
+      createDirectorySegmentSuffixTransformer.transform(singleEntryTransformSource(entry));
       // "Vocals" and "Drum Loops" both match — ambiguous.
       expect(entry.setSampleType).not.toHaveBeenCalled();
     });
@@ -134,7 +134,7 @@ describe("createDirectorySegmentSuffixTransformer", () => {
         [{ name: "hit.wav" }],
       );
       // "kicks," has a comma — not a valid alphabetic prefix.
-      createDirectorySegmentSuffixTransformer(singleEntryTransformSource(entry));
+      createDirectorySegmentSuffixTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
     });
 
@@ -144,7 +144,7 @@ describe("createDirectorySegmentSuffixTransformer", () => {
         { name: "My Unknown Folder", isFile: false },
         [{ name: "loop.wav" }],
       );
-      createDirectorySegmentSuffixTransformer(singleEntryTransformSource(entry));
+      createDirectorySegmentSuffixTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
     });
 
@@ -154,7 +154,7 @@ describe("createDirectorySegmentSuffixTransformer", () => {
         { name: "Brand - Phoenix Vocal Loops", isFile: true },
         [],
       );
-      createDirectorySegmentSuffixTransformer(singleEntryTransformSource(entry));
+      createDirectorySegmentSuffixTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
     });
   });

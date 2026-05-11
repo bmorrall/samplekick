@@ -53,48 +53,50 @@ function isAudioPath(path: string): boolean {
  *   When the prefix has only one segment (no nested " - "), children are stripped
  *   without any prepend (same as the simple strip behaviour).
  */
-export const createFlatPackPrefixTransformer: Transform = (source) => {
-  // Map from parent path → { strip, prepend }, populated in the first pass and
-  // consumed in the second pass where we have TransformEntry objects with setName.
-  const renameInfoByParentPath = new Map<string, { strip: string; prepend: string }>();
+export const createFlatPackPrefixTransformer: Transform = {
+  transform: (source) => {
+    // Map from parent path → { strip, prepend }, populated in the first pass and
+    // consumed in the second pass where we have TransformEntry objects with setName.
+    const renameInfoByParentPath = new Map<string, { strip: string; prepend: string }>();
 
-  source.eachTransformEntry((entry) => {
-    if (entry.getOwnSampleType() !== undefined) return;
-    if (entry.getParentNode() !== undefined) return; // root node only
+    source.eachTransformEntry((entry) => {
+      if (entry.getOwnSampleType() !== undefined) return;
+      if (entry.getParentNode() !== undefined) return; // root node only
 
-    const children = entry.getChildNodes();
-    if (children.length === 0) return;
+      const children = entry.getChildNodes();
+      if (children.length === 0) return;
 
-    // Must be a flat pack — no sub-directories.
-    if (children.some((child) => child.getChildNodes().length > 0)) return;
+      // Must be a flat pack — no sub-directories.
+      if (children.some((child) => child.getChildNodes().length > 0)) return;
 
-    const audioChildren = children.filter((child) => isAudioPath(child.getPath()));
-    if (audioChildren.length < MIN_AUDIO_FILES) return;
+      const audioChildren = children.filter((child) => isAudioPath(child.getPath()));
+      if (audioChildren.length < MIN_AUDIO_FILES) return;
 
-    const rawPrefix = longestCommonPrefix(audioChildren.map((child) => child.getName()));
-    const prefix = trimToLastSeparator(rawPrefix);
-    if (prefix === undefined || prefix.length === 0) return;
+      const rawPrefix = longestCommonPrefix(audioChildren.map((child) => child.getName()));
+      const prefix = trimToLastSeparator(rawPrefix);
+      if (prefix === undefined || prefix.length === 0) return;
 
-    entry.setPackageName(prefix);
-    entry.setSampleType('Packs');
+      entry.setPackageName(prefix);
+      entry.setSampleType('Packs');
 
-    const vendor = firstSegment(prefix);
-    const strip = `${prefix}${SEPARATOR}`;
-    const prepend = vendor === prefix ? '' : `${vendor}${SEPARATOR}`;
-    renameInfoByParentPath.set(entry.getPath(), { strip, prepend });
-  });
+      const vendor = firstSegment(prefix);
+      const strip = `${prefix}${SEPARATOR}`;
+      const prepend = vendor === prefix ? '' : `${vendor}${SEPARATOR}`;
+      renameInfoByParentPath.set(entry.getPath(), { strip, prepend });
+    });
 
-  // Second pass: rename children using TransformEntry objects (which expose setName).
-  source.eachTransformModification((entry) => {
-    const parent = entry.getParentNode();
-    if (parent === undefined) return;
+    // Second pass: rename children using TransformEntry objects (which expose setName).
+    source.eachTransformModification((entry) => {
+      const parent = entry.getParentNode();
+      if (parent === undefined) return;
 
-    const info = renameInfoByParentPath.get(parent.getPath());
-    if (info === undefined) return;
+      const info = renameInfoByParentPath.get(parent.getPath());
+      if (info === undefined) return;
 
-    const name = entry.getName();
-    if (name.startsWith(info.strip)) {
-      entry.setName(`${info.prepend}${name.slice(info.strip.length)}`);
-    }
-  });
+      const name = entry.getName();
+      if (name.startsWith(info.strip)) {
+        entry.setName(`${info.prepend}${name.slice(info.strip.length)}`);
+      }
+    });
+  },
 };

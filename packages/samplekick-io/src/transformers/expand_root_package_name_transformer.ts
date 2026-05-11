@@ -8,12 +8,14 @@ const expandCamelCase = (name: string): string => {
     .replaceAll(/(?<=[a-zA-Z])-/gv, " - ");
 };
 
-export const createExpandRootPackageNameTransformer :  Transform = (source) => {
-  source.eachTransformEntry((entry) => {
-    if (entry.getParentNode() !== undefined) return;
-    const packageName = entry.getPackageName();
-    if (packageName === undefined) return;
-    const expanded = expandCamelCase(packageName);
-    if (expanded !== packageName) entry.setPackageName(expanded);
-  });
+export const createExpandRootPackageNameTransformer :  Transform = {
+  transform: (source) => {
+    source.eachTransformEntry((entry) => {
+      if (entry.getParentNode() !== undefined) return;
+      const packageName = entry.getPackageName();
+      if (packageName === undefined) return;
+      const expanded = expandCamelCase(packageName);
+      if (expanded !== packageName) entry.setPackageName(expanded);
+    });
+  },
 };

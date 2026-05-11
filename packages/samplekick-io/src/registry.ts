@@ -175,7 +175,7 @@ export class Registry implements FileSource, ConfigSource {
         });
       },
     };
-    transform(source);
+    transform.transform(source);
   }
 
   // Transform entry management methods

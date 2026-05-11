@@ -3,42 +3,46 @@ import type { Transform, TransformEntry, TransformSource } from "../../src";
 import { createFileEntry, createRegistry } from "../support";
 
 const collectVisitedPaths =
-  (visitedPaths: string[]): Transform =>
-  (source: TransformSource) => {
-    source.eachTransformEntry((entry: TransformEntry) => {
-      visitedPaths.push(entry.getPath());
-    });
-  };
+  (visitedPaths: string[]): Transform => ({
+    transform: (source: TransformSource) => {
+      source.eachTransformEntry((entry: TransformEntry) => {
+        visitedPaths.push(entry.getPath());
+      });
+    },
+  });
 
 const collectVisitedPathsAndSetPackageName =
-  (visitedPaths: string[], packageName: string): Transform =>
-  (source: TransformSource) => {
-    source.eachTransformEntry((entry: TransformEntry) => {
-      visitedPaths.push(entry.getPath());
-      entry.setPackageName(packageName);
-    });
-  };
+  (visitedPaths: string[], packageName: string): Transform => ({
+    transform: (source: TransformSource) => {
+      source.eachTransformEntry((entry: TransformEntry) => {
+        visitedPaths.push(entry.getPath());
+        entry.setPackageName(packageName);
+      });
+    },
+  });
 
 const setSharedSampleTypeAtPath =
-  (path: string, sampleType: string): Transform =>
-  (source: TransformSource) => {
-    source.eachTransformEntry((entry: TransformEntry) => {
-      if (entry.getPath() === path) {
-        entry.setSampleType(sampleType);
-      }
-    });
-  };
+  (path: string, sampleType: string): Transform => ({
+    transform: (source: TransformSource) => {
+      source.eachTransformEntry((entry: TransformEntry) => {
+        if (entry.getPath() === path) {
+          entry.setSampleType(sampleType);
+        }
+      });
+    },
+  });
 
 const renameAndSkipAtPath =
-  (path: string, name: string): Transform =>
-  (source: TransformSource) => {
-    source.eachTransformEntry((entry: TransformEntry) => {
-      if (entry.getPath() === path) {
-        entry.setName(name);
-        entry.setSkipped(true);
-      }
-    });
-  };
+  (path: string, name: string): Transform => ({
+    transform: (source: TransformSource) => {
+      source.eachTransformEntry((entry: TransformEntry) => {
+        if (entry.getPath() === path) {
+          entry.setName(name);
+          entry.setSkipped(true);
+        }
+      });
+    },
+  });
 
 describe("Registry applyTransform", () => {
   it("provides correct name, path, parent and children via entry methods", () => {
@@ -63,8 +67,10 @@ describe("Registry applyTransform", () => {
         children: entry.getChildNodes().map((c) => c.getPath()),
       });
     };
-    const collectInfo: Transform = (source) => {
-      source.eachTransformEntry(recordEntry);
+    const collectInfo: Transform = {
+      transform: (source) => {
+        source.eachTransformEntry(recordEntry);
+      },
     };
 
     registry.applyTransform(collectInfo);
@@ -145,38 +151,42 @@ describe("Registry applyTransform", () => {
 });
 
 const collectModifiedPaths =
-  (visitedPaths: string[]): Transform =>
-  (source) => {
-    source.eachTransformModification((entry) => {
-      visitedPaths.push(entry.getPath());
-    });
-  };
+  (visitedPaths: string[]): Transform => ({
+    transform: (source) => {
+      source.eachTransformModification((entry) => {
+        visitedPaths.push(entry.getPath());
+      });
+    },
+  });
 
 const collectModifiedPackageNames =
-  (seen: Array<{ path: string; packageName: string | undefined }>): Transform =>
-  (source) => {
-    source.eachTransformModification((entry) => {
-      seen.push({ path: entry.getPath(), packageName: entry.getPackageName() });
-    });
-  };
+  (seen: Array<{ path: string; packageName: string | undefined }>): Transform => ({
+    transform: (source) => {
+      source.eachTransformModification((entry) => {
+        seen.push({ path: entry.getPath(), packageName: entry.getPackageName() });
+      });
+    },
+  });
 
 const collectModifiedSampleTypes =
-  (seen: Array<{ path: string; sampleType: string | undefined }>): Transform =>
-  (source) => {
-    source.eachTransformModification((entry) => {
-      seen.push({ path: entry.getPath(), sampleType: entry.getSampleType() });
-    });
-  };
+  (seen: Array<{ path: string; sampleType: string | undefined }>): Transform => ({
+    transform: (source) => {
+      source.eachTransformModification((entry) => {
+        seen.push({ path: entry.getPath(), sampleType: entry.getSampleType() });
+      });
+    },
+  });
 
 const setPackageNameAtPathViaModification =
-  (path: string, packageName: string): Transform =>
-  (source) => {
-    source.eachTransformModification((entry) => {
-      if (entry.getPath() === path) {
-        entry.setPackageName(packageName);
-      }
-    });
-  };
+  (path: string, packageName: string): Transform => ({
+    transform: (source) => {
+      source.eachTransformModification((entry) => {
+        if (entry.getPath() === path) {
+          entry.setPackageName(packageName);
+        }
+      });
+    },
+  });
 
 describe("Registry applyTransform eachTransformModification", () => {
   it("visits nodes that do not have keepStructure set", () => {

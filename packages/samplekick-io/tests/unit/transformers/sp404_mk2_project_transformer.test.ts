@@ -10,7 +10,7 @@ describe("createSP404Mk2ProjectTransformer", () => {
         { name: "MY_PROJECT", isFile: false },
         [{ name: "SMPL" }],
       );
-      createSP404Mk2ProjectTransformer(singleEntryTransformSource(entry));
+      createSP404Mk2ProjectTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("SP-404MKII Projects");
     });
 
@@ -20,7 +20,7 @@ describe("createSP404Mk2ProjectTransformer", () => {
         { name: "MY_PROJECT", isFile: false },
         [{ name: "SMPL" }],
       );
-      createSP404Mk2ProjectTransformer(singleEntryTransformSource(entry));
+      createSP404Mk2ProjectTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
     });
 
@@ -30,7 +30,7 @@ describe("createSP404Mk2ProjectTransformer", () => {
         { name: "MY_PROJECT", isFile: false },
         [{ name: "smpl" }],
       );
-      createSP404Mk2ProjectTransformer(singleEntryTransformSource(entry));
+      createSP404Mk2ProjectTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("SP-404MKII Projects");
     });
   });
@@ -42,7 +42,7 @@ describe("createSP404Mk2ProjectTransformer", () => {
         { name: "MY_PROJECT", isFile: false },
         [{ name: "PTN" }],
       );
-      createSP404Mk2ProjectTransformer(singleEntryTransformSource(entry));
+      createSP404Mk2ProjectTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("SP-404MKII Projects");
     });
 
@@ -52,7 +52,7 @@ describe("createSP404Mk2ProjectTransformer", () => {
         { name: "MY_PROJECT", isFile: false },
         [{ name: "PTN" }],
       );
-      createSP404Mk2ProjectTransformer(singleEntryTransformSource(entry));
+      createSP404Mk2ProjectTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
     });
 
@@ -62,7 +62,7 @@ describe("createSP404Mk2ProjectTransformer", () => {
         { name: "MY_PROJECT", isFile: false },
         [{ name: "ptn" }],
       );
-      createSP404Mk2ProjectTransformer(singleEntryTransformSource(entry));
+      createSP404Mk2ProjectTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("SP-404MKII Projects");
     });
   });
@@ -74,7 +74,7 @@ describe("createSP404Mk2ProjectTransformer", () => {
         { name: "MY_PROJECT", isFile: false },
         [{ name: "PICTURE" }],
       );
-      createSP404Mk2ProjectTransformer(singleEntryTransformSource(entry));
+      createSP404Mk2ProjectTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
       expect(entry.setKeepStructure).not.toHaveBeenCalled();
     });
@@ -83,7 +83,7 @@ describe("createSP404Mk2ProjectTransformer", () => {
   describe("when the entry has no children", () => {
     it("does not set sampleType or keepStructure", () => {
       const entry = createTransformEntry({ name: "MY_PROJECT" });
-      createSP404Mk2ProjectTransformer(singleEntryTransformSource(entry));
+      createSP404Mk2ProjectTransformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
       expect(entry.setKeepStructure).not.toHaveBeenCalled();
     });
