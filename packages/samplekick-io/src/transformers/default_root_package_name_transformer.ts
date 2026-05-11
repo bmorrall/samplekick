@@ -10,9 +10,6 @@ const _singleton: Transform = {
       if (dotIdx > 0 && entry.getOwnPackageName() === undefined) {
         entry.setPackageName(name.substring(0, dotIdx));
       }
-      if (entry.getOwnSampleType() === undefined) {
-        entry.setSampleType("Packs");
-      }
     });
   },
 };
