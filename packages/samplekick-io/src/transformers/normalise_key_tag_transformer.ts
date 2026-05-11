@@ -26,5 +26,20 @@ function keyTagReplacer(_match: string, root: string, quality: string): string {
 const normaliseKeyTag: StringTransformer = (name: string): string =>
   name.replace(KEY_RE, keyTagReplacer);
 
-const _singleton: Transform = createSanitiseNameTransformer(normaliseKeyTag);
+// Matches short minor+number forms with no spaces, e.g. "Cm7", "F#m9", "Bbm11".
+// Requires a digit — bare "Cm" is intentionally excluded to avoid false positives.
+// Separate regex to keep the match explicit and avoid ambiguity with KEY_RE.
+const SHORT_MINOR_RE =
+  /(?<![a-zA-Z])(?<root>[A-G][#b]?)m(?<num>\d+)(?![a-zA-Z])/giv;
+
+function shortMinorReplacer(_match: string, root: string, num: string): string {
+  return `${root[0].toUpperCase()}${root.slice(1)}min${num}`;
+}
+
+const normaliseShortMinor: StringTransformer = (name: string): string =>
+  name.replace(SHORT_MINOR_RE, shortMinorReplacer);
+
+const _singleton: Transform = createSanitiseNameTransformer((name) =>
+  normaliseShortMinor(normaliseKeyTag(name)),
+);
 export const createNormaliseKeyTagTransformer = (): Transform => _singleton;

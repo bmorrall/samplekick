@@ -297,6 +297,36 @@ describe("createNormaliseKeyTagTransformer", () => {
     });
   });
 
+  describe("short minor with number (no spaces)", () => {
+    it("normalises Cm7 to Cmin7", () => {
+      const entry = createTransformEntry({ name: "Chord Cm7.wav" });
+      const transformer = createNormaliseKeyTagTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setName).toHaveBeenCalledWith("Chord Cmin7.wav");
+    });
+
+    it("normalises F#m9 to F#min9", () => {
+      const entry = createTransformEntry({ name: "Chord F#m9.wav" });
+      const transformer = createNormaliseKeyTagTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setName).toHaveBeenCalledWith("Chord F#min9.wav");
+    });
+
+    it("normalises bbm11 (lowercase root) to Bbmin11", () => {
+      const entry = createTransformEntry({ name: "Chord bbm11.wav" });
+      const transformer = createNormaliseKeyTagTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setName).toHaveBeenCalledWith("Chord Bbmin11.wav");
+    });
+
+    it("does not match bare Cm (no digit)", () => {
+      const entry = createTransformEntry({ name: "Chord Cm.wav" });
+      const transformer = createNormaliseKeyTagTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setName).toHaveBeenCalledWith("Chord Cm.wav"); // No change
+    });
+  });
+
   it("normalises packageName when the entry has one", () => {
     const entry = createTransformEntry({
       name: "kick.wav",
