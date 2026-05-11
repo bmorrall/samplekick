@@ -42,4 +42,14 @@ const normaliseShortMinor: StringTransformer = (name: string): string =>
 const _singleton: Transform = createSanitiseNameTransformer((name) =>
   normaliseShortMinor(normaliseKeyTag(name)),
 );
+// NOT supported (intentional omissions):
+//   - Bare dominant/number chords: "C7", "Bb9", "F#13" — root + number only, no quality word; too
+//     ambiguous (could be a version number, BPM, etc.) and would require its own dedicated regex.
+//   - Short-minor without a number: "Cm" — excluded to avoid false positives on words ending in "m".
+//     Short-minor WITH a number ("Cm7", "F#m9") is handled via a dedicated SHORT_MINOR_RE pass.
+//   - Symbol notations: "C+" (aug), "Co"/"C°" (dim), "Cø" (half-diminished) — uncommon in file names.
+//   - Minor-major seventh: "CmMaj7", "Cm/Maj7".
+//   - Altered extensions: "C7#11", "C7b9", "C7#5" — sharps/flats on extensions clash with the root
+//     accidental syntax and would require a more complex parser.
+//   - Power chords: "C5" — indistinguishable from a bare number without wider context.
 export const createNormaliseKeyTagTransformer = (): Transform => _singleton;
