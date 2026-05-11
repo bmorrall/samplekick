@@ -35,6 +35,7 @@ export {
   createNormaliseQuotesTransformer,
   createTruncateNameTransformer,
   createFlatPackPrefixTransformer,
+  createCymaticsNameTransformer,
   createGhosthackNameTransformer,
   createSquashNameTransformer,
   createStripFormatHintsTransformer,

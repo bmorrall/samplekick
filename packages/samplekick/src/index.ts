@@ -22,6 +22,7 @@ import {
   createFLStudioProjectTransformer,
   createSP404Mk2ProjectTransformer,
   createGhosthackNameTransformer,
+  createCymaticsNameTransformer,
   createSquashNameTransformer,
   createNormaliseQuotesTransformer,
   createKnownFileTypeTransformer,
@@ -413,6 +414,7 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
   if (values.analyse === true || values.sanitise === true) {
     // Name transforms: run after file transforms so locked entries are skipped
     registry.applyTransform(createGhosthackNameTransformer());
+    registry.applyTransform(createCymaticsNameTransformer());
     registry.applyTransform(createNormaliseSpacesTransformer());
     registry.applyTransform(createNormaliseBracketSpacingTransformer());
     registry.applyTransform(createNormaliseCommaSpacingTransformer());
