@@ -19,4 +19,5 @@ const _singleton: Transform = {
     });
   },
 };
-export const createExpandRootPackageNameTransformer = (): Transform => _singleton;
+export const createExpandRootPackageNameTransformer = (): Transform =>
+  _singleton;

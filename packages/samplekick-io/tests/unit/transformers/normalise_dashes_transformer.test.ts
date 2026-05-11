@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { createNormaliseDashesTransformer } from "../../../src";
-import { createTransformEntry, singleEntryTransformSource } from "../../support";
+import {
+  createTransformEntry,
+  singleEntryTransformSource,
+} from "../../support";
 
 describe("createNormaliseDashesTransformer", () => {
   it("replaces an en dash with a hyphen-minus", () => {
@@ -53,28 +56,40 @@ describe("createNormaliseDashesTransformer", () => {
   });
 
   it("normalises packageName when the entry has one", () => {
-    const entry = createTransformEntry({ name: "kick.wav", packageName: "Drums \u2013 Bass" });
+    const entry = createTransformEntry({
+      name: "kick.wav",
+      packageName: "Drums \u2013 Bass",
+    });
     const transformer = createNormaliseDashesTransformer();
     transformer.transform(singleEntryTransformSource(entry));
     expect(entry.setPackageName).toHaveBeenCalledWith("Drums - Bass");
   });
 
   it("normalises sampleType when the entry has one", () => {
-    const entry = createTransformEntry({ name: "kick.wav", sampleType: "Drum\u2014Hits" });
+    const entry = createTransformEntry({
+      name: "kick.wav",
+      sampleType: "Drum\u2014Hits",
+    });
     const transformer = createNormaliseDashesTransformer();
     transformer.transform(singleEntryTransformSource(entry));
     expect(entry.setSampleType).toHaveBeenCalledWith("Drum-Hits");
   });
 
   it("does not act on a keepStructure entry", () => {
-    const entry = createTransformEntry({ name: "foo \u2013 bar.mid", keepStructure: true });
+    const entry = createTransformEntry({
+      name: "foo \u2013 bar.mid",
+      keepStructure: true,
+    });
     const transformer = createNormaliseDashesTransformer();
     transformer.transform(singleEntryTransformSource(entry));
     expect(entry.setName).not.toHaveBeenCalled();
   });
 
   it("does not act on a skipped entry", () => {
-    const entry = createTransformEntry({ name: "foo \u2013 bar.wav", skipped: true });
+    const entry = createTransformEntry({
+      name: "foo \u2013 bar.wav",
+      skipped: true,
+    });
     const transformer = createNormaliseDashesTransformer();
     transformer.transform(singleEntryTransformSource(entry));
     expect(entry.setName).not.toHaveBeenCalled();

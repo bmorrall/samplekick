@@ -21,7 +21,8 @@ const createInner = (): ExportReporter => ({
   onDebug: vi.fn<(message: string) => void>(),
   onError: vi.fn<(message: string) => void>(),
   onBeforeWrite: vi.fn<(entry: ConfigEntry, destRelPath: string) => void>(),
-  onAfterWrite: vi.fn<(entry: ConfigEntry, destRelPath: string, error?: Error) => void>(),
+  onAfterWrite:
+    vi.fn<(entry: ConfigEntry, destRelPath: string, error?: Error) => void>(),
   onReject: vi.fn<(entry: ConfigEntry, reason: string) => void>(),
   onSkip: vi.fn<(entry: FileNode) => void>(),
   onComplete: vi.fn<(dirPath: string) => void>(),
@@ -38,17 +39,35 @@ describe("DryRunReporter", () => {
     dryRun.onAfterWrite(createEntry("m.wav"), "m.wav");
     dryRun.flush();
 
-    expect(inner.onAfterWrite).toHaveBeenNthCalledWith(1, expect.anything(), "a.wav");
-    expect(inner.onAfterWrite).toHaveBeenNthCalledWith(2, expect.anything(), "m.wav");
-    expect(inner.onAfterWrite).toHaveBeenNthCalledWith(3, expect.anything(), "z.wav");
+    expect(inner.onAfterWrite).toHaveBeenNthCalledWith(
+      1,
+      expect.anything(),
+      "a.wav",
+    );
+    expect(inner.onAfterWrite).toHaveBeenNthCalledWith(
+      2,
+      expect.anything(),
+      "m.wav",
+    );
+    expect(inner.onAfterWrite).toHaveBeenNthCalledWith(
+      3,
+      expect.anything(),
+      "z.wav",
+    );
   });
 
   it("flush replays skips before successes before rejections", () => {
     const inner = createInner();
     const order: string[] = [];
-    vi.mocked(inner.onAfterWrite).mockImplementation((_, p) => { order.push(`success:${p}`); });
-    vi.mocked(inner.onReject).mockImplementation((e) => { order.push(`reject:${e.getPath()}`); });
-    vi.mocked(inner.onSkip).mockImplementation((e) => { order.push(`skip:${e.getPath()}`); });
+    vi.mocked(inner.onAfterWrite).mockImplementation((_, p) => {
+      order.push(`success:${p}`);
+    });
+    vi.mocked(inner.onReject).mockImplementation((e) => {
+      order.push(`reject:${e.getPath()}`);
+    });
+    vi.mocked(inner.onSkip).mockImplementation((e) => {
+      order.push(`skip:${e.getPath()}`);
+    });
     const dryRun = new DryRunReporter(inner);
 
     dryRun.onReject(createEntry("a.wav"), "Missing packageName");
@@ -68,7 +87,9 @@ describe("DryRunReporter", () => {
     dryRun.onReject(createEntry("m.wav"), "reason");
     dryRun.flush();
 
-    const rejectPaths = vi.mocked(inner.onReject).mock.calls.map(([e]) => e.getPath());
+    const rejectPaths = vi
+      .mocked(inner.onReject)
+      .mock.calls.map(([e]) => e.getPath());
     expect(rejectPaths).toEqual(["a.wav", "m.wav", "z.wav"]);
   });
 
@@ -95,7 +116,11 @@ describe("DryRunReporter", () => {
     const inner = createInner();
     const dryRun = new DryRunReporter(inner);
 
-    dryRun.onAfterWrite(createEntry("a.wav"), "a.wav", new Error("copy failed"));
+    dryRun.onAfterWrite(
+      createEntry("a.wav"),
+      "a.wav",
+      new Error("copy failed"),
+    );
 
     expect(inner.onError).toHaveBeenCalledWith("a.wav: copy failed");
     expect(inner.onAfterWrite).not.toHaveBeenCalled();
@@ -120,7 +145,9 @@ describe("DryRunReporter", () => {
     dryRun.onSkip(createEntry("m.wav"));
     dryRun.flush();
 
-    const skipPaths = vi.mocked(inner.onSkip).mock.calls.map(([e]) => e.getPath());
+    const skipPaths = vi
+      .mocked(inner.onSkip)
+      .mock.calls.map(([e]) => e.getPath());
     expect(skipPaths).toEqual(["a.wav", "m.wav", "z.wav"]);
   });
 

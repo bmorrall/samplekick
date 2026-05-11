@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { createKnownFileTypeTransformer } from "../../../src";
-import { createTransformEntry, singleEntryTransformSource } from "../../support";
+import {
+  createTransformEntry,
+  singleEntryTransformSource,
+} from "../../support";
 
 describe("createKnownFileTypeTransformer", () => {
   describe("when the name ends with .fxp", () => {
@@ -21,7 +24,10 @@ describe("createKnownFileTypeTransformer", () => {
     });
 
     it("does not overwrite an existing sampleType", () => {
-      const entry = createTransformEntry({ name: "patch.fxp", sampleType: "custom" });
+      const entry = createTransformEntry({
+        name: "patch.fxp",
+        sampleType: "custom",
+      });
       const transformer = createKnownFileTypeTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
@@ -47,7 +53,10 @@ describe("createKnownFileTypeTransformer", () => {
     });
 
     it("does not overwrite an existing sampleType", () => {
-      const entry = createTransformEntry({ name: "patch.phaseplant", sampleType: "custom" });
+      const entry = createTransformEntry({
+        name: "patch.phaseplant",
+        sampleType: "custom",
+      });
       const transformer = createKnownFileTypeTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
@@ -55,7 +64,10 @@ describe("createKnownFileTypeTransformer", () => {
     });
 
     it("sets sampleType when extension is on the path", () => {
-      const entry = createTransformEntry({ name: "patch", path: "presets/patch.phaseplant" });
+      const entry = createTransformEntry({
+        name: "patch",
+        path: "presets/patch.phaseplant",
+      });
       const transformer = createKnownFileTypeTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Phase Plant Presets");

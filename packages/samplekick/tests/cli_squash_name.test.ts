@@ -24,7 +24,10 @@ describe("SquashNameTransformer", () => {
       const result = spawnSync(
         "node",
         [CLI_PATH, zipPath, "--analyse", "--squash"],
-        { encoding: "utf8", env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir } },
+        {
+          encoding: "utf8",
+          env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+        },
       );
 
       expect(result.status).toBe(0);
@@ -59,13 +62,18 @@ describe("SquashNameTransformer", () => {
       const result = spawnSync(
         "node",
         [CLI_PATH, zipPath, "--squash", "--dump-config"],
-        { encoding: "utf8", env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") } },
+        {
+          encoding: "utf8",
+          env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
+        },
       );
 
       expect(result.status).toBe(0);
       expect(result.stdout).toContain("Bass Loops,BassLoops,");
       expect(result.stdout).toContain("Drum-Hits,DrumHits,");
-      expect(result.stdout).toContain("Bass Loops/kick drum 01.wav,kickDrum01.wav,");
+      expect(result.stdout).toContain(
+        "Bass Loops/kick drum 01.wav,kickDrum01.wav,",
+      );
       expect(result.stdout).toContain("Drum-Hits/snare hit.wav,snareHit.wav,");
     } finally {
       await rm(tmpDir, { recursive: true });

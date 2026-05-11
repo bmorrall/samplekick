@@ -7,7 +7,10 @@ const SAMPLE_RATE_HINT_PATTERN = "44\\.1kHz|44100Hz|48kHz|48000Hz|96kHz|192kHz";
 const ALL_HINT_PATTERN = `${FORMAT_HINT_PATTERN}|${BIT_DEPTH_HINT_PATTERN}|${SAMPLE_RATE_HINT_PATTERN}`;
 
 // Matches a format/quality hint enclosed in (), [], or {} — e.g. "(WAV)", "[24bit]"
-const BRACKETED_HINT_RE = new RegExp(`\\s*[\\(\\[\\{]\\s*(?:${ALL_HINT_PATTERN})\\s*[\\)\\]\\}]`, "giv");
+const BRACKETED_HINT_RE = new RegExp(
+  `\\s*[\\(\\[\\{]\\s*(?:${ALL_HINT_PATTERN})\\s*[\\)\\]\\}]`,
+  "giv",
+);
 // Matches a format/quality hint as a hyphen-separated suffix — e.g. " - 44.1kHz" at end of string
 const HYPHEN_SUFFIX_RE = new RegExp(`\\s+-\\s+(?:${ALL_HINT_PATTERN})$`, "giv");
 

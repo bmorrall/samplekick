@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { createSkipJunkTransformer } from "../../../src";
-import { createTransformEntry, singleEntryTransformSource } from "../../support";
+import {
+  createTransformEntry,
+  singleEntryTransformSource,
+} from "../../support";
 
 describe("createSkipJunkTransformer", () => {
   it("should skip entries named __MACOSX", () => {

@@ -27,7 +27,9 @@ describe("ZIP I/O", () => {
   });
 
   it("zip entries expose no metadata by default", async () => {
-    const registry = await createZipRegistry("example.zip", { "a/b.wav": "data" });
+    const registry = await createZipRegistry("example.zip", {
+      "a/b.wav": "data",
+    });
 
     const entry = registry.getEntry("a/b.wav");
     expect(entry?.getPackageName()).toBeUndefined();

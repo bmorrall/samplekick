@@ -20,7 +20,9 @@ describe("samplekick CLI", () => {
     });
 
     it("exits with code 1 and prints an error when the zip-file argument is missing", () => {
-      const result = spawnSync("node", [CLI_PATH, "-o", "/tmp/out"], { encoding: "utf8" });
+      const result = spawnSync("node", [CLI_PATH, "-o", "/tmp/out"], {
+        encoding: "utf8",
+      });
 
       expect(result.stderr).toContain("<zip-file>");
 
@@ -28,7 +30,9 @@ describe("samplekick CLI", () => {
     });
 
     it("prints help and exits with code 0 when --help is passed", () => {
-      const result = spawnSync("node", [CLI_PATH, "--help"], { encoding: "utf8" });
+      const result = spawnSync("node", [CLI_PATH, "--help"], {
+        encoding: "utf8",
+      });
 
       expect(result.stderr).toBe("");
       expect(result.stdout.trim()).toBe(
@@ -86,7 +90,9 @@ describe("samplekick CLI", () => {
     });
 
     it("prints version and exits with code 0 when --version is passed", () => {
-      const result = spawnSync("node", [CLI_PATH, "--version"], { encoding: "utf8" });
+      const result = spawnSync("node", [CLI_PATH, "--version"], {
+        encoding: "utf8",
+      });
 
       expect(result.stderr).toBe("");
       expect(result.stdout.trim()).toBe(packageJson.version);
@@ -153,16 +159,28 @@ describe("samplekick CLI", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync("node", [CLI_PATH, zipPath, "--preserve-paths", "-o", outputDir], {
-        encoding: "utf8",
-        env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
-      });
+      const result = spawnSync(
+        "node",
+        [CLI_PATH, zipPath, "--preserve-paths", "-o", outputDir],
+        {
+          encoding: "utf8",
+          env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
+        },
+      );
 
       expect(result.stderr).toBe("");
-      expect(await readFile(join(outputDir, "Drums/kick.wav"), "utf8")).toBe("kick-data");
-      expect(await readFile(join(outputDir, "Drums/snare.wav"), "utf8")).toBe("snare-data");
-      expect(await readFile(join(outputDir, "Loops/bass.wav"), "utf8")).toBe("bass-data");
-      await expect(stat(join(outputDir, "__MACOSX/Drums/._kick.wav"))).rejects.toThrow();
+      expect(await readFile(join(outputDir, "Drums/kick.wav"), "utf8")).toBe(
+        "kick-data",
+      );
+      expect(await readFile(join(outputDir, "Drums/snare.wav"), "utf8")).toBe(
+        "snare-data",
+      );
+      expect(await readFile(join(outputDir, "Loops/bass.wav"), "utf8")).toBe(
+        "bass-data",
+      );
+      await expect(
+        stat(join(outputDir, "__MACOSX/Drums/._kick.wav")),
+      ).rejects.toThrow();
       expect(result.stdout).not.toContain("skipped:");
 
       expect(result.status).toBe(0);
@@ -185,21 +203,26 @@ describe("samplekick CLI", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync("node", [CLI_PATH, zipPath, "--verbose", "--preserve-paths", "-o", outputDir], {
-        encoding: "utf8",
-        env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
-      });
+      const result = spawnSync(
+        "node",
+        [CLI_PATH, zipPath, "--verbose", "--preserve-paths", "-o", outputDir],
+        {
+          encoding: "utf8",
+          env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
+        },
+      );
 
       expect(result.stderr).toBe("");
       expect(result.stdout).toContain("skipped: Drums/.DS_Store");
       expect(result.stdout).toContain("skipped: __MACOSX (1 file)");
       expect(result.stdout).not.toContain("skipped: __MACOSX/Drums/._kick.wav");
-      await expect(stat(join(outputDir, "__MACOSX/Drums/._kick.wav"))).rejects.toThrow();
+      await expect(
+        stat(join(outputDir, "__MACOSX/Drums/._kick.wav")),
+      ).rejects.toThrow();
 
       expect(result.status).toBe(0);
     } finally {
       await rm(tmpDir, { recursive: true });
     }
   });
-
 });

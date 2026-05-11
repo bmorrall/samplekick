@@ -26,7 +26,9 @@ const createFlatPackSource = (
   dirEntry: TransformEntry,
   childEntries: TransformEntry[],
 ): TransformSource => ({
-  eachTransformEntry: (fn) => { fn(dirEntry); },
+  eachTransformEntry: (fn) => {
+    fn(dirEntry);
+  },
   eachTransformModification: (fn) => {
     childEntries.filter((c) => c.isKeepStructure() !== true).forEach(fn);
   },
@@ -73,7 +75,9 @@ describe("createFlatPackPrefixTransformer", () => {
       const transformer = createFlatPackPrefixTransformer();
       transformer.transform(createFlatPackSource(dir, [c1, c2]));
 
-      expect(dir.setPackageName).toHaveBeenCalledWith("Sounds by Sunwarper - SP404 Pack");
+      expect(dir.setPackageName).toHaveBeenCalledWith(
+        "Sounds by Sunwarper - SP404 Pack",
+      );
       expect(dir.setSampleType).toHaveBeenCalledWith("Packs");
     });
 
@@ -85,8 +89,12 @@ describe("createFlatPackPrefixTransformer", () => {
       const transformer = createFlatPackPrefixTransformer();
       transformer.transform(createFlatPackSource(dir, [c1, c2]));
 
-      expect(c1.setName).toHaveBeenCalledWith("Sounds by Sunwarper - 01 D4.wav");
-      expect(c2.setName).toHaveBeenCalledWith("Sounds by Sunwarper - 02 E4.wav");
+      expect(c1.setName).toHaveBeenCalledWith(
+        "Sounds by Sunwarper - 01 D4.wav",
+      );
+      expect(c2.setName).toHaveBeenCalledWith(
+        "Sounds by Sunwarper - 02 E4.wav",
+      );
     });
 
     it("only strips (no prepend) when the prefix has a single segment", () => {
@@ -110,7 +118,9 @@ describe("createFlatPackPrefixTransformer", () => {
       const transformer = createFlatPackPrefixTransformer();
       transformer.transform(createFlatPackSource(dir, [c1, c2, c3]));
 
-      expect(c3.setName).toHaveBeenCalledWith("Sounds by Sunwarper - LICENSE.pdf");
+      expect(c3.setName).toHaveBeenCalledWith(
+        "Sounds by Sunwarper - LICENSE.pdf",
+      );
     });
 
     it("does not strip the prefix from children that do not carry it", () => {
@@ -126,8 +136,12 @@ describe("createFlatPackPrefixTransformer", () => {
     });
 
     it("uses the path for audio extension detection, not just the name", () => {
-      const c1 = makeChild("Pack - 01 kick", { path: "root/Pack - 01 kick.wav" });
-      const c2 = makeChild("Pack - 02 snare", { path: "root/Pack - 02 snare.AIFF" });
+      const c1 = makeChild("Pack - 01 kick", {
+        path: "root/Pack - 01 kick.wav",
+      });
+      const c2 = makeChild("Pack - 02 snare", {
+        path: "root/Pack - 02 snare.AIFF",
+      });
       const dir = makeDir([c1, c2]);
 
       const transformer = createFlatPackPrefixTransformer();
@@ -177,8 +191,17 @@ describe("createFlatPackPrefixTransformer", () => {
 
     it("does not act when any child is a sub-directory (non-flat)", () => {
       const rootStub = makeRootStub();
-      const grandchild = createTransformEntry({ name: "kick.wav", path: "subdir/kick.wav", isFile: true });
-      const subDirEntry = createTransformEntry({ name: "subdir", path: "subdir", isFile: false, parentNode: rootStub });
+      const grandchild = createTransformEntry({
+        name: "kick.wav",
+        path: "subdir/kick.wav",
+        isFile: true,
+      });
+      const subDirEntry = createTransformEntry({
+        name: "subdir",
+        path: "subdir",
+        isFile: false,
+        parentNode: rootStub,
+      });
       const subDirWithChild: TransformEntry = {
         ...subDirEntry,
         getChildNodes: () => [grandchild],

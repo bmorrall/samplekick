@@ -1,18 +1,28 @@
-import type { Transform } from '../types';
-import { lookupPrefix, lookupStandalone, LOOP_LABELS, ONE_SHOT_LABELS, stripIgnoredSuffix } from './folder_lookup';
+import type { Transform } from "../types";
+import {
+  lookupPrefix,
+  lookupStandalone,
+  LOOP_LABELS,
+  ONE_SHOT_LABELS,
+  stripIgnoredSuffix,
+} from "./folder_lookup";
 
-const DASH_SEP = ' - ';
+const DASH_SEP = " - ";
 const MIN_SEGMENT_WORDS = 2;
 
 function resolveStandaloneType(nameLower: string): string | undefined {
   const standalone = lookupStandalone(nameLower);
   if (standalone !== undefined) return standalone;
-  const loopSuffix = LOOP_LABELS.map((l) => ` ${l}`).find((s) => nameLower.endsWith(s));
+  const loopSuffix = LOOP_LABELS.map((l) => ` ${l}`).find((s) =>
+    nameLower.endsWith(s),
+  );
   if (loopSuffix !== undefined) {
     const prefix = lookupPrefix(nameLower.slice(0, -loopSuffix.length));
     if (prefix !== undefined) return `${prefix} Loops`;
   }
-  const suffix = ONE_SHOT_LABELS.map((l) => ` ${l}`).find((s) => nameLower.endsWith(s));
+  const suffix = ONE_SHOT_LABELS.map((l) => ` ${l}`).find((s) =>
+    nameLower.endsWith(s),
+  );
   if (suffix !== undefined) {
     const prefix = lookupPrefix(nameLower.slice(0, -suffix.length));
     if (prefix !== undefined) return `${prefix} One Shots`;
@@ -21,10 +31,16 @@ function resolveStandaloneType(nameLower: string): string | undefined {
 }
 
 function resolveCompoundType(nameLower: string): string | undefined {
-  const sep = nameLower.includes(' and ') ? ' and ' : nameLower.includes(' & ') ? ' & ' : undefined;
+  const sep = nameLower.includes(" and ")
+    ? " and "
+    : nameLower.includes(" & ")
+      ? " & "
+      : undefined;
   if (sep === undefined) return undefined;
   const resolved = nameLower.split(sep).map(lookupStandalone);
-  if (resolved.every((r): r is string => r !== undefined)) return resolved.join(' and ');
+  if (resolved.every((r): r is string => r !== undefined)) {
+    return resolved.join(" and ");
+  }
   return undefined;
 }
 
@@ -44,11 +60,11 @@ function resolveAnyType(nameLower: string): string | undefined {
 const ALPHA_RE = /^[a-z]+$/v;
 function resolveSegmentSuffix(segment: string): string | undefined {
   const cleaned = stripIgnoredSuffix(segment);
-  const words = cleaned.split(' ').filter((w) => w.length > 0);
+  const words = cleaned.split(" ").filter((w) => w.length > 0);
   if (words.length < MIN_SEGMENT_WORDS) return undefined;
   if (!ALPHA_RE.test(words[0])) return undefined;
   for (let i = 1; i < words.length; i += 1) {
-    const type = resolveAnyType(words.slice(i).join(' '));
+    const type = resolveAnyType(words.slice(i).join(" "));
     if (type !== undefined) return type;
   }
   return undefined;
@@ -73,11 +89,17 @@ const _singleton: Transform = {
       if (entry.getChildNodes().length === 0) return;
 
       const nameLower = entry.getName().toLowerCase();
-      const parts = nameLower.includes(DASH_SEP) ? nameLower.split(DASH_SEP) : [nameLower];
-      const matches = parts.map(resolveSegmentSuffix).filter((t): t is string => t !== undefined);
+      const parts = nameLower.includes(DASH_SEP)
+        ? nameLower.split(DASH_SEP)
+        : [nameLower];
+      const matches = parts
+        .map(resolveSegmentSuffix)
+        .filter((t): t is string => t !== undefined);
       if (matches.length !== 1) return;
       const [sampleType] = matches;
       entry.setSampleType(sampleType);
     });
   },
-};export const createDirectorySegmentSuffixTransformer = (): Transform => _singleton;
+};
+export const createDirectorySegmentSuffixTransformer = (): Transform =>
+  _singleton;

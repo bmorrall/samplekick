@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { createNormaliseHyphenSpacingTransformer } from "../../../src";
-import { createTransformEntry, singleEntryTransformSource } from "../../support";
+import {
+  createTransformEntry,
+  singleEntryTransformSource,
+} from "../../support";
 
 describe("createNormaliseHyphenSpacingTransformer", () => {
   it("adds space before a hyphen that is touching the word after it", () => {
@@ -53,14 +56,20 @@ describe("createNormaliseHyphenSpacingTransformer", () => {
   });
 
   it("normalises packageName when the entry has one", () => {
-    const entry = createTransformEntry({ name: "kick.wav", packageName: "Drums- Bass" });
+    const entry = createTransformEntry({
+      name: "kick.wav",
+      packageName: "Drums- Bass",
+    });
     const transformer = createNormaliseHyphenSpacingTransformer();
     transformer.transform(singleEntryTransformSource(entry));
     expect(entry.setPackageName).toHaveBeenCalledWith("Drums - Bass");
   });
 
   it("normalises sampleType when the entry has one", () => {
-    const entry = createTransformEntry({ name: "kick.wav", sampleType: "Kicks -Snares" });
+    const entry = createTransformEntry({
+      name: "kick.wav",
+      sampleType: "Kicks -Snares",
+    });
     const transformer = createNormaliseHyphenSpacingTransformer();
     transformer.transform(singleEntryTransformSource(entry));
     expect(entry.setSampleType).toHaveBeenCalledWith("Kicks - Snares");
@@ -89,7 +98,12 @@ describe("createNormaliseHyphenSpacingTransformer", () => {
   });
 
   it("does not modify any fields when keepStructure is true", () => {
-    const entry = createTransformEntry({ name: "foo- bar.wav", packageName: "Drums- Bass", sampleType: "Kicks -Snares", keepStructure: true });
+    const entry = createTransformEntry({
+      name: "foo- bar.wav",
+      packageName: "Drums- Bass",
+      sampleType: "Kicks -Snares",
+      keepStructure: true,
+    });
     const transformer = createNormaliseHyphenSpacingTransformer();
     transformer.transform(singleEntryTransformSource(entry));
     expect(entry.setName).not.toHaveBeenCalled();

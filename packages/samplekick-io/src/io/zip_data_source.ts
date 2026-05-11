@@ -31,8 +31,15 @@ class NodeFileReader implements Reader {
     const handle = await open(this.filePath, "r");
     try {
       const buf = new Uint8Array(new ArrayBuffer(length));
-      const { bytesRead } = await handle.read(Buffer.from(buf.buffer), 0, length, offset);
-      return bytesRead === length ? buf : new Uint8Array(buf.buffer, 0, bytesRead);
+      const { bytesRead } = await handle.read(
+        Buffer.from(buf.buffer),
+        0,
+        length,
+        offset,
+      );
+      return bytesRead === length
+        ? buf
+        : new Uint8Array(buf.buffer, 0, bytesRead);
     } finally {
       await handle.close();
     }
@@ -60,15 +67,27 @@ export class ZipDataSource implements FileSource {
   private readonly name: string;
   private readonly fingerprint: string;
 
-  constructor(entries: Map<string, ZipEntry>, name: string, fingerprint: string = createHash("sha256").update(name).digest("hex")) {
+  constructor(
+    entries: Map<string, ZipEntry>,
+    name: string,
+    fingerprint: string = createHash("sha256").update(name).digest("hex"),
+  ) {
     this.entries = entries;
     this.name = name;
     this.fingerprint = fingerprint;
   }
 
-  static async fromBlob(blob: Blob, name: string, fingerprint: string = createHash("sha256").update(name).digest("hex")): Promise<ZipDataSource> {
+  static async fromBlob(
+    blob: Blob,
+    name: string,
+    fingerprint: string = createHash("sha256").update(name).digest("hex"),
+  ): Promise<ZipDataSource> {
     const { entries } = await unzip(blob);
-    return new ZipDataSource(new Map(Object.entries(entries)), name, fingerprint);
+    return new ZipDataSource(
+      new Map(Object.entries(entries)),
+      name,
+      fingerprint,
+    );
   }
 
   static async fromFile(filePath: string): Promise<ZipDataSource> {
@@ -76,7 +95,11 @@ export class ZipDataSource implements FileSource {
       computeFileFingerprint(filePath),
       unzip(new NodeFileReader(filePath)),
     ]);
-    return new ZipDataSource(new Map(Object.entries(entries)), basename(filePath), fingerprint);
+    return new ZipDataSource(
+      new Map(Object.entries(entries)),
+      basename(filePath),
+      fingerprint,
+    );
   }
 
   getName(): string {

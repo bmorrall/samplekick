@@ -29,7 +29,9 @@ const buildRootNodeFromFileSource = (fileSource: FileSource): EntryNode => {
       throw new Error("Entry path must not be empty");
     }
     let currentNode: EntryNode = rootNode;
-    const [, ...parentPartsReversed] = [...splitPath(entry.getPath())].reverse();
+    const [, ...parentPartsReversed] = [
+      ...splitPath(entry.getPath()),
+    ].reverse();
     let currentPath = "";
     for (const part of parentPartsReversed.reverse()) {
       currentPath = currentPath === "" ? part : `${currentPath}/${part}`;
@@ -165,11 +167,21 @@ export class Registry implements FileSource, ConfigSource {
             isFile: () => node.isFile(),
             getParentNode: () => node.getParentNode(),
             getChildNodes: () => node.getChildNodes(),
-            setName: (name) => { node.setName(name); },
-            setPackageName: (name) => { node.setPackageName(name); },
-            setSampleType: (type) => { node.setSampleType(type); },
-            setSkipped: (skipped) => { node.setSkipped(skipped); },
-            setKeepStructure: (value) => { node.setKeepStructure(value); },
+            setName: (name) => {
+              node.setName(name);
+            },
+            setPackageName: (name) => {
+              node.setPackageName(name);
+            },
+            setSampleType: (type) => {
+              node.setSampleType(type);
+            },
+            setSkipped: (skipped) => {
+              node.setSkipped(skipped);
+            },
+            setKeepStructure: (value) => {
+              node.setKeepStructure(value);
+            },
           };
           fn(facade);
         });
@@ -311,13 +323,19 @@ export class Registry implements FileSource, ConfigSource {
     return result instanceof SkipResult ? undefined : result.path;
   }
 
-  async exportToDirectory(dirPath: string | undefined, options: ExportOptions): Promise<void> {
+  async exportToDirectory(
+    dirPath: string | undefined,
+    options: ExportOptions,
+  ): Promise<void> {
     // Report the topmost skipped nodes (directories or files) — children of already-skipped
     // ancestors are implicitly covered and do not need their own callbacks.
     if (options.onSkip !== undefined) {
       const { onSkip } = options;
       this.rootNode.eachDescendant((node) => {
-        if (node.isSkipped() === true && node.getParentNode()?.isSkipped() !== true) {
+        if (
+          node.isSkipped() === true &&
+          node.getParentNode()?.isSkipped() !== true
+        ) {
           onSkip(node);
         }
       });
@@ -357,7 +375,10 @@ export class Registry implements FileSource, ConfigSource {
             const destPath = join(dirPath, destRelPath);
             await node.copyToPath(destPath);
             await this.postProcessors.reduce<Promise<void>>(
-              async (chain, processor) => { await chain; await processor.processFile(destPath, node); },
+              async (chain, processor) => {
+                await chain;
+                await processor.processFile(destPath, node);
+              },
               Promise.resolve(),
             );
           } catch (err) {
@@ -373,7 +394,9 @@ export class Registry implements FileSource, ConfigSource {
     const results = await Promise.allSettled(promises);
     const errors = results
       .filter((r): r is PromiseRejectedResult => r.status === "rejected")
-      .map((r) => (r.reason instanceof Error ? r.reason : new Error(String(r.reason))));
+      .map((r) =>
+        r.reason instanceof Error ? r.reason : new Error(String(r.reason)),
+      );
     if (errors.length > 0) {
       throw new AggregateError(errors, "One or more entries failed to export");
     }

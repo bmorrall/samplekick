@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { createGhosthackNameTransformer } from "../../../src";
-import { createTransformEntry, singleEntryTransformSource } from "../../support";
+import {
+  createTransformEntry,
+  singleEntryTransformSource,
+} from "../../support";
 
 describe("createGhosthackNameTransformer", () => {
   it('normalises "Ghosthack-Pack Name.wav" to include spaced hyphen', () => {
@@ -53,14 +56,20 @@ describe("createGhosthackNameTransformer", () => {
   });
 
   it("normalises packageName when the entry has one", () => {
-    const entry = createTransformEntry({ name: "kick.wav", packageName: "Ghosthack-Bass Loops" });
+    const entry = createTransformEntry({
+      name: "kick.wav",
+      packageName: "Ghosthack-Bass Loops",
+    });
     const transformer = createGhosthackNameTransformer();
     transformer.transform(singleEntryTransformSource(entry));
     expect(entry.setPackageName).toHaveBeenCalledWith("Ghosthack - Bass Loops");
   });
 
   it("normalises sampleType when the entry has one", () => {
-    const entry = createTransformEntry({ name: "kick.wav", sampleType: "Ghosthack-Drums" });
+    const entry = createTransformEntry({
+      name: "kick.wav",
+      sampleType: "Ghosthack-Drums",
+    });
     const transformer = createGhosthackNameTransformer();
     transformer.transform(singleEntryTransformSource(entry));
     expect(entry.setSampleType).toHaveBeenCalledWith("Ghosthack - Drums");
@@ -89,14 +98,22 @@ describe("createGhosthackNameTransformer", () => {
   });
 
   it('leaves "Ghosthack x Collab Name" unchanged (cross-collab prefix)', () => {
-    const entry = createTransformEntry({ name: "Ghosthack x Boom - Sci-Fi Horror FX & Foley" });
+    const entry = createTransformEntry({
+      name: "Ghosthack x Boom - Sci-Fi Horror FX & Foley",
+    });
     const transformer = createGhosthackNameTransformer();
     transformer.transform(singleEntryTransformSource(entry));
-    expect(entry.setName).toHaveBeenCalledWith("Ghosthack x Boom - Sci-Fi Horror FX & Foley");
+    expect(entry.setName).toHaveBeenCalledWith(
+      "Ghosthack x Boom - Sci-Fi Horror FX & Foley",
+    );
   });
 
   it("does not modify any fields when keepStructure is true", () => {
-    const entry = createTransformEntry({ name: "Ghosthack-Pack.wav", packageName: "Ghosthack-Pack", keepStructure: true });
+    const entry = createTransformEntry({
+      name: "Ghosthack-Pack.wav",
+      packageName: "Ghosthack-Pack",
+      keepStructure: true,
+    });
     const transformer = createGhosthackNameTransformer();
     transformer.transform(singleEntryTransformSource(entry));
     expect(entry.setName).not.toHaveBeenCalled();

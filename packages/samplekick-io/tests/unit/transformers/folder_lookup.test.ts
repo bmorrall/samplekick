@@ -33,7 +33,13 @@ describe("FOLDER_LOOKUP", () => {
     });
 
     it('returns "Drum and Bass" for all DRUM_AND_BASS_KEYS variants', () => {
-      const variants = ["drum and bass", "drum n bass", "drum & bass", "dnb", "d&b"];
+      const variants = [
+        "drum and bass",
+        "drum n bass",
+        "drum & bass",
+        "dnb",
+        "d&b",
+      ];
       for (const variant of variants) {
         expect(lookupStandalone(variant)).toBe("Drum and Bass");
       }
@@ -50,20 +56,26 @@ describe("FOLDER_LOOKUP", () => {
       expect(lookupPrefix("unknown")).toBeUndefined();
     });
 
-    it('returns undefined for all LOOP_LABELS (no compound prefix)', () => {
+    it("returns undefined for all LOOP_LABELS (no compound prefix)", () => {
       for (const label of LOOP_LABELS) {
         expect(lookupPrefix(label), label).toBeUndefined();
       }
     });
 
-    it('returns undefined for all ONE_SHOT_LABELS (no compound prefix)', () => {
+    it("returns undefined for all ONE_SHOT_LABELS (no compound prefix)", () => {
       for (const label of ONE_SHOT_LABELS) {
         expect(lookupPrefix(label)).toBeUndefined();
       }
     });
 
     it('returns "Drum and Bass" prefix for all DRUM_AND_BASS_KEYS variants', () => {
-      const variants = ["drum and bass", "drum n bass", "drum & bass", "dnb", "d&b"];
+      const variants = [
+        "drum and bass",
+        "drum n bass",
+        "drum & bass",
+        "dnb",
+        "d&b",
+      ];
       for (const variant of variants) {
         expect(lookupPrefix(variant)).toBe("Drum and Bass");
       }
@@ -76,9 +88,15 @@ describe("FOLDER_LOOKUP", () => {
         if (entry.prefix !== undefined) {
           // prefix should never equal standalone for singular/plural split entries
           // (this just verifies neither field is accidentally empty)
-          expect(entry.prefix.length, `prefix for "${key}" should not be empty`).toBeGreaterThan(0);
+          expect(
+            entry.prefix.length,
+            `prefix for "${key}" should not be empty`,
+          ).toBeGreaterThan(0);
         }
-        expect(entry.standalone.length, `standalone for "${key}" should not be empty`).toBeGreaterThan(0);
+        expect(
+          entry.standalone.length,
+          `standalone for "${key}" should not be empty`,
+        ).toBeGreaterThan(0);
       }
     });
   });
@@ -94,10 +112,10 @@ describe("isKnownTypeFolderName", () => {
     expect(isKnownTypeFolderName("kicks")).toBe(true);
   });
 
-it('returns true for all LOOP_LABELS forms', () => {
-      for (const label of LOOP_LABELS) {
-        expect(isKnownTypeFolderName(label), label).toBe(true);
-      }
+  it("returns true for all LOOP_LABELS forms", () => {
+    for (const label of LOOP_LABELS) {
+      expect(isKnownTypeFolderName(label), label).toBe(true);
+    }
   });
 
   it('returns true for "One Shots" and all one-shot label forms', () => {
@@ -143,15 +161,21 @@ describe("stripIgnoredSuffix", () => {
   });
 
   it('strips "Stems and MIDI" as a unit', () => {
-    expect(stripIgnoredSuffix("melody loops - trap stems and midi")).toBe("melody loops - trap");
+    expect(stripIgnoredSuffix("melody loops - trap stems and midi")).toBe(
+      "melody loops - trap",
+    );
   });
 
   it('strips "Stems & MIDI" as a unit', () => {
-    expect(stripIgnoredSuffix("melody loops - trap stems & midi")).toBe("melody loops - trap");
+    expect(stripIgnoredSuffix("melody loops - trap stems & midi")).toBe(
+      "melody loops - trap",
+    );
   });
 
   it('strips bare "Stems" suffix', () => {
-    expect(stripIgnoredSuffix("drum loops - various stems")).toBe("drum loops - various");
+    expect(stripIgnoredSuffix("drum loops - various stems")).toBe(
+      "drum loops - various",
+    );
   });
 
   it('strips "& Stems" suffix', () => {

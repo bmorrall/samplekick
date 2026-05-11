@@ -28,7 +28,12 @@ describe("EPIPE handling (pipe to head)", () => {
         ["-c", 'node "$CLI" "$ZIP" --preserve-paths | head -1'],
         {
           encoding: "utf8",
-          env: { ...process.env, CLI: CLI_PATH, ZIP: zipPath, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
+          env: {
+            ...process.env,
+            CLI: CLI_PATH,
+            ZIP: zipPath,
+            SAMPLEKICK_DATA_DIR: join(tmpDir, "data"),
+          },
         },
       );
 
@@ -59,16 +64,28 @@ describe("EPIPE handling (pipe to head)", () => {
         ["-c", 'node "$CLI" "$ZIP" --preserve-paths -o "$OUT" | head -1'],
         {
           encoding: "utf8",
-          env: { ...process.env, CLI: CLI_PATH, ZIP: zipPath, OUT: outputDir, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
+          env: {
+            ...process.env,
+            CLI: CLI_PATH,
+            ZIP: zipPath,
+            OUT: outputDir,
+            SAMPLEKICK_DATA_DIR: join(tmpDir, "data"),
+          },
         },
       );
 
       expect(result.stderr).toBe("");
 
       // Verify the export completed fully despite the broken pipe
-      await expect(stat(join(outputDir, "Drums/kick.wav"))).resolves.toBeDefined();
-      await expect(stat(join(outputDir, "Drums/snare.wav"))).resolves.toBeDefined();
-      await expect(stat(join(outputDir, "Loops/hihat.wav"))).resolves.toBeDefined();
+      await expect(
+        stat(join(outputDir, "Drums/kick.wav")),
+      ).resolves.toBeDefined();
+      await expect(
+        stat(join(outputDir, "Drums/snare.wav")),
+      ).resolves.toBeDefined();
+      await expect(
+        stat(join(outputDir, "Loops/hihat.wav")),
+      ).resolves.toBeDefined();
     } finally {
       await rm(tmpDir, { recursive: true });
     }

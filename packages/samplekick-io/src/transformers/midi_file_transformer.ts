@@ -1,6 +1,6 @@
-import type { Transform } from '../types';
+import type { Transform } from "../types";
 
-const MIDI_PREFIX = 'MIDI';
+const MIDI_PREFIX = "MIDI";
 
 /**
  * MidiFileTransformer
@@ -17,9 +17,12 @@ const _singleton: Transform = {
       const name = entry.getName().toLowerCase();
       const path = entry.getPath().toLowerCase();
 
-      if (name.endsWith('.mid') || path.endsWith('.mid')) {
+      if (name.endsWith(".mid") || path.endsWith(".mid")) {
         const existingType = entry.getSampleType();
-        const sampleType = existingType === undefined ? MIDI_PREFIX : `${MIDI_PREFIX} - ${existingType}`;
+        const sampleType =
+          existingType === undefined
+            ? MIDI_PREFIX
+            : `${MIDI_PREFIX} - ${existingType}`;
         entry.setSampleType(sampleType);
         entry.setKeepStructure(true);
       }

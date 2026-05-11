@@ -23,11 +23,10 @@ describe("FlatPackPrefixTransformer", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync(
-        "node",
-        [CLI_PATH, zipPath, "--analyse"],
-        { encoding: "utf8", env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir } },
-      );
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--analyse"], {
+        encoding: "utf8",
+        env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+      });
 
       expect(result.status).toBe(0);
 
@@ -41,10 +40,14 @@ describe("FlatPackPrefixTransformer", () => {
       expect(rootRow).toContain("Packs");
 
       // Audio children have the prefix stripped and the first segment prepended
-      const wav1Row = rows.find((r) => r.startsWith("Sounds by Sunwarper - SP404 Pack - 01 D4.wav,"));
+      const wav1Row = rows.find((r) =>
+        r.startsWith("Sounds by Sunwarper - SP404 Pack - 01 D4.wav,"),
+      );
       expect(wav1Row).toContain("Sounds by Sunwarper - 01 D4.wav");
 
-      const wav2Row = rows.find((r) => r.startsWith("Sounds by Sunwarper - SP404 Pack - 02 E4.wav,"));
+      const wav2Row = rows.find((r) =>
+        r.startsWith("Sounds by Sunwarper - SP404 Pack - 02 E4.wav,"),
+      );
       expect(wav2Row).toContain("Sounds by Sunwarper - 02 E4.wav");
     } finally {
       await rm(tmpDir, { recursive: true });
@@ -64,11 +67,10 @@ describe("FlatPackPrefixTransformer", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync(
-        "node",
-        [CLI_PATH, zipPath, "--analyse"],
-        { encoding: "utf8", env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir } },
-      );
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--analyse"], {
+        encoding: "utf8",
+        env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+      });
 
       expect(result.status).toBe(0);
 

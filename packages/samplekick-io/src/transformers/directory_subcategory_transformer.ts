@@ -1,5 +1,5 @@
-import type { Transform, TransformEntry } from '../types';
-import { isKnownTypeFolderName } from './folder_lookup';
+import type { Transform, TransformEntry } from "../types";
+import { isKnownTypeFolderName } from "./folder_lookup";
 
 const STRIP_MIDI_STEMS_RE = / (?:&|and) (?:midi|stems?)$/iv;
 
@@ -15,9 +15,9 @@ function trySetSubcategory(entry: TransformEntry): boolean {
   const parentSampleType = parent.getSampleType();
   if (parentSampleType === undefined) return false;
   if (!isKnownTypeFolderName(parentSampleType)) return false;
-  const displayName = entry.getName().replace(STRIP_MIDI_STEMS_RE, '');
+  const displayName = entry.getName().replace(STRIP_MIDI_STEMS_RE, "");
   if (SUBCATEGORY_EXCLUDED_SUFFIX_RE.test(displayName)) return false;
-  if (displayName.includes(' - ')) return false;
+  if (displayName.includes(" - ")) return false;
   entry.setSampleType(`${parentSampleType} - ${displayName}`);
   return true;
 }
@@ -38,4 +38,6 @@ const _singleton: Transform = {
       trySetSubcategory(entry);
     });
   },
-};export const createDirectorySubcategoryTransformer = (): Transform => _singleton;
+};
+export const createDirectorySubcategoryTransformer = (): Transform =>
+  _singleton;

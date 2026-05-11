@@ -1,5 +1,12 @@
 import { spawnSync } from "node:child_process";
-import { mkdtemp, readFile, readdir, rm, stat, writeFile } from "node:fs/promises";
+import {
+  mkdtemp,
+  readFile,
+  readdir,
+  rm,
+  stat,
+  writeFile,
+} from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { zipSync, strToU8 } from "fflate";
@@ -20,15 +27,21 @@ describe("samplekick CLI", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync("node", [CLI_PATH, zipPath, "--write-config", configPath], {
-        encoding: "utf8",
-        env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
-      });
+      const result = spawnSync(
+        "node",
+        [CLI_PATH, zipPath, "--write-config", configPath],
+        {
+          encoding: "utf8",
+          env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
+        },
+      );
 
       expect(result.stderr).toBe("");
 
       const fileContent = await readFile(configPath, "utf8");
-      expect(fileContent).toContain("path,name,packageName,sampleType,skip,keepPath");
+      expect(fileContent).toContain(
+        "path,name,packageName,sampleType,skip,keepPath",
+      );
       expect(fileContent).toContain("Drums/kick.wav");
       expect(fileContent).toContain("Loops/bass.wav");
 
@@ -51,17 +64,33 @@ describe("samplekick CLI", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync("node", [CLI_PATH, zipPath, "--write-config", configPath, "--preserve-paths", "-o", outputDir], {
-        encoding: "utf8",
-        env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
-      });
+      const result = spawnSync(
+        "node",
+        [
+          CLI_PATH,
+          zipPath,
+          "--write-config",
+          configPath,
+          "--preserve-paths",
+          "-o",
+          outputDir,
+        ],
+        {
+          encoding: "utf8",
+          env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
+        },
+      );
 
       expect(result.stderr).toBe("");
       const fileContent = await readFile(configPath, "utf8");
-      expect(fileContent).toContain("path,name,packageName,sampleType,skip,keepPath");
+      expect(fileContent).toContain(
+        "path,name,packageName,sampleType,skip,keepPath",
+      );
       expect(fileContent).toContain("Drums/kick.wav");
 
-      expect(await readFile(join(outputDir, "Drums/kick.wav"), "utf8")).toBe("kick-data");
+      expect(await readFile(join(outputDir, "Drums/kick.wav"), "utf8")).toBe(
+        "kick-data",
+      );
 
       expect(result.stdout).toContain("Drums/kick.wav");
       expect(result.stdout).toContain(`Exported 1 sample to ${outputDir}`);
@@ -93,10 +122,24 @@ describe("samplekick CLI", () => {
       await writeFile(zipPath, zipped);
       await writeFile(configPath, config);
 
-      const result = spawnSync("node", [CLI_PATH, zipPath, "--config", configPath, "--preserve-paths", "-o", outputDir], { encoding: "utf8" });
+      const result = spawnSync(
+        "node",
+        [
+          CLI_PATH,
+          zipPath,
+          "--config",
+          configPath,
+          "--preserve-paths",
+          "-o",
+          outputDir,
+        ],
+        { encoding: "utf8" },
+      );
 
       expect(result.stderr).toBe("");
-      expect(await readFile(join(outputDir, "Drums/My Kick.wav"), "utf8")).toBe("kick-data");
+      expect(await readFile(join(outputDir, "Drums/My Kick.wav"), "utf8")).toBe(
+        "kick-data",
+      );
       await expect(stat(join(outputDir, "Drums/kick.wav"))).rejects.toThrow();
       await expect(stat(join(outputDir, "Loops/bass.wav"))).rejects.toThrow();
 
@@ -127,10 +170,24 @@ describe("samplekick CLI", () => {
       await writeFile(zipPath, zipped);
       await writeFile(configPath, config);
 
-      const result = spawnSync("node", [CLI_PATH, zipPath, "--config", configPath, "--preserve-paths", "-o", outputDir], { encoding: "utf8" });
+      const result = spawnSync(
+        "node",
+        [
+          CLI_PATH,
+          zipPath,
+          "--config",
+          configPath,
+          "--preserve-paths",
+          "-o",
+          outputDir,
+        ],
+        { encoding: "utf8" },
+      );
 
       expect(result.stderr).toBe("");
-      expect(await readFile(join(outputDir, "Drums/kick.wav"), "utf8")).toBe("kick-data");
+      expect(await readFile(join(outputDir, "Drums/kick.wav"), "utf8")).toBe(
+        "kick-data",
+      );
       await expect(stat(join(outputDir, "Loops/bass.wav"))).rejects.toThrow();
       await expect(stat(join(outputDir, "Loops/synth.wav"))).rejects.toThrow();
 
@@ -158,7 +215,11 @@ describe("samplekick CLI", () => {
       await writeFile(zipPath, zipped);
       await writeFile(configPath, config);
 
-      const result = spawnSync("node", [CLI_PATH, zipPath, "--config", configPath, "--dump-config"], { encoding: "utf8" });
+      const result = spawnSync(
+        "node",
+        [CLI_PATH, zipPath, "--config", configPath, "--dump-config"],
+        { encoding: "utf8" },
+      );
 
       expect(result.stderr).toBe("");
       expect(result.stdout).toContain("Drums/kick.wav");
@@ -182,7 +243,9 @@ describe("samplekick CLI", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync("node", [CLI_PATH, zipPath, "--dump-config"], { encoding: "utf8" });
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--dump-config"], {
+        encoding: "utf8",
+      });
 
       expect(result.stderr).toBe("");
       expect(result.status).toBe(0);
@@ -217,7 +280,10 @@ describe("samplekick CLI", () => {
       expect(result.stderr).toBe("");
       expect(result.status).toBe(0);
 
-      const fileRow = result.stdout.trim().split("\n").find((row) => row.startsWith("Drums/kick.wav,"));
+      const fileRow = result.stdout
+        .trim()
+        .split("\n")
+        .find((row) => row.startsWith("Drums/kick.wav,"));
       // name matching basename is omitted, boolean defaults are empty
       expect(fileRow).toBe("Drums/kick.wav,,,,,");
     } finally {
@@ -236,15 +302,22 @@ describe("samplekick CLI", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync("node", [CLI_PATH, zipPath, "--dump-config", "--bake"], {
-        encoding: "utf8",
-        env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
-      });
+      const result = spawnSync(
+        "node",
+        [CLI_PATH, zipPath, "--dump-config", "--bake"],
+        {
+          encoding: "utf8",
+          env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
+        },
+      );
 
       expect(result.stderr).toBe("");
       expect(result.status).toBe(0);
 
-      const fileRow = result.stdout.trim().split("\n").find((row) => row.startsWith("Drums/kick.wav,"));
+      const fileRow = result.stdout
+        .trim()
+        .split("\n")
+        .find((row) => row.startsWith("Drums/kick.wav,"));
       // name always written, false for unset booleans
       expect(fileRow).toBe("Drums/kick.wav,kick.wav,,,false,false");
     } finally {
@@ -265,11 +338,10 @@ describe("samplekick CLI", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync(
-        "node",
-        [CLI_PATH, zipPath, "--analyse"],
-        { encoding: "utf8", env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir } },
-      );
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--analyse"], {
+        encoding: "utf8",
+        env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+      });
 
       expect(result.stderr).toBe("");
       expect(result.status).toBe(0);
@@ -304,11 +376,10 @@ describe("samplekick CLI", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync(
-        "node",
-        [CLI_PATH, zipPath, "--analyse"],
-        { encoding: "utf8", env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir } },
-      );
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--analyse"], {
+        encoding: "utf8",
+        env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+      });
 
       expect(result.stderr).toBe("");
       expect(result.status).toBe(0);
@@ -340,16 +411,23 @@ describe("samplekick CLI", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync("node", [CLI_PATH, zipPath, "--write-config", configPath], {
-        encoding: "utf8",
-        env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
-      });
+      const result = spawnSync(
+        "node",
+        [CLI_PATH, zipPath, "--write-config", configPath],
+        {
+          encoding: "utf8",
+          env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
+        },
+      );
 
       expect(result.stderr).toBe("");
       expect(result.status).toBe(0);
 
       const csv = await readFile(configPath, "utf8");
-      const fileRow = csv.trim().split("\n").find((row) => row.startsWith("Drums/kick.wav,"));
+      const fileRow = csv
+        .trim()
+        .split("\n")
+        .find((row) => row.startsWith("Drums/kick.wav,"));
       // name matching basename is omitted, boolean defaults are empty
       expect(fileRow).toBe("Drums/kick.wav,,,,,");
     } finally {
@@ -369,16 +447,23 @@ describe("samplekick CLI", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync("node", [CLI_PATH, zipPath, "--write-config", configPath, "--bake"], {
-        encoding: "utf8",
-        env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
-      });
+      const result = spawnSync(
+        "node",
+        [CLI_PATH, zipPath, "--write-config", configPath, "--bake"],
+        {
+          encoding: "utf8",
+          env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
+        },
+      );
 
       expect(result.stderr).toBe("");
       expect(result.status).toBe(0);
 
       const csv = await readFile(configPath, "utf8");
-      const fileRow = csv.trim().split("\n").find((row) => row.startsWith("Drums/kick.wav,"));
+      const fileRow = csv
+        .trim()
+        .split("\n")
+        .find((row) => row.startsWith("Drums/kick.wav,"));
       // name always written, false for unset booleans
       expect(fileRow).toBe("Drums/kick.wav,kick.wav,,,false,false");
     } finally {

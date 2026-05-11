@@ -22,11 +22,10 @@ describe("NormaliseBracketSpacingTransformer", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync(
-        "node",
-        [CLI_PATH, zipPath, "--analyse"],
-        { encoding: "utf8", env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir } },
-      );
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--analyse"], {
+        encoding: "utf8",
+        env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+      });
 
       expect(result.status).toBe(0);
 
@@ -34,9 +33,15 @@ describe("NormaliseBracketSpacingTransformer", () => {
       const csv = await readFile(join(dataDir, configFile), "utf8");
       const rows = csv.split("\n");
 
-      expect(rows.find((r) => r.startsWith("kick(hard),"))).toBe("kick(hard),kick (hard),,,,");
-      expect(rows.find((r) => r.startsWith("snare[soft],"))).toBe("snare[soft],snare [soft],,,,");
-      expect(rows.find((r) => r.startsWith("hats{open},"))).toBe("hats{open},hats {open},,,,");
+      expect(rows.find((r) => r.startsWith("kick(hard),"))).toBe(
+        "kick(hard),kick (hard),,,,",
+      );
+      expect(rows.find((r) => r.startsWith("snare[soft],"))).toBe(
+        "snare[soft],snare [soft],,,,",
+      );
+      expect(rows.find((r) => r.startsWith("hats{open},"))).toBe(
+        "hats{open},hats {open},,,,",
+      );
     } finally {
       await rm(tmpDir, { recursive: true });
     }

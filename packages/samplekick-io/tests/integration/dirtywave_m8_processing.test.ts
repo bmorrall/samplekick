@@ -1,7 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { OrganisedPathStrategy, DirtywaveM8Preset } from "../../src";
 import { createDefaultRootPackageNameTransformer } from "../../src/transformers";
-import { createZipRegistry, applyDeviceTransforms, applyDeviceValidators } from "../support";
+import {
+  createZipRegistry,
+  applyDeviceTransforms,
+  applyDeviceValidators,
+} from "../support";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";

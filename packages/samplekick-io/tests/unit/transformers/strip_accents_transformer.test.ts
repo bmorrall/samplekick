@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { createStripAccentsTransform } from "../../../src";
-import { createTransformEntry, singleEntryTransformSource } from "../../support";
+import {
+  createTransformEntry,
+  singleEntryTransformSource,
+} from "../../support";
 
 describe("createStripAccentsTransform", () => {
   it("strips accents from letters in the name", () => {
@@ -42,14 +45,20 @@ describe("createStripAccentsTransform", () => {
   });
 
   it("normalises accents in packageName when the entry has one", () => {
-    const entry = createTransformEntry({ name: "kick.wav", packageName: "Påck" });
+    const entry = createTransformEntry({
+      name: "kick.wav",
+      packageName: "Påck",
+    });
     const transformer = createStripAccentsTransform();
     transformer.transform(singleEntryTransformSource(entry));
     expect(entry.setPackageName).toHaveBeenCalledWith("Pack");
   });
 
   it("normalises accents in sampleType when the entry has one", () => {
-    const entry = createTransformEntry({ name: "kick.wav", sampleType: "Drüms" });
+    const entry = createTransformEntry({
+      name: "kick.wav",
+      sampleType: "Drüms",
+    });
     const transformer = createStripAccentsTransform();
     transformer.transform(singleEntryTransformSource(entry));
     expect(entry.setSampleType).toHaveBeenCalledWith("Drums");

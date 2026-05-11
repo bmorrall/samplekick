@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { createDefaultRootPackageNameTransformer } from "../../../src";
-import { createTransformEntry, createTransformEntryInHierarchy, singleEntryTransformSource } from "../../support";
+import {
+  createTransformEntry,
+  createTransformEntryInHierarchy,
+  singleEntryTransformSource,
+} from "../../support";
 
 describe("createDefaultRootPackageNameTransformer", () => {
   it("should strip extension from root node name", () => {
@@ -18,10 +22,10 @@ describe("createDefaultRootPackageNameTransformer", () => {
   });
 
   it("should not change package name if not root node", () => {
-    const entry = createTransformEntryInHierarchy(
-      [{ name: "Parent" }],
-      { name: "Example.zip", isFile: true },
-    );
+    const entry = createTransformEntryInHierarchy([{ name: "Parent" }], {
+      name: "Example.zip",
+      isFile: true,
+    });
     const transformer = createDefaultRootPackageNameTransformer();
     transformer.transform(singleEntryTransformSource(entry));
     expect(entry.setPackageName).not.toHaveBeenCalled();

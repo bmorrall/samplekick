@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { createNormaliseSpacesTransformer } from "../../../src";
-import { createTransformEntry, singleEntryTransformSource } from "../../support";
+import {
+  createTransformEntry,
+  singleEntryTransformSource,
+} from "../../support";
 
 describe("createNormaliseSpacesTransformer", () => {
   it("collapses double spaces to a single space", () => {
@@ -53,14 +56,20 @@ describe("createNormaliseSpacesTransformer", () => {
   });
 
   it("normalises packageName when the entry has one", () => {
-    const entry = createTransformEntry({ name: "kick.wav", packageName: "My  Pack" });
+    const entry = createTransformEntry({
+      name: "kick.wav",
+      packageName: "My  Pack",
+    });
     const transformer = createNormaliseSpacesTransformer();
     transformer.transform(singleEntryTransformSource(entry));
     expect(entry.setPackageName).toHaveBeenCalledWith("My Pack");
   });
 
   it("normalises sampleType when the entry has one", () => {
-    const entry = createTransformEntry({ name: "kick.wav", sampleType: "Kicks  Snares" });
+    const entry = createTransformEntry({
+      name: "kick.wav",
+      sampleType: "Kicks  Snares",
+    });
     const transformer = createNormaliseSpacesTransformer();
     transformer.transform(singleEntryTransformSource(entry));
     expect(entry.setSampleType).toHaveBeenCalledWith("Kicks Snares");
@@ -89,7 +98,12 @@ describe("createNormaliseSpacesTransformer", () => {
   });
 
   it("does not modify any fields when keepStructure is true", () => {
-    const entry = createTransformEntry({ name: "foo  bar.wav", packageName: "My  Pack", sampleType: "Kicks  Snares", keepStructure: true });
+    const entry = createTransformEntry({
+      name: "foo  bar.wav",
+      packageName: "My  Pack",
+      sampleType: "Kicks  Snares",
+      keepStructure: true,
+    });
     const transformer = createNormaliseSpacesTransformer();
     transformer.transform(singleEntryTransformSource(entry));
     expect(entry.setName).not.toHaveBeenCalled();

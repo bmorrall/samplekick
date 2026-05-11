@@ -21,14 +21,29 @@ describe("samplekick CLI flags", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync("node", [CLI_PATH, zipPath, "--allow-junk", "--preserve-paths", "-o", outputDir], {
-        encoding: "utf8",
-        env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
-      });
+      const result = spawnSync(
+        "node",
+        [
+          CLI_PATH,
+          zipPath,
+          "--allow-junk",
+          "--preserve-paths",
+          "-o",
+          outputDir,
+        ],
+        {
+          encoding: "utf8",
+          env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
+        },
+      );
 
       expect(result.stderr).toBe("");
-      expect(await readFile(join(outputDir, "Drums/kick.wav"), "utf8")).toBe("kick-data");
-      expect(await readFile(join(outputDir, "__MACOSX/Drums/._kick.wav"), "utf8")).toBe("junk");
+      expect(await readFile(join(outputDir, "Drums/kick.wav"), "utf8")).toBe(
+        "kick-data",
+      );
+      expect(
+        await readFile(join(outputDir, "__MACOSX/Drums/._kick.wav"), "utf8"),
+      ).toBe("junk");
 
       expect(result.status).toBe(0);
     } finally {
@@ -45,7 +60,11 @@ describe("samplekick CLI flags", () => {
       try {
         await writeFile(zipPath, zipped);
 
-        const result = spawnSync("node", [CLI_PATH, zipPath, "--device", "unknown-device"], { encoding: "utf8" });
+        const result = spawnSync(
+          "node",
+          [CLI_PATH, zipPath, "--device", "unknown-device"],
+          { encoding: "utf8" },
+        );
 
         expect(result.stderr).toContain("unknown-device");
 
@@ -70,14 +89,33 @@ describe("samplekick CLI flags", () => {
         try {
           await writeFile(zipPath, zipped);
 
-          const result = spawnSync("node", [CLI_PATH, zipPath, "--device", deviceAlias, "--preserve-paths", "-o", outputDir], {
-            encoding: "utf8",
-            env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
-          });
+          const result = spawnSync(
+            "node",
+            [
+              CLI_PATH,
+              zipPath,
+              "--device",
+              deviceAlias,
+              "--preserve-paths",
+              "-o",
+              outputDir,
+            ],
+            {
+              encoding: "utf8",
+              env: {
+                ...process.env,
+                SAMPLEKICK_DATA_DIR: join(tmpDir, "data"),
+              },
+            },
+          );
 
           expect(result.stderr).toBe("");
-          expect(await readFile(join(outputDir, "Drums/snare.wav"), "utf8")).toBe("snare-data");
-          expect(await readFile(join(outputDir, "Loops/hi-hat.wav"), "utf8")).toBe("hihat-data");
+          expect(
+            await readFile(join(outputDir, "Drums/snare.wav"), "utf8"),
+          ).toBe("snare-data");
+          expect(
+            await readFile(join(outputDir, "Loops/hi-hat.wav"), "utf8"),
+          ).toBe("hihat-data");
 
           expect(result.status).toBe(0);
         } finally {
@@ -107,12 +145,24 @@ describe("samplekick CLI flags", () => {
 
         const result = spawnSync(
           "node",
-          [CLI_PATH, zipPath, "--device", "sp404mk2", "--config", configPath, "--preserve-paths", "-o", outputDir],
+          [
+            CLI_PATH,
+            zipPath,
+            "--device",
+            "sp404mk2",
+            "--config",
+            configPath,
+            "--preserve-paths",
+            "-o",
+            outputDir,
+          ],
           { encoding: "utf8" },
         );
 
         expect(result.stderr).toBe("");
-        expect(await readFile(join(outputDir, "Drums/custom.wav"), "utf8")).toBe("kick-data");
+        expect(
+          await readFile(join(outputDir, "Drums/custom.wav"), "utf8"),
+        ).toBe("kick-data");
 
         expect(result.status).toBe(0);
       } finally {
@@ -121,13 +171,19 @@ describe("samplekick CLI flags", () => {
     });
 
     it("shows Devices section in help text with aliases and full name", () => {
-      const result = spawnSync("node", [CLI_PATH, "--help"], { encoding: "utf8" });
+      const result = spawnSync("node", [CLI_PATH, "--help"], {
+        encoding: "utf8",
+      });
 
       expect(result.stderr).toBe("");
       expect(result.stdout).toContain("Devices:");
-      expect(result.stdout).toContain("dirtywavem8             Dirtywave M8 (converts to 16-bit 44.1 kHz)");
+      expect(result.stdout).toContain(
+        "dirtywavem8             Dirtywave M8 (converts to 16-bit 44.1 kHz)",
+      );
       expect(result.stdout).toContain("    dirtywave, m8");
-      expect(result.stdout).toContain("sp404mk2                Roland SP-404MKII (converts to 16-bit 48 kHz)");
+      expect(result.stdout).toContain(
+        "sp404mk2                Roland SP-404MKII (converts to 16-bit 48 kHz)",
+      );
       expect(result.stdout).toContain("    sp404, 404");
 
       expect(result.status).toBe(0);

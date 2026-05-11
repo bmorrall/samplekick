@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { createSP404Mk2ProjectTransformer } from "../../../src";
-import { createTransformEntry, createTransformEntryInHierarchy, singleEntryTransformSource } from "../../support";
+import {
+  createTransformEntry,
+  createTransformEntryInHierarchy,
+  singleEntryTransformSource,
+} from "../../support";
 
 describe("createSP404Mk2ProjectTransformer", () => {
   describe("when a directory has a SMPL child", () => {

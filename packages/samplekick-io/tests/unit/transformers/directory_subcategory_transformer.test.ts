@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { createDirectorySubcategoryTransformer } from "../../../src";
-import { createTransformEntryInHierarchy, singleEntryTransformSource } from "../../support";
+import {
+  createTransformEntryInHierarchy,
+  singleEntryTransformSource,
+} from "../../support";
 
 describe("createDirectorySubcategoryTransformer", () => {
   describe("when a directory has no known sampleType but its parent does", () => {
@@ -67,7 +70,9 @@ describe("createDirectorySubcategoryTransformer", () => {
       );
       const transformer = createDirectorySubcategoryTransformer();
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setSampleType).toHaveBeenCalledWith("Melodies - Speed House");
+      expect(entry.setSampleType).toHaveBeenCalledWith(
+        "Melodies - Speed House",
+      );
     });
 
     it("strips & MIDI suffix from the child display name", () => {
@@ -78,7 +83,9 @@ describe("createDirectorySubcategoryTransformer", () => {
       );
       const transformer = createDirectorySubcategoryTransformer();
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setSampleType).toHaveBeenCalledWith("Melodies - Speed House");
+      expect(entry.setSampleType).toHaveBeenCalledWith(
+        "Melodies - Speed House",
+      );
     });
 
     it("strips & Stems suffix from the child display name", () => {
@@ -167,7 +174,7 @@ describe("createDirectorySubcategoryTransformer", () => {
       expect(entry.setKeepStructure).not.toHaveBeenCalled();
     });
 
-     it("does not set sampleType when the child name is 'MIDI'", () => {
+    it("does not set sampleType when the child name is 'MIDI'", () => {
       const entry = createTransformEntryInHierarchy(
         [{ name: "Melodies", sampleType: "Melodies" }],
         { name: "MIDI", isFile: false },

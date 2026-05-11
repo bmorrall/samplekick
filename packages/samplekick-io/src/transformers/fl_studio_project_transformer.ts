@@ -1,5 +1,5 @@
-import type { Transform } from '../types';
-import { FL_STUDIO_PROJECTS } from './folder_lookup';
+import type { Transform } from "../types";
+import { FL_STUDIO_PROJECTS } from "./folder_lookup";
 
 /**
  * FLStudioProjectTransformer
@@ -14,7 +14,7 @@ const _singleton: Transform = {
       if (children.length === 0) return;
 
       const hasFlp = children.some((child) =>
-        child.getName().toLowerCase().endsWith('.flp'),
+        child.getName().toLowerCase().endsWith(".flp"),
       );
 
       if (hasFlp) {
@@ -23,4 +23,5 @@ const _singleton: Transform = {
       }
     });
   },
-};export const createFLStudioProjectTransformer = (): Transform => _singleton;
+};
+export const createFLStudioProjectTransformer = (): Transform => _singleton;

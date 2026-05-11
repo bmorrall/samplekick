@@ -1,11 +1,11 @@
-import type { FileNode, Transform, TransformEntry } from '../types';
-import { lookupStandalone } from './folder_lookup';
+import type { FileNode, Transform, TransformEntry } from "../types";
+import { lookupStandalone } from "./folder_lookup";
 
-const DASH_SEP = ' - ';
+const DASH_SEP = " - ";
 
 // Strip the file extension from a name segment (e.g. "Coin Drop 3.wav" → "Coin Drop 3").
 const stripExtension = (name: string): string => {
-  const dot = name.lastIndexOf('.');
+  const dot = name.lastIndexOf(".");
   return dot > 0 ? name.slice(0, dot) : name;
 };
 
@@ -24,7 +24,9 @@ function findCommonKnownType(entry: TransformEntry): string | undefined {
   if (qualifying.length === 0) return undefined;
 
   const [first, ...rest] = qualifying.map(getSegments);
-  const common = new Set([...first].filter((seg) => rest.every((set) => set.has(seg))));
+  const common = new Set(
+    [...first].filter((seg) => rest.every((set) => set.has(seg))),
+  );
 
   const knownMatches = [...common]
     .map(lookupStandalone)
@@ -54,4 +56,5 @@ const _singleton: Transform = {
       entry.setSampleType(sampleType);
     });
   },
-};export const createDirectoryChildNameTransformer = (): Transform => _singleton;
+};
+export const createDirectoryChildNameTransformer = (): Transform => _singleton;

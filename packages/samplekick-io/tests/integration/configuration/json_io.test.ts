@@ -1,10 +1,11 @@
 import { PassThrough, Readable } from "node:stream";
 import { describe, it, expect } from "vitest";
+import { JsonConfigReader, JsonConfigWriter } from "../../../src";
 import {
-  JsonConfigReader,
-  JsonConfigWriter,
-} from "../../../src";
-import { collectConfigEntries, createFileEntry, createRegistry } from "../../support";
+  collectConfigEntries,
+  createFileEntry,
+  createRegistry,
+} from "../../support";
 
 const collectOutput = (fn: (stream: PassThrough) => void): string => {
   const stream = new PassThrough({ encoding: "utf8" });
@@ -62,7 +63,9 @@ describe("JSON I/O", () => {
   });
 
   it("writes path, packageName, sampleType, isSkipped, and isKeepStructure for each entry", () => {
-    const registry = createRegistry("library", [createFileEntry({ path: "jazz/bebop/track01" })]);
+    const registry = createRegistry("library", [
+      createFileEntry({ path: "jazz/bebop/track01" }),
+    ]);
     registry.setPackageName("jazz", "jazz-pack");
     registry.setSampleType("jazz/bebop", "Melodic Loops - Bebop");
 
@@ -151,7 +154,9 @@ describe("JSON I/O", () => {
   });
 
   it("reflects isSkipped and isKeepStructure when set", () => {
-    const registry = createRegistry("library", [createFileEntry({ path: "jazz/track01" })]);
+    const registry = createRegistry("library", [
+      createFileEntry({ path: "jazz/track01" }),
+    ]);
     registry.setSkipped("jazz", true);
     registry.setKeepStructure("jazz", true);
 
@@ -169,7 +174,9 @@ describe("JSON I/O", () => {
   });
 
   it("round-trips renamed entries through JSON", () => {
-    const registry = createRegistry("library", [createFileEntry({ path: "jazz/bebop/track01" })]);
+    const registry = createRegistry("library", [
+      createFileEntry({ path: "jazz/bebop/track01" }),
+    ]);
     registry.setName("jazz/bebop/track01", "Alt Track 01");
 
     const output = collectOutput((stream) => {
@@ -180,9 +187,7 @@ describe("JSON I/O", () => {
     const restoredRegistry = createRegistry("library", [
       createFileEntry({ path: "jazz/bebop/track01" }),
     ]);
-    restoredRegistry.loadConfig(
-      new JsonConfigReader(Readable.from([output])),
-    );
+    restoredRegistry.loadConfig(new JsonConfigReader(Readable.from([output])));
 
     expect(restoredRegistry.getEntry("jazz/bebop/track01")?.getName()).toBe(
       "Alt Track 01",
@@ -207,20 +212,26 @@ describe("JSON I/O", () => {
       "Renamed Library [?] [pkg:library-pack]\n",
     );
 
-    const restoredRegistryWithFiles = createRegistry("library", [createFileEntry({ path: "jazz/track01" })]);
+    const restoredRegistryWithFiles = createRegistry("library", [
+      createFileEntry({ path: "jazz/track01" }),
+    ]);
     restoredRegistryWithFiles.loadConfig(
       new JsonConfigReader(Readable.from([output])),
     );
-    expect(restoredRegistryWithFiles.getEntry("jazz/track01")?.getPackageName()).toBe(
-      "library-pack",
-    );
+    expect(
+      restoredRegistryWithFiles.getEntry("jazz/track01")?.getPackageName(),
+    ).toBe("library-pack");
   });
 
   it("each writeConfig call writes a separate JSON array to the stream", () => {
-    const registry1 = createRegistry("library1", [createFileEntry({ path: "jazz/track01" })]);
+    const registry1 = createRegistry("library1", [
+      createFileEntry({ path: "jazz/track01" }),
+    ]);
     registry1.setPackageName("jazz/track01", "jazz-pack");
 
-    const registry2 = createRegistry("library2", [createFileEntry({ path: "rock/track01" })]);
+    const registry2 = createRegistry("library2", [
+      createFileEntry({ path: "rock/track01" }),
+    ]);
     registry2.setPackageName("rock/track01", "rock-pack");
 
     const output = collectOutput((stream) => {
@@ -238,6 +249,10 @@ describe("JSON I/O", () => {
     const first = collectConfigEntries(firstReader);
     const second = collectConfigEntries(secondReader);
     expect(first.map((e) => e.getPath())).toEqual(["", "jazz", "jazz/track01"]);
-    expect(second.map((e) => e.getPath())).toEqual(["", "rock", "rock/track01"]);
+    expect(second.map((e) => e.getPath())).toEqual([
+      "",
+      "rock",
+      "rock/track01",
+    ]);
   });
 });

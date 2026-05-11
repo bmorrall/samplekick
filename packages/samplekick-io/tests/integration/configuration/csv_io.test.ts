@@ -1,7 +1,11 @@
 import { PassThrough, Readable } from "node:stream";
 import { describe, it, expect } from "vitest";
 import { CsvConfigReader, CsvConfigWriter } from "../../../src";
-import { collectConfigEntries, createFileEntry, createRegistry } from "../../support";
+import {
+  collectConfigEntries,
+  createFileEntry,
+  createRegistry,
+} from "../../support";
 
 const collectOutput = (fn: (stream: PassThrough) => void): string => {
   const stream = new PassThrough({ encoding: "utf8" });
@@ -69,7 +73,9 @@ describe("CSV I/O", () => {
   });
 
   it("writes path, packageName, sampleType, isSkipped, and isKeepStructure for each entry", () => {
-    const registry = createRegistry("library", [createFileEntry({ path: "jazz/bebop/track01" })]);
+    const registry = createRegistry("library", [
+      createFileEntry({ path: "jazz/bebop/track01" }),
+    ]);
     registry.setPackageName("jazz", "jazz-pack");
     registry.setSampleType("jazz/bebop", "Melodic Loops - Bebop");
 
@@ -175,8 +181,12 @@ describe("CSV I/O", () => {
     ]);
     restored.loadConfig(new CsvConfigReader(Readable.from([output])));
 
-    expect(restored.getEntry("jazz/loops/track01")?.getSampleType()).toBe("Jazz Loops");
-    expect(restored.getEntry("jazz/loops/track02")?.getSampleType()).toBe("Jazz Loops");
+    expect(restored.getEntry("jazz/loops/track01")?.getSampleType()).toBe(
+      "Jazz Loops",
+    );
+    expect(restored.getEntry("jazz/loops/track02")?.getSampleType()).toBe(
+      "Jazz Loops",
+    );
 
     const output2 = collectOutput((stream) => {
       const writer = new CsvConfigWriter(stream);
@@ -187,7 +197,9 @@ describe("CSV I/O", () => {
   });
 
   it("reflects isSkipped and isKeepStructure when set", () => {
-    const registry = createRegistry("library", [createFileEntry({ path: "jazz/track01" })]);
+    const registry = createRegistry("library", [
+      createFileEntry({ path: "jazz/track01" }),
+    ]);
     registry.setSkipped("jazz", true);
     registry.setKeepStructure("jazz", true);
 
@@ -250,7 +262,9 @@ describe("CSV I/O", () => {
   });
 
   it("round-trips renamed entries through CSV", () => {
-    const registry = createRegistry("library", [createFileEntry({ path: "jazz/bebop/track01" })]);
+    const registry = createRegistry("library", [
+      createFileEntry({ path: "jazz/bebop/track01" }),
+    ]);
     registry.setName("jazz/bebop/track01", "Alt Track 01");
 
     const output = collectOutput((stream) => {
@@ -261,9 +275,7 @@ describe("CSV I/O", () => {
     const restoredRegistry = createRegistry("library", [
       createFileEntry({ path: "jazz/bebop/track01" }),
     ]);
-    restoredRegistry.loadConfig(
-      new CsvConfigReader(Readable.from([output])),
-    );
+    restoredRegistry.loadConfig(new CsvConfigReader(Readable.from([output])));
 
     expect(restoredRegistry.getEntry("jazz/bebop/track01")?.getName()).toBe(
       "Alt Track 01",
@@ -288,12 +300,14 @@ describe("CSV I/O", () => {
       "Renamed Library [?] [pkg:library-pack]\n",
     );
 
-    const restoredRegistryWithFiles = createRegistry("library", [createFileEntry({ path: "jazz/track01" })]);
+    const restoredRegistryWithFiles = createRegistry("library", [
+      createFileEntry({ path: "jazz/track01" }),
+    ]);
     restoredRegistryWithFiles.loadConfig(
       new CsvConfigReader(Readable.from([output])),
     );
-    expect(restoredRegistryWithFiles.getEntry("jazz/track01")?.getPackageName()).toBe(
-      "library-pack",
-    );
+    expect(
+      restoredRegistryWithFiles.getEntry("jazz/track01")?.getPackageName(),
+    ).toBe("library-pack");
   });
 });

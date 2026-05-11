@@ -13,25 +13,28 @@ describe("DrumSubcategoryTransformer", () => {
       "Drum Fills/fill.wav": strToU8("fill-data"),
     });
 
-    const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-drum-subcategory-"));
+    const tmpDir = await mkdtemp(
+      join(tmpdir(), "samplekick-drum-subcategory-"),
+    );
     const zipPath = join(tmpDir, "test-pack.zip");
     const dataDir = join(tmpDir, "data");
 
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync(
-        "node",
-        [CLI_PATH, zipPath, "--analyse"],
-        { encoding: "utf8", env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir } },
-      );
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--analyse"], {
+        encoding: "utf8",
+        env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+      });
 
       expect(result.status).toBe(0);
 
       const [configFile] = await readdir(dataDir);
       const csv = await readFile(join(dataDir, configFile), "utf8");
 
-      const dirRow = csv.split("\n").find((row) => row.startsWith("Drum Fills,"));
+      const dirRow = csv
+        .split("\n")
+        .find((row) => row.startsWith("Drum Fills,"));
       expect(dirRow).toBe("Drum Fills,,,Drum Fills,,");
     } finally {
       await rm(tmpDir, { recursive: true });
@@ -43,25 +46,28 @@ describe("DrumSubcategoryTransformer", () => {
       "Drums/Fills/fill.wav": strToU8("fill-data"),
     });
 
-    const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-drum-subcategory-"));
+    const tmpDir = await mkdtemp(
+      join(tmpdir(), "samplekick-drum-subcategory-"),
+    );
     const zipPath = join(tmpDir, "test-pack.zip");
     const dataDir = join(tmpDir, "data");
 
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync(
-        "node",
-        [CLI_PATH, zipPath, "--analyse"],
-        { encoding: "utf8", env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir } },
-      );
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--analyse"], {
+        encoding: "utf8",
+        env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+      });
 
       expect(result.status).toBe(0);
 
       const [configFile] = await readdir(dataDir);
       const csv = await readFile(join(dataDir, configFile), "utf8");
 
-      const dirRow = csv.split("\n").find((row) => row.startsWith("Drums/Fills,"));
+      const dirRow = csv
+        .split("\n")
+        .find((row) => row.startsWith("Drums/Fills,"));
       expect(dirRow).toBe("Drums/Fills,,,Drum Fills,,");
     } finally {
       await rm(tmpDir, { recursive: true });
@@ -73,25 +79,28 @@ describe("DrumSubcategoryTransformer", () => {
       "Drum - Fills/fill.wav": strToU8("fill-data"),
     });
 
-    const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-drum-subcategory-"));
+    const tmpDir = await mkdtemp(
+      join(tmpdir(), "samplekick-drum-subcategory-"),
+    );
     const zipPath = join(tmpDir, "test-pack.zip");
     const dataDir = join(tmpDir, "data");
 
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync(
-        "node",
-        [CLI_PATH, zipPath, "--analyse"],
-        { encoding: "utf8", env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir } },
-      );
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--analyse"], {
+        encoding: "utf8",
+        env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+      });
 
       expect(result.status).toBe(0);
 
       const [configFile] = await readdir(dataDir);
       const csv = await readFile(join(dataDir, configFile), "utf8");
 
-      const dirRow = csv.split("\n").find((row) => row.startsWith("Drum - Fills,"));
+      const dirRow = csv
+        .split("\n")
+        .find((row) => row.startsWith("Drum - Fills,"));
       expect(dirRow).toBe("Drum - Fills,,,Drum Fills,,");
     } finally {
       await rm(tmpDir, { recursive: true });
@@ -103,25 +112,28 @@ describe("DrumSubcategoryTransformer", () => {
       "Drum Breaks/break.wav": strToU8("break-data"),
     });
 
-    const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-drum-subcategory-"));
+    const tmpDir = await mkdtemp(
+      join(tmpdir(), "samplekick-drum-subcategory-"),
+    );
     const zipPath = join(tmpDir, "test-pack.zip");
     const dataDir = join(tmpDir, "data");
 
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync(
-        "node",
-        [CLI_PATH, zipPath, "--analyse"],
-        { encoding: "utf8", env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir } },
-      );
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--analyse"], {
+        encoding: "utf8",
+        env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+      });
 
       expect(result.status).toBe(0);
 
       const [configFile] = await readdir(dataDir);
       const csv = await readFile(join(dataDir, configFile), "utf8");
 
-      const dirRow = csv.split("\n").find((row) => row.startsWith("Drum Breaks,"));
+      const dirRow = csv
+        .split("\n")
+        .find((row) => row.startsWith("Drum Breaks,"));
       expect(dirRow).toBe("Drum Breaks,,,Drum Breaks,,");
     } finally {
       await rm(tmpDir, { recursive: true });

@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { createDirectorySampleTypeTransformer, createDirectorySubcategoryTransformer } from "../../../src";
-import { createTransformEntryInHierarchy, singleEntryTransformSource } from "../../support";
+import {
+  createDirectorySampleTypeTransformer,
+  createDirectorySubcategoryTransformer,
+} from "../../../src";
+import {
+  createTransformEntryInHierarchy,
+  singleEntryTransformSource,
+} from "../../support";
 
 describe("createDirectorySampleTypeTransformer", () => {
   describe('when the directory is named "Melodic"', () => {

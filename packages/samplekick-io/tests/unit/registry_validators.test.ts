@@ -8,9 +8,11 @@ const createCopyableEntry = (path: string): FileEntry => ({
   copyToPath: vi.fn<(path: string) => Promise<void>>(),
 });
 
-const createPassingValidator = (): Validate => vi.fn<Validate>().mockReturnValue(undefined);
+const createPassingValidator = (): Validate =>
+  vi.fn<Validate>().mockReturnValue(undefined);
 
-const createFailingValidator = (reason: string): Validate => vi.fn<Validate>().mockReturnValue(reason);
+const createFailingValidator = (reason: string): Validate =>
+  vi.fn<Validate>().mockReturnValue(reason);
 
 describe("Registry.addValidator", () => {
   it("calls copyToPath when validator passes", async () => {
@@ -26,7 +28,9 @@ describe("Registry.addValidator", () => {
 
   it("calls onReject with the reason when a validator fails", async () => {
     const entry = createCopyableEntry("a.wav");
-    const validator = createFailingValidator("path too long: 256 characters (max 255)");
+    const validator = createFailingValidator(
+      "path too long: 256 characters (max 255)",
+    );
     const onReject = vi.fn<(entry: ConfigEntry, reason: string) => void>();
     const registry = new Registry(createFileSource("root", [entry]));
     registry.addValidator(validator);
@@ -42,7 +46,9 @@ describe("Registry.addValidator", () => {
 
   it("does not call copyToPath when a validator fails", async () => {
     const entry = createCopyableEntry("a.wav");
-    const validator = createFailingValidator("path too long: 256 characters (max 255)");
+    const validator = createFailingValidator(
+      "path too long: 256 characters (max 255)",
+    );
     const registry = new Registry(createFileSource("root", [entry]));
     registry.addValidator(validator);
 
@@ -53,13 +59,19 @@ describe("Registry.addValidator", () => {
 
   it("does not call onBeforeWrite or onAfterWrite when a validator fails", async () => {
     const entry = createCopyableEntry("a.wav");
-    const validator = createFailingValidator("path too long: 256 characters (max 255)");
+    const validator = createFailingValidator(
+      "path too long: 256 characters (max 255)",
+    );
     const onBeforeWrite = vi.fn<(entry: ConfigEntry, path: string) => void>();
-    const onAfterWrite = vi.fn<(entry: ConfigEntry, path: string, error?: Error) => void>();
+    const onAfterWrite =
+      vi.fn<(entry: ConfigEntry, path: string, error?: Error) => void>();
     const registry = new Registry(createFileSource("root", [entry]));
     registry.addValidator(validator);
 
-    await registry.exportToDirectory("/output", { onBeforeWrite, onAfterWrite });
+    await registry.exportToDirectory("/output", {
+      onBeforeWrite,
+      onAfterWrite,
+    });
 
     expect(onBeforeWrite).not.toHaveBeenCalled();
     expect(onAfterWrite).not.toHaveBeenCalled();
@@ -83,7 +95,9 @@ describe("Registry.addValidator", () => {
 
   it("runs validators in dry-run mode (dirPath undefined)", async () => {
     const entry = createCopyableEntry("a.wav");
-    const validator = createFailingValidator("path too long: 256 characters (max 255)");
+    const validator = createFailingValidator(
+      "path too long: 256 characters (max 255)",
+    );
     const onReject = vi.fn<(entry: ConfigEntry, reason: string) => void>();
     const registry = new Registry(createFileSource("root", [entry]));
     registry.addValidator(validator);

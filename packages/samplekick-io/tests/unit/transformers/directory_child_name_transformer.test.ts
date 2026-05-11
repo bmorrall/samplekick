@@ -1,13 +1,19 @@
 import { describe, expect, it } from "vitest";
 import { createDirectoryChildNameTransformer } from "../../../src";
-import { createTransformEntryInHierarchy, singleEntryTransformSource } from "../../support";
+import {
+  createTransformEntryInHierarchy,
+  singleEntryTransformSource,
+} from "../../support";
 
 describe("createDirectoryChildNameTransformer", () => {
   describe("when file children share a common known-type segment", () => {
     it('tags the directory as "Foley" when all children share the "Foley" segment', () => {
       const entry = createTransformEntryInHierarchy(
         [],
-        { name: "Cymatics - Nebula Foley Percussion & Textures", isFile: false },
+        {
+          name: "Cymatics - Nebula Foley Percussion & Textures",
+          isFile: false,
+        },
         [
           { name: "Cymatics - Foley - Coin Drop 1.wav" },
           { name: "Cymatics - Foley - Metal Hit.wav" },

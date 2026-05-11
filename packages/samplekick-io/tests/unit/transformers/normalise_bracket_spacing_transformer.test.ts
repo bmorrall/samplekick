@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { createNormaliseBracketSpacingTransformer } from "../../../src";
-import { createTransformEntry, singleEntryTransformSource } from "../../support";
+import {
+  createTransformEntry,
+  singleEntryTransformSource,
+} from "../../support";
 
 describe("createNormaliseBracketSpacingTransformer", () => {
   it("adds a space before ( when touching a preceding word", () => {
@@ -67,14 +70,20 @@ describe("createNormaliseBracketSpacingTransformer", () => {
   });
 
   it("normalises packageName when the entry has one", () => {
-    const entry = createTransformEntry({ name: "kick.wav", packageName: "My Pack(vol 1)" });
+    const entry = createTransformEntry({
+      name: "kick.wav",
+      packageName: "My Pack(vol 1)",
+    });
     const transformer = createNormaliseBracketSpacingTransformer();
     transformer.transform(singleEntryTransformSource(entry));
     expect(entry.setPackageName).toHaveBeenCalledWith("My Pack (vol 1)");
   });
 
   it("normalises sampleType when the entry has one", () => {
-    const entry = createTransformEntry({ name: "kick.wav", sampleType: "Drums[deep]" });
+    const entry = createTransformEntry({
+      name: "kick.wav",
+      sampleType: "Drums[deep]",
+    });
     const transformer = createNormaliseBracketSpacingTransformer();
     transformer.transform(singleEntryTransformSource(entry));
     expect(entry.setSampleType).toHaveBeenCalledWith("Drums [deep]");
@@ -103,7 +112,12 @@ describe("createNormaliseBracketSpacingTransformer", () => {
   });
 
   it("does not modify any fields when keepStructure is true", () => {
-    const entry = createTransformEntry({ name: "kick(hard).wav", packageName: "Pack(1)", sampleType: "Drums[soft]", keepStructure: true });
+    const entry = createTransformEntry({
+      name: "kick(hard).wav",
+      packageName: "Pack(1)",
+      sampleType: "Drums[soft]",
+      keepStructure: true,
+    });
     const transformer = createNormaliseBracketSpacingTransformer();
     transformer.transform(singleEntryTransformSource(entry));
     expect(entry.setName).not.toHaveBeenCalled();

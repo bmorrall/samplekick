@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { createStripFormatHintsTransformer } from "../../../src";
-import { createTransformEntry, singleEntryTransformSource } from "../../support";
+import {
+  createTransformEntry,
+  singleEntryTransformSource,
+} from "../../support";
 
 describe("createStripFormatHintsTransformer", () => {
   it("strips a bracketed WAV hint from a folder name", () => {
@@ -102,14 +105,20 @@ describe("createStripFormatHintsTransformer", () => {
   });
 
   it("normalises packageName when the entry has one", () => {
-    const entry = createTransformEntry({ name: "kick.wav", packageName: "My Pack (WAV)" });
+    const entry = createTransformEntry({
+      name: "kick.wav",
+      packageName: "My Pack (WAV)",
+    });
     const transformer = createStripFormatHintsTransformer();
     transformer.transform(singleEntryTransformSource(entry));
     expect(entry.setPackageName).toHaveBeenCalledWith("My Pack");
   });
 
   it("normalises sampleType when the entry has one", () => {
-    const entry = createTransformEntry({ name: "kick.wav", sampleType: "Loops [24bit]" });
+    const entry = createTransformEntry({
+      name: "kick.wav",
+      sampleType: "Loops [24bit]",
+    });
     const transformer = createStripFormatHintsTransformer();
     transformer.transform(singleEntryTransformSource(entry));
     expect(entry.setSampleType).toHaveBeenCalledWith("Loops");
@@ -138,7 +147,12 @@ describe("createStripFormatHintsTransformer", () => {
   });
 
   it("does not modify any fields when keepStructure is true", () => {
-    const entry = createTransformEntry({ name: "Samples (WAV)", packageName: "My Pack (WAV)", sampleType: "Loops [24bit]", keepStructure: true });
+    const entry = createTransformEntry({
+      name: "Samples (WAV)",
+      packageName: "My Pack (WAV)",
+      sampleType: "Loops [24bit]",
+      keepStructure: true,
+    });
     const transformer = createStripFormatHintsTransformer();
     transformer.transform(singleEntryTransformSource(entry));
     expect(entry.setName).not.toHaveBeenCalled();
@@ -147,7 +161,10 @@ describe("createStripFormatHintsTransformer", () => {
   });
 
   it("does not modify any fields when skipped is true", () => {
-    const entry = createTransformEntry({ name: "Samples (WAV)", skipped: true });
+    const entry = createTransformEntry({
+      name: "Samples (WAV)",
+      skipped: true,
+    });
     const transformer = createStripFormatHintsTransformer();
     transformer.transform(singleEntryTransformSource(entry));
     expect(entry.setName).not.toHaveBeenCalled();

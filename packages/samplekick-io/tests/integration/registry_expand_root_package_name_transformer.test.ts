@@ -15,6 +15,8 @@ describe("ExpandRootPackageNameTransformer integration", () => {
     registry.applyTransform(createExpandRootPackageNameTransformer());
     registry.setSampleType("drums");
     registry.setPathStrategy(OrganisedPathStrategy);
-    expect(registry.destinationPathFor("Drums/kick.wav")).toBe("drums/Cool Pack - v2/kick.wav");
+    expect(registry.destinationPathFor("Drums/kick.wav")).toBe(
+      "drums/Cool Pack - v2/kick.wav",
+    );
   });
 });

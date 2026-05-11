@@ -1,5 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { createMidiFileTransformer, createDirectorySampleTypeTransformer, createDirectorySubcategoryTransformer } from "../../src";
+import {
+  createMidiFileTransformer,
+  createDirectorySampleTypeTransformer,
+  createDirectorySubcategoryTransformer,
+} from "../../src";
 import { createRegistry, createFileEntry } from "../support";
 
 describe("MidiFileTransformer integration", () => {

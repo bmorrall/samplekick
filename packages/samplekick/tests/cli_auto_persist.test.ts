@@ -1,5 +1,12 @@
 import { spawnSync } from "node:child_process";
-import { mkdtemp, readFile, readdir, rm, stat, writeFile } from "node:fs/promises";
+import {
+  mkdtemp,
+  readFile,
+  readdir,
+  rm,
+  stat,
+  writeFile,
+} from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { zipSync, strToU8 } from "fflate";
@@ -21,10 +28,14 @@ describe("auto-persist config", () => {
       await writeFile(zipPath, zipped);
 
       // First run: no config exists yet, auto-saves config to data dir
-      const result1 = spawnSync("node", [CLI_PATH, zipPath, "--analyse", "-o", outputDir1], {
-        encoding: "utf8",
-        env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
-      });
+      const result1 = spawnSync(
+        "node",
+        [CLI_PATH, zipPath, "--analyse", "-o", outputDir1],
+        {
+          encoding: "utf8",
+          env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+        },
+      );
       expect(result1.status).toBe(0);
 
       // Verify a config file was saved keyed by fingerprint
@@ -33,18 +44,27 @@ describe("auto-persist config", () => {
       const autoConfigPath = join(dataDir, files[0]);
 
       // Overwrite the auto-saved config with a custom rename
-      await writeFile(autoConfigPath, [
-        "path,name,packageName,sampleType,skip,keepPath",
-        "Drums/kick.wav,custom_kick.wav,,,,",
-      ].join("\n"));
+      await writeFile(
+        autoConfigPath,
+        [
+          "path,name,packageName,sampleType,skip,keepPath",
+          "Drums/kick.wav,custom_kick.wav,,,,",
+        ].join("\n"),
+      );
 
       // Second run: loads the modified auto-saved config
-      const result2 = spawnSync("node", [CLI_PATH, zipPath, "--preserve-paths", "-o", outputDir2], {
-        encoding: "utf8",
-        env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
-      });
+      const result2 = spawnSync(
+        "node",
+        [CLI_PATH, zipPath, "--preserve-paths", "-o", outputDir2],
+        {
+          encoding: "utf8",
+          env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+        },
+      );
       expect(result2.status).toBe(0);
-      expect(await readFile(join(outputDir2, "Drums/custom_kick.wav"), "utf8")).toBe("kick-data");
+      expect(
+        await readFile(join(outputDir2, "Drums/custom_kick.wav"), "utf8"),
+      ).toBe("kick-data");
     } finally {
       await rm(tmpDir, { recursive: true });
     }
@@ -119,19 +139,30 @@ describe("auto-persist config", () => {
       const autoConfigPath = join(dataDir, files[0]);
 
       // Overwrite with a custom rename
-      await writeFile(autoConfigPath, [
-        "path,name,packageName,sampleType,skip,keepPath",
-        "Drums/kick.wav,custom_kick.wav,,,,",
-      ].join("\n"));
+      await writeFile(
+        autoConfigPath,
+        [
+          "path,name,packageName,sampleType,skip,keepPath",
+          "Drums/kick.wav,custom_kick.wav,,,,",
+        ].join("\n"),
+      );
 
       // Second run with --rebuild: should ignore the custom rename
-      const result = spawnSync("node", [CLI_PATH, zipPath, "--rebuild", "--preserve-paths", "-o", outputDir], {
-        encoding: "utf8",
-        env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
-      });
+      const result = spawnSync(
+        "node",
+        [CLI_PATH, zipPath, "--rebuild", "--preserve-paths", "-o", outputDir],
+        {
+          encoding: "utf8",
+          env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+        },
+      );
       expect(result.status).toBe(0);
-      await expect(readFile(join(outputDir, "Drums/kick.wav"), "utf8")).resolves.toBe("kick-data");
-      await expect(stat(join(outputDir, "Drums/custom_kick.wav"))).rejects.toThrow();
+      await expect(
+        readFile(join(outputDir, "Drums/kick.wav"), "utf8"),
+      ).resolves.toBe("kick-data");
+      await expect(
+        stat(join(outputDir, "Drums/custom_kick.wav")),
+      ).rejects.toThrow();
     } finally {
       await rm(tmpDir, { recursive: true });
     }

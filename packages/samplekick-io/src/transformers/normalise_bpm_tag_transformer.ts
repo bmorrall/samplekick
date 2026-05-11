@@ -6,9 +6,14 @@ import { createSanitiseNameTransformer } from "./sanitise_name_transformer";
 // [_ ]? allows an optional single space or underscore between number and label.
 // {2,3} restricts to 2–3 digit values (10–999). Lookbehind/lookahead prevent
 // matching digits that are part of a longer number (e.g. 44100BPM).
-const BPM_RE = /(?<!\d)(?<numBefore>\d{2,3})[_ ]?bpm|bpm[_ ]?(?<numAfter>\d{2,3})(?!\d)/giv;
+const BPM_RE =
+  /(?<!\d)(?<numBefore>\d{2,3})[_ ]?bpm|bpm[_ ]?(?<numAfter>\d{2,3})(?!\d)/giv;
 
-function bpmReplacer(_match: string, numBefore: string | undefined, numAfter: string | undefined): string {
+function bpmReplacer(
+  _match: string,
+  numBefore: string | undefined,
+  numAfter: string | undefined,
+): string {
   const raw = numBefore ?? numAfter ?? "0";
   const num = parseInt(raw, 10).toString();
   return `${num}bpm`;

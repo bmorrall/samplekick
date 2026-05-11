@@ -1,3 +1,4 @@
+/* eslint-disable max-lines -- TODO: split this file to bring it under the max-lines limit */
 import { PassThrough } from "node:stream";
 import { describe, expect, it } from "vitest";
 import type { FileNode } from "samplekick-io";
@@ -15,7 +16,11 @@ const createEntry = (path: string): FileNode => ({
   getChildNodes: () => [],
 });
 
-const createEntryWithMeta = (path: string, packageName: string, sampleType: string): FileNode => ({
+const createEntryWithMeta = (
+  path: string,
+  packageName: string,
+  sampleType: string,
+): FileNode => ({
   getPath: () => path,
   getName: () => path.split("/").pop() ?? path,
   getPackageName: () => packageName,
@@ -27,46 +32,71 @@ const createEntryWithMeta = (path: string, packageName: string, sampleType: stri
   getChildNodes: () => [],
 });
 
-const createReporter = (): { reporter: SimpleExportReporter; getOutput: () => string } => {
+const createReporter = (): {
+  reporter: SimpleExportReporter;
+  getOutput: () => string;
+} => {
   const stream = new PassThrough();
   const chunks: string[] = [];
-  stream.on("data", (chunk: Buffer) => { chunks.push(chunk.toString()); });
+  stream.on("data", (chunk: Buffer) => {
+    chunks.push(chunk.toString());
+  });
   const reporter = new SimpleExportReporter(stream);
   const getOutput = (): string => chunks.join("");
   return { reporter, getOutput };
 };
 
-const createQuietReporter = (): { reporter: SimpleExportReporter; getOutput: () => string } => {
+const createQuietReporter = (): {
+  reporter: SimpleExportReporter;
+  getOutput: () => string;
+} => {
   const stream = new PassThrough();
   const chunks: string[] = [];
-  stream.on("data", (chunk: Buffer) => { chunks.push(chunk.toString()); });
+  stream.on("data", (chunk: Buffer) => {
+    chunks.push(chunk.toString());
+  });
   const reporter = new SimpleExportReporter(stream, true);
   const getOutput = (): string => chunks.join("");
   return { reporter, getOutput };
 };
 
-const createPackReporter = (): { reporter: SimpleExportReporter; getOutput: () => string } => {
+const createPackReporter = (): {
+  reporter: SimpleExportReporter;
+  getOutput: () => string;
+} => {
   const stream = new PassThrough();
   const chunks: string[] = [];
-  stream.on("data", (chunk: Buffer) => { chunks.push(chunk.toString()); });
+  stream.on("data", (chunk: Buffer) => {
+    chunks.push(chunk.toString());
+  });
   const reporter = new SimpleExportReporter(stream, false, "my-pack.zip");
   const getOutput = (): string => chunks.join("");
   return { reporter, getOutput };
 };
 
-const createQuietPackReporter = (): { reporter: SimpleExportReporter; getOutput: () => string } => {
+const createQuietPackReporter = (): {
+  reporter: SimpleExportReporter;
+  getOutput: () => string;
+} => {
   const stream = new PassThrough();
   const chunks: string[] = [];
-  stream.on("data", (chunk: Buffer) => { chunks.push(chunk.toString()); });
+  stream.on("data", (chunk: Buffer) => {
+    chunks.push(chunk.toString());
+  });
   const reporter = new SimpleExportReporter(stream, true, "my-pack.zip");
   const getOutput = (): string => chunks.join("");
   return { reporter, getOutput };
 };
 
-const createOrganisedReporter = (): { reporter: SimpleExportReporter; getOutput: () => string } => {
+const createOrganisedReporter = (): {
+  reporter: SimpleExportReporter;
+  getOutput: () => string;
+} => {
   const stream = new PassThrough();
   const chunks: string[] = [];
-  stream.on("data", (chunk: Buffer) => { chunks.push(chunk.toString()); });
+  stream.on("data", (chunk: Buffer) => {
+    chunks.push(chunk.toString());
+  });
   const reporter = new SimpleExportReporter(stream, false, "", true);
   const getOutput = (): string => chunks.join("");
   return { reporter, getOutput };
@@ -93,7 +123,9 @@ describe("SimpleExportReporter", () => {
     it("writes 'error: ...' on its own line", () => {
       const { reporter, getOutput } = createReporter();
       reporter.onError("Could not convert kick.wav: ffmpeg error");
-      expect(getOutput()).toBe("error: Could not convert kick.wav: ffmpeg error\n");
+      expect(getOutput()).toBe(
+        "error: Could not convert kick.wav: ffmpeg error\n",
+      );
     });
   });
 
@@ -114,13 +146,20 @@ describe("SimpleExportReporter", () => {
   describe("onAfterWrite", () => {
     it("writes the destination path on success", () => {
       const { reporter, getOutput } = createReporter();
-      reporter.onAfterWrite(createEntry("drums/kick.wav"), "loops/my-pack/kick.wav");
+      reporter.onAfterWrite(
+        createEntry("drums/kick.wav"),
+        "loops/my-pack/kick.wav",
+      );
       expect(getOutput()).toBe("success: loops/my-pack/kick.wav\n");
     });
 
     it("writes a failed message with the error on failure", () => {
       const { reporter, getOutput } = createReporter();
-      reporter.onAfterWrite(createEntry("drums/kick.wav"), "loops/my-pack/kick.wav", new Error("disk full"));
+      reporter.onAfterWrite(
+        createEntry("drums/kick.wav"),
+        "loops/my-pack/kick.wav",
+        new Error("disk full"),
+      );
       expect(getOutput()).toBe("failed: loops/my-pack/kick.wav: disk full\n");
     });
   });
@@ -128,8 +167,13 @@ describe("SimpleExportReporter", () => {
   describe("onReject", () => {
     it("writes 'rejected: {path}: {reason}'", () => {
       const { reporter, getOutput } = createReporter();
-      reporter.onReject(createEntry("Drums/kick.wav"), "Missing sampleType and packageName");
-      expect(getOutput()).toBe("rejected: Drums/kick.wav: Missing sampleType and packageName\n");
+      reporter.onReject(
+        createEntry("Drums/kick.wav"),
+        "Missing sampleType and packageName",
+      );
+      expect(getOutput()).toBe(
+        "rejected: Drums/kick.wav: Missing sampleType and packageName\n",
+      );
     });
   });
 
@@ -152,7 +196,9 @@ describe("SimpleExportReporter", () => {
       const { reporter, getOutput } = createReporter();
       reporter.onAfterWrite(createEntry("a.wav"), "a.wav", new Error("fail"));
       reporter.onComplete("/output/dir");
-      expect(getOutput()).toContain("Exported 1 sample to /output/dir (1 error)\n");
+      expect(getOutput()).toContain(
+        "Exported 1 sample to /output/dir (1 error)\n",
+      );
     });
 
     it("includes plural error count when there are multiple errors", () => {
@@ -160,14 +206,18 @@ describe("SimpleExportReporter", () => {
       reporter.onAfterWrite(createEntry("a.wav"), "a.wav", new Error("fail"));
       reporter.onAfterWrite(createEntry("b.wav"), "b.wav", new Error("fail"));
       reporter.onComplete("/output/dir");
-      expect(getOutput()).toContain("Exported 2 samples to /output/dir (2 errors)\n");
+      expect(getOutput()).toContain(
+        "Exported 2 samples to /output/dir (2 errors)\n",
+      );
     });
 
     it("includes singular entry count when one entry is skipped", () => {
       const { reporter, getOutput } = createReporter();
       reporter.onSkip(createEntry("kick.wav"));
       reporter.onComplete("/output/dir");
-      expect(getOutput()).toContain("Exported 0 samples to /output/dir (1 entry skipped)\n");
+      expect(getOutput()).toContain(
+        "Exported 0 samples to /output/dir (1 entry skipped)\n",
+      );
     });
 
     it("includes plural entry count when multiple entries are skipped", () => {
@@ -176,7 +226,9 @@ describe("SimpleExportReporter", () => {
       reporter.onSkip(createEntry("cover.jpg"));
       reporter.onSkip(createEntry("notes.txt"));
       reporter.onComplete("/output/dir");
-      expect(getOutput()).toContain("Exported 0 samples to /output/dir (3 entries skipped)\n");
+      expect(getOutput()).toContain(
+        "Exported 0 samples to /output/dir (3 entries skipped)\n",
+      );
     });
   });
 
@@ -195,7 +247,11 @@ describe("SimpleExportReporter", () => {
 
     it("still writes error lines", () => {
       const { reporter, getOutput } = createQuietReporter();
-      reporter.onAfterWrite(createEntry("kick.wav"), "kick.wav", new Error("disk full"));
+      reporter.onAfterWrite(
+        createEntry("kick.wav"),
+        "kick.wav",
+        new Error("disk full"),
+      );
       expect(getOutput()).toBe("failed: kick.wav: disk full\n");
     });
 
@@ -227,7 +283,9 @@ describe("SimpleExportReporter", () => {
       reporter.onAfterWrite(createEntry("b.wav"), "b.wav");
       reporter.onReject(createEntry("kick.wav"), "Missing sampleType");
       reporter.onPreview();
-      expect(getOutput()).toContain("Would export 2 samples (1 sample rejected)\n");
+      expect(getOutput()).toContain(
+        "Would export 2 samples (1 sample rejected)\n",
+      );
     });
 
     it("uses plural 'samples' when reject count > 1", () => {
@@ -238,7 +296,9 @@ describe("SimpleExportReporter", () => {
       reporter.onReject(createEntry("snare.wav"), "Missing sampleType");
       reporter.onReject(createEntry("hat.wav"), "Missing sampleType");
       reporter.onPreview();
-      expect(getOutput()).toContain("Would export 2 samples (3 samples rejected)\n");
+      expect(getOutput()).toContain(
+        "Would export 2 samples (3 samples rejected)\n",
+      );
     });
 
     it("includes skip count when skips > 0", () => {
@@ -247,7 +307,9 @@ describe("SimpleExportReporter", () => {
       reporter.onAfterWrite(createEntry("b.wav"), "b.wav");
       reporter.onSkip(createEntry("kick.wav"));
       reporter.onPreview();
-      expect(getOutput()).toContain("Would export 2 samples (1 entry skipped)\n");
+      expect(getOutput()).toContain(
+        "Would export 2 samples (1 entry skipped)\n",
+      );
     });
 
     it("uses plural 'entries' when skip count > 1", () => {
@@ -258,7 +320,9 @@ describe("SimpleExportReporter", () => {
       reporter.onSkip(createEntry("snare.wav"));
       reporter.onSkip(createEntry("hat.wav"));
       reporter.onPreview();
-      expect(getOutput()).toContain("Would export 2 samples (3 entries skipped)\n");
+      expect(getOutput()).toContain(
+        "Would export 2 samples (3 entries skipped)\n",
+      );
     });
 
     it("includes both reject and skip counts", () => {
@@ -269,16 +333,27 @@ describe("SimpleExportReporter", () => {
       reporter.onSkip(createEntry("snare.wav"));
       reporter.onSkip(createEntry("hat.wav"));
       reporter.onPreview();
-      expect(getOutput()).toContain("Would export 2 samples (1 sample rejected, 2 entries skipped)\n");
+      expect(getOutput()).toContain(
+        "Would export 2 samples (1 sample rejected, 2 entries skipped)\n",
+      );
     });
   });
 
   describe("organised summary", () => {
     it("prints package total and sampleType breakdown after onComplete", () => {
       const { reporter, getOutput } = createOrganisedReporter();
-      reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/kick.wav", "my-pack", "Drums"), "Drums/my-pack/kick.wav");
-      reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/snare.wav", "my-pack", "Drums"), "Drums/my-pack/snare.wav");
-      reporter.onAfterWrite(createEntryWithMeta("Synths/my-pack/synth.wav", "my-pack", "Synths"), "Synths/my-pack/synth.wav");
+      reporter.onAfterWrite(
+        createEntryWithMeta("Drums/my-pack/kick.wav", "my-pack", "Drums"),
+        "Drums/my-pack/kick.wav",
+      );
+      reporter.onAfterWrite(
+        createEntryWithMeta("Drums/my-pack/snare.wav", "my-pack", "Drums"),
+        "Drums/my-pack/snare.wav",
+      );
+      reporter.onAfterWrite(
+        createEntryWithMeta("Synths/my-pack/synth.wav", "my-pack", "Synths"),
+        "Synths/my-pack/synth.wav",
+      );
       reporter.onComplete("/output");
       const output = getOutput();
       expect(output).toContain("my-pack: 3 samples\n");
@@ -288,25 +363,42 @@ describe("SimpleExportReporter", () => {
 
     it("sorts packages and sampleTypes alphabetically", () => {
       const { reporter, getOutput } = createOrganisedReporter();
-      reporter.onAfterWrite(createEntryWithMeta("Synths/zebra/s.wav", "zebra", "Synths"), "Synths/zebra/s.wav");
-      reporter.onAfterWrite(createEntryWithMeta("Drums/alpha/k.wav", "alpha", "Drums"), "Drums/alpha/k.wav");
-      reporter.onAfterWrite(createEntryWithMeta("Bass/zebra/b.wav", "zebra", "Bass"), "Bass/zebra/b.wav");
+      reporter.onAfterWrite(
+        createEntryWithMeta("Synths/zebra/s.wav", "zebra", "Synths"),
+        "Synths/zebra/s.wav",
+      );
+      reporter.onAfterWrite(
+        createEntryWithMeta("Drums/alpha/k.wav", "alpha", "Drums"),
+        "Drums/alpha/k.wav",
+      );
+      reporter.onAfterWrite(
+        createEntryWithMeta("Bass/zebra/b.wav", "zebra", "Bass"),
+        "Bass/zebra/b.wav",
+      );
       reporter.onComplete("/output");
       const output = getOutput();
       expect(output.indexOf("alpha:")).toBeLessThan(output.indexOf("zebra:"));
-      expect(output.indexOf("  Bass:")).toBeLessThan(output.indexOf("  Synths:"));
+      expect(output.indexOf("  Bass:")).toBeLessThan(
+        output.indexOf("  Synths:"),
+      );
     });
 
     it("does not print summary when organised is false", () => {
       const { reporter, getOutput } = createReporter();
-      reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/kick.wav", "my-pack", "Drums"), "Drums/my-pack/kick.wav");
+      reporter.onAfterWrite(
+        createEntryWithMeta("Drums/my-pack/kick.wav", "my-pack", "Drums"),
+        "Drums/my-pack/kick.wav",
+      );
       reporter.onComplete("/output");
       expect(getOutput()).not.toContain("my-pack:");
     });
 
     it("prints summary from onPreview in organised mode", () => {
       const { reporter, getOutput } = createOrganisedReporter();
-      reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/kick.wav", "my-pack", "Drums"), "Drums/my-pack/kick.wav");
+      reporter.onAfterWrite(
+        createEntryWithMeta("Drums/my-pack/kick.wav", "my-pack", "Drums"),
+        "Drums/my-pack/kick.wav",
+      );
       reporter.onPreview();
       expect(getOutput()).toContain("my-pack: 1 sample\n");
       expect(getOutput()).toContain("  Drums: 1 sample\n");
@@ -314,23 +406,39 @@ describe("SimpleExportReporter", () => {
 
     it("does not count error writes in the summary", () => {
       const { reporter, getOutput } = createOrganisedReporter();
-      reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/kick.wav", "my-pack", "Drums"), "Drums/my-pack/kick.wav", new Error("fail"));
+      reporter.onAfterWrite(
+        createEntryWithMeta("Drums/my-pack/kick.wav", "my-pack", "Drums"),
+        "Drums/my-pack/kick.wav",
+        new Error("fail"),
+      );
       reporter.onComplete("/output");
       expect(getOutput()).not.toContain("my-pack:");
     });
 
     it("shows 0 samples and singular file count when package has only non-audio files", () => {
       const { reporter, getOutput } = createOrganisedReporter();
-      reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/patch.nki", "my-pack", "Drums"), "Drums/my-pack/patch.nki");
+      reporter.onAfterWrite(
+        createEntryWithMeta("Drums/my-pack/patch.nki", "my-pack", "Drums"),
+        "Drums/my-pack/patch.nki",
+      );
       reporter.onComplete("/output");
       expect(getOutput()).toContain("my-pack: 0 samples, 1 file\n");
     });
 
     it("shows non-audio files count when package has non-audio files alongside samples", () => {
       const { reporter, getOutput } = createOrganisedReporter();
-      reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/kick.wav", "my-pack", "Drums"), "Drums/my-pack/kick.wav");
-      reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/patch.nki", "my-pack", "Drums"), "Drums/my-pack/patch.nki");
-      reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/patch2.nki", "my-pack", "Drums"), "Drums/my-pack/patch2.nki");
+      reporter.onAfterWrite(
+        createEntryWithMeta("Drums/my-pack/kick.wav", "my-pack", "Drums"),
+        "Drums/my-pack/kick.wav",
+      );
+      reporter.onAfterWrite(
+        createEntryWithMeta("Drums/my-pack/patch.nki", "my-pack", "Drums"),
+        "Drums/my-pack/patch.nki",
+      );
+      reporter.onAfterWrite(
+        createEntryWithMeta("Drums/my-pack/patch2.nki", "my-pack", "Drums"),
+        "Drums/my-pack/patch2.nki",
+      );
       reporter.onComplete("/output");
       const output = getOutput();
       expect(output).toContain("my-pack: 1 sample, 2 files\n");
@@ -338,41 +446,74 @@ describe("SimpleExportReporter", () => {
 
     it("uses singular 'file' when non-audio count is 1", () => {
       const { reporter, getOutput } = createOrganisedReporter();
-      reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/kick.wav", "my-pack", "Drums"), "Drums/my-pack/kick.wav");
-      reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/patch.nki", "my-pack", "Drums"), "Drums/my-pack/patch.nki");
+      reporter.onAfterWrite(
+        createEntryWithMeta("Drums/my-pack/kick.wav", "my-pack", "Drums"),
+        "Drums/my-pack/kick.wav",
+      );
+      reporter.onAfterWrite(
+        createEntryWithMeta("Drums/my-pack/patch.nki", "my-pack", "Drums"),
+        "Drums/my-pack/patch.nki",
+      );
       reporter.onComplete("/output");
       expect(getOutput()).toContain("my-pack: 1 sample, 1 file\n");
     });
 
     it("shows non-audio file count on the type line when files exist for that type", () => {
       const { reporter, getOutput } = createOrganisedReporter();
-      reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/kick.wav", "my-pack", "Drums"), "Drums/my-pack/kick.wav");
-      reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/patch.nki", "my-pack", "Drums"), "Drums/my-pack/patch.nki");
-      reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/patch2.nki", "my-pack", "Drums"), "Drums/my-pack/patch2.nki");
+      reporter.onAfterWrite(
+        createEntryWithMeta("Drums/my-pack/kick.wav", "my-pack", "Drums"),
+        "Drums/my-pack/kick.wav",
+      );
+      reporter.onAfterWrite(
+        createEntryWithMeta("Drums/my-pack/patch.nki", "my-pack", "Drums"),
+        "Drums/my-pack/patch.nki",
+      );
+      reporter.onAfterWrite(
+        createEntryWithMeta("Drums/my-pack/patch2.nki", "my-pack", "Drums"),
+        "Drums/my-pack/patch2.nki",
+      );
       reporter.onComplete("/output");
       expect(getOutput()).toContain("  Drums: 1 sample, 2 files\n");
     });
 
     it("uses singular 'file' on type line when non-audio count is 1", () => {
       const { reporter, getOutput } = createOrganisedReporter();
-      reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/kick.wav", "my-pack", "Drums"), "Drums/my-pack/kick.wav");
-      reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/patch.nki", "my-pack", "Drums"), "Drums/my-pack/patch.nki");
+      reporter.onAfterWrite(
+        createEntryWithMeta("Drums/my-pack/kick.wav", "my-pack", "Drums"),
+        "Drums/my-pack/kick.wav",
+      );
+      reporter.onAfterWrite(
+        createEntryWithMeta("Drums/my-pack/patch.nki", "my-pack", "Drums"),
+        "Drums/my-pack/patch.nki",
+      );
       reporter.onComplete("/output");
       expect(getOutput()).toContain("  Drums: 1 sample, 1 file\n");
     });
 
     it("omits file count on type line when no non-audio files for that type", () => {
       const { reporter, getOutput } = createOrganisedReporter();
-      reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/kick.wav", "my-pack", "Drums"), "Drums/my-pack/kick.wav");
+      reporter.onAfterWrite(
+        createEntryWithMeta("Drums/my-pack/kick.wav", "my-pack", "Drums"),
+        "Drums/my-pack/kick.wav",
+      );
       reporter.onComplete("/output");
       expect(getOutput()).toContain("  Drums: 1 sample\n");
     });
 
     it("shows correct file count per type when non-audio files span multiple types", () => {
       const { reporter, getOutput } = createOrganisedReporter();
-      reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/kick.wav", "my-pack", "Drums"), "Drums/my-pack/kick.wav");
-      reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/patch.nki", "my-pack", "Drums"), "Drums/my-pack/patch.nki");
-      reporter.onAfterWrite(createEntryWithMeta("Synths/my-pack/synth.wav", "my-pack", "Synths"), "Synths/my-pack/synth.wav");
+      reporter.onAfterWrite(
+        createEntryWithMeta("Drums/my-pack/kick.wav", "my-pack", "Drums"),
+        "Drums/my-pack/kick.wav",
+      );
+      reporter.onAfterWrite(
+        createEntryWithMeta("Drums/my-pack/patch.nki", "my-pack", "Drums"),
+        "Drums/my-pack/patch.nki",
+      );
+      reporter.onAfterWrite(
+        createEntryWithMeta("Synths/my-pack/synth.wav", "my-pack", "Synths"),
+        "Synths/my-pack/synth.wav",
+      );
       reporter.onComplete("/output");
       const output = getOutput();
       expect(output).toContain("  Drums: 1 sample, 1 file\n");
@@ -381,8 +522,14 @@ describe("SimpleExportReporter", () => {
 
     it("shows 0 samples and file count when package has no audio files", () => {
       const { reporter, getOutput } = createOrganisedReporter();
-      reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/patch.nki", "my-pack", "Drums"), "Drums/my-pack/patch.nki");
-      reporter.onAfterWrite(createEntryWithMeta("Drums/my-pack/patch2.nki", "my-pack", "Drums"), "Drums/my-pack/patch2.nki");
+      reporter.onAfterWrite(
+        createEntryWithMeta("Drums/my-pack/patch.nki", "my-pack", "Drums"),
+        "Drums/my-pack/patch.nki",
+      );
+      reporter.onAfterWrite(
+        createEntryWithMeta("Drums/my-pack/patch2.nki", "my-pack", "Drums"),
+        "Drums/my-pack/patch2.nki",
+      );
       reporter.onComplete("/output");
       expect(getOutput()).toContain("my-pack: 0 samples, 2 files\n");
     });

@@ -21,11 +21,10 @@ describe("NormaliseCommaSpacingTransformer", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync(
-        "node",
-        [CLI_PATH, zipPath, "--analyse"],
-        { encoding: "utf8", env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir } },
-      );
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--analyse"], {
+        encoding: "utf8",
+        env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+      });
 
       expect(result.status).toBe(0);
 
@@ -33,11 +32,15 @@ describe("NormaliseCommaSpacingTransformer", () => {
       const csv = await readFile(join(dataDir, configFile), "utf8");
 
       // "Kicks , Snares" should be renamed to "Kicks, Snares"
-      const kicksRow = csv.split("\n").find((row) => row.startsWith('"Kicks , Snares",'));
+      const kicksRow = csv
+        .split("\n")
+        .find((row) => row.startsWith('"Kicks , Snares",'));
       expect(kicksRow).toBe('"Kicks , Snares","Kicks, Snares",,,,');
 
       // "Hi-Hats ,Percussion" should be renamed to "Hi-Hats, Percussion"
-      const hatsRow = csv.split("\n").find((row) => row.startsWith('"Hi-Hats ,Percussion",'));
+      const hatsRow = csv
+        .split("\n")
+        .find((row) => row.startsWith('"Hi-Hats ,Percussion",'));
       expect(hatsRow).toBe('"Hi-Hats ,Percussion","Hi-Hats, Percussion",,,,');
     } finally {
       await rm(tmpDir, { recursive: true });
@@ -56,11 +59,10 @@ describe("NormaliseCommaSpacingTransformer", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync(
-        "node",
-        [CLI_PATH, zipPath, "--analyse"],
-        { encoding: "utf8", env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir } },
-      );
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--analyse"], {
+        encoding: "utf8",
+        env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+      });
 
       expect(result.status).toBe(0);
 
@@ -68,7 +70,9 @@ describe("NormaliseCommaSpacingTransformer", () => {
       const csv = await readFile(join(dataDir, configFile), "utf8");
 
       // "Kicks_,_Snares" should be renamed to "Kicks,_Snares"
-      const kicksRow = csv.split("\n").find((row) => row.startsWith('"Kicks_,_Snares",'));
+      const kicksRow = csv
+        .split("\n")
+        .find((row) => row.startsWith('"Kicks_,_Snares",'));
       expect(kicksRow).toBe('"Kicks_,_Snares","Kicks,_Snares",,,,');
     } finally {
       await rm(tmpDir, { recursive: true });

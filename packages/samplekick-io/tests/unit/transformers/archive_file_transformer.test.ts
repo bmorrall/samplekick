@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { createArchiveFileTransformer } from "../../../src";
-import { createTransformEntry, createTransformEntryInHierarchy, singleEntryTransformSource } from "../../support";
+import {
+  createTransformEntry,
+  createTransformEntryInHierarchy,
+  singleEntryTransformSource,
+} from "../../support";
 
 describe("createArchiveFileTransformer", () => {
   describe("when the path ends with .zip", () => {
@@ -123,7 +127,10 @@ describe("createArchiveFileTransformer", () => {
   describe("when the entry is the root node", () => {
     it("does not set sampleType even if the path ends with .zip", () => {
       // Root node has no parent - it is the archive being processed, not an embedded one
-      const entry = createTransformEntry({ name: "pack.zip", path: "pack.zip" });
+      const entry = createTransformEntry({
+        name: "pack.zip",
+        path: "pack.zip",
+      });
       const transformer = createArchiveFileTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();

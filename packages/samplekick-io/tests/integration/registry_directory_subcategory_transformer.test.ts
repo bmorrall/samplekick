@@ -1,5 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { createDirectorySampleTypeTransformer, createDirectorySubcategoryTransformer } from "../../src";
+import {
+  createDirectorySampleTypeTransformer,
+  createDirectorySubcategoryTransformer,
+} from "../../src";
 import { createRegistry, createFileEntry } from "../support";
 
 describe("DirectorySubcategoryTransformer integration", () => {

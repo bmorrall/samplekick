@@ -7,7 +7,8 @@ import { createSanitiseNameTransformer } from "./sanitise_name_transformer";
 // Quality: major, minor, maj, min (case-insensitive).
 // Lookbehind (?<![a-zA-Z]) prevents matching note letters inside words (e.g. "grab min").
 // Lookahead (?![a-zA-Z]) prevents partial-word matches (e.g. "Cmajority").
-const KEY_RE = /(?<![a-zA-Z])(?<root>[A-G][#b]?)[_ ]?(?<quality>major|minor|maj|min)(?![a-zA-Z])/giv;
+const KEY_RE =
+  /(?<![a-zA-Z])(?<root>[A-G][#b]?)[_ ]?(?<quality>major|minor|maj|min)(?![a-zA-Z])/giv;
 
 function keyTagReplacer(_match: string, root: string, quality: string): string {
   const normRoot = root[0].toUpperCase() + root.slice(1);

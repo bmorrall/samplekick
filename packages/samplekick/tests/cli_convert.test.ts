@@ -21,10 +21,23 @@ describe("--convert flag", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync("node", [CLI_PATH, zipPath, "--convert", "-d", "sp404mk2", "--preserve-paths", "-o", outputDir], {
-        encoding: "utf8",
-        env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
-      });
+      const result = spawnSync(
+        "node",
+        [
+          CLI_PATH,
+          zipPath,
+          "--convert",
+          "-d",
+          "sp404mk2",
+          "--preserve-paths",
+          "-o",
+          outputDir,
+        ],
+        {
+          encoding: "utf8",
+          env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
+        },
+      );
 
       expect(result.stderr).toBe("");
       expect(result.status).toBe(0);
@@ -35,7 +48,7 @@ describe("--convert flag", () => {
       const outHeader = await readFile(join(outputDir, "Drums/kick.wav"));
       expect(outHeader.subarray(0, 4).toString("ascii")).toBe("RIFF");
       expect(outHeader.readUInt32LE(24)).toBe(48000); // sample rate
-      expect(outHeader.readUInt16LE(34)).toBe(16);    // bits per sample
+      expect(outHeader.readUInt16LE(34)).toBe(16); // bits per sample
     } finally {
       await rm(tmpDir, { recursive: true });
     }
@@ -53,13 +66,28 @@ describe("--convert flag", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync("node", [CLI_PATH, zipPath, "--convert", "-d", "sp404mk2", "--preserve-paths", "-o", outputDir], {
-        encoding: "utf8",
-        env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
-      });
+      const result = spawnSync(
+        "node",
+        [
+          CLI_PATH,
+          zipPath,
+          "--convert",
+          "-d",
+          "sp404mk2",
+          "--preserve-paths",
+          "-o",
+          outputDir,
+        ],
+        {
+          encoding: "utf8",
+          env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
+        },
+      );
 
       expect(result.stderr).toBe("");
-      expect(await readFile(join(outputDir, "Patches/preset.nki"), "utf8")).toBe("preset-data");
+      expect(
+        await readFile(join(outputDir, "Patches/preset.nki"), "utf8"),
+      ).toBe("preset-data");
 
       expect(result.status).toBe(0);
     } finally {
@@ -79,10 +107,23 @@ describe("--convert flag", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync("node", [CLI_PATH, zipPath, "--convert", "-d", "sp404mk2", "--preserve-paths", "-o", outputDir], {
-        encoding: "utf8",
-        env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
-      });
+      const result = spawnSync(
+        "node",
+        [
+          CLI_PATH,
+          zipPath,
+          "--convert",
+          "-d",
+          "sp404mk2",
+          "--preserve-paths",
+          "-o",
+          outputDir,
+        ],
+        {
+          encoding: "utf8",
+          env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
+        },
+      );
 
       expect(result.stderr).toBe("");
       expect(result.stdout).toContain("Could not convert");
@@ -106,10 +147,24 @@ describe("--convert flag", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync("node", [CLI_PATH, zipPath, "--convert", "-d", "sp404mk2", "--verbose", "--preserve-paths", "-o", outputDir], {
-        encoding: "utf8",
-        env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
-      });
+      const result = spawnSync(
+        "node",
+        [
+          CLI_PATH,
+          zipPath,
+          "--convert",
+          "-d",
+          "sp404mk2",
+          "--verbose",
+          "--preserve-paths",
+          "-o",
+          outputDir,
+        ],
+        {
+          encoding: "utf8",
+          env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
+        },
+      );
 
       expect(result.stdout).toContain("Converting");
       expect(result.stdout).toContain("kick.wav");
@@ -130,10 +185,23 @@ describe("--convert flag", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync("node", [CLI_PATH, zipPath, "--convert", "-d", "sp404mk2", "--preserve-paths", "-o", outputDir], {
-        encoding: "utf8",
-        env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
-      });
+      const result = spawnSync(
+        "node",
+        [
+          CLI_PATH,
+          zipPath,
+          "--convert",
+          "-d",
+          "sp404mk2",
+          "--preserve-paths",
+          "-o",
+          outputDir,
+        ],
+        {
+          encoding: "utf8",
+          env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
+        },
+      );
 
       expect(result.stdout).not.toContain("Converting");
     } finally {
@@ -153,10 +221,27 @@ describe("--convert flag", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync(process.execPath, [CLI_PATH, zipPath, "--convert", "-d", "sp404mk2", "--preserve-paths", "-o", outputDir], {
-        encoding: "utf8",
-        env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data"), PATH: tmpDir },
-      });
+      const result = spawnSync(
+        process.execPath,
+        [
+          CLI_PATH,
+          zipPath,
+          "--convert",
+          "-d",
+          "sp404mk2",
+          "--preserve-paths",
+          "-o",
+          outputDir,
+        ],
+        {
+          encoding: "utf8",
+          env: {
+            ...process.env,
+            SAMPLEKICK_DATA_DIR: join(tmpDir, "data"),
+            PATH: tmpDir,
+          },
+        },
+      );
 
       expect(result.stderr).toContain("ffmpeg not found");
       expect(result.status).toBe(1);
@@ -177,10 +262,24 @@ describe("--convert flag", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync("node", [CLI_PATH, zipPath, "--convert", "-d", "sp404mk2", "--verbose", "--preserve-paths", "-o", outputDir], {
-        encoding: "utf8",
-        env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
-      });
+      const result = spawnSync(
+        "node",
+        [
+          CLI_PATH,
+          zipPath,
+          "--convert",
+          "-d",
+          "sp404mk2",
+          "--verbose",
+          "--preserve-paths",
+          "-o",
+          outputDir,
+        ],
+        {
+          encoding: "utf8",
+          env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
+        },
+      );
 
       expect(result.stdout).toContain("Using ffmpeg: ffmpeg version");
       const autoConfigIdx = result.stdout.indexOf("Using auto-config:");
@@ -204,10 +303,23 @@ describe("--convert flag", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync("node", [CLI_PATH, zipPath, "-c", "-d", "sp404mk2", "--preserve-paths", "-o", outputDir], {
-        encoding: "utf8",
-        env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
-      });
+      const result = spawnSync(
+        "node",
+        [
+          CLI_PATH,
+          zipPath,
+          "-c",
+          "-d",
+          "sp404mk2",
+          "--preserve-paths",
+          "-o",
+          outputDir,
+        ],
+        {
+          encoding: "utf8",
+          env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
+        },
+      );
 
       expect(result.stderr).toBe("");
       expect(result.status).toBe(0);

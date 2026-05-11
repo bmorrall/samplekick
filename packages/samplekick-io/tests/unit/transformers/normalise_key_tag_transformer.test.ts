@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { createNormaliseKeyTagTransformer } from "../../../src";
-import { createTransformEntry, singleEntryTransformSource } from "../../support";
+import {
+  createTransformEntry,
+  singleEntryTransformSource,
+} from "../../support";
 
 describe("createNormaliseKeyTagTransformer", () => {
   describe("major quality", () => {
@@ -103,28 +106,40 @@ describe("createNormaliseKeyTagTransformer", () => {
   });
 
   it("normalises packageName when the entry has one", () => {
-    const entry = createTransformEntry({ name: "kick.wav", packageName: "Loops F# Minor" });
+    const entry = createTransformEntry({
+      name: "kick.wav",
+      packageName: "Loops F# Minor",
+    });
     const transformer = createNormaliseKeyTagTransformer();
     transformer.transform(singleEntryTransformSource(entry));
     expect(entry.setPackageName).toHaveBeenCalledWith("Loops F#min");
   });
 
   it("normalises sampleType when the entry has one", () => {
-    const entry = createTransformEntry({ name: "kick.wav", sampleType: "Loops C Major" });
+    const entry = createTransformEntry({
+      name: "kick.wav",
+      sampleType: "Loops C Major",
+    });
     const transformer = createNormaliseKeyTagTransformer();
     transformer.transform(singleEntryTransformSource(entry));
     expect(entry.setSampleType).toHaveBeenCalledWith("Loops Cmaj");
   });
 
   it("does not act on a keepStructure entry", () => {
-    const entry = createTransformEntry({ name: "Loop C Major.wav", keepStructure: true });
+    const entry = createTransformEntry({
+      name: "Loop C Major.wav",
+      keepStructure: true,
+    });
     const transformer = createNormaliseKeyTagTransformer();
     transformer.transform(singleEntryTransformSource(entry));
     expect(entry.setName).not.toHaveBeenCalled();
   });
 
   it("does not act on a skipped entry", () => {
-    const entry = createTransformEntry({ name: "Loop C Major.wav", skipped: true });
+    const entry = createTransformEntry({
+      name: "Loop C Major.wav",
+      skipped: true,
+    });
     const transformer = createNormaliseKeyTagTransformer();
     transformer.transform(singleEntryTransformSource(entry));
     expect(entry.setName).not.toHaveBeenCalled();
