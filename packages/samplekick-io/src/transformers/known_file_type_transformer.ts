@@ -1,12 +1,6 @@
 import type { Transform } from "../types";
 import { PHASE_PLANT_PRESETS, SERUM_PRESETS } from "./folder_lookup";
 
-/**
- * KnownFileTypeTransformer
- * Sets sampleType based on the file extension when it has not already been set.
- * - ".fxp" (case-insensitive) → "Serum Presets"
- * - ".phaseplant" (case-insensitive) → "Phase Plant Presets"
- */
 const _singleton: Transform = {
   transform: (source) => {
     source.eachTransformEntry((entry) => {
@@ -27,4 +21,10 @@ const _singleton: Transform = {
     });
   },
 };
+/**
+ * KnownFileTypeTransformer
+ * Sets sampleType based on the file extension when it has not already been set.
+ * - ".fxp" (case-insensitive) → "Serum Presets"
+ * - ".phaseplant" (case-insensitive) → "Phase Plant Presets"
+ */
 export const createKnownFileTypeTransformer = (): Transform => _singleton;

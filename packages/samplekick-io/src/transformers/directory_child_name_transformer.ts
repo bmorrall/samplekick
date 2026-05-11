@@ -35,17 +35,6 @@ function findCommonKnownType(entry: TransformEntry): string | undefined {
   return knownMatches[0];
 }
 
-/**
- * DirectoryChildNameTransformer
- * For directories that have not yet been assigned a sampleType, inspects the
- * names of their immediate file children. If those file names all share a common
- * " - "-delimited segment that resolves to a known standalone sampleType, the
- * directory is tagged with that type.
- * e.g. children named "Brand - Foley - Coin Drop.wav" and "Brand - Foley - Hit.wav"
- * share the segment "Foley" → directory is tagged "Foley".
- * Works with a single child file (no intersection required for uniqueness).
- * Must run after createDirectorySampleTypeTransformer.
- */
 const _singleton: Transform = {
   transform: (source) => {
     source.eachTransformEntry((entry) => {
@@ -57,4 +46,15 @@ const _singleton: Transform = {
     });
   },
 };
+/**
+ * DirectoryChildNameTransformer
+ * For directories that have not yet been assigned a sampleType, inspects the
+ * names of their immediate file children. If those file names all share a common
+ * " - "-delimited segment that resolves to a known standalone sampleType, the
+ * directory is tagged with that type.
+ * e.g. children named "Brand - Foley - Coin Drop.wav" and "Brand - Foley - Hit.wav"
+ * share the segment "Foley" → directory is tagged "Foley".
+ * Works with a single child file (no intersection required for uniqueness).
+ * Must run after createDirectorySampleTypeTransformer.
+ */
 export const createDirectoryChildNameTransformer = (): Transform => _singleton;

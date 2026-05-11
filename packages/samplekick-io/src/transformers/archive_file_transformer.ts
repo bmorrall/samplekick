@@ -26,13 +26,6 @@ function resolveArchiveSampleType(path: string): string {
   return sampleType;
 }
 
-/**
- * ArchiveFileTransformer
- * Detects embedded archive files (e.g. nested .zip files) by extension and
- * sets sampleType to "Archive" with keepStructure enabled so their contents
- * are preserved as-is. If the path contains exactly one recognised keyword
- * (e.g. "Ableton", "FL Studio"), a more specific sampleType is used instead.
- */
 const _singleton: Transform = {
   transform: (source) => {
     source.eachTransformEntry((entry) => {
@@ -48,4 +41,11 @@ const _singleton: Transform = {
     });
   },
 };
+/**
+ * ArchiveFileTransformer
+ * Detects embedded archive files (e.g. nested .zip files) by extension and
+ * sets sampleType to "Archive" with keepStructure enabled so their contents
+ * are preserved as-is. If the path contains exactly one recognised keyword
+ * (e.g. "Ableton", "FL Studio"), a more specific sampleType is used instead.
+ */
 export const createArchiveFileTransformer = (): Transform => _singleton;

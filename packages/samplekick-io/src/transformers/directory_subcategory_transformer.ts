@@ -22,14 +22,6 @@ function trySetSubcategory(entry: TransformEntry): boolean {
   return true;
 }
 
-/**
- * DirectorySubcategoryTransformer
- * For directories that have not yet been assigned a sampleType, checks whether
- * their parent directory has a known sampleType and, if so, tags the child as a
- * subcategory using the "ParentType - ChildName" convention.
- * e.g. "Latin" under "Drum Loops" → "Drum Loops - Latin".
- * Must run after createDirectorySampleTypeTransformer.
- */
 const _singleton: Transform = {
   transform: (source) => {
     source.eachTransformEntry((entry) => {
@@ -39,5 +31,13 @@ const _singleton: Transform = {
     });
   },
 };
+/**
+ * DirectorySubcategoryTransformer
+ * For directories that have not yet been assigned a sampleType, checks whether
+ * their parent directory has a known sampleType and, if so, tags the child as a
+ * subcategory using the "ParentType - ChildName" convention.
+ * e.g. "Latin" under "Drum Loops" → "Drum Loops - Latin".
+ * Must run after createDirectorySampleTypeTransformer.
+ */
 export const createDirectorySubcategoryTransformer = (): Transform =>
   _singleton;

@@ -70,18 +70,6 @@ function resolveSegmentSuffix(segment: string): string | undefined {
   return undefined;
 }
 
-/**
- * DirectorySegmentSuffixTransformer
- * Last-ditch fallback for directories that have not been assigned a sampleType
- * by any earlier transformer. Splits the directory name by ' - ' (treating the
- * whole name as one segment when there is no separator) and checks each segment
- * for a known-type suffix by progressively stripping leading words. If exactly
- * one segment yields a unique match, the directory is tagged with that type.
- * e.g. "Cymatics - Phoenix Vocal Loops" → segment "Phoenix Vocal Loops"
- *      → strip "Phoenix" → "Vocal Loops" → tags as "Vocal Loops".
- * e.g. "Wet Percussion" → strip "Wet" → "Percussion" → tags as "Percussion".
- * Must run after all other directory transformers.
- */
 const _singleton: Transform = {
   transform: (source) => {
     source.eachTransformEntry((entry) => {
@@ -101,5 +89,17 @@ const _singleton: Transform = {
     });
   },
 };
+/**
+ * DirectorySegmentSuffixTransformer
+ * Last-ditch fallback for directories that have not been assigned a sampleType
+ * by any earlier transformer. Splits the directory name by ' - ' (treating the
+ * whole name as one segment when there is no separator) and checks each segment
+ * for a known-type suffix by progressively stripping leading words. If exactly
+ * one segment yields a unique match, the directory is tagged with that type.
+ * e.g. "Cymatics - Phoenix Vocal Loops" → segment "Phoenix Vocal Loops"
+ *      → strip "Phoenix" → "Vocal Loops" → tags as "Vocal Loops".
+ * e.g. "Wet Percussion" → strip "Wet" → "Percussion" → tags as "Percussion".
+ * Must run after all other directory transformers.
+ */
 export const createDirectorySegmentSuffixTransformer = (): Transform =>
   _singleton;
