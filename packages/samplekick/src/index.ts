@@ -335,7 +335,11 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
           values["preserve-paths"] !== true,
         );
 
-  if (values.debug !== true && values["dump-config"] !== true) {
+  if (
+    values.debug !== true &&
+    values["dump-config"] !== true &&
+    values.edit !== true
+  ) {
     reporter.onStart(zipPath);
   }
 
