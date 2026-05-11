@@ -235,6 +235,66 @@ describe("createNormaliseKeyTagTransformer", () => {
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setName).toHaveBeenCalledWith("Chord Fmaj11.wav");
     });
+
+    it("normalises D min 7 (all spaced) to Dmin7", () => {
+      const entry = createTransformEntry({ name: "Chord D min 7.wav" });
+      const transformer = createNormaliseKeyTagTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setName).toHaveBeenCalledWith("Chord Dmin7.wav");
+    });
+
+    it("normalises D min 7 + 9 (spaced extension) to Dmin7+9", () => {
+      const entry = createTransformEntry({ name: "Chord D min 7 + 9.wav" });
+      const transformer = createNormaliseKeyTagTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setName).toHaveBeenCalledWith("Chord Dmin7+9.wav");
+    });
+
+    it("normalises Bmin 7+4 (spaced quality, no-space extension) to Bmin7+4", () => {
+      const entry = createTransformEntry({ name: "Chord Bmin 7+4.wav" });
+      const transformer = createNormaliseKeyTagTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setName).toHaveBeenCalledWith("Chord Bmin7+4.wav");
+    });
+  });
+
+  describe("augmented chords", () => {
+    it("normalises Caug to Caug", () => {
+      const entry = createTransformEntry({ name: "Chord Caug.wav" });
+      const transformer = createNormaliseKeyTagTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setName).toHaveBeenCalledWith("Chord Caug.wav");
+    });
+
+    it("normalises G aug7 (spaced) to Gaug7", () => {
+      const entry = createTransformEntry({ name: "Chord G aug7.wav" });
+      const transformer = createNormaliseKeyTagTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setName).toHaveBeenCalledWith("Chord Gaug7.wav");
+    });
+
+    it("normalises C Augmented (long form) to Caug", () => {
+      const entry = createTransformEntry({ name: "Chord C Augmented.wav" });
+      const transformer = createNormaliseKeyTagTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setName).toHaveBeenCalledWith("Chord Caug.wav");
+    });
+  });
+
+  describe("add chords (bare)", () => {
+    it("normalises Cadd9 to Cadd9", () => {
+      const entry = createTransformEntry({ name: "Chord Cadd9.wav" });
+      const transformer = createNormaliseKeyTagTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setName).toHaveBeenCalledWith("Chord Cadd9.wav");
+    });
+
+    it("normalises G add11 (spaced) to Gadd11", () => {
+      const entry = createTransformEntry({ name: "Chord G add11.wav" });
+      const transformer = createNormaliseKeyTagTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setName).toHaveBeenCalledWith("Chord Gadd11.wav");
+    });
   });
 
   it("normalises packageName when the entry has one", () => {
