@@ -1,7 +1,6 @@
 import type { Readable } from "node:stream";
 import type { ConfigSource, ConfigEntry } from "../types";
 import { getPathName } from "../path_utils";
-import { CSV_HEADER } from "./csv_config_writer";
 
 const NOT_FOUND = -1;
 const ESCAPED_QUOTE_LEN = 2;
@@ -51,53 +50,66 @@ const optionalBoolean = (value: string): boolean | undefined => {
   return undefined;
 };
 
-class CsvConfigEntry implements ConfigEntry {
-  private readonly pathField: string;
-  private readonly nameField: string;
-  private readonly packageNameField: string;
-  private readonly sampleTypeField: string;
-  private readonly skippedField: string;
-  private readonly keepStructureField: string;
+interface ColumnIndices {
+  path: number;
+  name: number;
+  packageName: number;
+  sampleType: number;
+  skip: number;
+  keepPath: number;
+}
 
-  constructor(fields: string[]) {
-    const [
-      pathField = "",
-      nameField = "",
-      packageNameField = "",
-      sampleTypeField = "",
-      skippedField = "",
-      keepStructureField = "",
-    ] = fields;
-    this.pathField = pathField;
-    this.nameField = nameField;
-    this.packageNameField = packageNameField;
-    this.sampleTypeField = sampleTypeField;
-    this.skippedField = skippedField;
-    this.keepStructureField = keepStructureField;
+const parseColumnIndices = (header: string): ColumnIndices => {
+  const columns = header.trimEnd().split(",");
+  const idx = (col: string): number => {
+    const i = columns.indexOf(col);
+    if (i === NOT_FOUND) {
+      throw new Error(`Unrecognised CSV header: ${header}`);
+    }
+    return i;
+  };
+  return {
+    path: idx("path"),
+    name: idx("name"),
+    packageName: idx("packageName"),
+    sampleType: idx("sampleType"),
+    skip: idx("skip"),
+    keepPath: idx("keepPath"),
+  };
+};
+
+class CsvConfigEntry implements ConfigEntry {
+  private readonly fields: string[];
+  private readonly indices: ColumnIndices;
+
+  constructor(fields: string[], indices: ColumnIndices) {
+    this.fields = fields;
+    this.indices = indices;
   }
 
   getPath(): string {
-    return this.pathField;
+    return this.fields[this.indices.path] ?? "";
   }
 
   getName(): string {
-    return this.nameField === "" ? getPathName(this.pathField) : this.nameField;
+    const name = this.fields[this.indices.name] ?? "";
+    return name === "" ? getPathName(this.getPath()) : name;
   }
 
   getPackageName(): string | undefined {
-    return optionalString(this.packageNameField);
+    return optionalString(this.fields[this.indices.packageName] ?? "");
   }
 
   getSampleType(): string | undefined {
-    return optionalString(this.sampleTypeField);
+    return optionalString(this.fields[this.indices.sampleType] ?? "");
   }
 
   isSkipped(): boolean | undefined {
-    return optionalBoolean(this.skippedField);
+    return optionalBoolean(this.fields[this.indices.skip] ?? "");
   }
 
   isKeepStructure(): boolean | undefined {
-    return optionalBoolean(this.keepStructureField);
+    return optionalBoolean(this.fields[this.indices.keepPath] ?? "");
   }
 }
 
@@ -127,15 +139,13 @@ export class CsvConfigReader implements ConfigSource {
     if (content.trim() === "") return;
 
     const lines = content.split("\n");
-    // validate and skip header
+    // validate header and build column index map
     const [header, ...dataLines] = lines;
-    if (header.trimEnd() !== CSV_HEADER) {
-      throw new Error(`Unrecognised CSV header: ${header}`);
-    }
+    const indices = parseColumnIndices(header);
 
     for (const line of dataLines) {
       if (line === "") continue;
-      fn(new CsvConfigEntry(parseCsvRow(line)));
+      fn(new CsvConfigEntry(parseCsvRow(line), indices));
     }
   }
 }
