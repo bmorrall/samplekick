@@ -28,3 +28,4 @@ export { createFlatPackPrefixTransformer } from "./flat_pack_prefix_transformer"
 export { createGhosthackNameTransformer } from "./ghosthack_name_transformer";
 export { createSquashNameTransformer } from "./squash_name_transformer";
 export { createStripFormatHintsTransformer } from "./strip_format_hints_transformer";
+export { createKeepParentsTransformer } from "./keep_parents_transformer";
