@@ -167,4 +167,49 @@ describe("auto-persist config", () => {
       await rm(tmpDir, { recursive: true });
     }
   });
+
+  it("ignores auto-config when -r shorthand is passed", async () => {
+    const zipped = zipSync({ "Drums/kick.wav": strToU8("kick-data") });
+
+    const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
+    const zipPath = join(tmpDir, "test-pack.zip");
+    const dataDir = join(tmpDir, "data");
+    const outputDir = join(tmpDir, "output");
+
+    try {
+      await writeFile(zipPath, zipped);
+
+      spawnSync("node", [CLI_PATH, zipPath, "--analyse", "-o", outputDir], {
+        encoding: "utf8",
+        env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+      });
+
+      const files = await readdir(dataDir);
+      await writeFile(
+        join(dataDir, files[0]),
+        [
+          "path,keepPath,name,packageName,sampleType,skip",
+          "Drums/kick.wav,,custom_kick.wav,,,",
+        ].join("\n"),
+      );
+
+      const result = spawnSync(
+        "node",
+        [CLI_PATH, zipPath, "-r", "--preserve-paths", "-o", outputDir],
+        {
+          encoding: "utf8",
+          env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+        },
+      );
+      expect(result.status).toBe(0);
+      await expect(
+        readFile(join(outputDir, "Drums/kick.wav"), "utf8"),
+      ).resolves.toBe("kick-data");
+      await expect(
+        stat(join(outputDir, "Drums/custom_kick.wav")),
+      ).rejects.toThrow();
+    } finally {
+      await rm(tmpDir, { recursive: true });
+    }
+  });
 });
