@@ -1,3 +1,5 @@
+import { SAMPLE_TYPE_LOOPS, SAMPLE_TYPE_ONE_SHOTS } from "../sample_types";
+
 export interface FolderEntry {
   prefix: string | undefined;
   standalone: string;
@@ -74,7 +76,7 @@ export const FOLDER_LOOKUP = new Map<string, FolderEntry>([
   ]),
   ...LOOP_LABELS.map((k): [string, FolderEntry] => [
     k,
-    { prefix: undefined, standalone: "Loops" },
+    { prefix: undefined, standalone: SAMPLE_TYPE_LOOPS },
   ]),
   ["melody", { prefix: "Melody", standalone: "Melodies" }],
   ["melodies", { prefix: "Melody", standalone: "Melodies" }],
@@ -82,7 +84,7 @@ export const FOLDER_LOOKUP = new Map<string, FolderEntry>([
   ["melodics", { prefix: "Melodic", standalone: "Melodic" }],
   ...ONE_SHOT_LABELS.map((k): [string, FolderEntry] => [
     k,
-    { prefix: undefined, standalone: "One Shots" },
+    { prefix: undefined, standalone: SAMPLE_TYPE_ONE_SHOTS },
   ]),
   ...PERCUSSION_KEYS.map((k): [string, FolderEntry] => [
     k,

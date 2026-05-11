@@ -3,7 +3,12 @@ import type { Writable } from "node:stream";
 import type { ChalkInstance } from "chalk";
 import chalk from "chalk";
 import type { ConfigEntry, FileNode } from "samplekick-io";
-import { AUDIO_EXTENSIONS, SAMPLE_TYPE_PACKS } from "samplekick-io";
+import {
+  AUDIO_EXTENSIONS,
+  SAMPLE_TYPE_LOOPS,
+  SAMPLE_TYPE_ONE_SHOTS,
+  SAMPLE_TYPE_PACKS,
+} from "samplekick-io";
 import type { ExportReporter } from "./export_reporter";
 
 const countLeafNodes = (entry: FileNode): number => {
@@ -101,9 +106,13 @@ export class PrettyExportReporter implements ExportReporter {
   }
 
   private formatSampleType(type: string): string {
-    return type === SAMPLE_TYPE_PACKS
-      ? this.chalk.magentaBright(type)
-      : this.chalk.cyan(type);
+    if (type === SAMPLE_TYPE_PACKS) {
+      return this.chalk.magentaBright(type);
+    }
+    if (type === SAMPLE_TYPE_LOOPS || type === SAMPLE_TYPE_ONE_SHOTS) {
+      return this.chalk.yellowBright(type);
+    }
+    return this.chalk.cyan(type);
   }
 
   private formatPackageName(name: string): string {

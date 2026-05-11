@@ -170,6 +170,14 @@ describe("index exports", () => {
     expect(api.SAMPLE_TYPE_PACKS).toBe("Packs");
   });
 
+  test("exports SAMPLE_TYPE_LOOPS", () => {
+    expect(api.SAMPLE_TYPE_LOOPS).toBe("Loops");
+  });
+
+  test("exports SAMPLE_TYPE_ONE_SHOTS", () => {
+    expect(api.SAMPLE_TYPE_ONE_SHOTS).toBe("One Shots");
+  });
+
   test("only exposes runtime exports from the public index", () => {
     expect(Object.keys(api)).toEqual([
       "Registry",
@@ -227,6 +235,8 @@ describe("index exports", () => {
       "formatBitDepth",
       "AUDIO_EXTENSIONS",
       "SAMPLE_TYPE_PACKS",
+      "SAMPLE_TYPE_LOOPS",
+      "SAMPLE_TYPE_ONE_SHOTS",
       "PathResult",
       "SkipResult",
     ]);
