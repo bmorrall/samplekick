@@ -1,5 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { createDirectorySampleTypeTransformer, createDirectorySubcategoryTransformer } from "../../src";
+import {
+  createDirectorySampleTypeTransformer,
+  createDirectorySubcategoryTransformer,
+} from "../../src";
 import { createRegistry, createFileEntry } from "../support";
 
 describe("DirectorySampleTypeTransformer integration", () => {
@@ -37,7 +40,9 @@ describe("DirectorySampleTypeTransformer integration", () => {
   it("applies createDirectorySampleTypeTransformer to tag unrecognised subdirectory names under known-type parents", () => {
     const registry = createRegistry("Pack.zip", [
       createFileEntry({ path: "Drum Loops/Latin/Loop Stems/loop.wav" }),
-      createFileEntry({ path: "Melodies/Speed House/Loop Stems & MIDI/bass.wav" }),
+      createFileEntry({
+        path: "Melodies/Speed House/Loop Stems & MIDI/bass.wav",
+      }),
       createFileEntry({ path: "Melodies/Sunset/Loop Stems & MIDI/reese.wav" }),
     ]);
     registry.applyTransform(createDirectorySampleTypeTransformer());
@@ -83,7 +88,9 @@ describe("DirectorySampleTypeTransformer integration", () => {
 
   it("applies compound-tail resolution and subcategory tagging for brand-prefixed packs ending with a known type", () => {
     const registry = createRegistry("root", [
-      createFileEntry({ path: "Brand - Sci-Fi Horror FX & Foley/Alien Technology/alarm.wav" }),
+      createFileEntry({
+        path: "Brand - Sci-Fi Horror FX & Foley/Alien Technology/alarm.wav",
+      }),
     ]);
     registry.applyTransform(createDirectorySampleTypeTransformer());
     registry.applyTransform(createDirectorySubcategoryTransformer());

@@ -1,5 +1,5 @@
-import type { Transform } from '../types';
-import { PHASE_PLANT_PRESETS, SERUM_PRESETS } from './folder_lookup';
+import type { Transform } from "../types";
+import { PHASE_PLANT_PRESETS, SERUM_PRESETS } from "./folder_lookup";
 
 /**
  * KnownFileTypeTransformer
@@ -17,10 +17,10 @@ const _singleton: Transform = {
       const name = entry.getName().toLowerCase();
       const path = entry.getPath().toLowerCase();
 
-      if (name.endsWith('.fxp') || path.endsWith('.fxp')) {
+      if (name.endsWith(".fxp") || path.endsWith(".fxp")) {
         entry.setSampleType(SERUM_PRESETS);
         entry.setKeepStructure(true);
-      } else if (name.endsWith('.phaseplant') || path.endsWith('.phaseplant')) {
+      } else if (name.endsWith(".phaseplant") || path.endsWith(".phaseplant")) {
         entry.setSampleType(PHASE_PLANT_PRESETS);
         entry.setKeepStructure(true);
       }

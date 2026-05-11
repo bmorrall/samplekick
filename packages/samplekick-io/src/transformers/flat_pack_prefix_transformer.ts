@@ -1,19 +1,21 @@
-import type { Transform } from '../types';
-import { AUDIO_EXTENSIONS } from '../audio_format';
+import type { Transform } from "../types";
+import { AUDIO_EXTENSIONS } from "../audio_format";
 
-const SEPARATOR = ' - ';
+const SEPARATOR = " - ";
 const NOT_FOUND = -1;
 const MIN_AUDIO_FILES = 2;
 
 function longestCommonPrefix(strings: string[]): string {
-  if (strings.length === 0) return '';
+  if (strings.length === 0) return "";
   const [first, ...rest] = strings;
   let prefix = first;
   for (const s of rest) {
     let j = 0;
-    while (j < prefix.length && j < s.length && prefix[j] === s[j]) { j += 1; }
+    while (j < prefix.length && j < s.length && prefix[j] === s[j]) {
+      j += 1;
+    }
     prefix = prefix.slice(0, j);
-    if (prefix.length === 0) return '';
+    if (prefix.length === 0) return "";
   }
   return prefix;
 }
@@ -57,7 +59,10 @@ const _singleton: Transform = {
   transform: (source) => {
     // Map from parent path → { strip, prepend }, populated in the first pass and
     // consumed in the second pass where we have TransformEntry objects with setName.
-    const renameInfoByParentPath = new Map<string, { strip: string; prepend: string }>();
+    const renameInfoByParentPath = new Map<
+      string,
+      { strip: string; prepend: string }
+    >();
 
     source.eachTransformEntry((entry) => {
       if (entry.getOwnSampleType() !== undefined) return;
@@ -69,19 +74,23 @@ const _singleton: Transform = {
       // Must be a flat pack — no sub-directories.
       if (children.some((child) => child.getChildNodes().length > 0)) return;
 
-      const audioChildren = children.filter((child) => isAudioPath(child.getPath()));
+      const audioChildren = children.filter((child) =>
+        isAudioPath(child.getPath()),
+      );
       if (audioChildren.length < MIN_AUDIO_FILES) return;
 
-      const rawPrefix = longestCommonPrefix(audioChildren.map((child) => child.getName()));
+      const rawPrefix = longestCommonPrefix(
+        audioChildren.map((child) => child.getName()),
+      );
       const prefix = trimToLastSeparator(rawPrefix);
       if (prefix === undefined || prefix.length === 0) return;
 
       entry.setPackageName(prefix);
-      entry.setSampleType('Packs');
+      entry.setSampleType("Packs");
 
       const vendor = firstSegment(prefix);
       const strip = `${prefix}${SEPARATOR}`;
-      const prepend = vendor === prefix ? '' : `${vendor}${SEPARATOR}`;
+      const prepend = vendor === prefix ? "" : `${vendor}${SEPARATOR}`;
       renameInfoByParentPath.set(entry.getPath(), { strip, prepend });
     });
 

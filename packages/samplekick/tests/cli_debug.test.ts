@@ -26,7 +26,11 @@ describe("--debug flag", () => {
       await writeFile(zipPath, zipped);
       await writeFile(configPath, config);
 
-      const result = spawnSync("node", [CLI_PATH, zipPath, "--config", configPath, "--debug"], { encoding: "utf8" });
+      const result = spawnSync(
+        "node",
+        [CLI_PATH, zipPath, "--config", configPath, "--debug"],
+        { encoding: "utf8" },
+      );
 
       expect(result.stderr).toBe("");
       const expected = [

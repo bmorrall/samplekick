@@ -12,15 +12,16 @@ interface Transform {
 }
 ```
 
-All transformers are objects implementing the `Transform` interface. Always export the transformer as a `const`:
+All transformers are objects implementing the `Transform` interface. Every transformer is exported as a **zero-argument factory function** that returns a module-level singleton:
 
 ```ts
-export const createMyTransformer: Transform = {
+const _singleton: Transform = {
   transform: (source) => { … },
 };
+export const createMyTransformer = (): Transform => _singleton;
 ```
 
-The `create` prefix is used even for singleton transforms (no factory function needed unless the transformer is parameterised, e.g. `createTruncateNameTransformer(maxLength)`).
+Parameterised transformers (e.g. `createTruncateNameTransformer(maxLength)`) still accept arguments but should likewise store the result in a named variable and return it.
 
 ---
 
@@ -51,7 +52,8 @@ import { createSanitiseNameTransformer } from "./sanitise_name_transformer";
 
 const myFn: StringTransformer = (name: string): string => /* … */;
 
-export const createMyTransformer: Transform = createSanitiseNameTransformer(myFn);
+const _singleton: Transform = createSanitiseNameTransformer(myFn);
+export const createMyTransformer = (): Transform => _singleton;
 ```
 
 `createSanitiseNameTransformer` uses `eachTransformModification` internally, so it automatically skips keepStructure and skipped entries, and applies the function to all three fields when present.
@@ -63,7 +65,7 @@ export const createMyTransformer: Transform = createSanitiseNameTransformer(myFn
 When a transformer needs to **inspect directory structure** (first pass) and **rename children** (second pass), use a `Map` to bridge the two passes:
 
 ```ts
-export const createMyTransformer: Transform = {
+const _singleton: Transform = {
   transform: (source) => {
     const actionByParentPath = new Map<string, string>();
 
@@ -86,6 +88,7 @@ export const createMyTransformer: Transform = {
     });
   },
 };
+export const createMyTransformer = (): Transform => _singleton;
 ```
 
 ---

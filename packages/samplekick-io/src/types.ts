@@ -67,7 +67,10 @@ export interface Transform {
 
 // Device Preset
 
-export type Validate = (destRelPath: string, entry: ConfigEntry) => string | undefined;
+export type Validate = (
+  destRelPath: string,
+  entry: ConfigEntry,
+) => string | undefined;
 
 export interface DevicePreset {
   displayName: string;
@@ -86,7 +89,11 @@ export interface PostProcessor {
 export interface ExportOptions {
   onSkip?: (entry: FileNode) => void;
   onBeforeWrite?: (entry: ConfigEntry, destRelPath: string) => void;
-  onAfterWrite?: (entry: ConfigEntry, destRelPath: string, error?: Error) => void;
+  onAfterWrite?: (
+    entry: ConfigEntry,
+    destRelPath: string,
+    error?: Error,
+  ) => void;
   onReject?: (entry: ConfigEntry, reason: string) => void;
 }
 

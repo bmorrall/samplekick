@@ -24,48 +24,70 @@ describe("Dirtywave M8 device preset", () => {
       await writeFile(zipPath, zipped);
 
       // First run: analyse to save auto-config
-      const firstRun = spawnSync("node", [CLI_PATH, zipPath, "--analyse", "--device", "dirtywavem8"], {
-        encoding: "utf8",
-        env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
-      });
+      const firstRun = spawnSync(
+        "node",
+        [CLI_PATH, zipPath, "--analyse", "--device", "dirtywavem8"],
+        {
+          encoding: "utf8",
+          env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+        },
+      );
       expect(firstRun.stderr).toBe("");
       expect(firstRun.status).toBe(0);
 
       const [autoConfigFile] = await readdir(dataDir);
       const autoConfig = await readFile(join(dataDir, autoConfigFile), "utf8");
-      expect(autoConfig).toBe([
-        "path,name,packageName,sampleType,skip,keepPath",
-        ",test-pack.zip,test-pack,,,",
-        "Drums,,,Drums,,",
-        "Drums/kick.wav,,,,,",
-        "Loops,,,Loops,,",
-        "Loops/bass.wav,,,,,",
-      ].join("\n"));
+      expect(autoConfig).toBe(
+        [
+          "path,name,packageName,sampleType,skip,keepPath",
+          ",test-pack.zip,test-pack,,,",
+          "Drums,,,Drums,,",
+          "Drums/kick.wav,,,,,",
+          "Loops,,,Loops,,",
+          "Loops/bass.wav,,,,,",
+        ].join("\n"),
+      );
 
       // Write config with packageName and sampleTypes
-      await writeFile(join(dataDir, autoConfigFile), [
-        "path,name,packageName,sampleType,skip,keepPath",
-        ",test-pack.zip,my-pack,,,",
-        "Drums,,,Percussion,,",
-        "Drums/kick.wav,,,,,",
-        "Loops,,,Loops,,",
-        "Loops/bass.wav,,,,,",
-      ].join("\n"));
+      await writeFile(
+        join(dataDir, autoConfigFile),
+        [
+          "path,name,packageName,sampleType,skip,keepPath",
+          ",test-pack.zip,my-pack,,,",
+          "Drums,,,Percussion,,",
+          "Drums/kick.wav,,,,,",
+          "Loops,,,Loops,,",
+          "Loops/bass.wav,,,,,",
+        ].join("\n"),
+      );
 
       // Second run: convert and export
       const result = spawnSync(
         "node",
-        [CLI_PATH, zipPath, "--device", "dirtywavem8", "--convert", "-o", outputDir],
-        { encoding: "utf8", env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir } },
+        [
+          CLI_PATH,
+          zipPath,
+          "--device",
+          "dirtywavem8",
+          "--convert",
+          "-o",
+          outputDir,
+        ],
+        {
+          encoding: "utf8",
+          env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+        },
       );
 
       expect(result.stderr).toBe("");
       expect(result.status).toBe(0);
 
-      const kickBuf = await readFile(join(outputDir, "Percussion/my-pack/kick.wav"));
+      const kickBuf = await readFile(
+        join(outputDir, "Percussion/my-pack/kick.wav"),
+      );
       expect(kickBuf.subarray(0, 4).toString("ascii")).toBe("RIFF");
       expect(kickBuf.readUInt32LE(24)).toBe(44100); // sample rate
-      expect(kickBuf.readUInt16LE(34)).toBe(16);    // bits per sample
+      expect(kickBuf.readUInt16LE(34)).toBe(16); // bits per sample
 
       const bassBuf = await readFile(join(outputDir, "Loops/my-pack/bass.wav"));
       expect(bassBuf.subarray(0, 4).toString("ascii")).toBe("RIFF");
@@ -78,7 +100,7 @@ describe("Dirtywave M8 device preset", () => {
 
   it("rejects files whose relative path exceeds the 127 character limit", async () => {
     // 124 'a's + ".wav" = 128 characters — one over the 127 limit
-    const longName = `${'a'.repeat(124)}.wav`;
+    const longName = `${"a".repeat(124)}.wav`;
     const zipped = zipSync({ [longName]: makeMinimalWav() });
 
     const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
@@ -90,14 +112,27 @@ describe("Dirtywave M8 device preset", () => {
 
       const result = spawnSync(
         "node",
-        [CLI_PATH, zipPath, "--device", "dirtywavem8", "--preserve-paths", "-o", outputDir],
-        { encoding: "utf8", env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") } },
+        [
+          CLI_PATH,
+          zipPath,
+          "--device",
+          "dirtywavem8",
+          "--preserve-paths",
+          "-o",
+          outputDir,
+        ],
+        {
+          encoding: "utf8",
+          env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
+        },
       );
 
       expect(result.stderr).toBe("");
       expect(result.status).toBe(0);
       expect(result.stdout).toContain("rejected:");
-      expect(result.stdout).toContain("path too long: 128 characters (max 127)");
+      expect(result.stdout).toContain(
+        "path too long: 128 characters (max 127)",
+      );
     } finally {
       await rm(tmpDir, { recursive: true });
     }

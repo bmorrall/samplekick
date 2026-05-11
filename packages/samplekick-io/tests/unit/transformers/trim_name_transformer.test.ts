@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { createTrimNameTransformer } from "../../../src";
-import { createTransformEntry, singleEntryTransformSource } from "../../support";
+import {
+  createTransformEntry,
+  singleEntryTransformSource,
+} from "../../support";
 
 describe("createTrimNameTransformer", () => {
   it("trims leading whitespace from the name", () => {
@@ -32,14 +35,20 @@ describe("createTrimNameTransformer", () => {
   });
 
   it("trims packageName when the entry has one", () => {
-    const entry = createTransformEntry({ name: "kick.wav", packageName: " My Pack " });
+    const entry = createTransformEntry({
+      name: "kick.wav",
+      packageName: " My Pack ",
+    });
     const transformer = createTrimNameTransformer();
     transformer.transform(singleEntryTransformSource(entry));
     expect(entry.setPackageName).toHaveBeenCalledWith("My Pack");
   });
 
   it("trims sampleType when the entry has one", () => {
-    const entry = createTransformEntry({ name: "kick.wav", sampleType: " Drums " });
+    const entry = createTransformEntry({
+      name: "kick.wav",
+      sampleType: " Drums ",
+    });
     const transformer = createTrimNameTransformer();
     transformer.transform(singleEntryTransformSource(entry));
     expect(entry.setSampleType).toHaveBeenCalledWith("Drums");
@@ -68,7 +77,12 @@ describe("createTrimNameTransformer", () => {
   });
 
   it("does not modify any fields when keepStructure is true", () => {
-    const entry = createTransformEntry({ name: " kick.wav", packageName: " pack ", sampleType: " drums ", keepStructure: true });
+    const entry = createTransformEntry({
+      name: " kick.wav",
+      packageName: " pack ",
+      sampleType: " drums ",
+      keepStructure: true,
+    });
     const transformer = createTrimNameTransformer();
     transformer.transform(singleEntryTransformSource(entry));
     expect(entry.setName).not.toHaveBeenCalled();

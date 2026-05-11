@@ -9,12 +9,7 @@ describe("Registry.toString", () => {
     ]);
 
     expect(registry.toString()).toBe(
-      [
-        "library",
-        "├── jazz [?]",
-        "└── rock [?]",
-        "",
-      ].join("\n"),
+      ["library", "├── jazz [?]", "└── rock [?]", ""].join("\n"),
     );
   });
 
@@ -40,7 +35,9 @@ describe("Registry.toString", () => {
   });
 
   it("renders tags on nodes whose name has changed", () => {
-    const registry = createRegistry("library", [createFileEntry({ path: "jazz/track01" })]);
+    const registry = createRegistry("library", [
+      createFileEntry({ path: "jazz/track01" }),
+    ]);
     registry.setName("jazz", "Jazz Loops");
     registry.setPackageName("jazz", "jazz-pack");
     registry.setSampleType("jazz", "Melodic Loops - Jazz");
@@ -56,7 +53,9 @@ describe("Registry.toString", () => {
   });
 
   it("renders pkg/type tags even when name has not changed", () => {
-    const registry = createRegistry("library", [createFileEntry({ path: "jazz/track01" })]);
+    const registry = createRegistry("library", [
+      createFileEntry({ path: "jazz/track01" }),
+    ]);
     registry.setPackageName("jazz", "jazz-pack");
     registry.setSampleType("jazz", "Melodic Loops - Jazz");
 

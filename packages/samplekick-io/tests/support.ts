@@ -126,10 +126,15 @@ export const createTransformEntryInHierarchy = (
   let prevChildRef: { current: FileNode | undefined } | undefined = undefined;
 
   for (const parentPart of parents) {
-    currentPath = currentPath === "" ? parentPart.name : `${currentPath}/${parentPart.name}`;
+    currentPath =
+      currentPath === ""
+        ? parentPart.name
+        : `${currentPath}/${parentPart.name}`;
     const path = currentPath;
     const currentParent = lastParent;
-    const nodeChildRef: { current: FileNode | undefined } = { current: undefined };
+    const nodeChildRef: { current: FileNode | undefined } = {
+      current: undefined,
+    };
     const parentNode: FileNode = {
       getPath: () => path,
       getName: () => parentPart.name,
@@ -139,7 +144,8 @@ export const createTransformEntryInHierarchy = (
       isKeepStructure: () => parentPart.keepStructure,
       isFile: () => false,
       getParentNode: () => currentParent,
-      getChildNodes: () => (nodeChildRef.current === undefined ? [] : [nodeChildRef.current]),
+      getChildNodes: () =>
+        nodeChildRef.current === undefined ? [] : [nodeChildRef.current],
     };
     if (prevChildRef !== undefined) {
       prevChildRef.current = parentNode;
@@ -148,7 +154,9 @@ export const createTransformEntryInHierarchy = (
     lastParent = parentNode;
   }
 
-  const entryPath = part.path ?? (currentPath === "" ? part.name : `${currentPath}/${part.name}`);
+  const entryPath =
+    part.path ??
+    (currentPath === "" ? part.name : `${currentPath}/${part.name}`);
   const entryParent = lastParent;
   const childNodesRef: { current: FileNode[] } = { current: [] };
 
@@ -211,7 +219,9 @@ export const createTransformEntryInHierarchy = (
 
 // Config Source
 
-export const singleEntryTransformSource = (entry: TransformEntry): TransformSource => ({
+export const singleEntryTransformSource = (
+  entry: TransformEntry,
+): TransformSource => ({
   eachTransformEntry: (fn: (e: TransformEntry) => void) => {
     fn(entry);
   },
@@ -220,9 +230,7 @@ export const singleEntryTransformSource = (entry: TransformEntry): TransformSour
   },
 });
 
-export const createConfigSource = (
-  nodes: ConfigEntry[],
-): ConfigSource => ({
+export const createConfigSource = (nodes: ConfigEntry[]): ConfigSource => ({
   eachConfigEntry: (fn: (entry: ConfigEntry) => void) => {
     nodes.forEach(fn);
   },
@@ -249,13 +257,18 @@ interface NodePart {
 }
 
 export function createFileNodeHierarchy(rootName: string, parts: []): FileNode;
-export function createFileNodeHierarchy(rootName: string, parts: [NodePart, ...NodePart[]]): LeafNode;
+export function createFileNodeHierarchy(
+  rootName: string,
+  parts: [NodePart, ...NodePart[]],
+): LeafNode;
 export function createFileNodeHierarchy(
   rootName: string,
   parts: NodePart[],
 ): FileNode {
   // Each node uses a mutable ref so its child can be assigned after the child is created
-  const rootChildRef: { current: FileNode | undefined } = { current: undefined };
+  const rootChildRef: { current: FileNode | undefined } = {
+    current: undefined,
+  };
   const root: FileNode = {
     getPath: () => "",
     getName: () => rootName,
@@ -265,17 +278,21 @@ export function createFileNodeHierarchy(
     isKeepStructure: () => undefined,
     isFile: () => false,
     getParentNode: () => undefined,
-    getChildNodes: () => (rootChildRef.current === undefined ? [] : [rootChildRef.current]),
+    getChildNodes: () =>
+      rootChildRef.current === undefined ? [] : [rootChildRef.current],
   };
   let parent: FileNode = root;
   let leaf: FileNode = root;
   let prevChildRef: { current: FileNode | undefined } = rootChildRef;
   let currentPath = "";
   for (const part of parts) {
-    currentPath = currentPath === "" ? part.name : `${currentPath}/${part.name}`;
+    currentPath =
+      currentPath === "" ? part.name : `${currentPath}/${part.name}`;
     const path = currentPath;
     const currentParent = parent;
-    const nodeChildRef: { current: FileNode | undefined } = { current: undefined };
+    const nodeChildRef: { current: FileNode | undefined } = {
+      current: undefined,
+    };
     const node: LeafNode = {
       getPath: () => path,
       getName: () => part.name,
@@ -285,7 +302,8 @@ export function createFileNodeHierarchy(
       isKeepStructure: () => part.keepStructure,
       isFile: () => true,
       getParentNode: () => currentParent,
-      getChildNodes: () => (nodeChildRef.current === undefined ? [] : [nodeChildRef.current]),
+      getChildNodes: () =>
+        nodeChildRef.current === undefined ? [] : [nodeChildRef.current],
     };
     prevChildRef.current = node;
     prevChildRef = nodeChildRef;
@@ -300,7 +318,11 @@ export function createFileNodeHierarchy(
 const fingerprintFromName = (name: string): string =>
   createHash("sha256").update(name).digest("hex");
 
-export const createFileSource = (name: string, entries: FileEntry[], fingerprint: string = fingerprintFromName(name)): FileSource => ({
+export const createFileSource = (
+  name: string,
+  entries: FileEntry[],
+  fingerprint: string = fingerprintFromName(name),
+): FileSource => ({
   getName: () => name,
   getFingerprint: () => fingerprint,
   eachFileEntry: (fn: (entry: FileEntry) => void) => {
@@ -316,19 +338,27 @@ export const collectFileEntries = (fileSource: FileSource): FileEntry[] => {
   });
 
   return entries;
-}
+};
 
 // Zip Data Source
 
-export const createZipDataSource = async (name: string, files: Record<string, string>): Promise<ZipDataSource> => {
+export const createZipDataSource = async (
+  name: string,
+  files: Record<string, string>,
+): Promise<ZipDataSource> => {
   const entries = Object.fromEntries(
     Object.entries(files).map(([path, content]) => [path, strToU8(content)]),
   );
-  return await ZipDataSource.fromBlob(new Blob([Buffer.from(zipSync(entries))]), name);
+  return await ZipDataSource.fromBlob(
+    new Blob([Buffer.from(zipSync(entries))]),
+    name,
+  );
 };
 
-export const createZipRegistry = async (name: string, files: Record<string, string>): Promise<Registry> =>
-  new Registry(await createZipDataSource(name, files));
+export const createZipRegistry = async (
+  name: string,
+  files: Record<string, string>,
+): Promise<Registry> => new Registry(await createZipDataSource(name, files));
 
 // Registry
 
@@ -338,13 +368,19 @@ export const createRegistry = (
   fingerprint?: string,
 ): Registry => new Registry(createFileSource(name, files, fingerprint));
 
-export const applyDeviceTransforms = (registry: Registry, preset: DevicePreset): void => {
+export const applyDeviceTransforms = (
+  registry: Registry,
+  preset: DevicePreset,
+): void => {
   for (const transform of preset.transforms) {
     registry.applyTransform(transform);
   }
 };
 
-export const applyDeviceValidators = (registry: Registry, preset: DevicePreset): void => {
+export const applyDeviceValidators = (
+  registry: Registry,
+  preset: DevicePreset,
+): void => {
   for (const validator of preset.validators) {
     registry.addValidator(validator);
   }

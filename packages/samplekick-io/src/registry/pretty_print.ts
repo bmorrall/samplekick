@@ -48,7 +48,11 @@ function printNode(
 }
 
 function isNodeRenamed(node: EntryNode): boolean {
-  return !node.isRootNode() && node.getOwnName() !== undefined && node.getOwnName() !== node.getEntryName();
+  return (
+    !node.isRootNode() &&
+    node.getOwnName() !== undefined &&
+    node.getOwnName() !== node.getEntryName()
+  );
 }
 
 function isMissingRequired(node: EntryNode): boolean {
@@ -58,9 +62,17 @@ function isMissingRequired(node: EntryNode): boolean {
   );
 }
 
-function buildTags(node: EntryNode, showInherited: boolean, verbose: boolean): string[] {
-  const packageName = showInherited ? node.getPackageName() : node.getOwnPackageName();
-  const sampleType = showInherited ? node.getSampleType() : node.getOwnSampleType();
+function buildTags(
+  node: EntryNode,
+  showInherited: boolean,
+  verbose: boolean,
+): string[] {
+  const packageName = showInherited
+    ? node.getPackageName()
+    : node.getOwnPackageName();
+  const sampleType = showInherited
+    ? node.getSampleType()
+    : node.getOwnSampleType();
   const isRenamed = isNodeRenamed(node);
   const tags: string[] = [];
   if (isRenamed) tags.push("renamed");
@@ -71,7 +83,11 @@ function buildTags(node: EntryNode, showInherited: boolean, verbose: boolean): s
   return tags;
 }
 
-function formatTags(node: EntryNode, showInherited: boolean, verbose: boolean): string {
+function formatTags(
+  node: EntryNode,
+  showInherited: boolean,
+  verbose: boolean,
+): string {
   const tags = buildTags(node, showInherited, verbose);
   const tagStr = tags.length > 0 ? ` [${tags.join(", ")}]` : "";
   return isMissingRequired(node) ? ` [?]${tagStr}` : tagStr;

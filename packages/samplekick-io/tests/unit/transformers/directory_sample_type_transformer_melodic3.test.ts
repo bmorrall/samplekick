@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { createDirectorySampleTypeTransformer } from "../../../src";
-import { createTransformEntryInHierarchy, singleEntryTransformSource } from "../../support";
+import {
+  createTransformEntryInHierarchy,
+  singleEntryTransformSource,
+} from "../../support";
 
 describe("createDirectorySampleTypeTransformer", () => {
   describe('when the directory is named "Harp"', () => {

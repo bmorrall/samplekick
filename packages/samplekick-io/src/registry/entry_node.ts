@@ -1,9 +1,15 @@
 import { prettyPrint } from "./pretty_print";
 import { getPathName } from "../path_utils";
-import type { ConfigEntry, FileEntry, FileNode, TransformEntry } from "../types";
+import type {
+  ConfigEntry,
+  FileEntry,
+  FileNode,
+  TransformEntry,
+} from "../types";
 
-export class EntryNode implements ConfigEntry, FileEntry, FileNode, TransformEntry {
-
+export class EntryNode
+  implements ConfigEntry, FileEntry, FileNode, TransformEntry
+{
   static buildRootNode(name: string): EntryNode {
     const entry = this.blankEntry("");
     entry.setName(name);
@@ -11,11 +17,7 @@ export class EntryNode implements ConfigEntry, FileEntry, FileNode, TransformEnt
   }
 
   static blankEntry(path: string): EntryNode {
-    return new EntryNode(
-      path,
-      undefined,
-      undefined,
-    );
+    return new EntryNode(path, undefined, undefined);
   }
 
   static fromEntry(entry: FileEntry, parentNode?: EntryNode): EntryNode {
@@ -23,7 +25,9 @@ export class EntryNode implements ConfigEntry, FileEntry, FileNode, TransformEnt
   }
 
   private readonly path: string;
-  private readonly entryRef: { current: FileEntry | undefined } = { current: undefined };
+  private readonly entryRef: { current: FileEntry | undefined } = {
+    current: undefined,
+  };
   private readonly parentNode?: EntryNode;
   private readonly nodeLookup = new Map<string, EntryNode>();
 
@@ -180,7 +184,7 @@ export class EntryNode implements ConfigEntry, FileEntry, FileNode, TransformEnt
       return existing;
     }
 
-    const node = new EntryNode(path, undefined, this)
+    const node = new EntryNode(path, undefined, this);
     this.nodeLookup.set(name, node);
     return node;
   }
@@ -212,7 +216,9 @@ export class EntryNode implements ConfigEntry, FileEntry, FileNode, TransformEnt
 
   eachDescendant(fn: (node: EntryNode) => void): void {
     fn(this);
-    const sorted = [...this.nodeLookup.values()].sort((a, b) => a.getName().localeCompare(b.getName()));
+    const sorted = [...this.nodeLookup.values()].sort((a, b) =>
+      a.getName().localeCompare(b.getName()),
+    );
     for (const child of sorted) {
       child.eachDescendant(fn);
     }
@@ -220,7 +226,11 @@ export class EntryNode implements ConfigEntry, FileEntry, FileNode, TransformEnt
 
   eachMutatedEntry(fn: (node: EntryNode) => void): void {
     const isLeafFile = this.isFile() && this.getChildNodes().length === 0;
-    if (this.parentNode === undefined || this.mutatesNode(this.parentNode) || isLeafFile) {
+    if (
+      this.parentNode === undefined ||
+      this.mutatesNode(this.parentNode) ||
+      isLeafFile
+    ) {
       fn(this);
     }
     for (const child of this.getChildNodes()) {

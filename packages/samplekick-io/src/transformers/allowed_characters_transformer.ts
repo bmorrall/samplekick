@@ -8,7 +8,10 @@ const uppercaseZCodePoint = 90;
 const lowercaseACodePoint = 97;
 const lowercaseZCodePoint = 122;
 
-const isAllowedCharacter = (character: string, punctuation: Set<string>): boolean => {
+const isAllowedCharacter = (
+  character: string,
+  punctuation: Set<string>,
+): boolean => {
   const codePoint = character.codePointAt(0);
   /* v8 ignore next 3 */
   if (codePoint === undefined) {
@@ -40,13 +43,18 @@ const createAllowedCharactersStringTransformer =
     for (const character of name) {
       const isFinalDot = index === finalDotIndex;
       sanitizedName +=
-        isFinalDot || isAllowedCharacter(character, punctuation) ? character : "_";
+        isFinalDot || isAllowedCharacter(character, punctuation)
+          ? character
+          : "_";
       index += 1;
     }
 
     return sanitizedName;
   };
 
-export const createAllowedCharactersTransform =
-  (punctuation: Set<string>): Transform =>
-    createSanitiseNameTransformer(createAllowedCharactersStringTransformer(punctuation));
+export const createAllowedCharactersTransform = (
+  punctuation: Set<string>,
+): Transform =>
+  createSanitiseNameTransformer(
+    createAllowedCharactersStringTransformer(punctuation),
+  );

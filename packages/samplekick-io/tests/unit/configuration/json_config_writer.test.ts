@@ -1,7 +1,11 @@
 import { PassThrough } from "node:stream";
 import { describe, expect, it } from "vitest";
 import { JsonConfigWriter } from "../../../src";
-import { createConfigSource, createConfigEntry, createRegistry } from "../../support";
+import {
+  createConfigSource,
+  createConfigEntry,
+  createRegistry,
+} from "../../support";
 import type { ConfigSource } from "../../../src";
 
 const captureOutput = (
@@ -116,7 +120,7 @@ describe("JsonConfigWriter", () => {
       {
         path: "",
         name: "Renamed Library",
-        packageName: "library-pack"
+        packageName: "library-pack",
       },
     ]);
   });

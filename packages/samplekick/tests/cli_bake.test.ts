@@ -23,7 +23,10 @@ describe("--bake flag", () => {
       const result = spawnSync(
         "node",
         [CLI_PATH, zipPath, "--bake", "--device", "sp404mk2", "--squash"],
-        { encoding: "utf8", env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir } },
+        {
+          encoding: "utf8",
+          env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+        },
       );
 
       expect(result.stderr).toBe("");
@@ -55,7 +58,10 @@ describe("--bake flag", () => {
       const result = spawnSync(
         "node",
         [CLI_PATH, zipPath, "--bake", "--device", "sp404mk2"],
-        { encoding: "utf8", env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir } },
+        {
+          encoding: "utf8",
+          env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+        },
       );
 
       expect(result.stderr).toBe("");
@@ -85,15 +91,21 @@ describe("--bake flag", () => {
     try {
       await writeFile(zipPath, zipped);
       // Input config has no name set for the directory entry
-      await writeFile(configPath, [
-        "path,name,packageName,sampleType,skip,keepPath",
-        "Drum-Hits,,,Drums,,",
-      ].join("\n"));
+      await writeFile(
+        configPath,
+        [
+          "path,name,packageName,sampleType,skip,keepPath",
+          "Drum-Hits,,,Drums,,",
+        ].join("\n"),
+      );
 
       const result = spawnSync(
         "node",
         [CLI_PATH, zipPath, "--bake", "--squash", "--config", configPath],
-        { encoding: "utf8", env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir } },
+        {
+          encoding: "utf8",
+          env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+        },
       );
 
       expect(result.stderr).toBe("");
@@ -126,7 +138,10 @@ describe("--bake flag", () => {
       const result = spawnSync(
         "node",
         [CLI_PATH, zipPath, "--bake", "--analyse"],
-        { encoding: "utf8", env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir } },
+        {
+          encoding: "utf8",
+          env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+        },
       );
 
       expect(result.stderr).toBe("");
@@ -135,12 +150,14 @@ describe("--bake flag", () => {
       const [configFile] = await readdir(dataDir);
       const csv = await readFile(join(dataDir, configFile), "utf8");
 
-      expect(csv).toBe([
-        "path,name,packageName,sampleType,skip,keepPath",
-        ",test-pack.zip,test-pack,,false,false", // root: name is zip filename; packageName derived from it
-        "Drums,Drums,,Drums,false,false",         // directory: sampleType set by analyse
-        "Drums/kick.wav,kick.wav,,,false,false",  // file: name locked in explicitly
-      ].join("\n"));
+      expect(csv).toBe(
+        [
+          "path,name,packageName,sampleType,skip,keepPath",
+          ",test-pack.zip,test-pack,,false,false", // root: name is zip filename; packageName derived from it
+          "Drums,Drums,,Drums,false,false", // directory: sampleType set by analyse
+          "Drums/kick.wav,kick.wav,,,false,false", // file: name locked in explicitly
+        ].join("\n"),
+      );
     } finally {
       await rm(tmpDir, { recursive: true });
     }

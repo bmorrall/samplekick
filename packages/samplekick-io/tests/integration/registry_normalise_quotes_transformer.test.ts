@@ -15,7 +15,7 @@ describe("NormaliseQuotesTransformer integration", () => {
         "root",
         "\u251C\u2500\u2500 'Kicks' [renamed]",
         "\u2502   \u2514\u2500\u2500 kick.wav [?]",
-        "\u251C\u2500\u2500 \"Synths\" [renamed]",
+        '\u251C\u2500\u2500 "Synths" [renamed]',
         "\u2502   \u2514\u2500\u2500 pad.wav [?]",
         "\u2514\u2500\u2500 Drums",
         "    \u2514\u2500\u2500 snare.wav [?]",

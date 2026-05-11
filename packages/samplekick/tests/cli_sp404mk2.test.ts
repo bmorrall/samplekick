@@ -24,51 +24,75 @@ describe("SP-404MKII device preset", () => {
       await writeFile(zipPath, zipped);
 
       // First run: no config yet — all entries skipped, auto-config is saved
-      const firstRun = spawnSync("node", [CLI_PATH, zipPath, "--analyse", "--device", "sp404mk2"], {
-        encoding: "utf8",
-        env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
-      });
+      const firstRun = spawnSync(
+        "node",
+        [CLI_PATH, zipPath, "--analyse", "--device", "sp404mk2"],
+        {
+          encoding: "utf8",
+          env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+        },
+      );
       expect(firstRun.stderr).toBe("");
       expect(firstRun.status).toBe(0);
 
       // Auto-config is saved with folder rows and leaf paths
       const [autoConfigFile] = await readdir(dataDir);
       const autoConfig = await readFile(join(dataDir, autoConfigFile), "utf8");
-      expect(autoConfig).toBe([
-        "path,name,packageName,sampleType,skip,keepPath",
-        ",test-pack.zip,test-pack,,,",
-        "Drums,,,Drums,,",
-        "Drums/kick.wav,,,,,",
-        "Loops,,,Loops,,",
-        "Loops/bass.wav,,,,,",
-      ].join("\n"));
+      expect(autoConfig).toBe(
+        [
+          "path,name,packageName,sampleType,skip,keepPath",
+          ",test-pack.zip,test-pack,,,",
+          "Drums,,,Drums,,",
+          "Drums/kick.wav,,,,,",
+          "Loops,,,Loops,,",
+          "Loops/bass.wav,,,,,",
+        ].join("\n"),
+      );
 
       // Set packageName on the root node, sampleType on each folder node, and override sampleType on the bass leaf
-      await writeFile(join(dataDir, autoConfigFile), [
-        "path,name,packageName,sampleType,skip,keepPath",
-        ",test-pack.zip,my-pack,,,",
-        "Drums,,,Percussion,,",
-        "Drums/kick.wav,,,,,",
-        "Loops,,,Loops,,",
-        "Loops/bass.wav,,,Loops - Bass,,",
-      ].join("\n"));
+      await writeFile(
+        join(dataDir, autoConfigFile),
+        [
+          "path,name,packageName,sampleType,skip,keepPath",
+          ",test-pack.zip,my-pack,,,",
+          "Drums,,,Percussion,,",
+          "Drums/kick.wav,,,,,",
+          "Loops,,,Loops,,",
+          "Loops/bass.wav,,,Loops - Bass,,",
+        ].join("\n"),
+      );
 
       // Second run: auto-config now has sampleType/packageName — exports to organised paths
       const result = spawnSync(
         "node",
-        [CLI_PATH, zipPath, "--device", "sp404mk2", "--convert", "-o", outputDir],
-        { encoding: "utf8", env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir } },
+        [
+          CLI_PATH,
+          zipPath,
+          "--device",
+          "sp404mk2",
+          "--convert",
+          "-o",
+          outputDir,
+        ],
+        {
+          encoding: "utf8",
+          env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+        },
       );
 
       expect(result.stderr).toBe("");
       expect(result.status).toBe(0);
 
-      const kickBuf = await readFile(join(outputDir, "Percussion/my-pack/kick.wav"));
+      const kickBuf = await readFile(
+        join(outputDir, "Percussion/my-pack/kick.wav"),
+      );
       expect(kickBuf.subarray(0, 4).toString("ascii")).toBe("RIFF");
       expect(kickBuf.readUInt32LE(24)).toBe(48000); // sample rate
-      expect(kickBuf.readUInt16LE(34)).toBe(16);    // bits per sample
+      expect(kickBuf.readUInt16LE(34)).toBe(16); // bits per sample
 
-      const bassBuf = await readFile(join(outputDir, "Loops - Bass/my-pack/bass.wav"));
+      const bassBuf = await readFile(
+        join(outputDir, "Loops - Bass/my-pack/bass.wav"),
+      );
       expect(bassBuf.subarray(0, 4).toString("ascii")).toBe("RIFF");
       expect(bassBuf.readUInt32LE(24)).toBe(48000);
       expect(bassBuf.readUInt16LE(34)).toBe(16);
@@ -93,7 +117,10 @@ describe("SP-404MKII device preset", () => {
       const result = spawnSync(
         "node",
         [CLI_PATH, zipPath, "--analyse", "-o", outputDir],
-        { encoding: "utf8", env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") } },
+        {
+          encoding: "utf8",
+          env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
+        },
       );
 
       expect(result.stderr).toBe("");
@@ -101,14 +128,31 @@ describe("SP-404MKII device preset", () => {
 
       // AbletonProjectTransformer sets sampleType="Ableton Projects" and keepStructure=true,
       // so OrganisedPathStrategy routes files to Ableton Projects/<packageName>/<original structure>
-      expect(await readFile(join(outputDir, "Ableton Projects/test-pack/My Project/My Project.als"), "utf8")).toBe("als-data");
-      expect(await readFile(join(outputDir, "Ableton Projects/test-pack/My Project/samples/kick.wav"), "utf8")).toBe("kick-data");
+      expect(
+        await readFile(
+          join(
+            outputDir,
+            "Ableton Projects/test-pack/My Project/My Project.als",
+          ),
+          "utf8",
+        ),
+      ).toBe("als-data");
+      expect(
+        await readFile(
+          join(
+            outputDir,
+            "Ableton Projects/test-pack/My Project/samples/kick.wav",
+          ),
+          "utf8",
+        ),
+      ).toBe("kick-data");
     } finally {
       await rm(tmpDir, { recursive: true });
     }
   });
 
-  it("sanitizes non-ASCII filenames at export time; auto-config preserves original paths", async () => {    const zipped = zipSync({
+  it("sanitizes non-ASCII filenames at export time; auto-config preserves original paths", async () => {
+    const zipped = zipSync({
       "Dr\u00fcms/sn\u00e2re.wav": strToU8("snare-data"),
     });
 
@@ -121,39 +165,56 @@ describe("SP-404MKII device preset", () => {
       await writeFile(zipPath, zipped);
 
       // First run: entry is skipped, auto-config saved with sanitized paths (Drums/snare.wav)
-      const firstRun = spawnSync("node", [CLI_PATH, zipPath, "-a", "-d", "sp404mk2"], {
-        encoding: "utf8",
-        env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
-      });
+      const firstRun = spawnSync(
+        "node",
+        [CLI_PATH, zipPath, "-a", "-d", "sp404mk2"],
+        {
+          encoding: "utf8",
+          env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+        },
+      );
       expect(firstRun.stderr).toBe("");
       expect(firstRun.status).toBe(0);
 
       const [autoConfigFile] = await readdir(dataDir);
       const autoConfig = await readFile(join(dataDir, autoConfigFile), "utf8");
-      expect(autoConfig).toBe([
-        "path,name,packageName,sampleType,skip,keepPath",
-        ",t\u00ebst-pack.zip,t\u00ebst-pack,,,",
-        "Dr\u00fcms,,,,,",
-        "Dr\u00fcms/sn\u00e2re.wav,,,,,",
-      ].join("\n"));
+      expect(autoConfig).toBe(
+        [
+          "path,name,packageName,sampleType,skip,keepPath",
+          ",t\u00ebst-pack.zip,t\u00ebst-pack,,,",
+          "Dr\u00fcms,,,,,",
+          "Dr\u00fcms/sn\u00e2re.wav,,,,,",
+        ].join("\n"),
+      );
 
       // Override packageName and add sampleType for the second run
-      await writeFile(join(dataDir, autoConfigFile), [
-        "path,name,packageName,sampleType,skip,keepPath",
-        ",t\u00ebst-pack.zip,test-pack,,,",
-        "Dr\u00fcms,,,Percussion,,",
-      ].join("\n"));
+      await writeFile(
+        join(dataDir, autoConfigFile),
+        [
+          "path,name,packageName,sampleType,skip,keepPath",
+          ",t\u00ebst-pack.zip,test-pack,,,",
+          "Dr\u00fcms,,,Percussion,,",
+        ].join("\n"),
+      );
 
       // Second run: exports to organised paths; packageName comes from the auto-config
       const result = spawnSync(
         "node",
         [CLI_PATH, zipPath, "-d", "sp404mk2", "-o", outputDir],
-        { encoding: "utf8", env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir } },
+        {
+          encoding: "utf8",
+          env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+        },
       );
 
       expect(result.stderr).toBe("");
       expect(result.status).toBe(0);
-      expect(await readFile(join(outputDir, "Percussion/test-pack/snare.wav"), "utf8")).toBe("snare-data");
+      expect(
+        await readFile(
+          join(outputDir, "Percussion/test-pack/snare.wav"),
+          "utf8",
+        ),
+      ).toBe("snare-data");
     } finally {
       await rm(tmpDir, { recursive: true });
     }
@@ -172,30 +233,42 @@ describe("SP-404MKII device preset", () => {
       await writeFile(zipPath, zipped);
 
       // --analyse: auto-config preserves original (non-sanitized) paths and names
-      const analyseRun = spawnSync("node", [CLI_PATH, zipPath, "-a", "-d", "sp404mk2"], {
-        encoding: "utf8",
-        env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
-      });
+      const analyseRun = spawnSync(
+        "node",
+        [CLI_PATH, zipPath, "-a", "-d", "sp404mk2"],
+        {
+          encoding: "utf8",
+          env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+        },
+      );
       expect(analyseRun.stderr).toBe("");
       expect(analyseRun.status).toBe(0);
 
       const [autoConfigFile] = await readdir(dataDir);
       const autoConfig = await readFile(join(dataDir, autoConfigFile), "utf8");
-      expect(autoConfig).toBe([
-        "path,name,packageName,sampleType,skip,keepPath",
-        ",t\u00ebst-pack.zip,t\u00ebst-pack,,,",
-        "Dr\u00fcms,,,,,",
-        "Dr\u00fcms/sn\u00e2re.wav,,,,,",
-      ].join("\n"));
+      expect(autoConfig).toBe(
+        [
+          "path,name,packageName,sampleType,skip,keepPath",
+          ",t\u00ebst-pack.zip,t\u00ebst-pack,,,",
+          "Dr\u00fcms,,,,,",
+          "Dr\u00fcms/sn\u00e2re.wav,,,,,",
+        ].join("\n"),
+      );
 
       // --dump-config: output reflects device-sanitized names
-      const dumpRun = spawnSync("node", [CLI_PATH, zipPath, "-d", "sp404mk2", "--dump-config"], {
-        encoding: "utf8",
-        env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
-      });
+      const dumpRun = spawnSync(
+        "node",
+        [CLI_PATH, zipPath, "-d", "sp404mk2", "--dump-config"],
+        {
+          encoding: "utf8",
+          env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+        },
+      );
       expect(dumpRun.stderr).toBe("");
       expect(dumpRun.status).toBe(0);
-      expect(dumpRun.stdout).toContain("Dr\u00fcms/sn\u00e2re.wav,snare.wav,,,,");
+      expect(dumpRun.stdout).toContain(
+        "Dr\u00fcms/sn\u00e2re.wav,snare.wav,,,,",
+      );
     } finally {
       await rm(tmpDir, { recursive: true });
     }
@@ -205,7 +278,8 @@ describe("SP-404MKII device preset", () => {
     // Each folder is 85 chars; SP-404 truncates names to 80 chars each.
     // Path after truncation: a(80)/b(80)/c(80)/d(76).wav = 323 chars — over the 255 limit.
     const zipped = zipSync({
-      [`${"a".repeat(85)}/${"b".repeat(85)}/${"c".repeat(85)}/${"d".repeat(76)}.wav`]: makeMinimalWav(),
+      [`${"a".repeat(85)}/${"b".repeat(85)}/${"c".repeat(85)}/${"d".repeat(76)}.wav`]:
+        makeMinimalWav(),
     });
 
     const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
@@ -217,14 +291,27 @@ describe("SP-404MKII device preset", () => {
 
       const result = spawnSync(
         "node",
-        [CLI_PATH, zipPath, "--device", "sp404mk2", "--preserve-paths", "-o", outputDir],
-        { encoding: "utf8", env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") } },
+        [
+          CLI_PATH,
+          zipPath,
+          "--device",
+          "sp404mk2",
+          "--preserve-paths",
+          "-o",
+          outputDir,
+        ],
+        {
+          encoding: "utf8",
+          env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
+        },
       );
 
       expect(result.stderr).toBe("");
       expect(result.status).toBe(0);
       expect(result.stdout).toContain("rejected:");
-      expect(result.stdout).toContain("path too long: 323 characters (max 255)");
+      expect(result.stdout).toContain(
+        "path too long: 323 characters (max 255)",
+      );
     } finally {
       await rm(tmpDir, { recursive: true });
     }

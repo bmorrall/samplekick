@@ -13,7 +13,9 @@ describe("samplekick CLI error handling", () => {
     const zipPath = join(tmpDir, "nonexistent.zip");
 
     try {
-      const result = spawnSync("node", [CLI_PATH, zipPath], { encoding: "utf8" });
+      const result = spawnSync("node", [CLI_PATH, zipPath], {
+        encoding: "utf8",
+      });
 
       expect(result.stderr).toContain("Error: file not found");
       expect(result.stderr).toContain("nonexistent.zip");
@@ -31,7 +33,9 @@ describe("samplekick CLI error handling", () => {
     try {
       await writeFile(zipPath, "not a zip file");
 
-      const result = spawnSync("node", [CLI_PATH, zipPath], { encoding: "utf8" });
+      const result = spawnSync("node", [CLI_PATH, zipPath], {
+        encoding: "utf8",
+      });
 
       expect(result.stderr).toContain("Error: not a valid zip file");
       expect(result.stderr).toContain("invalid.zip");
@@ -74,10 +78,14 @@ describe("samplekick CLI error handling", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync("node", [CLI_PATH, zipPath, "--write-config", writePath], {
-        encoding: "utf8",
-        env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
-      });
+      const result = spawnSync(
+        "node",
+        [CLI_PATH, zipPath, "--write-config", writePath],
+        {
+          encoding: "utf8",
+          env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
+        },
+      );
 
       expect(result.stderr).toContain("Error: could not write to");
       expect(result.stderr).toContain("config.json");
@@ -99,10 +107,14 @@ describe("samplekick CLI error handling", () => {
       await writeFile(zipPath, zipped);
       await writeFile(outputPath, "not a directory");
 
-      const result = spawnSync("node", [CLI_PATH, zipPath, "--preserve-paths", "-o", outputPath], {
-        encoding: "utf8",
-        env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
-      });
+      const result = spawnSync(
+        "node",
+        [CLI_PATH, zipPath, "--preserve-paths", "-o", outputPath],
+        {
+          encoding: "utf8",
+          env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
+        },
+      );
 
       expect(result.stderr).toContain("Error: could not export to");
       expect(result.stderr).toContain("output");
@@ -129,7 +141,9 @@ describe("samplekick CLI error handling", () => {
         { encoding: "utf8" },
       );
 
-      expect(result.stderr).toContain("Error: --config cannot be used with multiple input files");
+      expect(result.stderr).toContain(
+        "Error: --config cannot be used with multiple input files",
+      );
       expect(result.status).toBe(1);
     } finally {
       await rm(tmpDir, { recursive: true });
@@ -148,11 +162,19 @@ describe("samplekick CLI error handling", () => {
 
       const result = spawnSync(
         "node",
-        [CLI_PATH, zipPath1, zipPath2, "--write-config", join(tmpDir, "config.csv")],
+        [
+          CLI_PATH,
+          zipPath1,
+          zipPath2,
+          "--write-config",
+          join(tmpDir, "config.csv"),
+        ],
         { encoding: "utf8" },
       );
 
-      expect(result.stderr).toContain("Error: --write-config cannot be used with multiple input files");
+      expect(result.stderr).toContain(
+        "Error: --write-config cannot be used with multiple input files",
+      );
       expect(result.status).toBe(1);
     } finally {
       await rm(tmpDir, { recursive: true });
@@ -175,7 +197,9 @@ describe("samplekick CLI error handling", () => {
         { encoding: "utf8" },
       );
 
-      expect(result.stderr).toContain("Error: --dump-config cannot be used with multiple input files");
+      expect(result.stderr).toContain(
+        "Error: --dump-config cannot be used with multiple input files",
+      );
       expect(result.status).toBe(1);
     } finally {
       await rm(tmpDir, { recursive: true });
@@ -198,7 +222,9 @@ describe("samplekick CLI error handling", () => {
         { encoding: "utf8" },
       );
 
-      expect(result.stderr).toContain("Error: --edit cannot be used with multiple input files");
+      expect(result.stderr).toContain(
+        "Error: --edit cannot be used with multiple input files",
+      );
       expect(result.status).toBe(1);
     } finally {
       await rm(tmpDir, { recursive: true });
@@ -221,7 +247,9 @@ describe("samplekick CLI error handling", () => {
         { encoding: "utf8" },
       );
 
-      expect(result.stderr).toContain("Error: --debug cannot be used with multiple input files");
+      expect(result.stderr).toContain(
+        "Error: --debug cannot be used with multiple input files",
+      );
       expect(result.status).toBe(1);
     } finally {
       await rm(tmpDir, { recursive: true });
@@ -229,7 +257,9 @@ describe("samplekick CLI error handling", () => {
   });
 
   it("exits with code 1 and prints a clean error when an unknown flag is passed", () => {
-    const result = spawnSync("node", [CLI_PATH, "--unknown-flag"], { encoding: "utf8" });
+    const result = spawnSync("node", [CLI_PATH, "--unknown-flag"], {
+      encoding: "utf8",
+    });
 
     expect(result.stderr).toMatch(/^Error: /v);
     expect(result.stderr).toContain("--unknown-flag");

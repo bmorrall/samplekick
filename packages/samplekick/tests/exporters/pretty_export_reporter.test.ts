@@ -1,3 +1,4 @@
+/* eslint-disable max-lines -- TODO: split this file to bring it under the max-lines limit */
 import { PassThrough } from "node:stream";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { Chalk } from "chalk";
@@ -7,7 +8,7 @@ import { PrettyExportReporter } from "../../src/exporters/pretty_export_reporter
 // Force level 1 (ANSI 16 colors) so chalk always emits escape codes in tests
 const chalk1 = new Chalk({ level: 1 });
 
-const ESC = String.fromCharCode(0x1B);
+const ESC = String.fromCharCode(0x1b);
 const ANSI_RE = new RegExp(`${ESC}\\[[0-9;]*[A-Za-z]`, "gv");
 const stripAnsi = (s: string): string => s.replace(ANSI_RE, "");
 
@@ -23,39 +24,66 @@ const createEntry = (path: string): FileNode => ({
   getChildNodes: () => [],
 });
 
-const createReporter = (): { reporter: PrettyExportReporter; getOutput: () => string } => {
+const createReporter = (): {
+  reporter: PrettyExportReporter;
+  getOutput: () => string;
+} => {
   const stream = new PassThrough();
   const chunks: string[] = [];
-  stream.on("data", (chunk: Buffer) => { chunks.push(chunk.toString()); });
+  stream.on("data", (chunk: Buffer) => {
+    chunks.push(chunk.toString());
+  });
   const reporter = new PrettyExportReporter(stream, chalk1);
   const getOutput = (): string => chunks.join("");
   return { reporter, getOutput };
 };
 
-const createTTYReporter = (): { reporter: PrettyExportReporter; getOutput: () => string } => {
+const createTTYReporter = (): {
+  reporter: PrettyExportReporter;
+  getOutput: () => string;
+} => {
   const stream = new PassThrough();
   Object.assign(stream, { isTTY: true });
   const chunks: string[] = [];
-  stream.on("data", (chunk: Buffer) => { chunks.push(chunk.toString()); });
-  const reporter = new PrettyExportReporter(stream, chalk1, { displayName: "my-pack.zip" });
+  stream.on("data", (chunk: Buffer) => {
+    chunks.push(chunk.toString());
+  });
+  const reporter = new PrettyExportReporter(stream, chalk1, {
+    displayName: "my-pack.zip",
+  });
   const getOutput = (): string => chunks.join("");
   return { reporter, getOutput };
 };
 
-const createPackReporter = (): { reporter: PrettyExportReporter; getOutput: () => string } => {
+const createPackReporter = (): {
+  reporter: PrettyExportReporter;
+  getOutput: () => string;
+} => {
   const stream = new PassThrough();
   const chunks: string[] = [];
-  stream.on("data", (chunk: Buffer) => { chunks.push(chunk.toString()); });
-  const reporter = new PrettyExportReporter(stream, chalk1, { displayName: "my-pack.zip" });
+  stream.on("data", (chunk: Buffer) => {
+    chunks.push(chunk.toString());
+  });
+  const reporter = new PrettyExportReporter(stream, chalk1, {
+    displayName: "my-pack.zip",
+  });
   const getOutput = (): string => chunks.join("");
   return { reporter, getOutput };
 };
 
-const createQuietPackReporter = (): { reporter: PrettyExportReporter; getOutput: () => string } => {
+const createQuietPackReporter = (): {
+  reporter: PrettyExportReporter;
+  getOutput: () => string;
+} => {
   const stream = new PassThrough();
   const chunks: string[] = [];
-  stream.on("data", (chunk: Buffer) => { chunks.push(chunk.toString()); });
-  const reporter = new PrettyExportReporter(stream, chalk1, { quiet: true, displayName: "my-pack.zip" });
+  stream.on("data", (chunk: Buffer) => {
+    chunks.push(chunk.toString());
+  });
+  const reporter = new PrettyExportReporter(stream, chalk1, {
+    quiet: true,
+    displayName: "my-pack.zip",
+  });
   const getOutput = (): string => chunks.join("");
   return { reporter, getOutput };
 };
@@ -87,7 +115,9 @@ describe("PrettyExportReporter", () => {
       reporter.onError("Could not convert kick.wav: ffmpeg error");
       const raw = getOutput();
       expect(raw).toContain("\x1B[31m");
-      expect(stripAnsi(raw)).toBe("  ! Could not convert kick.wav: ffmpeg error\n");
+      expect(stripAnsi(raw)).toBe(
+        "  ! Could not convert kick.wav: ffmpeg error\n",
+      );
     });
   });
 
@@ -123,7 +153,10 @@ describe("PrettyExportReporter", () => {
   describe("onBeforeWrite", () => {
     it("writes nothing on non-TTY", () => {
       const { reporter, getOutput } = createReporter();
-      reporter.onBeforeWrite(createEntry("drums/kick.wav"), "loops/my-pack/kick.wav");
+      reporter.onBeforeWrite(
+        createEntry("drums/kick.wav"),
+        "loops/my-pack/kick.wav",
+      );
       expect(getOutput()).toBe("");
     });
   });
@@ -131,7 +164,10 @@ describe("PrettyExportReporter", () => {
   describe("onAfterWrite (success)", () => {
     it("writes '✓ {dir}/{filename}' with green symbol and dimmed directory", () => {
       const { reporter, getOutput } = createReporter();
-      reporter.onAfterWrite(createEntry("loops/my-pack/kick.wav"), "loops/my-pack/kick.wav");
+      reporter.onAfterWrite(
+        createEntry("loops/my-pack/kick.wav"),
+        "loops/my-pack/kick.wav",
+      );
       const raw = getOutput();
       expect(raw).toContain("\x1B[32m");
       expect(stripAnsi(raw)).toBe("  ✓ loops/my-pack/kick.wav\n");
@@ -145,17 +181,23 @@ describe("PrettyExportReporter", () => {
 
     it("shows destination path below source when they differ", () => {
       const { reporter, getOutput } = createReporter();
-      reporter.onAfterWrite(createEntry("Drums/Kick 01.wav"), "loops/my-pack/kick.wav");
-      expect(stripAnsi(getOutput())).toBe([
-        "  ✓ Drums/Kick 01.wav",
-        "    └── loops/my-pack/kick.wav",
-        "",
-      ].join("\n"));
+      reporter.onAfterWrite(
+        createEntry("Drums/Kick 01.wav"),
+        "loops/my-pack/kick.wav",
+      );
+      expect(stripAnsi(getOutput())).toBe(
+        ["  ✓ Drums/Kick 01.wav", "    └── loops/my-pack/kick.wav", ""].join(
+          "\n",
+        ),
+      );
     });
 
     it("omits source path when source and destination are identical", () => {
       const { reporter, getOutput } = createReporter();
-      reporter.onAfterWrite(createEntry("loops/my-pack/kick.wav"), "loops/my-pack/kick.wav");
+      reporter.onAfterWrite(
+        createEntry("loops/my-pack/kick.wav"),
+        "loops/my-pack/kick.wav",
+      );
       expect(stripAnsi(getOutput())).toBe("  ✓ loops/my-pack/kick.wav\n");
     });
   });
@@ -163,7 +205,11 @@ describe("PrettyExportReporter", () => {
   describe("onAfterWrite (error)", () => {
     it("writes '✗ {destRelPath}: {message}' in red", () => {
       const { reporter, getOutput } = createReporter();
-      reporter.onAfterWrite(createEntry("kick.wav"), "loops/my-pack/kick.wav", new Error("disk full"));
+      reporter.onAfterWrite(
+        createEntry("kick.wav"),
+        "loops/my-pack/kick.wav",
+        new Error("disk full"),
+      );
       const raw = getOutput();
       expect(raw).toContain("\x1B[31m");
       expect(stripAnsi(raw)).toBe("  ✗ loops/my-pack/kick.wav: disk full\n");
@@ -193,7 +239,9 @@ describe("PrettyExportReporter", () => {
       reporter.onReject(createEntry("a.wav"), "Missing packageName");
       reporter.onAfterWrite(createEntry("b.wav"), "b.wav");
       reporter.onComplete("/output/dir");
-      expect(stripAnsi(getOutput())).toContain("Exported 1 sample to /output/dir");
+      expect(stripAnsi(getOutput())).toContain(
+        "Exported 1 sample to /output/dir",
+      );
     });
   });
 
@@ -201,7 +249,9 @@ describe("PrettyExportReporter", () => {
     it("writes 'Exported 0 samples to <dirPath>' when there are no errors", () => {
       const { reporter, getOutput } = createReporter();
       reporter.onComplete("/output/dir");
-      expect(stripAnsi(getOutput())).toBe("Exported 0 samples to /output/dir\n");
+      expect(stripAnsi(getOutput())).toBe(
+        "Exported 0 samples to /output/dir\n",
+      );
     });
 
     it("includes singular error count in red when there is 1 error", () => {
@@ -209,7 +259,9 @@ describe("PrettyExportReporter", () => {
       reporter.onAfterWrite(createEntry("a.wav"), "a.wav", new Error("fail"));
       reporter.onComplete("/output/dir");
       const raw = getOutput();
-      expect(stripAnsi(raw)).toContain("Exported 1 sample to /output/dir (1 error)\n");
+      expect(stripAnsi(raw)).toContain(
+        "Exported 1 sample to /output/dir (1 error)\n",
+      );
       expect(raw).toContain("\x1B[31m");
     });
 
@@ -218,7 +270,9 @@ describe("PrettyExportReporter", () => {
       reporter.onAfterWrite(createEntry("a.wav"), "a.wav", new Error("fail"));
       reporter.onAfterWrite(createEntry("b.wav"), "b.wav", new Error("fail"));
       reporter.onComplete("/output/dir");
-      expect(stripAnsi(getOutput())).toContain("Exported 2 samples to /output/dir (2 errors)\n");
+      expect(stripAnsi(getOutput())).toContain(
+        "Exported 2 samples to /output/dir (2 errors)\n",
+      );
     });
 
     it("includes reject count when entries were rejected", () => {
@@ -226,7 +280,9 @@ describe("PrettyExportReporter", () => {
       reporter.onReject(createEntry("a.wav"), "Missing sampleType");
       reporter.onAfterWrite(createEntry("b.wav"), "b.wav");
       reporter.onComplete("/output/dir");
-      expect(stripAnsi(getOutput())).toContain("Exported 1 sample to /output/dir (1 sample rejected)\n");
+      expect(stripAnsi(getOutput())).toContain(
+        "Exported 1 sample to /output/dir (1 sample rejected)\n",
+      );
     });
 
     it("includes both error and reject counts when both occur", () => {
@@ -235,14 +291,18 @@ describe("PrettyExportReporter", () => {
       reporter.onReject(createEntry("b.wav"), "Missing packageName");
       reporter.onAfterWrite(createEntry("c.wav"), "c.wav");
       reporter.onComplete("/output/dir");
-      expect(stripAnsi(getOutput())).toContain("Exported 2 samples to /output/dir (1 error, 1 sample rejected)\n");
+      expect(stripAnsi(getOutput())).toContain(
+        "Exported 2 samples to /output/dir (1 error, 1 sample rejected)\n",
+      );
     });
 
     it("includes singular entry count when one entry is skipped", () => {
       const { reporter, getOutput } = createReporter();
       reporter.onSkip(createEntry("kick.wav"));
       reporter.onComplete("/output/dir");
-      expect(stripAnsi(getOutput())).toContain("Exported 0 samples to /output/dir (1 entry skipped)\n");
+      expect(stripAnsi(getOutput())).toContain(
+        "Exported 0 samples to /output/dir (1 entry skipped)\n",
+      );
     });
 
     it("includes plural entry count when multiple entries are skipped", () => {
@@ -251,16 +311,25 @@ describe("PrettyExportReporter", () => {
       reporter.onSkip(createEntry("cover.jpg"));
       reporter.onSkip(createEntry("notes.txt"));
       reporter.onComplete("/output/dir");
-      expect(stripAnsi(getOutput())).toContain("Exported 0 samples to /output/dir (3 entries skipped)\n");
+      expect(stripAnsi(getOutput())).toContain(
+        "Exported 0 samples to /output/dir (3 entries skipped)\n",
+      );
     });
   });
 
   describe("quiet mode", () => {
-    const createQuietReporter = (): { reporter: PrettyExportReporter; getOutput: () => string } => {
+    const createQuietReporter = (): {
+      reporter: PrettyExportReporter;
+      getOutput: () => string;
+    } => {
       const stream = new PassThrough();
       const chunks: string[] = [];
-      stream.on("data", (chunk: Buffer) => { chunks.push(chunk.toString()); });
-      const reporter = new PrettyExportReporter(stream, chalk1, { quiet: true });
+      stream.on("data", (chunk: Buffer) => {
+        chunks.push(chunk.toString());
+      });
+      const reporter = new PrettyExportReporter(stream, chalk1, {
+        quiet: true,
+      });
       const getOutput = (): string => chunks.join("");
       return { reporter, getOutput };
     };
@@ -291,7 +360,11 @@ describe("PrettyExportReporter", () => {
 
     it("still writes error lines", () => {
       const { reporter, getOutput } = createQuietReporter();
-      reporter.onAfterWrite(createEntry("kick.wav"), "kick.wav", new Error("disk full"));
+      reporter.onAfterWrite(
+        createEntry("kick.wav"),
+        "kick.wav",
+        new Error("disk full"),
+      );
       expect(stripAnsi(getOutput())).toBe("  ✗ kick.wav: disk full\n");
     });
 
@@ -304,11 +377,18 @@ describe("PrettyExportReporter", () => {
   });
 
   describe("organised path colouring", () => {
-    const createOrganisedReporter = (): { reporter: PrettyExportReporter; getOutput: () => string } => {
+    const createOrganisedReporter = (): {
+      reporter: PrettyExportReporter;
+      getOutput: () => string;
+    } => {
       const stream = new PassThrough();
       const chunks: string[] = [];
-      stream.on("data", (chunk: Buffer) => { chunks.push(chunk.toString()); });
-      const reporter = new PrettyExportReporter(stream, chalk1, { organised: true });
+      stream.on("data", (chunk: Buffer) => {
+        chunks.push(chunk.toString());
+      });
+      const reporter = new PrettyExportReporter(stream, chalk1, {
+        organised: true,
+      });
       const getOutput = (): string => chunks.join("");
       return { reporter, getOutput };
     };
@@ -317,23 +397,33 @@ describe("PrettyExportReporter", () => {
       const { reporter, getOutput } = createOrganisedReporter();
       reporter.onAfterWrite(createEntry("kick.wav"), "loops/my-pack/kick.wav");
       const raw = getOutput();
-      expect(stripAnsi(raw)).toBe("  ✓ kick.wav\n    └── loops/my-pack/kick.wav\n");
+      expect(stripAnsi(raw)).toBe(
+        "  ✓ kick.wav\n    └── loops/my-pack/kick.wav\n",
+      );
       expect(raw).toContain("\x1B[36m"); // cyan — sampleType
       expect(raw).toContain("\x1B[92m"); // greenBright — packageName
     });
 
     it("colours extra subfolder segments gray", () => {
       const { reporter, getOutput } = createOrganisedReporter();
-      reporter.onAfterWrite(createEntry("kick.wav"), "loops/my-pack/sub/kick.wav");
+      reporter.onAfterWrite(
+        createEntry("kick.wav"),
+        "loops/my-pack/sub/kick.wav",
+      );
       const raw = getOutput();
-      expect(stripAnsi(raw)).toBe(["  ✓ kick.wav", "    └── loops/my-pack/sub/kick.wav", ""].join("\n"));
+      expect(stripAnsi(raw)).toBe(
+        ["  ✓ kick.wav", "    └── loops/my-pack/sub/kick.wav", ""].join("\n"),
+      );
       expect(raw).toContain("\x1B[36m"); // cyan — sampleType
       expect(raw).toContain("\x1B[92m"); // greenBright — packageName
     });
 
     it("does not apply organised colouring when organised is false", () => {
       const { reporter, getOutput } = createReporter();
-      reporter.onAfterWrite(createEntry("loops/my-pack/kick.wav"), "loops/my-pack/kick.wav");
+      reporter.onAfterWrite(
+        createEntry("loops/my-pack/kick.wav"),
+        "loops/my-pack/kick.wav",
+      );
       const raw = getOutput();
       expect(raw).not.toContain("\x1B[36m"); // no cyan
       expect(raw).not.toContain("\x1B[34m"); // no blue
@@ -396,7 +486,11 @@ describe("PrettyExportReporter", () => {
       const { reporter, getOutput } = createTTYReporter();
       reporter.onBeforeWrite(createEntry("kick.wav"), "kick.wav");
       const { length: afterSpinner } = getOutput();
-      reporter.onAfterWrite(createEntry("kick.wav"), "kick.wav", new Error("disk full"));
+      reporter.onAfterWrite(
+        createEntry("kick.wav"),
+        "kick.wav",
+        new Error("disk full"),
+      );
       const writeOutput = getOutput().slice(afterSpinner);
       expect(writeOutput.startsWith("\x1b[2K\r")).toBe(true);
       expect(stripAnsi(writeOutput)).toContain("\u2717 kick.wav: disk full\n");
@@ -408,7 +502,9 @@ describe("PrettyExportReporter", () => {
       const { reporter, getOutput } = createTTYReporter();
       reporter.onBeforeWrite(createEntry("kick.wav"), "kick.wav");
       reporter.onComplete("/output/dir");
-      expect(stripAnsi(getOutput())).toContain("Exported 0 samples to /output/dir\n");
+      expect(stripAnsi(getOutput())).toContain(
+        "Exported 0 samples to /output/dir\n",
+      );
     });
 
     it("clears spinner line on onPreview", () => {
@@ -440,7 +536,9 @@ describe("PrettyExportReporter", () => {
       reporter.onAfterWrite(createEntry("b.wav"), "b.wav");
       reporter.onReject(createEntry("kick.wav"), "Missing sampleType");
       reporter.onPreview();
-      expect(stripAnsi(getOutput())).toContain("Would export 2 samples (1 sample rejected)\n");
+      expect(stripAnsi(getOutput())).toContain(
+        "Would export 2 samples (1 sample rejected)\n",
+      );
     });
 
     it("uses plural 'samples' when reject count > 1", () => {
@@ -451,7 +549,9 @@ describe("PrettyExportReporter", () => {
       reporter.onReject(createEntry("snare.wav"), "Missing sampleType");
       reporter.onReject(createEntry("hat.wav"), "Missing sampleType");
       reporter.onPreview();
-      expect(stripAnsi(getOutput())).toContain("Would export 2 samples (3 samples rejected)\n");
+      expect(stripAnsi(getOutput())).toContain(
+        "Would export 2 samples (3 samples rejected)\n",
+      );
     });
 
     it("includes skip count when skips > 0", () => {
@@ -460,7 +560,9 @@ describe("PrettyExportReporter", () => {
       reporter.onAfterWrite(createEntry("b.wav"), "b.wav");
       reporter.onSkip(createEntry("kick.wav"));
       reporter.onPreview();
-      expect(stripAnsi(getOutput())).toContain("Would export 2 samples (1 entry skipped)\n");
+      expect(stripAnsi(getOutput())).toContain(
+        "Would export 2 samples (1 entry skipped)\n",
+      );
     });
 
     it("uses plural 'entries' when skip count > 1", () => {
@@ -471,7 +573,9 @@ describe("PrettyExportReporter", () => {
       reporter.onSkip(createEntry("snare.wav"));
       reporter.onSkip(createEntry("hat.wav"));
       reporter.onPreview();
-      expect(stripAnsi(getOutput())).toContain("Would export 2 samples (3 entries skipped)\n");
+      expect(stripAnsi(getOutput())).toContain(
+        "Would export 2 samples (3 entries skipped)\n",
+      );
     });
 
     it("includes both reject and skip counts", () => {
@@ -482,7 +586,9 @@ describe("PrettyExportReporter", () => {
       reporter.onSkip(createEntry("snare.wav"));
       reporter.onSkip(createEntry("hat.wav"));
       reporter.onPreview();
-      expect(stripAnsi(getOutput())).toContain("Would export 2 samples (1 sample rejected, 2 entries skipped)\n");
+      expect(stripAnsi(getOutput())).toContain(
+        "Would export 2 samples (1 sample rejected, 2 entries skipped)\n",
+      );
     });
   });
 });

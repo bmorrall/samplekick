@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { createDirectorySampleTypeTransformer } from "../../../src";
-import { createTransformEntry, createTransformEntryInHierarchy, singleEntryTransformSource } from "../../support";
+import {
+  createTransformEntry,
+  createTransformEntryInHierarchy,
+  singleEntryTransformSource,
+} from "../../support";
 
 describe("createDirectorySampleTypeTransformer", () => {
   describe("when the entry has no children", () => {
@@ -38,10 +42,7 @@ describe("createDirectorySampleTypeTransformer", () => {
 
     it('sets sampleType to "Drum Loops" for "Loops" nested inside "Root/Drums"', () => {
       const entry = createTransformEntryInHierarchy(
-        [
-          { name: "Root" },
-          { name: "Drums" },
-        ],
+        [{ name: "Root" }, { name: "Drums" }],
         { name: "Loops", isFile: false },
         [{ name: "kick.wav" }],
       );
@@ -280,10 +281,7 @@ describe("createDirectorySampleTypeTransformer", () => {
   describe('when a "Loops" or "One Shots" folder is a more distant ancestor', () => {
     it('sets sampleType to "Clap Loops" for "Claps" nested inside "Loops/Drums"', () => {
       const entry = createTransformEntryInHierarchy(
-        [
-          { name: "Loops" },
-          { name: "Drums" },
-        ],
+        [{ name: "Loops" }, { name: "Drums" }],
         { name: "Claps", isFile: false },
         [{ name: "clap.wav" }],
       );
@@ -294,10 +292,7 @@ describe("createDirectorySampleTypeTransformer", () => {
 
     it('sets sampleType to "Snare Loops" for "Snares" nested inside "Loops/Drums"', () => {
       const entry = createTransformEntryInHierarchy(
-        [
-          { name: "Loops" },
-          { name: "Drums" },
-        ],
+        [{ name: "Loops" }, { name: "Drums" }],
         { name: "Snares", isFile: false },
         [{ name: "snare.wav" }],
       );
@@ -308,10 +303,7 @@ describe("createDirectorySampleTypeTransformer", () => {
 
     it('sets sampleType to "Clap One Shots" for "Claps" nested inside "One Shots/Drums"', () => {
       const entry = createTransformEntryInHierarchy(
-        [
-          { name: "One Shots" },
-          { name: "Drums" },
-        ],
+        [{ name: "One Shots" }, { name: "Drums" }],
         { name: "Claps", isFile: false },
         [{ name: "clap.wav" }],
       );

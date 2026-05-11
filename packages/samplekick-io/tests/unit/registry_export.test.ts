@@ -31,7 +31,9 @@ describe("Registry.exportToDirectory", () => {
     const entry = createCopyableEntry("a.wav");
     const registry = new Registry(createFileSource("root", [entry]));
     // use a custom strategy that always returns skip
-    registry.setPathStrategy({ destinationPathFor: () => new SkipResult("test") });
+    registry.setPathStrategy({
+      destinationPathFor: () => new SkipResult("test"),
+    });
 
     await registry.exportToDirectory("/output", {});
 
@@ -41,7 +43,9 @@ describe("Registry.exportToDirectory", () => {
   it("calls onReject when pathStrategy returns skip", async () => {
     const entry = createCopyableEntry("a.wav");
     const registry = new Registry(createFileSource("root", [entry]));
-    registry.setPathStrategy({ destinationPathFor: () => new SkipResult("test") });
+    registry.setPathStrategy({
+      destinationPathFor: () => new SkipResult("test"),
+    });
     const onReject = vi.fn<(entry: ConfigEntry, reason: string) => void>();
 
     await registry.exportToDirectory("/output", { onReject });
@@ -58,7 +62,10 @@ describe("Registry.exportToDirectory", () => {
 
     await registry.exportToDirectory("/output", { onReject });
 
-    expect(onReject).toHaveBeenCalledWith(expect.anything(), "Missing sampleType and packageName");
+    expect(onReject).toHaveBeenCalledWith(
+      expect.anything(),
+      "Missing sampleType and packageName",
+    );
   });
 
   it("does not call onReject when isSkipped is true", async () => {
@@ -106,9 +113,13 @@ describe("Registry.exportToDirectory", () => {
     const entryC = createCopyableEntry("c.wav");
     const error = new Error("copy failed");
     vi.mocked(entryB.copyToPath).mockRejectedValue(error);
-    const registry = new Registry(createFileSource("root", [entryA, entryB, entryC]));
+    const registry = new Registry(
+      createFileSource("root", [entryA, entryB, entryC]),
+    );
 
-    await expect(registry.exportToDirectory("/output", {})).rejects.toThrow(AggregateError);
+    await expect(registry.exportToDirectory("/output", {})).rejects.toThrow(
+      AggregateError,
+    );
 
     expect(entryA.copyToPath).toHaveBeenCalled();
     expect(entryB.copyToPath).toHaveBeenCalled();
@@ -160,7 +171,10 @@ describe("Registry.exportToDirectory", () => {
     await registry.exportToDirectory("/output", { onReject });
 
     expect(onReject).toHaveBeenCalledOnce();
-    expect(onReject).toHaveBeenCalledWith(expect.anything(), expect.stringContaining("duplicate destination"));
+    expect(onReject).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.stringContaining("duplicate destination"),
+    );
   });
 
   describe("dry-run (dirPath: undefined)", () => {
@@ -183,20 +197,33 @@ describe("Registry.exportToDirectory", () => {
       registry.setPathStrategy(OrganisedPathStrategy);
       registry.setPackageName("my-pack");
       registry.setSampleType("loops");
-      const onBeforeWrite = vi.fn<(entry: ConfigEntry, destRelPath: string) => void>();
-      const onAfterWrite = vi.fn<(entry: ConfigEntry, destRelPath: string, error?: Error) => void>();
+      const onBeforeWrite =
+        vi.fn<(entry: ConfigEntry, destRelPath: string) => void>();
+      const onAfterWrite =
+        vi.fn<
+          (entry: ConfigEntry, destRelPath: string, error?: Error) => void
+        >();
 
-      await registry.exportToDirectory(undefined, { onBeforeWrite, onAfterWrite });
+      await registry.exportToDirectory(undefined, {
+        onBeforeWrite,
+        onAfterWrite,
+      });
 
       expect(onBeforeWrite).toHaveBeenCalledTimes(2);
       expect(onAfterWrite).toHaveBeenCalledTimes(2);
-      expect(onAfterWrite).not.toHaveBeenCalledWith(expect.anything(), expect.any(String), expect.any(Error));
+      expect(onAfterWrite).not.toHaveBeenCalledWith(
+        expect.anything(),
+        expect.any(String),
+        expect.any(Error),
+      );
     });
 
     it("still calls onReject when path strategy returns skip", async () => {
       const entry = createCopyableEntry("a.wav");
       const registry = new Registry(createFileSource("root", [entry]));
-      registry.setPathStrategy({ destinationPathFor: () => new SkipResult("test") });
+      registry.setPathStrategy({
+        destinationPathFor: () => new SkipResult("test"),
+      });
       const onReject = vi.fn<(entry: ConfigEntry, reason: string) => void>();
 
       await registry.exportToDirectory(undefined, { onReject });

@@ -34,9 +34,7 @@ export const SP404Mk2Preset: DevicePreset = {
     createAllowedCharactersTransform(SP404_ALLOWED_PUNCTUATION),
     createTruncateNameTransformer(MAX_NAME_LENGTH),
   ],
-  validators: [
-    createPathLengthValidator(MAX_PATH_LENGTH),
-  ],
+  validators: [createPathLengthValidator(MAX_PATH_LENGTH)],
   targetBitDepth: BIT_DEPTH_16,
   targetSampleRate: SAMPLE_RATE_48000,
 };

@@ -21,11 +21,10 @@ describe("AbletonProjectTransformer", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync(
-        "node",
-        [CLI_PATH, zipPath, "--analyse"],
-        { encoding: "utf8", env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir } },
-      );
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--analyse"], {
+        encoding: "utf8",
+        env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+      });
 
       expect(result.status).toBe(0);
 
@@ -33,7 +32,9 @@ describe("AbletonProjectTransformer", () => {
       const csv = await readFile(join(dataDir, configFile), "utf8");
 
       // The "My Project" directory row should have sampleType=Ableton Projects and keepPath=true
-      const dirRow = csv.split("\n").find((row) => row.startsWith("My Project,"));
+      const dirRow = csv
+        .split("\n")
+        .find((row) => row.startsWith("My Project,"));
       expect(dirRow).toBe("My Project,,,Ableton Projects,,true");
     } finally {
       await rm(tmpDir, { recursive: true });

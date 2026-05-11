@@ -1,5 +1,5 @@
-import type { Transform } from '../types';
-import { ABLETON_PROJECTS } from './folder_lookup';
+import type { Transform } from "../types";
+import { ABLETON_PROJECTS } from "./folder_lookup";
 
 /**
  * AbletonProjectTransformer
@@ -14,11 +14,11 @@ const _singleton: Transform = {
       if (children.length === 0) return;
 
       const hasAls = children.some((child) =>
-        child.getName().toLowerCase().endsWith('.als'),
+        child.getName().toLowerCase().endsWith(".als"),
       );
 
       const hasAbletonFolderInfo = children.some(
-        (child) => child.getName() === 'Ableton Folder Info',
+        (child) => child.getName() === "Ableton Folder Info",
       );
 
       if (hasAls || hasAbletonFolderInfo) {
@@ -27,4 +27,5 @@ const _singleton: Transform = {
       }
     });
   },
-};export const createAbletonProjectTransformer = (): Transform => _singleton;
+};
+export const createAbletonProjectTransformer = (): Transform => _singleton;

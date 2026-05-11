@@ -21,11 +21,10 @@ describe("DirectorySampleTypeTransformer", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync(
-        "node",
-        [CLI_PATH, zipPath, "--analyse"],
-        { encoding: "utf8", env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir } },
-      );
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--analyse"], {
+        encoding: "utf8",
+        env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+      });
 
       expect(result.status).toBe(0);
 
@@ -51,18 +50,19 @@ describe("DirectorySampleTypeTransformer", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync(
-        "node",
-        [CLI_PATH, zipPath, "--analyse"],
-        { encoding: "utf8", env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir } },
-      );
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--analyse"], {
+        encoding: "utf8",
+        env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+      });
 
       expect(result.status).toBe(0);
 
       const [configFile] = await readdir(dataDir);
       const csv = await readFile(join(dataDir, configFile), "utf8");
 
-      const dirRow = csv.split("\n").find((row) => row.startsWith("Percussion,"));
+      const dirRow = csv
+        .split("\n")
+        .find((row) => row.startsWith("Percussion,"));
       expect(dirRow).toBe("Percussion,,,Percussion,,");
     } finally {
       await rm(tmpDir, { recursive: true });
@@ -81,18 +81,19 @@ describe("DirectorySampleTypeTransformer", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync(
-        "node",
-        [CLI_PATH, zipPath, "--analyse"],
-        { encoding: "utf8", env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir } },
-      );
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--analyse"], {
+        encoding: "utf8",
+        env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+      });
 
       expect(result.status).toBe(0);
 
       const [configFile] = await readdir(dataDir);
       const csv = await readFile(join(dataDir, configFile), "utf8");
 
-      const dirRow = csv.split("\n").find((row) => row.startsWith("Loop Stems & MIDI,"));
+      const dirRow = csv
+        .split("\n")
+        .find((row) => row.startsWith("Loop Stems & MIDI,"));
       expect(dirRow).toBe("Loop Stems & MIDI,,,Loops,,");
     } finally {
       await rm(tmpDir, { recursive: true });
@@ -111,11 +112,10 @@ describe("DirectorySampleTypeTransformer", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync(
-        "node",
-        [CLI_PATH, zipPath, "--analyse"],
-        { encoding: "utf8", env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir } },
-      );
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--analyse"], {
+        encoding: "utf8",
+        env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+      });
 
       expect(result.status).toBe(0);
 
@@ -141,18 +141,19 @@ describe("DirectorySampleTypeTransformer", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync(
-        "node",
-        [CLI_PATH, zipPath, "--analyse"],
-        { encoding: "utf8", env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir } },
-      );
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--analyse"], {
+        encoding: "utf8",
+        env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+      });
 
       expect(result.status).toBe(0);
 
       const [configFile] = await readdir(dataDir);
       const csv = await readFile(join(dataDir, configFile), "utf8");
 
-      const dirRow = csv.split("\n").find((row) => row.startsWith("Cymatics - SESSIONS - Drum Breaks,"));
+      const dirRow = csv
+        .split("\n")
+        .find((row) => row.startsWith("Cymatics - SESSIONS - Drum Breaks,"));
       expect(dirRow).toBe("Cymatics - SESSIONS - Drum Breaks,,,Drum Breaks,,");
     } finally {
       await rm(tmpDir, { recursive: true });

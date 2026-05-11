@@ -29,9 +29,11 @@ describe("Registry constructor", () => {
   });
 
   it("keeps a loaded entry addressable by path when its name differs from the path leaf", () => {
-    const registry = new Registry(createFileSource("root", [
-      createFileEntry({ path: "a/b", name: "Renamed B" }),
-    ]));
+    const registry = new Registry(
+      createFileSource("root", [
+        createFileEntry({ path: "a/b", name: "Renamed B" }),
+      ]),
+    );
 
     expect(registry.getEntry("a/b")?.getName()).toBe("Renamed B");
   });
@@ -45,7 +47,9 @@ describe("Registry constructor", () => {
         fn(createFileEntry({ path: "a/b", name: "renamed-b" }));
       },
     };
-    expect(() => new Registry(fileSource)).toThrow('Node already exists at path "a/b"');
+    expect(() => new Registry(fileSource)).toThrow(
+      'Node already exists at path "a/b"',
+    );
   });
 
   it("throws an error when the file source provides an entry with an empty path", () => {

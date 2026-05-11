@@ -21,14 +21,25 @@ describe("Registry.addPostProcessor", () => {
 
     await registry.exportToDirectory("/output", {});
 
-    expect(processor.processFile).toHaveBeenCalledWith("/output/a.wav", expect.objectContaining({ getPath: expect.any(Function) as unknown }));
+    expect(processor.processFile).toHaveBeenCalledWith(
+      "/output/a.wav",
+      expect.objectContaining({ getPath: expect.any(Function) as unknown }),
+    );
   });
 
   it("calls each processor in order for each file", async () => {
     const entry = createCopyableEntry("a.wav");
     const calls: string[] = [];
-    const processorA: PostProcessor = { processFile: vi.fn(() => { calls.push("A"); }) };
-    const processorB: PostProcessor = { processFile: vi.fn(() => { calls.push("B"); }) };
+    const processorA: PostProcessor = {
+      processFile: vi.fn(() => {
+        calls.push("A");
+      }),
+    };
+    const processorB: PostProcessor = {
+      processFile: vi.fn(() => {
+        calls.push("B");
+      }),
+    };
     const registry = new Registry(createFileSource("root", [entry]));
     registry.addPostProcessor(processorA);
     registry.addPostProcessor(processorB);
@@ -41,8 +52,15 @@ describe("Registry.addPostProcessor", () => {
   it("calls processFile after copyToPath", async () => {
     const entry = createCopyableEntry("a.wav");
     const callOrder: string[] = [];
-    vi.mocked(entry.copyToPath).mockImplementation(async () => { callOrder.push("copy"); await Promise.resolve(); });
-    const processor: PostProcessor = { processFile: vi.fn(() => { callOrder.push("process"); }) };
+    vi.mocked(entry.copyToPath).mockImplementation(async () => {
+      callOrder.push("copy");
+      await Promise.resolve();
+    });
+    const processor: PostProcessor = {
+      processFile: vi.fn(() => {
+        callOrder.push("process");
+      }),
+    };
     const registry = new Registry(createFileSource("root", [entry]));
     registry.addPostProcessor(processor);
 
@@ -53,11 +71,15 @@ describe("Registry.addPostProcessor", () => {
 
   it("throws AggregateError when a processor throws", async () => {
     const entry = createCopyableEntry("a.wav");
-    const processor: PostProcessor = { processFile: vi.fn().mockRejectedValue(new Error("process failed")) };
+    const processor: PostProcessor = {
+      processFile: vi.fn().mockRejectedValue(new Error("process failed")),
+    };
     const registry = new Registry(createFileSource("root", [entry]));
     registry.addPostProcessor(processor);
 
-    await expect(registry.exportToDirectory("/output", {})).rejects.toThrow(AggregateError);
+    await expect(registry.exportToDirectory("/output", {})).rejects.toThrow(
+      AggregateError,
+    );
   });
 
   it("does not call processFile for skipped entries", async () => {

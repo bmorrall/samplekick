@@ -1,9 +1,10 @@
 import { describe, it, expect } from "vitest";
+import { SP404Mk2Preset, createAbletonProjectTransformer } from "../../src";
 import {
-  SP404Mk2Preset,
-  createAbletonProjectTransformer,
-} from "../../src";
-import { createRegistry, createFileEntry, applyDeviceTransforms } from "../support";
+  createRegistry,
+  createFileEntry,
+  applyDeviceTransforms,
+} from "../support";
 
 describe("SP-404MKII device preset transforms", () => {
   it("preserves all SP-404 MkII supported punctuation characters", () => {
@@ -12,11 +13,7 @@ describe("SP-404MKII device preset transforms", () => {
     ]);
     applyDeviceTransforms(registry, SP404Mk2Preset);
     expect(registry.toString()).toBe(
-      [
-        "root",
-        "└── A _-!&()+,=@[]{}'.wav [?]",
-        "",
-      ].join("\n"),
+      ["root", "└── A _-!&()+,=@[]{}'.wav [?]", ""].join("\n"),
     );
   });
 

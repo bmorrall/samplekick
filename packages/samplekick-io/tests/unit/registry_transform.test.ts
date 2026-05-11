@@ -2,47 +2,49 @@ import { describe, expect, it } from "vitest";
 import type { Transform, TransformEntry, TransformSource } from "../../src";
 import { createFileEntry, createRegistry } from "../support";
 
-const collectVisitedPaths =
-  (visitedPaths: string[]): Transform => ({
-    transform: (source: TransformSource) => {
-      source.eachTransformEntry((entry: TransformEntry) => {
-        visitedPaths.push(entry.getPath());
-      });
-    },
-  });
+const collectVisitedPaths = (visitedPaths: string[]): Transform => ({
+  transform: (source: TransformSource) => {
+    source.eachTransformEntry((entry: TransformEntry) => {
+      visitedPaths.push(entry.getPath());
+    });
+  },
+});
 
-const collectVisitedPathsAndSetPackageName =
-  (visitedPaths: string[], packageName: string): Transform => ({
-    transform: (source: TransformSource) => {
-      source.eachTransformEntry((entry: TransformEntry) => {
-        visitedPaths.push(entry.getPath());
-        entry.setPackageName(packageName);
-      });
-    },
-  });
+const collectVisitedPathsAndSetPackageName = (
+  visitedPaths: string[],
+  packageName: string,
+): Transform => ({
+  transform: (source: TransformSource) => {
+    source.eachTransformEntry((entry: TransformEntry) => {
+      visitedPaths.push(entry.getPath());
+      entry.setPackageName(packageName);
+    });
+  },
+});
 
-const setSharedSampleTypeAtPath =
-  (path: string, sampleType: string): Transform => ({
-    transform: (source: TransformSource) => {
-      source.eachTransformEntry((entry: TransformEntry) => {
-        if (entry.getPath() === path) {
-          entry.setSampleType(sampleType);
-        }
-      });
-    },
-  });
+const setSharedSampleTypeAtPath = (
+  path: string,
+  sampleType: string,
+): Transform => ({
+  transform: (source: TransformSource) => {
+    source.eachTransformEntry((entry: TransformEntry) => {
+      if (entry.getPath() === path) {
+        entry.setSampleType(sampleType);
+      }
+    });
+  },
+});
 
-const renameAndSkipAtPath =
-  (path: string, name: string): Transform => ({
-    transform: (source: TransformSource) => {
-      source.eachTransformEntry((entry: TransformEntry) => {
-        if (entry.getPath() === path) {
-          entry.setName(name);
-          entry.setSkipped(true);
-        }
-      });
-    },
-  });
+const renameAndSkipAtPath = (path: string, name: string): Transform => ({
+  transform: (source: TransformSource) => {
+    source.eachTransformEntry((entry: TransformEntry) => {
+      if (entry.getPath() === path) {
+        entry.setName(name);
+        entry.setSkipped(true);
+      }
+    });
+  },
+});
 
 describe("Registry applyTransform", () => {
   it("provides correct name, path, parent and children via entry methods", () => {
@@ -75,13 +77,15 @@ describe("Registry applyTransform", () => {
 
     registry.applyTransform(collectInfo);
 
-    expect(calls).toEqual(expect.arrayContaining([
-      { name: "root", path: "", parent: undefined, children: ["a", "d"] },
-      { name: "a", path: "a", parent: "", children: ["a/b", "a/c"] },
-      { name: "b", path: "a/b", parent: "a", children: [] },
-      { name: "c", path: "a/c", parent: "a", children: [] },
-      { name: "d", path: "d", parent: "", children: [] },
-    ]));
+    expect(calls).toEqual(
+      expect.arrayContaining([
+        { name: "root", path: "", parent: undefined, children: ["a", "d"] },
+        { name: "a", path: "a", parent: "", children: ["a/b", "a/c"] },
+        { name: "b", path: "a/b", parent: "a", children: [] },
+        { name: "c", path: "a/c", parent: "a", children: [] },
+        { name: "d", path: "d", parent: "", children: [] },
+      ]),
+    );
   });
 
   it("vistis the root node", () => {
@@ -95,7 +99,9 @@ describe("Registry applyTransform", () => {
   });
 
   it("visits each node in a three-segment path", () => {
-    const registry = createRegistry("root", [createFileEntry({ path: "a/b/c" })]);
+    const registry = createRegistry("root", [
+      createFileEntry({ path: "a/b/c" }),
+    ]);
 
     const visitedPaths: string[] = [];
 
@@ -150,49 +156,50 @@ describe("Registry applyTransform", () => {
   });
 });
 
-const collectModifiedPaths =
-  (visitedPaths: string[]): Transform => ({
-    transform: (source) => {
-      source.eachTransformModification((entry) => {
-        visitedPaths.push(entry.getPath());
-      });
-    },
-  });
+const collectModifiedPaths = (visitedPaths: string[]): Transform => ({
+  transform: (source) => {
+    source.eachTransformModification((entry) => {
+      visitedPaths.push(entry.getPath());
+    });
+  },
+});
 
-const collectModifiedPackageNames =
-  (seen: Array<{ path: string; packageName: string | undefined }>): Transform => ({
-    transform: (source) => {
-      source.eachTransformModification((entry) => {
-        seen.push({ path: entry.getPath(), packageName: entry.getPackageName() });
-      });
-    },
-  });
+const collectModifiedPackageNames = (
+  seen: Array<{ path: string; packageName: string | undefined }>,
+): Transform => ({
+  transform: (source) => {
+    source.eachTransformModification((entry) => {
+      seen.push({ path: entry.getPath(), packageName: entry.getPackageName() });
+    });
+  },
+});
 
-const collectModifiedSampleTypes =
-  (seen: Array<{ path: string; sampleType: string | undefined }>): Transform => ({
-    transform: (source) => {
-      source.eachTransformModification((entry) => {
-        seen.push({ path: entry.getPath(), sampleType: entry.getSampleType() });
-      });
-    },
-  });
+const collectModifiedSampleTypes = (
+  seen: Array<{ path: string; sampleType: string | undefined }>,
+): Transform => ({
+  transform: (source) => {
+    source.eachTransformModification((entry) => {
+      seen.push({ path: entry.getPath(), sampleType: entry.getSampleType() });
+    });
+  },
+});
 
-const setPackageNameAtPathViaModification =
-  (path: string, packageName: string): Transform => ({
-    transform: (source) => {
-      source.eachTransformModification((entry) => {
-        if (entry.getPath() === path) {
-          entry.setPackageName(packageName);
-        }
-      });
-    },
-  });
+const setPackageNameAtPathViaModification = (
+  path: string,
+  packageName: string,
+): Transform => ({
+  transform: (source) => {
+    source.eachTransformModification((entry) => {
+      if (entry.getPath() === path) {
+        entry.setPackageName(packageName);
+      }
+    });
+  },
+});
 
 describe("Registry applyTransform eachTransformModification", () => {
   it("visits nodes that do not have keepStructure set", () => {
-    const registry = createRegistry("root", [
-      createFileEntry({ path: "a/b" }),
-    ]);
+    const registry = createRegistry("root", [createFileEntry({ path: "a/b" })]);
 
     const visitedPaths: string[] = [];
     registry.applyTransform(collectModifiedPaths(visitedPaths));
@@ -238,7 +245,9 @@ describe("Registry applyTransform eachTransformModification", () => {
 
     expect(seen.find((e) => e.path === "")?.packageName).toBe("my-pack");
     expect(seen.find((e) => e.path === "Drums")?.packageName).toBeUndefined();
-    expect(seen.find((e) => e.path === "Drums/kick.wav")?.packageName).toBeUndefined();
+    expect(
+      seen.find((e) => e.path === "Drums/kick.wav")?.packageName,
+    ).toBeUndefined();
   });
 
   it("exposes only the node's own sampleType, not an inherited parent value", () => {
@@ -252,15 +261,17 @@ describe("Registry applyTransform eachTransformModification", () => {
 
     expect(seen.find((e) => e.path === "")?.sampleType).toBe("Percussion");
     expect(seen.find((e) => e.path === "Drums")?.sampleType).toBeUndefined();
-    expect(seen.find((e) => e.path === "Drums/kick.wav")?.sampleType).toBeUndefined();
+    expect(
+      seen.find((e) => e.path === "Drums/kick.wav")?.sampleType,
+    ).toBeUndefined();
   });
 
   it("mutations made via the facade persist on the real node", () => {
-    const registry = createRegistry("root", [
-      createFileEntry({ path: "a/b" }),
-    ]);
+    const registry = createRegistry("root", [createFileEntry({ path: "a/b" })]);
 
-    registry.applyTransform(setPackageNameAtPathViaModification("a", "new-pack"));
+    registry.applyTransform(
+      setPackageNameAtPathViaModification("a", "new-pack"),
+    );
 
     expect(registry.getEntry("a")?.getPackageName()).toBe("new-pack");
   });

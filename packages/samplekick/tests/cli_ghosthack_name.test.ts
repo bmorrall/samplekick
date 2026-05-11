@@ -21,21 +21,24 @@ describe("GhosthackNameTransformer", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync(
-        "node",
-        [CLI_PATH, zipPath, "--analyse"],
-        { encoding: "utf8", env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir } },
-      );
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--analyse"], {
+        encoding: "utf8",
+        env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+      });
 
       expect(result.status).toBe(0);
 
       const [configFile] = await readdir(dataDir);
       const csv = await readFile(join(dataDir, configFile), "utf8");
 
-      const bassRow = csv.split("\n").find((row) => row.startsWith("Ghosthack-Bass Loops,"));
+      const bassRow = csv
+        .split("\n")
+        .find((row) => row.startsWith("Ghosthack-Bass Loops,"));
       expect(bassRow).toContain("Ghosthack - Bass Loops");
 
-      const drumRow = csv.split("\n").find((row) => row.startsWith("Ghosthack -Drum Hits,"));
+      const drumRow = csv
+        .split("\n")
+        .find((row) => row.startsWith("Ghosthack -Drum Hits,"));
       expect(drumRow).toContain("Ghosthack - Drum Hits");
     } finally {
       await rm(tmpDir, { recursive: true });
@@ -54,18 +57,19 @@ describe("GhosthackNameTransformer", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync(
-        "node",
-        [CLI_PATH, zipPath, "--analyse"],
-        { encoding: "utf8", env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir } },
-      );
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--analyse"], {
+        encoding: "utf8",
+        env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+      });
 
       expect(result.status).toBe(0);
 
       const [configFile] = await readdir(dataDir);
       const csv = await readFile(join(dataDir, configFile), "utf8");
 
-      const row = csv.split("\n").find((row) => row.startsWith("Ghosthack-SH_Impact_Mine,"));
+      const row = csv
+        .split("\n")
+        .find((row) => row.startsWith("Ghosthack-SH_Impact_Mine,"));
       expect(row).toContain("Ghosthack - SH Impact Mine");
     } finally {
       await rm(tmpDir, { recursive: true });

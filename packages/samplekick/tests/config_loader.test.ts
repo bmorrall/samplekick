@@ -5,15 +5,26 @@ import { spawnSync } from "node:child_process";
 import { zipSync, strToU8 } from "fflate";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { Registry, ZipDataSource } from "samplekick-io";
-import { getDataDir, loadConfig, openConfigInEditor } from "../src/config_loader";
+import {
+  getDataDir,
+  loadConfig,
+  openConfigInEditor,
+} from "../src/config_loader";
 
 vi.mock("node:child_process", () => ({
   spawnSync: vi.fn(),
 }));
 
-const createRegistry = async (files: Record<string, string>): Promise<Registry> => {
-  const entries = Object.fromEntries(Object.entries(files).map(([k, v]) => [k, strToU8(v)]));
-  const dataSource = await ZipDataSource.fromBlob(new Blob([Buffer.from(zipSync(entries))]), "test.zip");
+const createRegistry = async (
+  files: Record<string, string>,
+): Promise<Registry> => {
+  const entries = Object.fromEntries(
+    Object.entries(files).map(([k, v]) => [k, strToU8(v)]),
+  );
+  const dataSource = await ZipDataSource.fromBlob(
+    new Blob([Buffer.from(zipSync(entries))]),
+    "test.zip",
+  );
   return new Registry(dataSource);
 };
 
@@ -64,7 +75,9 @@ describe("loadConfig", () => {
     await loadConfig(registry, undefined, dataDir);
 
     const entries: string[] = [];
-    registry.eachConfigEntry((e) => { entries.push(e.getName()); });
+    registry.eachConfigEntry((e) => {
+      entries.push(e.getName());
+    });
     expect(entries).toContain("custom.wav");
   });
 
@@ -72,9 +85,14 @@ describe("loadConfig", () => {
     const dataDir = join(tmpDir, "data");
     const registry = await createRegistry({ "Drums/kick.wav": "data" });
     await mkdir(dataDir, { recursive: true });
-    await writeFile(join(dataDir, `${registry.getFingerprint()}.csv`), "not valid csv");
+    await writeFile(
+      join(dataDir, `${registry.getFingerprint()}.csv`),
+      "not valid csv",
+    );
 
-    await expect(loadConfig(registry, undefined, dataDir)).rejects.toThrow("auto-config could not be loaded");
+    await expect(loadConfig(registry, undefined, dataDir)).rejects.toThrow(
+      "auto-config could not be loaded",
+    );
   });
 
   // Explicit config mode (configPath provided)
@@ -82,10 +100,13 @@ describe("loadConfig", () => {
   it("explicit config: returns undefined", async () => {
     const registry = await createRegistry({ "Drums/kick.wav": "data" });
     const configPath = join(tmpDir, "config.csv");
-    await writeFile(configPath, [
-      "path,name,packageName,sampleType,skip,keepPath",
-      "Drums/kick.wav,explicit.wav,,,,",
-    ].join("\n"));
+    await writeFile(
+      configPath,
+      [
+        "path,name,packageName,sampleType,skip,keepPath",
+        "Drums/kick.wav,explicit.wav,,,,",
+      ].join("\n"),
+    );
 
     const result = await loadConfig(registry, configPath, tmpDir);
 
@@ -95,22 +116,29 @@ describe("loadConfig", () => {
   it("explicit config: loads config from the provided file", async () => {
     const registry = await createRegistry({ "Drums/kick.wav": "data" });
     const configPath = join(tmpDir, "config.csv");
-    await writeFile(configPath, [
-      "path,name,packageName,sampleType,skip,keepPath",
-      "Drums/kick.wav,explicit.wav,,,,",
-    ].join("\n"));
+    await writeFile(
+      configPath,
+      [
+        "path,name,packageName,sampleType,skip,keepPath",
+        "Drums/kick.wav,explicit.wav,,,,",
+      ].join("\n"),
+    );
 
     await loadConfig(registry, configPath, tmpDir);
 
     const entries: string[] = [];
-    registry.eachConfigEntry((e) => { entries.push(e.getName()); });
+    registry.eachConfigEntry((e) => {
+      entries.push(e.getName());
+    });
     expect(entries).toContain("explicit.wav");
   });
 
   it("explicit config: throws when the file does not exist", async () => {
     const registry = await createRegistry({ "Drums/kick.wav": "data" });
 
-    await expect(loadConfig(registry, join(tmpDir, "nonexistent.csv"), tmpDir)).rejects.toThrow("config file not found");
+    await expect(
+      loadConfig(registry, join(tmpDir, "nonexistent.csv"), tmpDir),
+    ).rejects.toThrow("config file not found");
   });
 });
 
@@ -118,23 +146,35 @@ describe("getDataDir", () => {
   const home = homedir();
 
   it("returns XDG_DATA_HOME/<appName> on linux when XDG_DATA_HOME is set", () => {
-    expect(getDataDir("myapp", "linux", { XDG_DATA_HOME: "/custom/data" })).toBe("/custom/data/myapp");
+    expect(
+      getDataDir("myapp", "linux", { XDG_DATA_HOME: "/custom/data" }),
+    ).toBe("/custom/data/myapp");
   });
 
   it("returns ~/.local/share/<appName> on linux when XDG_DATA_HOME is not set", () => {
-    expect(getDataDir("myapp", "linux", {})).toBe(join(home, ".local", "share", "myapp"));
+    expect(getDataDir("myapp", "linux", {})).toBe(
+      join(home, ".local", "share", "myapp"),
+    );
   });
 
   it("returns APPDATA/<appName> on win32 when APPDATA is set", () => {
-    expect(getDataDir("myapp", "win32", { APPDATA: "C:\\Users\\User\\AppData\\Roaming" })).toBe(join("C:\\Users\\User\\AppData\\Roaming", "myapp"));
+    expect(
+      getDataDir("myapp", "win32", {
+        APPDATA: "C:\\Users\\User\\AppData\\Roaming",
+      }),
+    ).toBe(join("C:\\Users\\User\\AppData\\Roaming", "myapp"));
   });
 
   it("returns ~/AppData/Roaming/<appName> on win32 when APPDATA is not set", () => {
-    expect(getDataDir("myapp", "win32", {})).toBe(join(home, "AppData", "Roaming", "myapp"));
+    expect(getDataDir("myapp", "win32", {})).toBe(
+      join(home, "AppData", "Roaming", "myapp"),
+    );
   });
 
   it("returns ~/Library/Application Support/<appName> on macOS", () => {
-    expect(getDataDir("myapp", "darwin", {})).toBe(join(home, "Library", "Application Support", "myapp"));
+    expect(getDataDir("myapp", "darwin", {})).toBe(
+      join(home, "Library", "Application Support", "myapp"),
+    );
   });
 });
 
@@ -144,27 +184,46 @@ describe("openConfigInEditor", () => {
   });
 
   it("uses $VISUAL when set", () => {
-    openConfigInEditor("/path/to/config.json", "darwin", { VISUAL: "nvim", EDITOR: "nano" });
-    expect(spawnSync).toHaveBeenCalledWith("nvim", ["/path/to/config.json"], { stdio: "inherit" });
+    openConfigInEditor("/path/to/config.json", "darwin", {
+      VISUAL: "nvim",
+      EDITOR: "nano",
+    });
+    expect(spawnSync).toHaveBeenCalledWith("nvim", ["/path/to/config.json"], {
+      stdio: "inherit",
+    });
   });
 
   it("falls back to $EDITOR when $VISUAL is not set", () => {
     openConfigInEditor("/path/to/config.json", "darwin", { EDITOR: "nano" });
-    expect(spawnSync).toHaveBeenCalledWith("nano", ["/path/to/config.json"], { stdio: "inherit" });
+    expect(spawnSync).toHaveBeenCalledWith("nano", ["/path/to/config.json"], {
+      stdio: "inherit",
+    });
   });
 
   it("uses 'open -W' on macOS when no editor env var is set", () => {
     openConfigInEditor("/path/to/config.json", "darwin", {});
-    expect(spawnSync).toHaveBeenCalledWith("open", ["-W", "/path/to/config.json"], { stdio: "inherit" });
+    expect(spawnSync).toHaveBeenCalledWith(
+      "open",
+      ["-W", "/path/to/config.json"],
+      { stdio: "inherit" },
+    );
   });
 
   it("uses 'xdg-open' on linux when no editor env var is set", () => {
     openConfigInEditor("/path/to/config.json", "linux", {});
-    expect(spawnSync).toHaveBeenCalledWith("xdg-open", ["/path/to/config.json"], { stdio: "inherit" });
+    expect(spawnSync).toHaveBeenCalledWith(
+      "xdg-open",
+      ["/path/to/config.json"],
+      { stdio: "inherit" },
+    );
   });
 
   it("uses 'cmd /c start' on win32 when no editor env var is set", () => {
     openConfigInEditor("/path/to/config.json", "win32", {});
-    expect(spawnSync).toHaveBeenCalledWith("cmd", ["/c", "start", "", "/path/to/config.json"], { stdio: "inherit" });
+    expect(spawnSync).toHaveBeenCalledWith(
+      "cmd",
+      ["/c", "start", "", "/path/to/config.json"],
+      { stdio: "inherit" },
+    );
   });
 });

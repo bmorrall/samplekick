@@ -1,7 +1,11 @@
 import { PassThrough } from "node:stream";
 import { describe, expect, it } from "vitest";
 import { CsvConfigWriter } from "../../../src";
-import { createConfigSource, createConfigEntry, createRegistry } from "../../support";
+import {
+  createConfigSource,
+  createConfigEntry,
+  createRegistry,
+} from "../../support";
 import type { ConfigSource } from "../../../src";
 
 const captureOutput = (
@@ -52,7 +56,9 @@ describe("CsvConfigWriter", () => {
 
     expect(lines).toHaveLength(3);
     expect(lines[0]).toBe("path,name,packageName,sampleType,skip,keepPath");
-    expect(lines[1]).toBe("jazz/bebop/track01,Alt Track 01,jazz-pack,Bebop,true,true");
+    expect(lines[1]).toBe(
+      "jazz/bebop/track01,Alt Track 01,jazz-pack,Bebop,true,true",
+    );
     expect(lines[2]).toBe("rock/track01,,,,,");
   });
 
@@ -128,14 +134,21 @@ describe("CsvConfigWriter { explicit: true }", () => {
     const writer = new CsvConfigWriter(stream, { explicit: true });
     const configSource = createConfigSource([
       createConfigEntry({ path: "jazz/bebop/track01", name: "track01" }),
-      createConfigEntry({ path: "jazz/bebop/track02", name: "Alt Track", packageName: "jazz-pack", sampleType: "Bebop" }),
+      createConfigEntry({
+        path: "jazz/bebop/track02",
+        name: "Alt Track",
+        packageName: "jazz-pack",
+        sampleType: "Bebop",
+      }),
     ]);
 
     const output = captureOutput(writer, configSource, stream);
     const lines = output.split("\n");
 
     expect(lines[1]).toBe("jazz/bebop/track01,track01,,,false,false");
-    expect(lines[2]).toBe("jazz/bebop/track02,Alt Track,jazz-pack,Bebop,false,false");
+    expect(lines[2]).toBe(
+      "jazz/bebop/track02,Alt Track,jazz-pack,Bebop,false,false",
+    );
   });
 
   it("still omits the name column and boolean defaults when not in explicit mode", () => {

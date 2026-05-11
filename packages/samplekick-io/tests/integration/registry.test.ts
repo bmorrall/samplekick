@@ -231,7 +231,9 @@ describe("Registry eachConfigEntry", () => {
 
 describe("Registry", () => {
   it("inherits package name down a full path", () => {
-    const registry = createRegistry("library", [createFileEntry({ path: "jazz/bebop/track01" })]);
+    const registry = createRegistry("library", [
+      createFileEntry({ path: "jazz/bebop/track01" }),
+    ]);
     registry.setPackageName("jazz", "jazz-pack");
 
     const deep = registry.getEntry("jazz/bebop/track01");
@@ -273,7 +275,9 @@ describe("Registry", () => {
   });
 
   it("computes destination paths through OrganisedPathStrategy", () => {
-    const registry = createRegistry("library", [createFileEntry({ path: "a/b/c" })]);
+    const registry = createRegistry("library", [
+      createFileEntry({ path: "a/b/c" }),
+    ]);
     registry.setPackageName("my-pack");
     registry.setSampleType("loops");
     registry.setKeepStructure("a", true);
@@ -316,7 +320,9 @@ describe("Registry eachFileEntry enumeration", () => {
   });
 
   it("provided entries inherit tags from ancestors", () => {
-    const registry = createRegistry("library", [createFileEntry({ path: "jazz/track01" })]);
+    const registry = createRegistry("library", [
+      createFileEntry({ path: "jazz/track01" }),
+    ]);
     registry.setPackageName("jazz", "jazz-pack");
     registry.setSampleType("jazz", "Melodic Loops - Jazz");
 
@@ -327,16 +333,24 @@ describe("Registry eachFileEntry enumeration", () => {
 
     expect(entries).toHaveLength(3);
     expect(entries.map((e) => e.getPath())).toEqual([
-      "", "jazz", "jazz/track01"
+      "",
+      "jazz",
+      "jazz/track01",
     ]);
     expect(entries.map((e) => e.getName())).toEqual([
-      "library", "jazz", "track01"
+      "library",
+      "jazz",
+      "track01",
     ]);
     expect(entries.map((e) => e.getPackageName())).toEqual([
-      undefined, "jazz-pack", undefined
+      undefined,
+      "jazz-pack",
+      undefined,
     ]);
     expect(entries.map((e) => e.getSampleType())).toEqual([
-      undefined, "Melodic Loops - Jazz", undefined
+      undefined,
+      "Melodic Loops - Jazz",
+      undefined,
     ]);
   });
 });

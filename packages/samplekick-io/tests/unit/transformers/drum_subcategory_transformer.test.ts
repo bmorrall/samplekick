@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { createDrumSubcategoryTransformer } from "../../../src";
-import { createTransformEntryInHierarchy, singleEntryTransformSource } from "../../support";
+import {
+  createTransformEntryInHierarchy,
+  singleEntryTransformSource,
+} from "../../support";
 
 describe("createDrumSubcategoryTransformer", () => {
   describe('when the directory is named "Drum Fills"', () => {
@@ -138,7 +141,7 @@ describe("createDrumSubcategoryTransformer", () => {
       expect(entry.setSampleType).toHaveBeenCalledWith("Drum Fills");
     });
 
-    it('does not set sampleType when the parent is not drums', () => {
+    it("does not set sampleType when the parent is not drums", () => {
       const entry = createTransformEntryInHierarchy(
         [{ name: "Percussion" }],
         { name: "Fills", isFile: false },

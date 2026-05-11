@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { createNormaliseCommaSpacingTransformer } from "../../../src";
-import { createTransformEntry, singleEntryTransformSource } from "../../support";
+import {
+  createTransformEntry,
+  singleEntryTransformSource,
+} from "../../support";
 
 describe("createNormaliseCommaSpacingTransformer", () => {
   it("removes space before a comma", () => {
@@ -67,14 +70,20 @@ describe("createNormaliseCommaSpacingTransformer", () => {
   });
 
   it("normalises packageName when the entry has one", () => {
-    const entry = createTransformEntry({ name: "kick.wav", packageName: "Drums , Bass" });
+    const entry = createTransformEntry({
+      name: "kick.wav",
+      packageName: "Drums , Bass",
+    });
     const transformer = createNormaliseCommaSpacingTransformer();
     transformer.transform(singleEntryTransformSource(entry));
     expect(entry.setPackageName).toHaveBeenCalledWith("Drums, Bass");
   });
 
   it("normalises sampleType when the entry has one", () => {
-    const entry = createTransformEntry({ name: "kick.wav", sampleType: "Kicks ,Snares" });
+    const entry = createTransformEntry({
+      name: "kick.wav",
+      sampleType: "Kicks ,Snares",
+    });
     const transformer = createNormaliseCommaSpacingTransformer();
     transformer.transform(singleEntryTransformSource(entry));
     expect(entry.setSampleType).toHaveBeenCalledWith("Kicks, Snares");
@@ -103,7 +112,12 @@ describe("createNormaliseCommaSpacingTransformer", () => {
   });
 
   it("does not modify any fields when keepStructure is true", () => {
-    const entry = createTransformEntry({ name: "kick , snare.wav", packageName: "Drums , Bass", sampleType: "Kicks ,Snares", keepStructure: true });
+    const entry = createTransformEntry({
+      name: "kick , snare.wav",
+      packageName: "Drums , Bass",
+      sampleType: "Kicks ,Snares",
+      keepStructure: true,
+    });
     const transformer = createNormaliseCommaSpacingTransformer();
     transformer.transform(singleEntryTransformSource(entry));
     expect(entry.setName).not.toHaveBeenCalled();

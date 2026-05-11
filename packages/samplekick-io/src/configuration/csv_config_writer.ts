@@ -14,7 +14,8 @@ const quoteCsvField = (value: string): string => {
 const serializeRow = (entry: ConfigEntry, explicit: boolean): string => {
   const name = entry.getName();
   const path = entry.getPath();
-  const nameField = !explicit && name === getPathName(path) ? "" : quoteCsvField(name);
+  const nameField =
+    !explicit && name === getPathName(path) ? "" : quoteCsvField(name);
   const packageName = entry.getPackageName() ?? "";
   const sampleType = entry.getSampleType() ?? "";
   const skipped = entry.isSkipped();
@@ -26,7 +27,11 @@ const serializeRow = (entry: ConfigEntry, explicit: boolean): string => {
     quoteCsvField(packageName),
     quoteCsvField(sampleType),
     skipped === undefined ? (explicit ? "false" : "") : String(skipped),
-    keepStructure === undefined ? (explicit ? "false" : "") : String(keepStructure),
+    keepStructure === undefined
+      ? explicit
+        ? "false"
+        : ""
+      : String(keepStructure),
   ].join(",");
 };
 

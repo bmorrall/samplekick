@@ -5,8 +5,12 @@ import { createRegistry, createFileEntry } from "../support";
 describe("GhosthackNameTransformer integration", () => {
   it("applies createGhosthackNameTransformer to normalise Ghosthack prefixes", () => {
     const registry = createRegistry("root", [
-      createFileEntry({ path: "Ghosthack-Bass Loops/Ghosthack-Bass Loop 01.wav" }),
-      createFileEntry({ path: "Ghosthack -Drum Hits/Ghosthack -Snare Hit.wav" }),
+      createFileEntry({
+        path: "Ghosthack-Bass Loops/Ghosthack-Bass Loop 01.wav",
+      }),
+      createFileEntry({
+        path: "Ghosthack -Drum Hits/Ghosthack -Snare Hit.wav",
+      }),
       createFileEntry({ path: "Ghosthack_Synths/Ghosthack_Pad 01.wav" }),
       createFileEntry({ path: "Ghosthack - Pads/Ghosthack - Pad 01.wav" }),
       createFileEntry({ path: "Other Pack/hat.wav" }),

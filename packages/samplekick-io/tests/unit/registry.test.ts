@@ -1,11 +1,18 @@
 import { describe, it, expect, vi } from "vitest";
 import type { FileEntry, FileSource, PathStrategy } from "../../src";
 import { PathResult } from "../../src";
-import { createConfigEntry, createFileEntry, createConfigSource, createRegistry, collectFileEntries } from "../support";
+import {
+  createConfigEntry,
+  createFileEntry,
+  createConfigSource,
+  createRegistry,
+  collectFileEntries,
+} from "../support";
 
 type EachFileEntryCallback = (entry: FileEntry) => void;
 
-const collectFilePaths = (fileRepository: FileSource): string[] => collectFileEntries(fileRepository).map((entry) => entry.getPath());
+const collectFilePaths = (fileRepository: FileSource): string[] =>
+  collectFileEntries(fileRepository).map((entry) => entry.getPath());
 
 describe("Registry", () => {
   describe("getRootEntry", () => {
@@ -25,7 +32,9 @@ describe("Registry", () => {
 
   describe("setName", () => {
     it("sets the name for the entry at the given path", () => {
-      const registry = createRegistry("root", [createFileEntry({ path: "a/b" })]);
+      const registry = createRegistry("root", [
+        createFileEntry({ path: "a/b" }),
+      ]);
 
       expect(registry.setName("a/b", "renamed-b")).toBe(true);
 
@@ -48,7 +57,9 @@ describe("Registry", () => {
     });
 
     it("clears the renamed entry name when undefined is passed as the second argument", () => {
-      const registry = createRegistry("root", [createFileEntry({ path: "a/b" })]);
+      const registry = createRegistry("root", [
+        createFileEntry({ path: "a/b" }),
+      ]);
       expect(registry.setName("a/b", "renamed-b")).toBe(true);
 
       expect(registry.setName("a/b", undefined)).toBe(true);
@@ -59,7 +70,9 @@ describe("Registry", () => {
 
   describe("setPackageName", () => {
     it("sets the package name for the entry at the given path", () => {
-      const registry = createRegistry("root", [createFileEntry({ path: "a/b" })]);
+      const registry = createRegistry("root", [
+        createFileEntry({ path: "a/b" }),
+      ]);
 
       expect(registry.setPackageName("a/b", "my-pack")).toBe(true);
 
@@ -76,7 +89,9 @@ describe("Registry", () => {
     });
 
     it("sets the package name on the root node when called with only a value", () => {
-      const registry = createRegistry("root", [createFileEntry({ path: "a/b" })]);
+      const registry = createRegistry("root", [
+        createFileEntry({ path: "a/b" }),
+      ]);
 
       expect(registry.setPackageName("my-pack")).toBe(true);
 
@@ -96,7 +111,9 @@ describe("Registry", () => {
     });
 
     it("clears the package name for a specific path when undefined is passed as the second argument", () => {
-      const registry = createRegistry("root", [createFileEntry({ path: "a/b" })]);
+      const registry = createRegistry("root", [
+        createFileEntry({ path: "a/b" }),
+      ]);
       expect(registry.setPackageName("a/b", "my-pack")).toBe(true);
 
       expect(registry.setPackageName("a/b", undefined)).toBe(true);
@@ -107,7 +124,9 @@ describe("Registry", () => {
 
   describe("setSampleType", () => {
     it("sets the sample type for the entry at the given path", () => {
-      const registry = createRegistry("root", [createFileEntry({ path: "a/b" })]);
+      const registry = createRegistry("root", [
+        createFileEntry({ path: "a/b" }),
+      ]);
 
       expect(registry.setSampleType("a/b", "drums")).toBe(true);
 
@@ -121,7 +140,9 @@ describe("Registry", () => {
     });
 
     it("sets the sample type on the root node when called with only a value", () => {
-      const registry = createRegistry("root", [createFileEntry({ path: "a/b" })]);
+      const registry = createRegistry("root", [
+        createFileEntry({ path: "a/b" }),
+      ]);
 
       expect(registry.setSampleType("drums")).toBe(true);
 
@@ -141,7 +162,9 @@ describe("Registry", () => {
     });
 
     it("clears the sample type for a specific path when undefined is passed as the second argument", () => {
-      const registry = createRegistry("root", [createFileEntry({ path: "a/b" })]);
+      const registry = createRegistry("root", [
+        createFileEntry({ path: "a/b" }),
+      ]);
       expect(registry.setSampleType("a/b", "drums")).toBe(true);
 
       expect(registry.setSampleType("a/b", undefined)).toBe(true);
@@ -152,7 +175,9 @@ describe("Registry", () => {
 
   describe("setSkipped", () => {
     it("sets skipped to true for the entry at the given path", () => {
-      const registry = createRegistry("root", [createFileEntry({ path: "a/b" })]);
+      const registry = createRegistry("root", [
+        createFileEntry({ path: "a/b" }),
+      ]);
 
       expect(registry.setSkipped("a/b", true)).toBe(true);
 
@@ -160,7 +185,9 @@ describe("Registry", () => {
     });
 
     it("sets skipped to false for the entry at the given path", () => {
-      const registry = createRegistry("root", [createFileEntry({ path: "a/b" })]);
+      const registry = createRegistry("root", [
+        createFileEntry({ path: "a/b" }),
+      ]);
 
       expect(registry.setSkipped("a/b", true)).toBe(true);
       expect(registry.setSkipped("a/b", false)).toBe(true);
@@ -175,7 +202,9 @@ describe("Registry", () => {
     });
 
     it("sets skipped on the root node when called with only a value", () => {
-      const registry = createRegistry("root", [createFileEntry({ path: "a/b" })]);
+      const registry = createRegistry("root", [
+        createFileEntry({ path: "a/b" }),
+      ]);
 
       expect(registry.setSkipped(true)).toBe(true);
 
@@ -185,7 +214,9 @@ describe("Registry", () => {
 
   describe("setKeepStructure", () => {
     it("sets keepStructure for the entry at the given path", () => {
-      const registry = createRegistry("root", [createFileEntry({ path: "a/b" })]);
+      const registry = createRegistry("root", [
+        createFileEntry({ path: "a/b" }),
+      ]);
 
       expect(registry.setKeepStructure("a/b", true)).toBe(true);
 
@@ -199,7 +230,9 @@ describe("Registry", () => {
     });
 
     it("sets keepStructure on the root node when called with only a value", () => {
-      const registry = createRegistry("root", [createFileEntry({ path: "a/b" })]);
+      const registry = createRegistry("root", [
+        createFileEntry({ path: "a/b" }),
+      ]);
 
       expect(registry.setKeepStructure(true)).toBe(true);
 
@@ -209,19 +242,25 @@ describe("Registry", () => {
 
   describe("getEntry", () => {
     it("returns an entry for a single-part path", () => {
-      const registry = createRegistry("root", [createFileEntry({ path: "file" })]);
+      const registry = createRegistry("root", [
+        createFileEntry({ path: "file" }),
+      ]);
       const entry = registry.getEntry("file");
       expect(entry?.getPath()).toBe("file");
     });
 
     it("returns an entry for a multi-part path", () => {
-      const registry = createRegistry("root", [createFileEntry({ path: "a/b/c" })]);
+      const registry = createRegistry("root", [
+        createFileEntry({ path: "a/b/c" }),
+      ]);
       const entry = registry.getEntry("a/b/c");
       expect(entry?.getPath()).toBe("a/b/c");
     });
 
     it("returns the same node for the same path", () => {
-      const registry = createRegistry("root", [createFileEntry({ path: "a/b" })]);
+      const registry = createRegistry("root", [
+        createFileEntry({ path: "a/b" }),
+      ]);
       const entry1 = registry.getEntry("a/b");
       const entry2 = registry.getEntry("a/b");
       expect(entry1).toBe(entry2);
@@ -241,7 +280,9 @@ describe("Registry", () => {
 
   describe("setEntryConfig", () => {
     it("updates an existing entry at the given path", () => {
-      const registry = createRegistry("root", [createFileEntry({ path: "a/b" })]);
+      const registry = createRegistry("root", [
+        createFileEntry({ path: "a/b" }),
+      ]);
 
       expect(
         registry.setEntryConfig(
@@ -278,18 +319,22 @@ describe("Registry", () => {
       const registry = createRegistry("root", []);
 
       expect(
-        registry.setEntryConfig(createConfigEntry({ path: "", name: "renamed-root" })),
+        registry.setEntryConfig(
+          createConfigEntry({ path: "", name: "renamed-root" }),
+        ),
       ).toBe(false);
     });
   });
 
   describe("loadConfig", () => {
     it("does not overwrite a transformer-set name when the config has no name override", () => {
-      const registry = createRegistry("root", [createFileEntry({ path: "a/b" })]);
+      const registry = createRegistry("root", [
+        createFileEntry({ path: "a/b" }),
+      ]);
       registry.setName("a/b", "Transformer Name");
 
       const configSource = createConfigSource([
-        createConfigEntry({ path: "a/b", packageName: "my-pack" })
+        createConfigEntry({ path: "a/b", packageName: "my-pack" }),
       ]);
       registry.loadConfig(configSource);
 
@@ -297,7 +342,9 @@ describe("Registry", () => {
     });
 
     it("updates an existing entry when one exists at the path", () => {
-      const registry = createRegistry("root", [createFileEntry({ path: "a/b" })]);
+      const registry = createRegistry("root", [
+        createFileEntry({ path: "a/b" }),
+      ]);
       const configSource = createConfigSource([
         createConfigEntry({
           path: "a/b",
@@ -305,8 +352,8 @@ describe("Registry", () => {
           sampleType: "drums",
           skipped: true,
           keepStructure: true,
-        })
-      ])
+        }),
+      ]);
 
       registry.loadConfig(configSource);
 
@@ -318,10 +365,12 @@ describe("Registry", () => {
     });
 
     it("does not set packageName or sampleType when the entry provides neither", () => {
-      const registry = createRegistry("root", [createFileEntry({ path: "a/b" })]);
+      const registry = createRegistry("root", [
+        createFileEntry({ path: "a/b" }),
+      ]);
 
       const configSource = createConfigSource([
-        createConfigEntry({ path: "a/b", skipped: true })
+        createConfigEntry({ path: "a/b", skipped: true }),
       ]);
       registry.loadConfig(configSource);
 
@@ -335,8 +384,8 @@ describe("Registry", () => {
       const registry = createRegistry("root", []);
 
       const configSource = createConfigSource([
-        createConfigEntry({ path: "a/b", packageName: "my-pack" })
-      ])
+        createConfigEntry({ path: "a/b", packageName: "my-pack" }),
+      ]);
       registry.loadConfig(configSource);
 
       const fn = vi.fn<EachFileEntryCallback>();
@@ -351,7 +400,7 @@ describe("Registry", () => {
           path: "",
           name: "renamed-root",
           packageName: "root-pack",
-        })
+        }),
       ]);
 
       registry.loadConfig(configSource);
@@ -417,7 +466,9 @@ describe("Registry", () => {
     });
 
     it("delegates to the path strategy with the entry node", () => {
-      const registry = createRegistry("root", [createFileEntry({ path: "a/b" })]);
+      const registry = createRegistry("root", [
+        createFileEntry({ path: "a/b" }),
+      ]);
 
       const strategy: PathStrategy = {
         destinationPathFor: vi.fn().mockReturnValue(new PathResult("out/b")),
@@ -429,7 +480,9 @@ describe("Registry", () => {
     });
 
     it("uses the default SourcePathStrategy when no strategy is set", () => {
-      const registry = createRegistry("root", [createFileEntry({ path: "a/b" })]);
+      const registry = createRegistry("root", [
+        createFileEntry({ path: "a/b" }),
+      ]);
       expect(registry.destinationPathFor("a/b")).toBe("a/b");
     });
   });

@@ -1,5 +1,12 @@
 import { spawnSync } from "node:child_process";
-import { mkdtemp, readdir, readFile, rm, stat, writeFile } from "node:fs/promises";
+import {
+  mkdtemp,
+  readdir,
+  readFile,
+  rm,
+  stat,
+  writeFile,
+} from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { zipSync, strToU8 } from "fflate";
@@ -48,13 +55,19 @@ describe("path strategy", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync("node", [CLI_PATH, zipPath, "--verbose", "-o", outputDir], {
-        encoding: "utf8",
-        env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
-      });
+      const result = spawnSync(
+        "node",
+        [CLI_PATH, zipPath, "--verbose", "-o", outputDir],
+        {
+          encoding: "utf8",
+          env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
+        },
+      );
 
       expect(result.stderr).toBe("");
-      expect(result.stdout).toContain("rejected: Drums/kick.wav: Missing sampleType and packageName");
+      expect(result.stdout).toContain(
+        "rejected: Drums/kick.wav: Missing sampleType and packageName",
+      );
       expect(result.status).toBe(0);
     } finally {
       await rm(tmpDir, { recursive: true });
@@ -102,14 +115,22 @@ describe("path strategy", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync("node", [CLI_PATH, zipPath, "--preserve-paths", "-o", outputDir], {
-        encoding: "utf8",
-        env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
-      });
+      const result = spawnSync(
+        "node",
+        [CLI_PATH, zipPath, "--preserve-paths", "-o", outputDir],
+        {
+          encoding: "utf8",
+          env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
+        },
+      );
 
       expect(result.stderr).toBe("");
-      expect(await readFile(join(outputDir, "Drums/kick.wav"), "utf8")).toBe("kick-data");
-      expect(await readFile(join(outputDir, "Loops/bass.wav"), "utf8")).toBe("bass-data");
+      expect(await readFile(join(outputDir, "Drums/kick.wav"), "utf8")).toBe(
+        "kick-data",
+      );
+      expect(await readFile(join(outputDir, "Loops/bass.wav"), "utf8")).toBe(
+        "bass-data",
+      );
       expect(result.status).toBe(0);
     } finally {
       await rm(tmpDir, { recursive: true });

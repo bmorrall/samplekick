@@ -20,18 +20,19 @@ describe("DirectorySubcategoryTransformer", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync(
-        "node",
-        [CLI_PATH, zipPath, "--analyse"],
-        { encoding: "utf8", env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir } },
-      );
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--analyse"], {
+        encoding: "utf8",
+        env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+      });
 
       expect(result.status).toBe(0);
 
       const [configFile] = await readdir(dataDir);
       const csv = await readFile(join(dataDir, configFile), "utf8");
 
-      const row = csv.split("\n").find((r) => r.startsWith("Drum Loops/Latin,"));
+      const row = csv
+        .split("\n")
+        .find((r) => r.startsWith("Drum Loops/Latin,"));
       expect(row).toBe("Drum Loops/Latin,,,Drum Loops - Latin,,");
     } finally {
       await rm(tmpDir, { recursive: true });
@@ -50,11 +51,10 @@ describe("DirectorySubcategoryTransformer", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync(
-        "node",
-        [CLI_PATH, zipPath, "--analyse"],
-        { encoding: "utf8", env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir } },
-      );
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--analyse"], {
+        encoding: "utf8",
+        env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+      });
 
       expect(result.status).toBe(0);
 
@@ -62,7 +62,7 @@ describe("DirectorySubcategoryTransformer", () => {
       const csv = await readFile(join(dataDir, configFile), "utf8");
 
       const row = csv.split("\n").find((r) => r.startsWith("Bonks/Latin,"));
-      expect(row).toBe("Bonks/Latin,,,,," );
+      expect(row).toBe("Bonks/Latin,,,,,");
     } finally {
       await rm(tmpDir, { recursive: true });
     }
@@ -70,7 +70,8 @@ describe("DirectorySubcategoryTransformer", () => {
 
   it('tags "Alien Technology" under a brand-prefixed "FX & Foley" pack as "Foley - Alien Technology"', async () => {
     const zipped = zipSync({
-      "Ghosthack x Boom - Sci-Fi Horror FX & Foley/Alien Technology/alarm.wav": strToU8("data"),
+      "Ghosthack x Boom - Sci-Fi Horror FX & Foley/Alien Technology/alarm.wav":
+        strToU8("data"),
     });
 
     const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-dir-subcategory-"));
@@ -80,19 +81,26 @@ describe("DirectorySubcategoryTransformer", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync(
-        "node",
-        [CLI_PATH, zipPath, "--analyse"],
-        { encoding: "utf8", env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir } },
-      );
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--analyse"], {
+        encoding: "utf8",
+        env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+      });
 
       expect(result.status).toBe(0);
 
       const [configFile] = await readdir(dataDir);
       const csv = await readFile(join(dataDir, configFile), "utf8");
 
-      const row = csv.split("\n").find((r) => r.startsWith("Ghosthack x Boom - Sci-Fi Horror FX & Foley/Alien Technology,"));
-      expect(row).toBe("Ghosthack x Boom - Sci-Fi Horror FX & Foley/Alien Technology,,,Foley - Alien Technology,,");
+      const row = csv
+        .split("\n")
+        .find((r) =>
+          r.startsWith(
+            "Ghosthack x Boom - Sci-Fi Horror FX & Foley/Alien Technology,",
+          ),
+        );
+      expect(row).toBe(
+        "Ghosthack x Boom - Sci-Fi Horror FX & Foley/Alien Technology,,,Foley - Alien Technology,,",
+      );
     } finally {
       await rm(tmpDir, { recursive: true });
     }

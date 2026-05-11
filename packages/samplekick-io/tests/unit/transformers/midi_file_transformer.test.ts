@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { createMidiFileTransformer } from "../../../src";
-import { createTransformEntry, singleEntryTransformSource } from "../../support";
+import {
+  createTransformEntry,
+  singleEntryTransformSource,
+} from "../../support";
 
 describe("createMidiFileTransformer", () => {
   describe("when the name ends with .mid", () => {
@@ -21,7 +24,10 @@ describe("createMidiFileTransformer", () => {
     });
 
     it("prefixes an existing inherited sampleType with MIDI -", () => {
-      const entry = createTransformEntry({ name: "song.mid", sampleType: "Drum Loops" });
+      const entry = createTransformEntry({
+        name: "song.mid",
+        sampleType: "Drum Loops",
+      });
       const transformer = createMidiFileTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("MIDI - Drum Loops");
@@ -29,7 +35,10 @@ describe("createMidiFileTransformer", () => {
     });
 
     it("does not modify an entry that already has keepStructure set", () => {
-      const entry = createTransformEntry({ name: "song.mid", keepStructure: true });
+      const entry = createTransformEntry({
+        name: "song.mid",
+        keepStructure: true,
+      });
       const transformer = createMidiFileTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
@@ -39,7 +48,10 @@ describe("createMidiFileTransformer", () => {
 
   describe("when the path ends with .mid", () => {
     it("sets sampleType to MIDI when name does not include extension", () => {
-      const entry = createTransformEntry({ name: "song", path: "midi/song.mid" });
+      const entry = createTransformEntry({
+        name: "song",
+        path: "midi/song.mid",
+      });
       const transformer = createMidiFileTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("MIDI");

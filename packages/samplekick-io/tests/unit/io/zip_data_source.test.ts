@@ -66,7 +66,9 @@ describe("ZipDataSource", () => {
     });
 
     it("creates nested directories for deeply nested destination paths", async () => {
-      const dataSource = await createZipDataSource("example.zip", { "a.wav": "data" });
+      const dataSource = await createZipDataSource("example.zip", {
+        "a.wav": "data",
+      });
       const [entry] = collectConfigEntries(dataSource);
 
       await entry.copyToPath("/deep/nested/dir/a.wav");

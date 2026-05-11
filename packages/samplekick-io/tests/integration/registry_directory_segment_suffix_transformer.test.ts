@@ -30,7 +30,9 @@ describe("DirectorySegmentSuffixTransformer integration", () => {
 
   it("feeds the subcategory transformer with types resolved from segment suffixes", () => {
     const registry = createRegistry("Pack.zip", [
-      createFileEntry({ path: "Cymatics - Phoenix Vocal Loops/Latin/loop.wav" }),
+      createFileEntry({
+        path: "Cymatics - Phoenix Vocal Loops/Latin/loop.wav",
+      }),
     ]);
     registry.applyTransform(createDirectorySampleTypeTransformer());
     registry.applyTransform(createDirectorySegmentSuffixTransformer());
@@ -48,7 +50,9 @@ describe("DirectorySegmentSuffixTransformer integration", () => {
 
   it("does not tag when multiple segments each resolve to a different known type", () => {
     const registry = createRegistry("Pack.zip", [
-      createFileEntry({ path: "Brand - Signature Vocals - Phoenix Drum Loops/sample.wav" }),
+      createFileEntry({
+        path: "Brand - Signature Vocals - Phoenix Drum Loops/sample.wav",
+      }),
     ]);
     registry.applyTransform(createDirectorySegmentSuffixTransformer());
     expect(registry.toString()).toBe(

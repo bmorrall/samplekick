@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { createDirectorySegmentSuffixTransformer } from "../../../src";
-import { createTransformEntryInHierarchy, singleEntryTransformSource } from "../../support";
+import {
+  createTransformEntryInHierarchy,
+  singleEntryTransformSource,
+} from "../../support";
 
 describe("createDirectorySegmentSuffixTransformer", () => {
   describe("when a segment suffix resolves to a known type", () => {
@@ -62,7 +65,10 @@ describe("createDirectorySegmentSuffixTransformer", () => {
     it('tags "Cymatics - Imperium Analog One Shot Collection" as "One Shots" via singular form', () => {
       const entry = createTransformEntryInHierarchy(
         [],
-        { name: "Cymatics - Imperium Analog One Shot Collection", isFile: false },
+        {
+          name: "Cymatics - Imperium Analog One Shot Collection",
+          isFile: false,
+        },
         [{ name: "hit.wav" }],
       );
       const transformer = createDirectorySegmentSuffixTransformer();
@@ -86,7 +92,11 @@ describe("createDirectorySegmentSuffixTransformer", () => {
     it("does not overwrite an existing sampleType", () => {
       const entry = createTransformEntryInHierarchy(
         [],
-        { name: "Cymatics - Phoenix Vocal Loops", isFile: false, sampleType: "Loops" },
+        {
+          name: "Cymatics - Phoenix Vocal Loops",
+          isFile: false,
+          sampleType: "Loops",
+        },
         [{ name: "loop.wav" }],
       );
       const transformer = createDirectorySegmentSuffixTransformer();
@@ -130,7 +140,10 @@ describe("createDirectorySegmentSuffixTransformer", () => {
     it("does not set sampleType when multiple segments each match a different type", () => {
       const entry = createTransformEntryInHierarchy(
         [],
-        { name: "Brand - Signature Vocals - Phoenix Drum Loops", isFile: false },
+        {
+          name: "Brand - Signature Vocals - Phoenix Drum Loops",
+          isFile: false,
+        },
         [{ name: "sample.wav" }],
       );
       const transformer = createDirectorySegmentSuffixTransformer();

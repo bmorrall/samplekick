@@ -5,8 +5,12 @@ import { createRegistry, createFileEntry } from "../support";
 describe("DirectoryChildNameTransformer integration", () => {
   it("tags a directory whose file children share a common known-type segment", () => {
     const registry = createRegistry("Pack.zip", [
-      createFileEntry({ path: "Cymatics - Nebula/Cymatics - Foley - Coin Drop 1.wav" }),
-      createFileEntry({ path: "Cymatics - Nebula/Cymatics - Foley - Metal Hit.wav" }),
+      createFileEntry({
+        path: "Cymatics - Nebula/Cymatics - Foley - Coin Drop 1.wav",
+      }),
+      createFileEntry({
+        path: "Cymatics - Nebula/Cymatics - Foley - Metal Hit.wav",
+      }),
       createFileEntry({ path: "Unknown Brand/Unknown Category - Hit.wav" }),
     ]);
     registry.applyTransform(createDirectoryChildNameTransformer());

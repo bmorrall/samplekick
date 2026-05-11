@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { createDirectorySampleTypeTransformer } from "../../../src";
-import { createTransformEntryInHierarchy, singleEntryTransformSource } from "../../support";
+import {
+  createTransformEntryInHierarchy,
+  singleEntryTransformSource,
+} from "../../support";
 
 describe("createDirectorySampleTypeTransformer", () => {
   describe('when the directory is named "808s"', () => {
@@ -26,7 +29,7 @@ describe("createDirectorySampleTypeTransformer", () => {
       expect(entry.setSampleType).toHaveBeenCalledWith("808s");
     });
 
-    it('does not set sampleType when under a known-type parent', () => {
+    it("does not set sampleType when under a known-type parent", () => {
       const entry = createTransformEntryInHierarchy(
         [{ name: "Drums", sampleType: "Drums" }],
         { name: "808s", isFile: false },
@@ -61,7 +64,7 @@ describe("createDirectorySampleTypeTransformer", () => {
       expect(entry.setSampleType).toHaveBeenCalledWith("909s");
     });
 
-    it('does not set sampleType when under a known-type parent', () => {
+    it("does not set sampleType when under a known-type parent", () => {
       const entry = createTransformEntryInHierarchy(
         [{ name: "Drums", sampleType: "Drums" }],
         { name: "909s", isFile: false },
@@ -129,7 +132,7 @@ describe("createDirectorySampleTypeTransformer", () => {
       expect(entry.setSampleType).not.toHaveBeenCalled();
     });
 
-    it('resolves a compound name before falling through to the subcategory check', () => {
+    it("resolves a compound name before falling through to the subcategory check", () => {
       const entry = createTransformEntryInHierarchy(
         [{ name: "Melodies", sampleType: "Melodies" }],
         { name: "Bass and Drums", isFile: false },
@@ -196,7 +199,6 @@ describe("createDirectorySampleTypeTransformer", () => {
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Drum Loops - Various");
     });
-
   });
 
   describe("when the directory name is a compound of two known types", () => {
@@ -279,7 +281,7 @@ describe("createDirectorySampleTypeTransformer", () => {
       expect(entry.setSampleType).toHaveBeenCalledWith("Drums - 808s");
     });
 
-    it('sets sampleType from the known-type segment when the prefix is unrecognised', () => {
+    it("sets sampleType from the known-type segment when the prefix is unrecognised", () => {
       const entry = createTransformEntryInHierarchy(
         [],
         { name: "Bonks - 808s", isFile: false },

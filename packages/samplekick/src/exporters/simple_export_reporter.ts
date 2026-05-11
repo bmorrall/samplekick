@@ -10,12 +10,17 @@ const countLeafNodes = (entry: FileNode): number => {
   return children.reduce((sum, child) => sum + countLeafNodes(child), 0);
 };
 
-const pluralise = (count: number, singular: string, plural: string): string => `${count} ${count === 1 ? singular : plural}`;
-const pluraliseFiles = (count: number): string => pluralise(count, "file", "files");
-const pluraliseSamples = (count: number): string => pluralise(count, "sample", "samples");
+const pluralise = (count: number, singular: string, plural: string): string =>
+  `${count} ${count === 1 ? singular : plural}`;
+const pluraliseFiles = (count: number): string =>
+  pluralise(count, "file", "files");
+const pluraliseSamples = (count: number): string =>
+  pluralise(count, "sample", "samples");
 const formatTotal = (sampleCount: number, fileCount: number): string => {
   const samplePart = pluraliseSamples(sampleCount);
-  return fileCount > 0 ? `${samplePart}, ${pluraliseFiles(fileCount)}` : samplePart;
+  return fileCount > 0
+    ? `${samplePart}, ${pluraliseFiles(fileCount)}`
+    : samplePart;
 };
 
 export class SimpleExportReporter implements ExportReporter {
@@ -28,9 +33,17 @@ export class SimpleExportReporter implements ExportReporter {
   private rejectedSampleCount = 0;
   private rejectedFileCount = 0;
   private skippedCount = 0;
-  private readonly packageSummary = new Map<string, Map<string, { samples: number; files: number }>>();
+  private readonly packageSummary = new Map<
+    string,
+    Map<string, { samples: number; files: number }>
+  >();
 
-  constructor(output: Writable, quiet = false, _packName = "", organised = false) {
+  constructor(
+    output: Writable,
+    quiet = false,
+    _packName = "",
+    organised = false,
+  ) {
     this.output = output;
     this.quiet = quiet;
     this.organised = organised;
@@ -55,33 +68,53 @@ export class SimpleExportReporter implements ExportReporter {
     const parts: string[] = [];
     if (this.errorCount > 0) parts.push(this.formatErrors(this.errorCount));
     if (this.rejectedSampleCount > 0 || this.rejectedFileCount > 0) {
-      parts.push(this.formatRejectedCounts(this.rejectedSampleCount, this.rejectedFileCount));
+      parts.push(
+        this.formatRejectedCounts(
+          this.rejectedSampleCount,
+          this.rejectedFileCount,
+        ),
+      );
     }
-    if (this.skippedCount > 0) parts.push(this.formatSkipped(this.skippedCount));
+    if (this.skippedCount > 0) {
+      parts.push(this.formatSkipped(this.skippedCount));
+    }
     return parts.length > 0 ? ` (${parts.join(", ")})` : "";
   }
 
-  private pkgSampleTotal(types: Map<string, { samples: number; files: number }>): number {
+  private pkgSampleTotal(
+    types: Map<string, { samples: number; files: number }>,
+  ): number {
     return [...types.values()].reduce((a, b) => a + b.samples, 0);
   }
 
-  private pkgFileTotal(types: Map<string, { samples: number; files: number }>): number {
+  private pkgFileTotal(
+    types: Map<string, { samples: number; files: number }>,
+  ): number {
     return [...types.values()].reduce((a, b) => a + b.files, 0);
   }
 
-  private printPkgTypes(types: Map<string, { samples: number; files: number }>): void {
-    for (const [type, counts] of [...types].sort(([a], [b]) => a.localeCompare(b))) {
+  private printPkgTypes(
+    types: Map<string, { samples: number; files: number }>,
+  ): void {
+    for (const [type, counts] of [...types].sort(([a], [b]) =>
+      a.localeCompare(b),
+    )) {
       if (type.length > 0) {
-        const filePart = counts.files > 0 ? `, ${pluraliseFiles(counts.files)}` : "";
-        this.output.write(`  ${type}: ${pluraliseSamples(counts.samples)}${filePart}\n`);
+        const filePart =
+          counts.files > 0 ? `, ${pluraliseFiles(counts.files)}` : "";
+        this.output.write(
+          `  ${type}: ${pluraliseSamples(counts.samples)}${filePart}\n`,
+        );
       }
     }
   }
 
   private printSummary(): void {
     if (!this.organised || this.packageSummary.size === 0) return;
-    this.output.write('\n');
-    for (const [pkg, types] of [...this.packageSummary].sort(([a], [b]) => a.localeCompare(b))) {
+    this.output.write("\n");
+    for (const [pkg, types] of [...this.packageSummary].sort(([a], [b]) =>
+      a.localeCompare(b),
+    )) {
       const total = this.pkgSampleTotal(types);
       const fileTotal = this.pkgFileTotal(types);
       const filePart = fileTotal > 0 ? `, ${pluraliseFiles(fileTotal)}` : "";
@@ -113,7 +146,9 @@ export class SimpleExportReporter implements ExportReporter {
     const pkg = entry.getPackageName();
     if (pkg === undefined || pkg.length === 0) return;
 
-    const types = this.packageSummary.get(pkg) ?? new Map<string, { samples: number; files: number }>();
+    const types =
+      this.packageSummary.get(pkg) ??
+      new Map<string, { samples: number; files: number }>();
     const type = entry.getSampleType() ?? "";
     const current = types.get(type) ?? { samples: 0, files: 0 };
     if (AUDIO_EXTENSIONS.has(extname(destRelPath).toLowerCase())) {
@@ -126,7 +161,11 @@ export class SimpleExportReporter implements ExportReporter {
 
   onAfterWrite(entry: ConfigEntry, destRelPath: string, error?: Error): void {
     const isAudio = AUDIO_EXTENSIONS.has(extname(destRelPath).toLowerCase());
-    if (isAudio) { this.totalSampleCount += 1; } else { this.totalFileCount += 1; }
+    if (isAudio) {
+      this.totalSampleCount += 1;
+    } else {
+      this.totalFileCount += 1;
+    }
     if (error !== undefined) {
       this.errorCount += 1;
       this.output.write(`failed: ${destRelPath}: ${error.message}\n`);
@@ -139,8 +178,14 @@ export class SimpleExportReporter implements ExportReporter {
   }
 
   onReject(entry: ConfigEntry, reason: string): void {
-    const isAudio = AUDIO_EXTENSIONS.has(extname(entry.getPath()).toLowerCase());
-    if (isAudio) { this.rejectedSampleCount += 1; } else { this.rejectedFileCount += 1; }
+    const isAudio = AUDIO_EXTENSIONS.has(
+      extname(entry.getPath()).toLowerCase(),
+    );
+    if (isAudio) {
+      this.rejectedSampleCount += 1;
+    } else {
+      this.rejectedFileCount += 1;
+    }
     this.output.write(`rejected: ${entry.getPath()}: ${reason}\n`);
   }
 

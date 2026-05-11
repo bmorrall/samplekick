@@ -23,8 +23,10 @@ describe("EntryNode", () => {
     const entry1 = createFileEntry({ path: "foo/bar1.wav" });
     const entry2 = createFileEntry({ path: "foo/bar2.wav" });
     const node = EntryNode.fromEntry(entry1);
-    expect(() => { node.replaceEntry(entry2); }).toThrow(
-      'Entry path "foo/bar2.wav" does not match node path "foo/bar1.wav"'
+    expect(() => {
+      node.replaceEntry(entry2);
+    }).toThrow(
+      'Entry path "foo/bar2.wav" does not match node path "foo/bar1.wav"',
     );
   });
 
@@ -35,7 +37,9 @@ describe("EntryNode", () => {
     });
 
     it("allows a root node to have an internal path that does not match its name", () => {
-      const node = EntryNode.fromEntry(createFileEntry({ path: "", name: "root" }));
+      const node = EntryNode.fromEntry(
+        createFileEntry({ path: "", name: "root" }),
+      );
       expect(node.getName()).toBe("root");
       expect(node.getPath()).toBe("");
     });
@@ -93,7 +97,9 @@ describe("EntryNode", () => {
     const root = EntryNode.fromEntry(createFileEntry({ path: "root" }));
     const child = root.addNode(createFileEntry({ path: "child" }));
 
-    expect(() => child.addNode(createFileEntry({ path: "grandchild" }))).toThrow(
+    expect(() =>
+      child.addNode(createFileEntry({ path: "grandchild" })),
+    ).toThrow(
       'Entry path "grandchild" does not match expected path "child/grandchild"',
     );
   });
@@ -335,7 +341,9 @@ describe("EntryNode", () => {
     it("throws if a node already exists at that path", () => {
       const root = EntryNode.blankEntry("root");
       root.addNode(EntryNode.blankEntry("child"));
-      const duplicate = (): void => { root.addNode(EntryNode.blankEntry("child")); };
+      const duplicate = (): void => {
+        root.addNode(EntryNode.blankEntry("child"));
+      };
       expect(duplicate).toThrow('Node already exists at path "child"');
     });
 
@@ -411,12 +419,7 @@ describe("EntryNode", () => {
       root.addNode(EntryNode.blankEntry("a"));
       root.addNode(EntryNode.blankEntry("b"));
       expect(root.toString()).toBe(
-        [
-          "root",
-          "├── a [?]",
-          "└── b [?]",
-          "",
-        ].join("\n"),
+        ["root", "├── a [?]", "└── b [?]", ""].join("\n"),
       );
     });
 
@@ -442,11 +445,7 @@ describe("EntryNode", () => {
       const child = root.addNode(EntryNode.blankEntry("child"));
       child.addNode(EntryNode.blankEntry("child/grandchild"));
       expect(child.toString()).toBe(
-        [
-          "child [pkg:my-pkg, type:typeA]",
-          "└── grandchild",
-          "",
-        ].join("\n"),
+        ["child [pkg:my-pkg, type:typeA]", "└── grandchild", ""].join("\n"),
       );
     });
   });

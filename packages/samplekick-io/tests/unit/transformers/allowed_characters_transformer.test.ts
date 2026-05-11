@@ -1,8 +1,27 @@
 import { describe, expect, it } from "vitest";
 import { createAllowedCharactersTransform } from "../../../src";
-import { createTransformEntry, singleEntryTransformSource } from "../../support";
+import {
+  createTransformEntry,
+  singleEntryTransformSource,
+} from "../../support";
 
-const testPunctuation = new Set([" ", "-", "_", "!", "&", "(", ")", "+", ",", "=", "@", "[", "]", "{", "}"]);
+const testPunctuation = new Set([
+  " ",
+  "-",
+  "_",
+  "!",
+  "&",
+  "(",
+  ")",
+  "+",
+  ",",
+  "=",
+  "@",
+  "[",
+  "]",
+  "{",
+  "}",
+]);
 
 const transform = createAllowedCharactersTransform(testPunctuation);
 
@@ -60,7 +79,12 @@ describe("createAllowedCharactersTransform", () => {
   });
 
   it("does not modify any fields when keepStructure is true", () => {
-    const entry = createTransformEntry({ name: "Drüms", packageName: "Påck", sampleType: "Drüms", keepStructure: true });
+    const entry = createTransformEntry({
+      name: "Drüms",
+      packageName: "Påck",
+      sampleType: "Drüms",
+      keepStructure: true,
+    });
     transform.transform(singleEntryTransformSource(entry));
     expect(entry.setName).not.toHaveBeenCalled();
     expect(entry.setPackageName).not.toHaveBeenCalled();
@@ -68,13 +92,19 @@ describe("createAllowedCharactersTransform", () => {
   });
 
   it("sanitizes packageName when the entry has one", () => {
-    const entry = createTransformEntry({ name: "kick.wav", packageName: "SP404 Pack" });
+    const entry = createTransformEntry({
+      name: "kick.wav",
+      packageName: "SP404 Pack",
+    });
     transform.transform(singleEntryTransformSource(entry));
     expect(entry.setPackageName).toHaveBeenCalledWith("SP404 Pack");
   });
 
   it("sanitizes sampleType when the entry has one", () => {
-    const entry = createTransformEntry({ name: "kick.wav", sampleType: "Drums" });
+    const entry = createTransformEntry({
+      name: "kick.wav",
+      sampleType: "Drums",
+    });
     transform.transform(singleEntryTransformSource(entry));
     expect(entry.setSampleType).toHaveBeenCalledWith("Drums");
   });

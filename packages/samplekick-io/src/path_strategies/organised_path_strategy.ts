@@ -32,6 +32,8 @@ export const OrganisedPathStrategy: PathStrategy = {
     if (packageName === undefined) {
       return new SkipResult("Missing packageName");
     }
-    return new PathResult(`${sampleType}/${packageName}/${structuredPathFor(node)}`);
+    return new PathResult(
+      `${sampleType}/${packageName}/${structuredPathFor(node)}`,
+    );
   },
 };

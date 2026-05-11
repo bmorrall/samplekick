@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { createSquashNameTransformer } from "../../../src";
-import { createTransformEntry, singleEntryTransformSource } from "../../support";
+import {
+  createTransformEntry,
+  singleEntryTransformSource,
+} from "../../support";
 
 describe("createSquashNameTransformer", () => {
   it("squashes a space-separated name to camelCase", () => {
@@ -46,14 +49,20 @@ describe("createSquashNameTransformer", () => {
   });
 
   it("squashes packageName when the entry has one", () => {
-    const entry = createTransformEntry({ name: "kick.wav", packageName: "My Pack" });
+    const entry = createTransformEntry({
+      name: "kick.wav",
+      packageName: "My Pack",
+    });
     const transformer = createSquashNameTransformer();
     transformer.transform(singleEntryTransformSource(entry));
     expect(entry.setPackageName).toHaveBeenCalledWith("MyPack");
   });
 
   it("squashes sampleType when the entry has one", () => {
-    const entry = createTransformEntry({ name: "kick.wav", sampleType: "Bass Loops" });
+    const entry = createTransformEntry({
+      name: "kick.wav",
+      sampleType: "Bass Loops",
+    });
     const transformer = createSquashNameTransformer();
     transformer.transform(singleEntryTransformSource(entry));
     expect(entry.setSampleType).toHaveBeenCalledWith("BassLoops");
@@ -82,7 +91,12 @@ describe("createSquashNameTransformer", () => {
   });
 
   it("does not modify any fields when keepStructure is true", () => {
-    const entry = createTransformEntry({ name: "Bass Loops", packageName: "My Pack", sampleType: "Drum Hits", keepStructure: true });
+    const entry = createTransformEntry({
+      name: "Bass Loops",
+      packageName: "My Pack",
+      sampleType: "Drum Hits",
+      keepStructure: true,
+    });
     const transformer = createSquashNameTransformer();
     transformer.transform(singleEntryTransformSource(entry));
     expect(entry.setName).not.toHaveBeenCalled();

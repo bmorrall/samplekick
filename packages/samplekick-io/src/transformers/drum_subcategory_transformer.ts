@@ -1,22 +1,22 @@
-import type { Transform, TransformEntry } from '../types';
-import { stripIgnoredSuffix } from './folder_lookup';
+import type { Transform, TransformEntry } from "../types";
+import { stripIgnoredSuffix } from "./folder_lookup";
 
-const DRUM_KEYS = ['drum', 'drums'] as const;
-const DASH_SEP = ' - ';
+const DRUM_KEYS = ["drum", "drums"] as const;
+const DASH_SEP = " - ";
 
 // Maps bare subcategory keywords (singular and plural) to their canonical label.
 const SUBCATEGORY_MAP = new Map<string, string>([
-  ['fill',   'Fills'],
-  ['fills',  'Fills'],
-  ['break',  'Breaks'],
-  ['breaks', 'Breaks'],
+  ["fill", "Fills"],
+  ["fills", "Fills"],
+  ["break", "Breaks"],
+  ["breaks", "Breaks"],
 ]);
 
 function hasDrumAncestor(entry: TransformEntry): boolean {
   let ancestor = entry.getParentNode();
   while (ancestor !== undefined) {
     const name = ancestor.getName().toLowerCase();
-    if (name === 'drum' || name === 'drums') return true;
+    if (name === "drum" || name === "drums") return true;
     ancestor = ancestor.getParentNode();
   }
   return false;
@@ -38,10 +38,15 @@ function resolveDrumSubcategoryType(segment: string): string | undefined {
   return undefined;
 }
 
-function setFromUniqueDashSegment(entry: TransformEntry, nameLower: string): void {
+function setFromUniqueDashSegment(
+  entry: TransformEntry,
+  nameLower: string,
+): void {
   if (!nameLower.includes(DASH_SEP)) return;
   const parts = nameLower.split(DASH_SEP);
-  const matches = parts.map(resolveDrumSubcategoryType).filter((t): t is string => t !== undefined);
+  const matches = parts
+    .map(resolveDrumSubcategoryType)
+    .filter((t): t is string => t !== undefined);
   if (matches.length === 1) entry.setSampleType(matches[0]);
 }
 
@@ -95,4 +100,5 @@ const _singleton: Transform = {
       setFromUniqueDashSegment(entry, nameLower);
     });
   },
-};export const createDrumSubcategoryTransformer = (): Transform => _singleton;
+};
+export const createDrumSubcategoryTransformer = (): Transform => _singleton;

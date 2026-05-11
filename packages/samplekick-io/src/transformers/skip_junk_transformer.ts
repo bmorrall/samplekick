@@ -1,4 +1,4 @@
-import type { Transform } from '../types';
+import type { Transform } from "../types";
 
 /**
  * SkipJunkTransformer
@@ -8,7 +8,7 @@ const _singleton: Transform = {
   transform: (source) => {
     source.eachTransformEntry((entry) => {
       const name = entry.getName();
-      if (name === '__MACOSX' || name.startsWith('.')) {
+      if (name === "__MACOSX" || name.startsWith(".")) {
         entry.setSkipped(true);
       }
     });

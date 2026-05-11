@@ -1,9 +1,5 @@
 import type { Writable } from "node:stream";
-import type {
-  ConfigSource,
-  ConfigEntry,
-  ConfigWriter,
-} from "../types";
+import type { ConfigSource, ConfigEntry, ConfigWriter } from "../types";
 import { getPathName } from "../path_utils";
 
 export interface DataSourceEntryJSON {

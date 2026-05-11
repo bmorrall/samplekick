@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { createNormaliseBpmTagTransformer } from "../../../src";
-import { createTransformEntry, singleEntryTransformSource } from "../../support";
+import {
+  createTransformEntry,
+  singleEntryTransformSource,
+} from "../../support";
 
 describe("createNormaliseBpmTagTransformer", () => {
   describe("number before label", () => {
@@ -85,28 +88,40 @@ describe("createNormaliseBpmTagTransformer", () => {
   });
 
   it("normalises packageName when the entry has one", () => {
-    const entry = createTransformEntry({ name: "kick.wav", packageName: "Drums 120 BPM" });
+    const entry = createTransformEntry({
+      name: "kick.wav",
+      packageName: "Drums 120 BPM",
+    });
     const transformer = createNormaliseBpmTagTransformer();
     transformer.transform(singleEntryTransformSource(entry));
     expect(entry.setPackageName).toHaveBeenCalledWith("Drums 120bpm");
   });
 
   it("normalises sampleType when the entry has one", () => {
-    const entry = createTransformEntry({ name: "kick.wav", sampleType: "Loops 120BPM" });
+    const entry = createTransformEntry({
+      name: "kick.wav",
+      sampleType: "Loops 120BPM",
+    });
     const transformer = createNormaliseBpmTagTransformer();
     transformer.transform(singleEntryTransformSource(entry));
     expect(entry.setSampleType).toHaveBeenCalledWith("Loops 120bpm");
   });
 
   it("does not act on a keepStructure entry", () => {
-    const entry = createTransformEntry({ name: "Drums 120BPM.wav", keepStructure: true });
+    const entry = createTransformEntry({
+      name: "Drums 120BPM.wav",
+      keepStructure: true,
+    });
     const transformer = createNormaliseBpmTagTransformer();
     transformer.transform(singleEntryTransformSource(entry));
     expect(entry.setName).not.toHaveBeenCalled();
   });
 
   it("does not act on a skipped entry", () => {
-    const entry = createTransformEntry({ name: "Drums 120BPM.wav", skipped: true });
+    const entry = createTransformEntry({
+      name: "Drums 120BPM.wav",
+      skipped: true,
+    });
     const transformer = createNormaliseBpmTagTransformer();
     transformer.transform(singleEntryTransformSource(entry));
     expect(entry.setName).not.toHaveBeenCalled();

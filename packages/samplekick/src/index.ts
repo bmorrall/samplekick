@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint-disable max-lines -- TODO: split this file to bring it under the max-lines limit */
 import { createWriteStream } from "node:fs";
 import { Writable } from "node:stream";
 import { mkdir } from "node:fs/promises";
@@ -45,7 +46,11 @@ import {
 } from "samplekick-io";
 import { loadConfig, openConfigInEditor, getDataDir } from "./config_loader";
 import type { DevicePreset } from "samplekick-io";
-import { SimpleExportReporter, PrettyExportReporter, DryRunReporter } from "./exporters";
+import {
+  SimpleExportReporter,
+  PrettyExportReporter,
+  DryRunReporter,
+} from "./exporters";
 import { AudioConverter } from "./post_processors";
 import { createFfmpegRunner, getFfmpegVersion } from "./adaptors";
 import chalk from "chalk";
@@ -70,17 +75,23 @@ const buildHelpText = (): string => {
   for (const preset of Object.values(DEVICE_PRESETS)) {
     if (!seen.has(preset)) seen.add(preset);
   }
-  const sorted = [...seen].sort((a, b) => a.displayName.localeCompare(b.displayName));
+  const sorted = [...seen].sort((a, b) =>
+    a.displayName.localeCompare(b.displayName),
+  );
   for (const preset of sorted) {
     const aliasList = Object.entries(DEVICE_PRESETS)
       .filter(([, p]) => p === preset)
       .map(([key]) => key)
       .sort((a, b) => b.length - a.length);
     const [mainAlias = "", ...restAliases] = aliasList;
-    const conversionSuffix = preset.targetBitDepth !== undefined && preset.targetSampleRate !== undefined
-      ? ` (converts to ${formatBitDepth(preset.targetBitDepth)} ${formatSampleRate(preset.targetSampleRate)})`
-      : "";
-    deviceLines.push(`  ${mainAlias.padEnd(DEVICE_MAIN_ALIAS_PAD_WIDTH)}${preset.displayName}${conversionSuffix}`);
+    const conversionSuffix =
+      preset.targetBitDepth !== undefined &&
+      preset.targetSampleRate !== undefined
+        ? ` (converts to ${formatBitDepth(preset.targetBitDepth)} ${formatSampleRate(preset.targetSampleRate)})`
+        : "";
+    deviceLines.push(
+      `  ${mainAlias.padEnd(DEVICE_MAIN_ALIAS_PAD_WIDTH)}${preset.displayName}${conversionSuffix}`,
+    );
     if (restAliases.length > 0) {
       deviceLines.push(`    ${restAliases.join(", ")}`);
     }
@@ -129,7 +140,10 @@ const SEPARATOR = `\n${"─".repeat(SEPARATOR_WIDTH)}\n\n`;
 const makeSafeStdout = (stream: NodeJS.WriteStream): Writable => {
   let broken = false;
   stream.on("error", (err: NodeJS.ErrnoException) => {
-    if (err.code === "EPIPE") { broken = true; return; }
+    if (err.code === "EPIPE") {
+      broken = true;
+      return;
+    }
     throw err;
   });
   return new Writable({
@@ -140,16 +154,28 @@ const makeSafeStdout = (stream: NodeJS.WriteStream): Writable => {
   });
 };
 
-const saveConfigToStream = (registry: Registry, stream: Writable, options: { explicit?: boolean } = {}): void => {
-  new CsvConfigWriter(stream, { explicit: options.explicit }).writeConfig(registry);
+const saveConfigToStream = (
+  registry: Registry,
+  stream: Writable,
+  options: { explicit?: boolean } = {},
+): void => {
+  new CsvConfigWriter(stream, { explicit: options.explicit }).writeConfig(
+    registry,
+  );
 };
 
-const saveConfigToPath = async (registry: Registry, savePath: string, options: { explicit?: boolean } = {}): Promise<void> => {
+const saveConfigToPath = async (
+  registry: Registry,
+  savePath: string,
+  options: { explicit?: boolean } = {},
+): Promise<void> => {
   await mkdir(dirname(savePath), { recursive: true });
   const stream = createWriteStream(savePath);
   saveConfigToStream(registry, stream, options);
   await finished(stream).catch((err: unknown) => {
-    console.error(`Warning: could not save config to ${savePath}: ${err instanceof Error ? err.message : String(err)}`);
+    console.error(
+      `Warning: could not save config to ${savePath}: ${err instanceof Error ? err.message : String(err)}`,
+    );
   });
 };
 
@@ -225,11 +251,15 @@ if (zipPaths.length > 1) {
     process.exit(1);
   }
   if (values["write-config"] !== undefined) {
-    console.error("Error: --write-config cannot be used with multiple input files");
+    console.error(
+      "Error: --write-config cannot be used with multiple input files",
+    );
     process.exit(1);
   }
   if (values["dump-config"] === true) {
-    console.error("Error: --dump-config cannot be used with multiple input files");
+    console.error(
+      "Error: --dump-config cannot be used with multiple input files",
+    );
     process.exit(1);
   }
   if (values.edit === true) {
@@ -242,19 +272,38 @@ if (zipPaths.length > 1) {
   }
 }
 
-const dataDir = process.env.SAMPLEKICK_DATA_DIR ?? getDataDir("samplekick", process.platform, process.env);
-const pathStrategy = values["preserve-paths"] === true ? SourcePathStrategy : OrganisedPathStrategy;
+const dataDir =
+  process.env.SAMPLEKICK_DATA_DIR ??
+  getDataDir("samplekick", process.platform, process.env);
+const pathStrategy =
+  values["preserve-paths"] === true
+    ? SourcePathStrategy
+    : OrganisedPathStrategy;
 
-let conversion: { targetBitDepth: number; targetSampleRate: number; ffmpegVersion: string } | undefined = undefined;
+let conversion:
+  | { targetBitDepth: number; targetSampleRate: number; ffmpegVersion: string }
+  | undefined = undefined;
 if (values.convert === true) {
-  if (devicePreset?.targetBitDepth === undefined || devicePreset.targetSampleRate === undefined) {
-    console.error(`Error: device "${values.device ?? ""}" does not support --convert (no conversion settings defined)`);
+  if (
+    devicePreset?.targetBitDepth === undefined ||
+    devicePreset.targetSampleRate === undefined
+  ) {
+    console.error(
+      `Error: device "${values.device ?? ""}" does not support --convert (no conversion settings defined)`,
+    );
     process.exit(1);
   }
   const { targetBitDepth, targetSampleRate } = devicePreset;
   const ffmpegVersion = await getFfmpegVersion().catch((err: unknown) => {
-    if (typeof err === "object" && err !== null && "code" in err && err.code === "ENOENT") {
-      console.error("Error: ffmpeg not found. Please install ffmpeg to use --convert.");
+    if (
+      typeof err === "object" &&
+      err !== null &&
+      "code" in err &&
+      err.code === "ENOENT"
+    ) {
+      console.error(
+        "Error: ffmpeg not found. Please install ffmpeg to use --convert.",
+      );
       process.exit(1);
     }
     throw err;
@@ -266,38 +315,62 @@ if (values.convert === true) {
 for (const [zipIndex, zipPath] of zipPaths.entries()) {
   if (zipIndex > 0) process.stdout.write(SEPARATOR);
 
-  const reporter: ExportReporter = chalk.level > 0
-    ? new PrettyExportReporter(process.stdout, chalk, { quiet: values.quiet === true, displayName: basename(zipPath), organised: values["preserve-paths"] !== true })
-    : new SimpleExportReporter(makeSafeStdout(process.stdout), values.quiet === true, basename(zipPath), values["preserve-paths"] !== true);
+  const reporter: ExportReporter =
+    chalk.level > 0
+      ? new PrettyExportReporter(process.stdout, chalk, {
+          quiet: values.quiet === true,
+          displayName: basename(zipPath),
+          organised: values["preserve-paths"] !== true,
+        })
+      : new SimpleExportReporter(
+          makeSafeStdout(process.stdout),
+          values.quiet === true,
+          basename(zipPath),
+          values["preserve-paths"] !== true,
+        );
 
   if (values.debug !== true && values["dump-config"] !== true) {
     reporter.onStart(zipPath);
   }
 
-  const dataSource = await ZipDataSource.fromFile(zipPath).catch((err: unknown) => {
-    if (typeof err === "object" && err !== null && "code" in err && err.code === "ENOENT") {
-      console.error(`Error: file not found: ${zipPath}`);
-      process.exit(1);
-    }
-    if (err instanceof Error && err.message.includes("not zip file")) {
-      console.error(`Error: not a valid zip file: ${zipPath}`);
-      process.exit(1);
-    }
-    throw err;
-  });
+  const dataSource = await ZipDataSource.fromFile(zipPath).catch(
+    (err: unknown) => {
+      if (
+        typeof err === "object" &&
+        err !== null &&
+        "code" in err &&
+        err.code === "ENOENT"
+      ) {
+        console.error(`Error: file not found: ${zipPath}`);
+        process.exit(1);
+      }
+      if (err instanceof Error && err.message.includes("not zip file")) {
+        console.error(`Error: not a valid zip file: ${zipPath}`);
+        process.exit(1);
+      }
+      throw err;
+    },
+  );
 
   const registry = new Registry(dataSource);
 
   // Debug messages are suppressed unless --verbose is passed
-  const debugLog = values.verbose === true ? reporter.onDebug.bind(reporter) : undefined;
+  const debugLog =
+    values.verbose === true ? reporter.onDebug.bind(reporter) : undefined;
 
   if (conversion !== undefined) {
-    registry.addPostProcessor(new AudioConverter(createFfmpegRunner(), {
-      onError: (destPath, error) => { reporter.onError(`Could not convert ${basename(destPath)}: ${error.message}`); },
-      onDebug: debugLog,
-      targetBitDepth: conversion.targetBitDepth,
-      targetSampleRate: conversion.targetSampleRate,
-    }));
+    registry.addPostProcessor(
+      new AudioConverter(createFfmpegRunner(), {
+        onError: (destPath, error) => {
+          reporter.onError(
+            `Could not convert ${basename(destPath)}: ${error.message}`,
+          );
+        },
+        onDebug: debugLog,
+        targetBitDepth: conversion.targetBitDepth,
+        targetSampleRate: conversion.targetSampleRate,
+      }),
+    );
   }
 
   if (values["allow-junk"] !== true) {
@@ -345,13 +418,20 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
     registry.applyTransform(createMidiFileTransformer());
   }
 
-  const configPath = values.config === undefined ? undefined : resolve(values.config);
-  const autoConfigPath = await loadConfig(registry, configPath, dataDir, { skipAutoConfig: values.rebuild === true }).catch((err: unknown) => {
+  const configPath =
+    values.config === undefined ? undefined : resolve(values.config);
+  const autoConfigPath = await loadConfig(registry, configPath, dataDir, {
+    skipAutoConfig: values.rebuild === true,
+  }).catch((err: unknown) => {
     console.error(err instanceof Error ? err.message : String(err));
     process.exit(1);
   });
 
-  if (values.analyse === true && autoConfigPath !== undefined && values.bake !== true) {
+  if (
+    values.analyse === true &&
+    autoConfigPath !== undefined &&
+    values.bake !== true
+  ) {
     await saveConfigToPath(registry, autoConfigPath);
   }
 
@@ -390,7 +470,9 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
   if (values.edit === true) {
     const editPath = configPath ?? autoConfigPath;
     if (editPath === undefined) {
-      console.error("Error: no config file to edit. Run an export first to create an auto-config, or specify one with --config.");
+      console.error(
+        "Error: no config file to edit. Run an export first to create an auto-config, or specify one with --config.",
+      );
       process.exit(1);
     }
     openConfigInEditor(editPath, process.platform, process.env);
@@ -400,44 +482,77 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
   if (values["write-config"] !== undefined) {
     const writePath = resolve(values["write-config"]);
     const fileStream = createWriteStream(writePath);
-    saveConfigToStream(registry, fileStream, { explicit: values.bake === true });
+    saveConfigToStream(registry, fileStream, {
+      explicit: values.bake === true,
+    });
     await finished(fileStream).catch((err: unknown) => {
-      console.error(`Error: could not write to ${writePath}: ${err instanceof Error ? err.message : String(err)}`);
+      console.error(
+        `Error: could not write to ${writePath}: ${err instanceof Error ? err.message : String(err)}`,
+      );
       process.exit(1);
     });
   }
 
   if (values["dump-config"] === true) {
-    saveConfigToStream(registry, process.stdout, { explicit: values.bake === true });
+    saveConfigToStream(registry, process.stdout, {
+      explicit: values.bake === true,
+    });
     process.exit(0);
   }
 
   if (values.bake === true) {
-    await saveConfigToPath(registry, buildAutoConfigPath(registry, dataDir), { explicit: true });
+    await saveConfigToPath(registry, buildAutoConfigPath(registry, dataDir), {
+      explicit: true,
+    });
   }
 
   if (values.output === undefined) {
     const dryRun = new DryRunReporter(reporter);
-    await registry.exportToDirectory(undefined, {
-      onAfterWrite: (e, p, err) => { dryRun.onAfterWrite(e, p, err); },
-      onReject: (e, r) => { dryRun.onReject(e, r); },
-      onSkip: (e) => { dryRun.onSkip(e); },
-    }).catch((err: unknown) => {
-      console.error(`Error: ${err instanceof Error ? err.message : String(err)}`);
-      process.exit(1);
-    });
+    await registry
+      .exportToDirectory(undefined, {
+        onAfterWrite: (e, p, err) => {
+          dryRun.onAfterWrite(e, p, err);
+        },
+        onReject: (e, r) => {
+          dryRun.onReject(e, r);
+        },
+        onSkip: (e) => {
+          dryRun.onSkip(e);
+        },
+      })
+      .catch((err: unknown) => {
+        console.error(
+          `Error: ${err instanceof Error ? err.message : String(err)}`,
+        );
+        process.exit(1);
+      });
     dryRun.flush();
   } else {
     const destPath = resolve(values.output);
-    await registry.exportToDirectory(destPath, {
-      onBeforeWrite: (e, p) => { reporter.onBeforeWrite?.(e, p); },
-      onAfterWrite: (e, p, err) => { reporter.onAfterWrite(e, p, err); },
-      onReject: (e, r) => { reporter.onReject(e, r); },
-      onSkip: values.verbose === true ? (e) => { reporter.onSkip(e); } : undefined,
-    }).catch((err: unknown) => {
-      console.error(`Error: could not export to ${destPath}: ${err instanceof Error ? err.message : String(err)}`);
-      process.exit(1);
-    });
+    await registry
+      .exportToDirectory(destPath, {
+        onBeforeWrite: (e, p) => {
+          reporter.onBeforeWrite?.(e, p);
+        },
+        onAfterWrite: (e, p, err) => {
+          reporter.onAfterWrite(e, p, err);
+        },
+        onReject: (e, r) => {
+          reporter.onReject(e, r);
+        },
+        onSkip:
+          values.verbose === true
+            ? (e) => {
+                reporter.onSkip(e);
+              }
+            : undefined,
+      })
+      .catch((err: unknown) => {
+        console.error(
+          `Error: could not export to ${destPath}: ${err instanceof Error ? err.message : String(err)}`,
+        );
+        process.exit(1);
+      });
     reporter.onComplete(destPath);
   }
 }

@@ -6,7 +6,11 @@ import { Readable } from "node:stream";
 import { CsvConfigReader } from "samplekick-io";
 import type { Registry } from "samplekick-io";
 
-export const getDataDir = (appName: string, platform: NodeJS.Platform, env: NodeJS.ProcessEnv): string => {
+export const getDataDir = (
+  appName: string,
+  platform: NodeJS.Platform,
+  env: NodeJS.ProcessEnv,
+): string => {
   const home = homedir();
   if (platform === "linux") {
     return join(env.XDG_DATA_HOME ?? join(home, ".local", "share"), appName);
@@ -17,7 +21,11 @@ export const getDataDir = (appName: string, platform: NodeJS.Platform, env: Node
   }
 };
 
-export const openConfigInEditor = (configPath: string, platform: NodeJS.Platform, env: NodeJS.ProcessEnv): void => {
+export const openConfigInEditor = (
+  configPath: string,
+  platform: NodeJS.Platform,
+  env: NodeJS.ProcessEnv,
+): void => {
   const editor = env.VISUAL ?? env.EDITOR;
   if (editor !== undefined) {
     spawnSync(editor, [configPath], { stdio: "inherit" });
@@ -30,30 +38,50 @@ export const openConfigInEditor = (configPath: string, platform: NodeJS.Platform
   }
 };
 
-export const loadConfig = async (registry: Registry, configPath: string | undefined, dataDir: string, options: { skipAutoConfig?: boolean } = {}): Promise<string | undefined> => {
+export const loadConfig = async (
+  registry: Registry,
+  configPath: string | undefined,
+  dataDir: string,
+  options: { skipAutoConfig?: boolean } = {},
+): Promise<string | undefined> => {
   if (configPath === undefined) {
     const autoConfigPath = join(dataDir, `${registry.getFingerprint()}.csv`);
     if (options.skipAutoConfig === true) {
       return autoConfigPath;
     }
-    const content = await readFile(autoConfigPath, "utf8").catch((err: unknown) => {
-      if (typeof err === "object" && err !== null && "code" in err && err.code === "ENOENT") {
-        return undefined;
-      }
-      throw err;
-    });
+    const content = await readFile(autoConfigPath, "utf8").catch(
+      (err: unknown) => {
+        if (
+          typeof err === "object" &&
+          err !== null &&
+          "code" in err &&
+          err.code === "ENOENT"
+        ) {
+          return undefined;
+        }
+        throw err;
+      },
+    );
     if (content !== undefined) {
       try {
         registry.loadConfig(new CsvConfigReader(Readable.from([content])));
       } catch (err) {
-        throw new Error(`Error: auto-config could not be loaded from ${autoConfigPath} — ${String(err)}`, { cause: err });
+        throw new Error(
+          `Error: auto-config could not be loaded from ${autoConfigPath} — ${String(err)}`,
+          { cause: err },
+        );
       }
     }
     return autoConfigPath;
   }
 
   const content = await readFile(configPath, "utf8").catch((err: unknown) => {
-    if (typeof err === "object" && err !== null && "code" in err && err.code === "ENOENT") {
+    if (
+      typeof err === "object" &&
+      err !== null &&
+      "code" in err &&
+      err.code === "ENOENT"
+    ) {
       throw new Error(`Error: config file not found: ${configPath}`);
     }
     throw err;

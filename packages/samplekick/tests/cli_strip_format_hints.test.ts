@@ -23,11 +23,10 @@ describe("StripFormatHintsTransformer", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync(
-        "node",
-        [CLI_PATH, zipPath, "--analyse"],
-        { encoding: "utf8", env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir } },
-      );
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--analyse"], {
+        encoding: "utf8",
+        env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+      });
 
       expect(result.status).toBe(0);
 
@@ -35,10 +34,18 @@ describe("StripFormatHintsTransformer", () => {
       const csv = await readFile(join(dataDir, configFile), "utf8");
       const rows = csv.split("\n");
 
-      expect(rows.find((r) => r.startsWith("Samples (WAV),"))).toBe("Samples (WAV),Samples,,,,");
-      expect(rows.find((r) => r.startsWith("Drums - 24bit,"))).toBe("Drums - 24bit,Drums,,Drums,,");
-      expect(rows.find((r) => r.startsWith("Bass - 44.1kHz,"))).toBe("Bass - 44.1kHz,Bass,,Bass,,");
-      expect(rows.find((r) => r.startsWith("Loops [STEMS],"))).toBe("Loops [STEMS],,,,,");
+      expect(rows.find((r) => r.startsWith("Samples (WAV),"))).toBe(
+        "Samples (WAV),Samples,,,,",
+      );
+      expect(rows.find((r) => r.startsWith("Drums - 24bit,"))).toBe(
+        "Drums - 24bit,Drums,,Drums,,",
+      );
+      expect(rows.find((r) => r.startsWith("Bass - 44.1kHz,"))).toBe(
+        "Bass - 44.1kHz,Bass,,Bass,,",
+      );
+      expect(rows.find((r) => r.startsWith("Loops [STEMS],"))).toBe(
+        "Loops [STEMS],,,,,",
+      );
     } finally {
       await rm(tmpDir, { recursive: true });
     }
