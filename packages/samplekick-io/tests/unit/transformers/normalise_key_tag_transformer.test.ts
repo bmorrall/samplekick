@@ -327,6 +327,82 @@ describe("createNormaliseKeyTagTransformer", () => {
     });
   });
 
+  describe("degree symbol ° (diminished)", () => {
+    it("normalises C° to Cdim", () => {
+      const entry = createTransformEntry({ name: "Chord C°.wav" });
+      const transformer = createNormaliseKeyTagTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setName).toHaveBeenCalledWith("Chord Cdim.wav");
+    });
+
+    it("normalises C°7 to Cdim7", () => {
+      const entry = createTransformEntry({ name: "Chord C°7.wav" });
+      const transformer = createNormaliseKeyTagTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setName).toHaveBeenCalledWith("Chord Cdim7.wav");
+    });
+
+    it("uppercases a lowercase root with °", () => {
+      const entry = createTransformEntry({ name: "Chord f#°.wav" });
+      const transformer = createNormaliseKeyTagTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setName).toHaveBeenCalledWith("Chord F#dim.wav");
+    });
+  });
+
+  describe("half-diminished symbol ø", () => {
+    it("normalises Cø to Chdim", () => {
+      const entry = createTransformEntry({ name: "Chord Cø.wav" });
+      const transformer = createNormaliseKeyTagTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setName).toHaveBeenCalledWith("Chord Chdim.wav");
+    });
+
+    it("normalises Cø7 to Chdim7", () => {
+      const entry = createTransformEntry({ name: "Chord Cø7.wav" });
+      const transformer = createNormaliseKeyTagTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setName).toHaveBeenCalledWith("Chord Chdim7.wav");
+    });
+
+    it("uppercases a lowercase root with ø", () => {
+      const entry = createTransformEntry({ name: "Chord f#ø7.wav" });
+      const transformer = createNormaliseKeyTagTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setName).toHaveBeenCalledWith("Chord F#hdim7.wav");
+    });
+  });
+
+  describe("minor-major seventh", () => {
+    it("normalises CmMaj7 to CminMaj7", () => {
+      const entry = createTransformEntry({ name: "Chord CmMaj7.wav" });
+      const transformer = createNormaliseKeyTagTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setName).toHaveBeenCalledWith("Chord CminMaj7.wav");
+    });
+
+    it("normalises F#mMaj7 to F#minMaj7", () => {
+      const entry = createTransformEntry({ name: "Chord F#mMaj7.wav" });
+      const transformer = createNormaliseKeyTagTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setName).toHaveBeenCalledWith("Chord F#minMaj7.wav");
+    });
+
+    it("normalises CmMaj (no number) to CminMaj", () => {
+      const entry = createTransformEntry({ name: "Chord CmMaj.wav" });
+      const transformer = createNormaliseKeyTagTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setName).toHaveBeenCalledWith("Chord CminMaj.wav");
+    });
+
+    it("uppercases a lowercase root in mMaj7", () => {
+      const entry = createTransformEntry({ name: "Chord cmMaj7.wav" });
+      const transformer = createNormaliseKeyTagTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setName).toHaveBeenCalledWith("Chord CminMaj7.wav");
+    });
+  });
+
   it("normalises packageName when the entry has one", () => {
     const entry = createTransformEntry({
       name: "kick.wav",

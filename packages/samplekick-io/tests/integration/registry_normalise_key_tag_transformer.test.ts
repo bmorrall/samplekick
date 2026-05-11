@@ -23,4 +23,25 @@ describe("NormaliseKeyTagTransformer integration", () => {
       ].join("\n"),
     );
   });
+
+  it("normalises degree °, half-diminished ø, and minor-major mMaj forms", () => {
+    const registry = createRegistry("root", [
+      createFileEntry({ path: "Chords C°7/lead.wav" }),
+      createFileEntry({ path: "Chords Cø7/lead.wav" }),
+      createFileEntry({ path: "Chords CmMaj7/lead.wav" }),
+    ]);
+    registry.applyTransform(createNormaliseKeyTagTransformer());
+    expect(registry.toString()).toBe(
+      [
+        "root",
+        "├── Chords Cdim7 [renamed]",
+        "│   └── lead.wav [?]",
+        "├── Chords Chdim7 [renamed]",
+        "│   └── lead.wav [?]",
+        "└── Chords CminMaj7 [renamed]",
+        "    └── lead.wav [?]",
+        "",
+      ].join("\n"),
+    );
+  });
 });

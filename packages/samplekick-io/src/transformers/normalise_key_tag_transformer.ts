@@ -39,16 +39,50 @@ function shortMinorReplacer(_match: string, root: string, num: string): string {
 const normaliseShortMinor: StringTransformer = (name: string): string =>
   name.replace(SHORT_MINOR_RE, shortMinorReplacer);
 
+// Matches minor-major chords, e.g. "CmMaj7", "F#mMaj", "cmMaj9" (case-insensitive).
+// Separate from KEY_RE to keep the "mMaj" pattern explicit.
+const MINOR_MAJ_RE =
+  /(?<![a-zA-Z])(?<root>[A-G][#b]?)mMaj(?<num>\d*)(?![a-zA-Z])/giv;
+
+function minorMajReplacer(_match: string, root: string, num: string): string {
+  return `${root[0].toUpperCase()}${root.slice(1)}minMaj${num}`;
+}
+
+const normaliseMinorMaj: StringTransformer = (name: string): string =>
+  name.replace(MINOR_MAJ_RE, minorMajReplacer);
+
+// Matches degree symbol ° (diminished) and ø (half-diminished) directly attached to a root
+// note, e.g. "C°", "C°7", "Cø", "Cø7". Separate from KEY_RE to keep unicode symbol matching
+// explicit and avoid widening the main regex character classes.
+const SYMBOL_CHORD_RE =
+  /(?<![a-zA-Z])(?<root>[A-G][#b]?)(?<quality>[°ø]\d*)(?![a-zA-Z])/giv;
+
+function symbolChordReplacer(
+  _match: string,
+  root: string,
+  quality: string,
+): string {
+  const normRoot = root[0].toUpperCase() + root.slice(1);
+  const num = quality.slice(1);
+  const suffix = quality.startsWith("°") ? "dim" : "hdim";
+  return `${normRoot}${suffix}${num}`;
+}
+
+const normaliseSymbolChord: StringTransformer = (name: string): string =>
+  name.replace(SYMBOL_CHORD_RE, symbolChordReplacer);
+
 const _singleton: Transform = createSanitiseNameTransformer((name) =>
-  normaliseShortMinor(normaliseKeyTag(name)),
+  normaliseMinorMaj(
+    normaliseSymbolChord(normaliseShortMinor(normaliseKeyTag(name))),
+  ),
 );
 // NOT supported (intentional omissions):
 //   - Bare dominant/number chords: "C7", "Bb9", "F#13" — root + number only, no quality word; too
 //     ambiguous (could be a version number, BPM, etc.) and would require its own dedicated regex.
 //   - Short-minor without a number: "Cm" — excluded to avoid false positives on words ending in "m".
 //     Short-minor WITH a number ("Cm7", "F#m9") is handled via a dedicated SHORT_MINOR_RE pass.
-//   - Symbol notations: "C+" (aug), "Co"/"C°" (dim), "Cø" (half-diminished) — uncommon in file names.
-//   - Minor-major seventh: "CmMaj7", "Cm/Maj7".
+//   - "C+" (aug plus notation) — uncommon and clashes with other uses of + in file names.
+//   - "Co" (text diminished shorthand) — "co" is a common substring.
 //   - Altered extensions: "C7#11", "C7b9", "C7#5" — sharps/flats on extensions clash with the root
 //     accidental syntax and would require a more complex parser.
 //   - Power chords: "C5" — indistinguishable from a bare number without wider context.
