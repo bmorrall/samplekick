@@ -162,6 +162,10 @@ describe("index exports", () => {
     expect(api.createPathLengthValidator).toBeDefined();
   });
 
+  test("exports createNoPacksValidator", () => {
+    expect(api.createNoPacksValidator).toBeDefined();
+  });
+
   test("exports SAMPLE_TYPE_PACKS", () => {
     expect(api.SAMPLE_TYPE_PACKS).toBe("Packs");
   });
@@ -210,6 +214,7 @@ describe("index exports", () => {
       "SourcePathStrategy",
       "OrganisedPathStrategy",
       "createPathLengthValidator",
+      "createNoPacksValidator",
       "SP404Mk2Preset",
       "DirtywaveM8Preset",
       "BIT_DEPTH_16",
