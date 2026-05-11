@@ -124,6 +124,8 @@ export const lookupStandalone = (key: string): string | undefined =>
 export const ABLETON_PROJECTS = "Ableton Projects" as const;
 export const FL_STUDIO_PROJECTS = "FL Studio Projects" as const;
 export const SP404_MK2_PROJECTS = "SP-404MKII Projects" as const;
+export const DIGITONE_PROJECTS = "Digitone Projects" as const;
+export const DIGITONE_SOUNDS = "Digitone Sounds" as const;
 export const PHASE_PLANT_PRESETS = "Phase Plant Presets" as const;
 export const SERUM_PRESETS = "Serum Presets" as const;
 

@@ -6,6 +6,86 @@ import {
 } from "../../support";
 
 describe("createKnownFileTypeTransformer", () => {
+  describe("when the name ends with .dnprj", () => {
+    it("sets sampleType to Digitone Projects", () => {
+      const entry = createTransformEntry({ name: "project.dnprj" });
+      const transformer = createKnownFileTypeTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("Digitone Projects");
+      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+    });
+
+    it("sets sampleType to Digitone Projects when extension is uppercase", () => {
+      const entry = createTransformEntry({ name: "project.DNPRJ" });
+      const transformer = createKnownFileTypeTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("Digitone Projects");
+      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+    });
+
+    it("does not overwrite an existing sampleType but still sets keepStructure", () => {
+      const entry = createTransformEntry({
+        name: "project.dnprj",
+        sampleType: "custom",
+      });
+      const transformer = createKnownFileTypeTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).not.toHaveBeenCalled();
+      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+    });
+
+    it("sets sampleType when extension is on the path", () => {
+      const entry = createTransformEntry({
+        name: "project",
+        path: "projects/project.dnprj",
+      });
+      const transformer = createKnownFileTypeTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("Digitone Projects");
+      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+    });
+  });
+
+  describe("when the name ends with .dnsnd", () => {
+    it("sets sampleType to Digitone Sounds", () => {
+      const entry = createTransformEntry({ name: "patch.dnsnd" });
+      const transformer = createKnownFileTypeTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("Digitone Sounds");
+      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+    });
+
+    it("sets sampleType to Digitone Sounds when extension is uppercase", () => {
+      const entry = createTransformEntry({ name: "patch.DNSND" });
+      const transformer = createKnownFileTypeTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("Digitone Sounds");
+      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+    });
+
+    it("does not overwrite an existing sampleType but still sets keepStructure", () => {
+      const entry = createTransformEntry({
+        name: "patch.dnsnd",
+        sampleType: "custom",
+      });
+      const transformer = createKnownFileTypeTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).not.toHaveBeenCalled();
+      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+    });
+
+    it("sets sampleType when extension is on the path", () => {
+      const entry = createTransformEntry({
+        name: "patch",
+        path: "sounds/patch.dnsnd",
+      });
+      const transformer = createKnownFileTypeTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("Digitone Sounds");
+      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+    });
+  });
+
   describe("when the name ends with .fxp", () => {
     it("sets sampleType to Serum Presets", () => {
       const entry = createTransformEntry({ name: "patch.fxp" });
@@ -93,6 +173,26 @@ describe("createKnownFileTypeTransformer", () => {
   });
 
   describe("when tagSampleType is false", () => {
+    it("sets keepStructure but not sampleType for .dnprj files", () => {
+      const entry = createTransformEntry({ name: "project.dnprj" });
+      const transformer = createKnownFileTypeTransformer({
+        tagSampleType: false,
+      });
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+      expect(entry.setSampleType).not.toHaveBeenCalled();
+    });
+
+    it("sets keepStructure but not sampleType for .dnsnd files", () => {
+      const entry = createTransformEntry({ name: "patch.dnsnd" });
+      const transformer = createKnownFileTypeTransformer({
+        tagSampleType: false,
+      });
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+      expect(entry.setSampleType).not.toHaveBeenCalled();
+    });
+
     it("sets keepStructure but not sampleType for .fxp files", () => {
       const entry = createTransformEntry({ name: "patch.fxp" });
       const transformer = createKnownFileTypeTransformer({
