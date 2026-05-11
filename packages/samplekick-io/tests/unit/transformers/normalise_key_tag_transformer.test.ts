@@ -193,6 +193,50 @@ describe("createNormaliseKeyTagTransformer", () => {
     });
   });
 
+  describe("maj/min with numeric suffix", () => {
+    it("normalises Fmaj_7 (underscore before number) to Fmaj7", () => {
+      const entry = createTransformEntry({ name: "Chord Fmaj_7.wav" });
+      const transformer = createNormaliseKeyTagTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setName).toHaveBeenCalledWith("Chord Fmaj7.wav");
+    });
+
+    it("normalises F maj 7 (spaced number) to Fmaj7", () => {
+      const entry = createTransformEntry({ name: "Chord F maj 7.wav" });
+      const transformer = createNormaliseKeyTagTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setName).toHaveBeenCalledWith("Chord Fmaj7.wav");
+    });
+
+    it("normalises Fmajor7 to Fmaj7", () => {
+      const entry = createTransformEntry({ name: "Chord Fmajor7.wav" });
+      const transformer = createNormaliseKeyTagTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setName).toHaveBeenCalledWith("Chord Fmaj7.wav");
+    });
+
+    it("normalises Amin7 (already short) to Amin7 unchanged", () => {
+      const entry = createTransformEntry({ name: "Chord Amin7.wav" });
+      const transformer = createNormaliseKeyTagTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setName).toHaveBeenCalledWith("Chord Amin7.wav");
+    });
+
+    it("normalises A minor 9 (spaced) to Amin9", () => {
+      const entry = createTransformEntry({ name: "Chord A minor 9.wav" });
+      const transformer = createNormaliseKeyTagTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setName).toHaveBeenCalledWith("Chord Amin9.wav");
+    });
+
+    it("normalises F major 11 (multi-digit) to Fmaj11", () => {
+      const entry = createTransformEntry({ name: "Chord F major 11.wav" });
+      const transformer = createNormaliseKeyTagTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setName).toHaveBeenCalledWith("Chord Fmaj11.wav");
+    });
+  });
+
   it("normalises packageName when the entry has one", () => {
     const entry = createTransformEntry({
       name: "kick.wav",
