@@ -26,26 +26,29 @@ function resolveArchiveSampleType(path: string): string {
   return sampleType;
 }
 
-const _singleton: Transform = {
-  transform: (source) => {
-    source.eachTransformEntry((entry) => {
-      if (entry.getSampleType() !== undefined) return;
-      if (entry.getParentNode() === undefined) return; // skip the root archive
-
-      const path = entry.getPath().toLowerCase();
-
-      if (path.endsWith(".zip")) {
-        entry.setSampleType(resolveArchiveSampleType(entry.getPath()));
-        entry.setKeepStructure(true);
-      }
-    });
-  },
-};
 /**
  * ArchiveFileTransformer
  * Detects embedded archive files (e.g. nested .zip files) by extension and
  * sets sampleType to "Archive" with keepStructure enabled so their contents
  * are preserved as-is. If the path contains exactly one recognised keyword
  * (e.g. "Ableton", "FL Studio"), a more specific sampleType is used instead.
+ * Pass `{ tagSampleType: false }` to lock the folder structure without tagging.
  */
-export const createArchiveFileTransformer = (): Transform => _singleton;
+export const createArchiveFileTransformer = ({
+  tagSampleType = true,
+}: { tagSampleType?: boolean } = {}): Transform => ({
+  transform: (source) => {
+    source.eachTransformEntry((entry) => {
+      if (entry.getParentNode() === undefined) return; // skip the root archive
+
+      const path = entry.getPath().toLowerCase();
+
+      if (path.endsWith(".zip")) {
+        if (tagSampleType && entry.getSampleType() === undefined) {
+          entry.setSampleType(resolveArchiveSampleType(entry.getPath()));
+        }
+        entry.setKeepStructure(true);
+      }
+    });
+  },
+});

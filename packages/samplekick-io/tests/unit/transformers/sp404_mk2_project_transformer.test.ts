@@ -100,4 +100,34 @@ describe("createSP404Mk2ProjectTransformer", () => {
       expect(entry.setKeepStructure).not.toHaveBeenCalled();
     });
   });
+
+  describe("when tagSampleType is false", () => {
+    it("sets keepStructure but not sampleType for SMPL directories", () => {
+      const entry = createTransformEntryInHierarchy(
+        [],
+        { name: "MY_PROJECT", isFile: false },
+        [{ name: "SMPL" }],
+      );
+      const transformer = createSP404Mk2ProjectTransformer({
+        tagSampleType: false,
+      });
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+      expect(entry.setSampleType).not.toHaveBeenCalled();
+    });
+
+    it("does not call setKeepStructure when neither SMPL nor PTN is present", () => {
+      const entry = createTransformEntryInHierarchy(
+        [],
+        { name: "MY_PROJECT", isFile: false },
+        [{ name: "PICTURE" }],
+      );
+      const transformer = createSP404Mk2ProjectTransformer({
+        tagSampleType: false,
+      });
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setKeepStructure).not.toHaveBeenCalled();
+      expect(entry.setSampleType).not.toHaveBeenCalled();
+    });
+  });
 });

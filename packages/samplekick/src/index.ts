@@ -400,18 +400,20 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
     registry.applyTransform(createTrimNameTransformer());
     registry.applyTransform(createNormaliseQuotesTransformer());
     registry.applyTransform(createNormaliseDashesTransformer());
-  }
 
-  if (values.analyse === true) {
-    // File transforms: identify known file types and lock their folder structure
-    registry.applyTransform(createKnownFileTypeTransformer());
-    registry.applyTransform(createArchiveFileTransformer());
-    registry.applyTransform(createAbletonProjectTransformer());
-    registry.applyTransform(createFLStudioProjectTransformer());
-    registry.applyTransform(createSP404Mk2ProjectTransformer());
-  }
+    // File transforms: identify known file types and lock their folder structure.
+    // sampleType tagging is only applied during --analyse.
+    const tagSampleType = values.analyse === true;
+    registry.applyTransform(createKnownFileTypeTransformer({ tagSampleType }));
+    registry.applyTransform(createArchiveFileTransformer({ tagSampleType }));
+    registry.applyTransform(createAbletonProjectTransformer({ tagSampleType }));
+    registry.applyTransform(
+      createFLStudioProjectTransformer({ tagSampleType }),
+    );
+    registry.applyTransform(
+      createSP404Mk2ProjectTransformer({ tagSampleType }),
+    );
 
-  if (values.analyse === true || values.sanitise === true) {
     // Name transforms: run after file transforms so locked entries are skipped
     registry.applyTransform(createGhosthackNameTransformer());
     registry.applyTransform(createCymaticsNameTransformer());
