@@ -8,77 +8,77 @@ import {
 describe("createNormaliseKeyTagTransformer", () => {
   describe("major quality", () => {
     it("normalises C Major (spaced) to Cmaj", () => {
-      const entry = createTransformEntry({ name: "Loop C Major.wav" });
+      const entry = createTransformEntry({ name: "Chord C Major.wav" });
       const transformer = createNormaliseKeyTagTransformer();
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setName).toHaveBeenCalledWith("Loop Cmaj.wav");
+      expect(entry.setName).toHaveBeenCalledWith("Chord Cmaj.wav");
     });
 
     it("normalises C_Major (underscore) to Cmaj", () => {
-      const entry = createTransformEntry({ name: "Loop C_Major.wav" });
+      const entry = createTransformEntry({ name: "Chord C_Major.wav" });
       const transformer = createNormaliseKeyTagTransformer();
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setName).toHaveBeenCalledWith("Loop Cmaj.wav");
+      expect(entry.setName).toHaveBeenCalledWith("Chord Cmaj.wav");
     });
 
     it("normalises Cmajor (no separator) to Cmaj", () => {
-      const entry = createTransformEntry({ name: "Loop Cmajor.wav" });
+      const entry = createTransformEntry({ name: "Chord Cmajor.wav" });
       const transformer = createNormaliseKeyTagTransformer();
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setName).toHaveBeenCalledWith("Loop Cmaj.wav");
+      expect(entry.setName).toHaveBeenCalledWith("Chord Cmaj.wav");
     });
 
     it("normalises C maj (short form) to Cmaj", () => {
-      const entry = createTransformEntry({ name: "Loop C maj.wav" });
+      const entry = createTransformEntry({ name: "Chord C maj.wav" });
       const transformer = createNormaliseKeyTagTransformer();
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setName).toHaveBeenCalledWith("Loop Cmaj.wav");
+      expect(entry.setName).toHaveBeenCalledWith("Chord Cmaj.wav");
     });
 
     it("normalises C_maj (underscore short form) to Cmaj", () => {
-      const entry = createTransformEntry({ name: "Loop C_maj.wav" });
+      const entry = createTransformEntry({ name: "Chord C_maj.wav" });
       const transformer = createNormaliseKeyTagTransformer();
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setName).toHaveBeenCalledWith("Loop Cmaj.wav");
+      expect(entry.setName).toHaveBeenCalledWith("Chord Cmaj.wav");
     });
   });
 
   describe("minor quality", () => {
     it("normalises F# Minor (spaced, sharp) to F#min", () => {
-      const entry = createTransformEntry({ name: "Loop F# Minor.wav" });
+      const entry = createTransformEntry({ name: "Chord F# Minor.wav" });
       const transformer = createNormaliseKeyTagTransformer();
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setName).toHaveBeenCalledWith("Loop F#min.wav");
+      expect(entry.setName).toHaveBeenCalledWith("Chord F#min.wav");
     });
 
     it("normalises Dbminor (flat, no separator) to Dbmin", () => {
-      const entry = createTransformEntry({ name: "Loop Dbminor.wav" });
+      const entry = createTransformEntry({ name: "Chord Dbminor.wav" });
       const transformer = createNormaliseKeyTagTransformer();
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setName).toHaveBeenCalledWith("Loop Dbmin.wav");
+      expect(entry.setName).toHaveBeenCalledWith("Chord Dbmin.wav");
     });
 
     it("normalises A_min (underscore short form) to Amin", () => {
-      const entry = createTransformEntry({ name: "Loop A_min.wav" });
+      const entry = createTransformEntry({ name: "Chord A_min.wav" });
       const transformer = createNormaliseKeyTagTransformer();
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setName).toHaveBeenCalledWith("Loop Amin.wav");
+      expect(entry.setName).toHaveBeenCalledWith("Chord Amin.wav");
     });
   });
 
   describe("case handling", () => {
     it("uppercases a lowercase root note", () => {
-      const entry = createTransformEntry({ name: "Loop c major.wav" });
+      const entry = createTransformEntry({ name: "Chord c major.wav" });
       const transformer = createNormaliseKeyTagTransformer();
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setName).toHaveBeenCalledWith("Loop Cmaj.wav");
+      expect(entry.setName).toHaveBeenCalledWith("Chord Cmaj.wav");
     });
 
     it("leaves an already canonical Cmaj unchanged", () => {
-      const entry = createTransformEntry({ name: "Loop Cmaj.wav" });
+      const entry = createTransformEntry({ name: "Chord Cmaj.wav" });
       const transformer = createNormaliseKeyTagTransformer();
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setName).toHaveBeenCalledWith("Loop Cmaj.wav");
+      expect(entry.setName).toHaveBeenCalledWith("Chord Cmaj.wav");
     });
   });
 
@@ -107,38 +107,89 @@ describe("createNormaliseKeyTagTransformer", () => {
 
   describe("sus quality", () => {
     it("normalises G sus2 (spaced) to Gsus2", () => {
-      const entry = createTransformEntry({ name: "Loop G sus2.wav" });
+      const entry = createTransformEntry({ name: "Chord G sus2.wav" });
       const transformer = createNormaliseKeyTagTransformer();
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setName).toHaveBeenCalledWith("Loop Gsus2.wav");
+      expect(entry.setName).toHaveBeenCalledWith("Chord Gsus2.wav");
     });
 
     it("normalises G_sus2 (underscore) to Gsus2", () => {
-      const entry = createTransformEntry({ name: "Loop G_sus2.wav" });
+      const entry = createTransformEntry({ name: "Chord G_sus2.wav" });
       const transformer = createNormaliseKeyTagTransformer();
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setName).toHaveBeenCalledWith("Loop Gsus2.wav");
+      expect(entry.setName).toHaveBeenCalledWith("Chord Gsus2.wav");
     });
 
     it("normalises Gsus2 (no separator) to Gsus2 unchanged", () => {
-      const entry = createTransformEntry({ name: "Loop Gsus2.wav" });
+      const entry = createTransformEntry({ name: "Chord Gsus2.wav" });
       const transformer = createNormaliseKeyTagTransformer();
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setName).toHaveBeenCalledWith("Loop Gsus2.wav");
+      expect(entry.setName).toHaveBeenCalledWith("Chord Gsus2.wav");
     });
 
     it("normalises G sus4 (spaced) to Gsus4", () => {
-      const entry = createTransformEntry({ name: "Loop G sus4.wav" });
+      const entry = createTransformEntry({ name: "Chord G sus4.wav" });
       const transformer = createNormaliseKeyTagTransformer();
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setName).toHaveBeenCalledWith("Loop Gsus4.wav");
+      expect(entry.setName).toHaveBeenCalledWith("Chord Gsus4.wav");
     });
 
     it("uppercases a lowercase root in sus quality", () => {
-      const entry = createTransformEntry({ name: "Loop g sus2.wav" });
+      const entry = createTransformEntry({ name: "Chord g sus2.wav" });
       const transformer = createNormaliseKeyTagTransformer();
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setName).toHaveBeenCalledWith("Loop Gsus2.wav");
+      expect(entry.setName).toHaveBeenCalledWith("Chord Gsus2.wav");
+    });
+
+    it("uppercases a lowercase root in sus2add4", () => {
+      const entry = createTransformEntry({ name: "Chord gsus2add4.wav" });
+      const transformer = createNormaliseKeyTagTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setName).toHaveBeenCalledWith("Chord Gsus2add4.wav");
+    });
+
+    it("collapses g sus2 add4 (spaced) to Gsus2add4", () => {
+      const entry = createTransformEntry({ name: "Chord g sus2 add4.wav" });
+      const transformer = createNormaliseKeyTagTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setName).toHaveBeenCalledWith("Chord Gsus2add4.wav");
+    });
+
+    it("leaves Gsus2add4 with uppercase root unchanged", () => {
+      const entry = createTransformEntry({ name: "Chord Gsus2add4.wav" });
+      const transformer = createNormaliseKeyTagTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setName).toHaveBeenCalledWith("Chord Gsus2add4.wav");
+    });
+  });
+
+  describe("dim quality", () => {
+    it("normalises C dim (spaced) to Cdim", () => {
+      const entry = createTransformEntry({ name: "Chord C dim.wav" });
+      const transformer = createNormaliseKeyTagTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setName).toHaveBeenCalledWith("Chord Cdim.wav");
+    });
+
+    it("normalises C_dim7 (underscore) to Cdim7", () => {
+      const entry = createTransformEntry({ name: "Chord C_dim7.wav" });
+      const transformer = createNormaliseKeyTagTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setName).toHaveBeenCalledWith("Chord Cdim7.wav");
+    });
+
+    it("uppercases a lowercase root in dim quality", () => {
+      const entry = createTransformEntry({ name: "Chord c dim.wav" });
+      const transformer = createNormaliseKeyTagTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setName).toHaveBeenCalledWith("Chord Cdim.wav");
+    });
+
+    it("leaves Cdim7 with uppercase root unchanged", () => {
+      const entry = createTransformEntry({ name: "Chord Cdim7.wav" });
+      const transformer = createNormaliseKeyTagTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setName).toHaveBeenCalledWith("Chord Cdim7.wav");
     });
   });
 
@@ -164,7 +215,7 @@ describe("createNormaliseKeyTagTransformer", () => {
 
   it("does not act on a keepStructure entry", () => {
     const entry = createTransformEntry({
-      name: "Loop C Major.wav",
+      name: "Chord C Major.wav",
       keepStructure: true,
     });
     const transformer = createNormaliseKeyTagTransformer();
@@ -174,7 +225,7 @@ describe("createNormaliseKeyTagTransformer", () => {
 
   it("does not act on a skipped entry", () => {
     const entry = createTransformEntry({
-      name: "Loop C Major.wav",
+      name: "Chord C Major.wav",
       skipped: true,
     });
     const transformer = createNormaliseKeyTagTransformer();
