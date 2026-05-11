@@ -9,7 +9,7 @@ describe("DirectoryChildNameTransformer integration", () => {
       createFileEntry({ path: "Cymatics - Nebula/Cymatics - Foley - Metal Hit.wav" }),
       createFileEntry({ path: "Unknown Brand/Unknown Category - Hit.wav" }),
     ]);
-    registry.applyTransform(createDirectoryChildNameTransformer);
+    registry.applyTransform(createDirectoryChildNameTransformer());
     expect(registry.toString()).toBe(
       [
         "Pack.zip",
@@ -28,7 +28,7 @@ describe("DirectoryChildNameTransformer integration", () => {
       createFileEntry({ path: "My Pack/Brand - Foley - Hit.wav" }),
       createFileEntry({ path: "My Pack/Brand - Drums - Kick.wav" }),
     ]);
-    registry.applyTransform(createDirectoryChildNameTransformer);
+    registry.applyTransform(createDirectoryChildNameTransformer());
     expect(registry.toString()).toBe(
       [
         "Pack.zip",
@@ -44,7 +44,7 @@ describe("DirectoryChildNameTransformer integration", () => {
     const registry = createRegistry("Pack.zip", [
       createFileEntry({ path: "Foley/Brand - Drums - Kick.wav" }),
     ]);
-    registry.applyTransform(createDirectoryChildNameTransformer);
+    registry.applyTransform(createDirectoryChildNameTransformer());
     expect(registry.toString()).toBe(
       [
         "Pack.zip",

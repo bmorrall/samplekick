@@ -54,7 +54,7 @@ function setFromUniqueDashSegment(entry: TransformEntry, nameLower: string): voi
  *   - Dash-separated forms ("Drum - Fills", "Drums - Breaks").
  * Case-insensitive. Does not overwrite an existing sampleType.
  */
-export const createDrumSubcategoryTransformer: Transform = {
+const _singleton: Transform = {
   transform: (source) => {
     source.eachTransformEntry((entry) => {
       if (entry.getOwnSampleType() !== undefined) return;
@@ -95,4 +95,4 @@ export const createDrumSubcategoryTransformer: Transform = {
       setFromUniqueDashSegment(entry, nameLower);
     });
   },
-};
+};export const createDrumSubcategoryTransformer = (): Transform => _singleton;

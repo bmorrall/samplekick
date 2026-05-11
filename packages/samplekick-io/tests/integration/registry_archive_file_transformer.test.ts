@@ -8,7 +8,7 @@ describe("ArchiveFileTransformer integration", () => {
       createFileEntry({ path: "extras/bonus.zip" }),
       createFileEntry({ path: "samples/kick.wav" }),
     ]);
-    registry.applyTransform(createArchiveFileTransformer);
+    registry.applyTransform(createArchiveFileTransformer());
     expect(registry.toString()).toBe(
       [
         "root",
@@ -26,7 +26,7 @@ describe("ArchiveFileTransformer integration", () => {
       createFileEntry({ path: "Ableton/My Set.zip" }),
       createFileEntry({ path: "samples/kick.wav" }),
     ]);
-    registry.applyTransform(createArchiveFileTransformer);
+    registry.applyTransform(createArchiveFileTransformer());
     expect(registry.toString()).toBe(
       [
         "root",
@@ -44,7 +44,7 @@ describe("ArchiveFileTransformer integration", () => {
       createFileEntry({ path: "FL Studio/My Song.zip" }),
       createFileEntry({ path: "samples/kick.wav" }),
     ]);
-    registry.applyTransform(createArchiveFileTransformer);
+    registry.applyTransform(createArchiveFileTransformer());
     expect(registry.toString()).toBe(
       [
         "root",

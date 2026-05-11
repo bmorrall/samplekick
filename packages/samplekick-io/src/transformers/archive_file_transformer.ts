@@ -28,7 +28,7 @@ function resolveArchiveSampleType(path: string): string {
  * are preserved as-is. If the path contains exactly one recognised keyword
  * (e.g. "Ableton", "FL Studio"), a more specific sampleType is used instead.
  */
-export const createArchiveFileTransformer: Transform = {
+const _singleton: Transform = {
   transform: (source) => {
     source.eachTransformEntry((entry) => {
       if (entry.getSampleType() !== undefined) return;
@@ -43,3 +43,4 @@ export const createArchiveFileTransformer: Transform = {
     });
   },
 };
+export const createArchiveFileTransformer = (): Transform => _singleton;

@@ -13,7 +13,8 @@ describe("createDirectoryChildNameTransformer", () => {
           { name: "Cymatics - Foley - Metal Hit.wav" },
         ],
       );
-      createDirectoryChildNameTransformer.transform(singleEntryTransformSource(entry));
+      const transformer = createDirectoryChildNameTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Foley");
     });
 
@@ -26,7 +27,8 @@ describe("createDirectoryChildNameTransformer", () => {
           { name: "Brand - Drums - Snare 2.wav" },
         ],
       );
-      createDirectoryChildNameTransformer.transform(singleEntryTransformSource(entry));
+      const transformer = createDirectoryChildNameTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Drums");
     });
 
@@ -36,7 +38,8 @@ describe("createDirectoryChildNameTransformer", () => {
         { name: "Cymatics - Nebula", isFile: false },
         [{ name: "Cymatics - Foley - Coin Drop 3.wav" }],
       );
-      createDirectoryChildNameTransformer.transform(singleEntryTransformSource(entry));
+      const transformer = createDirectoryChildNameTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Foley");
     });
   });
@@ -48,7 +51,8 @@ describe("createDirectoryChildNameTransformer", () => {
         { name: "My Folder", isFile: false, sampleType: "Kicks" },
         [{ name: "Brand - Foley - Hit.wav" }],
       );
-      createDirectoryChildNameTransformer.transform(singleEntryTransformSource(entry));
+      const transformer = createDirectoryChildNameTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
     });
   });
@@ -60,7 +64,8 @@ describe("createDirectoryChildNameTransformer", () => {
         { name: "My Folder", isFile: false },
         [{ name: "kick.wav" }, { name: "snare.wav" }],
       );
-      createDirectoryChildNameTransformer.transform(singleEntryTransformSource(entry));
+      const transformer = createDirectoryChildNameTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
     });
 
@@ -73,7 +78,8 @@ describe("createDirectoryChildNameTransformer", () => {
           { name: "Brand - Drums - Kick.wav" },
         ],
       );
-      createDirectoryChildNameTransformer.transform(singleEntryTransformSource(entry));
+      const transformer = createDirectoryChildNameTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
       // "Brand" is not a known type; "Foley" and "Drums" are not in common.
       expect(entry.setSampleType).not.toHaveBeenCalled();
     });
@@ -87,7 +93,8 @@ describe("createDirectoryChildNameTransformer", () => {
           { name: "Foley - Drums - Kick.wav" },
         ],
       );
-      createDirectoryChildNameTransformer.transform(singleEntryTransformSource(entry));
+      const transformer = createDirectoryChildNameTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
       // Both "Foley" and "Drums" are common known types — ambiguous, no match.
       expect(entry.setSampleType).not.toHaveBeenCalled();
     });
@@ -98,7 +105,8 @@ describe("createDirectoryChildNameTransformer", () => {
         { name: "Brand - Foley - Hit.wav", isFile: true },
         [],
       );
-      createDirectoryChildNameTransformer.transform(singleEntryTransformSource(entry));
+      const transformer = createDirectoryChildNameTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
     });
   });

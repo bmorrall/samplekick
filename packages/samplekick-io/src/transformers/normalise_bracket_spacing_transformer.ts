@@ -8,4 +8,5 @@ const normaliseBracketSpacing: StringTransformer = (name: string): string =>
     .replaceAll(/(?<before>\S)(?<open>\(|\[|\{)/gv, "$<before> $<open>")
     .replaceAll(/(?<close>\)|\]|\})(?<after>\w|\(|\[|\{)/gv, "$<close> $<after>");
 
-export const createNormaliseBracketSpacingTransformer : Transform = createSanitiseNameTransformer(normaliseBracketSpacing);
+const _singleton: Transform = createSanitiseNameTransformer(normaliseBracketSpacing);
+export const createNormaliseBracketSpacingTransformer = (): Transform => _singleton;

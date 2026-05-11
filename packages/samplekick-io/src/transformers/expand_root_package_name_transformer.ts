@@ -8,7 +8,7 @@ const expandCamelCase = (name: string): string => {
     .replaceAll(/(?<=[a-zA-Z])-/gv, " - ");
 };
 
-export const createExpandRootPackageNameTransformer :  Transform = {
+const _singleton: Transform = {
   transform: (source) => {
     source.eachTransformEntry((entry) => {
       if (entry.getParentNode() !== undefined) return;
@@ -19,3 +19,4 @@ export const createExpandRootPackageNameTransformer :  Transform = {
     });
   },
 };
+export const createExpandRootPackageNameTransformer = (): Transform => _singleton;

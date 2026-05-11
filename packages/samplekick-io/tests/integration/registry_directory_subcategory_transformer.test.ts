@@ -9,8 +9,8 @@ describe("DirectorySubcategoryTransformer integration", () => {
       createFileEntry({ path: "Melodies/Speed House/melody.wav" }),
       createFileEntry({ path: "Bonks/Unknown/lead.wav" }),
     ]);
-    registry.applyTransform(createDirectorySampleTypeTransformer);
-    registry.applyTransform(createDirectorySubcategoryTransformer);
+    registry.applyTransform(createDirectorySampleTypeTransformer());
+    registry.applyTransform(createDirectorySubcategoryTransformer());
     expect(registry.toString()).toBe(
       [
         "Pack.zip",
@@ -33,8 +33,8 @@ describe("DirectorySubcategoryTransformer integration", () => {
       createFileEntry({ path: "Drum Loops/Latin & Stems/loop.wav" }),
       createFileEntry({ path: "Melodies/Speed House & MIDI/melody.wav" }),
     ]);
-    registry.applyTransform(createDirectorySampleTypeTransformer);
-    registry.applyTransform(createDirectorySubcategoryTransformer);
+    registry.applyTransform(createDirectorySampleTypeTransformer());
+    registry.applyTransform(createDirectorySubcategoryTransformer());
     expect(registry.toString()).toBe(
       [
         "Pack.zip",
@@ -54,8 +54,8 @@ describe("DirectorySubcategoryTransformer integration", () => {
       createFileEntry({ path: "Drum Loops/Loop Stems/loop.wav" }),
       createFileEntry({ path: "Drum Loops/Loop Steps/loop.wav" }),
     ]);
-    registry.applyTransform(createDirectorySampleTypeTransformer);
-    registry.applyTransform(createDirectorySubcategoryTransformer);
+    registry.applyTransform(createDirectorySampleTypeTransformer());
+    registry.applyTransform(createDirectorySubcategoryTransformer());
     expect(registry.toString()).toBe(
       [
         "Pack.zip",
@@ -73,8 +73,8 @@ describe("DirectorySubcategoryTransformer integration", () => {
     const registry = createRegistry("Pack.zip", [
       createFileEntry({ path: "Melodies/MIDI/track.mid" }),
     ]);
-    registry.applyTransform(createDirectorySampleTypeTransformer);
-    registry.applyTransform(createDirectorySubcategoryTransformer);
+    registry.applyTransform(createDirectorySampleTypeTransformer());
+    registry.applyTransform(createDirectorySubcategoryTransformer());
     expect(registry.toString()).toBe(
       [
         "Pack.zip",
@@ -92,8 +92,8 @@ describe("DirectorySubcategoryTransformer integration", () => {
       createFileEntry({ path: "Drums/909s/909.wav" }),
       createFileEntry({ path: "Drum Loops/808s/808.wav" }),
     ]);
-    registry.applyTransform(createDirectorySampleTypeTransformer);
-    registry.applyTransform(createDirectorySubcategoryTransformer);
+    registry.applyTransform(createDirectorySampleTypeTransformer());
+    registry.applyTransform(createDirectorySubcategoryTransformer());
     expect(registry.toString()).toBe(
       [
         "Pack.zip",

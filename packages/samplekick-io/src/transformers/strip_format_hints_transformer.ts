@@ -17,4 +17,5 @@ const stripFormatHints: StringTransformer = (name: string): string =>
     .replaceAll(HYPHEN_SUFFIX_RE, "")
     .trim();
 
-export const createStripFormatHintsTransformer: Transform = createSanitiseNameTransformer(stripFormatHints);
+const _singleton: Transform = createSanitiseNameTransformer(stripFormatHints);
+export const createStripFormatHintsTransformer = (): Transform => _singleton;

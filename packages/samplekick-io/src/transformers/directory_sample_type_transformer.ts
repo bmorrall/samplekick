@@ -165,7 +165,7 @@ function setFromStrippedLoopLabel(entry: TransformEntry, originalNameLower: stri
  * (case-insensitive) and sets the sampleType on that directory.
  * Accepts both singular and plural forms (e.g. "Drum" and "Drums" both map to "Drums").
  */
-export const createDirectorySampleTypeTransformer: Transform = {
+const _singleton: Transform = {
   transform: (source) => {
     source.eachTransformEntry((entry) => {
       if (entry.getOwnSampleType() !== undefined) return;
@@ -182,4 +182,4 @@ export const createDirectorySampleTypeTransformer: Transform = {
       setFromUniqueDashSegment(entry, nameLower);
     });
   },
-};
+};export const createDirectorySampleTypeTransformer = (): Transform => _singleton;

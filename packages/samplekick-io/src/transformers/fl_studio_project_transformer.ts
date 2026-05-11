@@ -7,7 +7,7 @@ import { FL_STUDIO_PROJECTS } from './folder_lookup';
  * extension, then marks the directory with sampleType "FL Studio Projects"
  * and keepStructure.
  */
-export const createFLStudioProjectTransformer :  Transform = {
+const _singleton: Transform = {
   transform: (source) => {
     source.eachTransformEntry((entry) => {
       const children = entry.getChildNodes();
@@ -23,4 +23,4 @@ export const createFLStudioProjectTransformer :  Transform = {
       }
     });
   },
-};
+};export const createFLStudioProjectTransformer = (): Transform => _singleton;

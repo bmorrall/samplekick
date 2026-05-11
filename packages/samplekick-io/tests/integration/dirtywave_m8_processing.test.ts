@@ -15,7 +15,7 @@ describe("Dirtywave M8 end-to-end sample processing", () => {
     });
     registry.setPathStrategy(OrganisedPathStrategy);
 
-    registry.applyTransform(createDefaultRootPackageNameTransformer);
+    registry.applyTransform(createDefaultRootPackageNameTransformer());
 
     // Apply Dirtywave M8 transforms (none — all file names are valid as-is)
     applyDeviceTransforms(registry, DirtywaveM8Preset);

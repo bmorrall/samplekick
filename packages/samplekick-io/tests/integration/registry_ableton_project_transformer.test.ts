@@ -9,7 +9,7 @@ describe("AbletonProjectTransformer integration", () => {
       createFileEntry({ path: "My Project/Samples/kick.wav" }),
       createFileEntry({ path: "samples/kick.wav" }),
     ]);
-    registry.applyTransform(createAbletonProjectTransformer);
+    registry.applyTransform(createAbletonProjectTransformer());
     expect(registry.toString()).toBe(
       [
         "root",

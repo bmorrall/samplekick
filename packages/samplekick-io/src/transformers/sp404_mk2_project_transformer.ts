@@ -4,7 +4,7 @@ import { SP404_MK2_PROJECTS } from './folder_lookup';
 const SP404_SMPL_FOLDER = 'SMPL';
 const SP404_PTN_FOLDER = 'PTN';
 
-export const createSP404Mk2ProjectTransformer: Transform = {
+const _singleton: Transform = {
   transform: (source) => {
     source.eachTransformEntry((entry) => {
       const children = entry.getChildNodes();
@@ -24,4 +24,4 @@ export const createSP404Mk2ProjectTransformer: Transform = {
       }
     });
   },
-};
+};export const createSP404Mk2ProjectTransformer = (): Transform => _singleton;

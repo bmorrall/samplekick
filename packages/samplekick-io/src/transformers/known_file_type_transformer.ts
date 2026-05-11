@@ -7,7 +7,7 @@ import { PHASE_PLANT_PRESETS, SERUM_PRESETS } from './folder_lookup';
  * - ".fxp" (case-insensitive) → "Serum Presets"
  * - ".phaseplant" (case-insensitive) → "Phase Plant Presets"
  */
-export const createKnownFileTypeTransformer :  Transform = {
+const _singleton: Transform = {
   transform: (source) => {
     source.eachTransformEntry((entry) => {
       if (entry.getSampleType() !== undefined) {
@@ -27,3 +27,4 @@ export const createKnownFileTypeTransformer :  Transform = {
     });
   },
 };
+export const createKnownFileTypeTransformer = (): Transform => _singleton;

@@ -1,6 +1,6 @@
 import type { Transform } from '../types';
 
-export const createDefaultRootPackageNameTransformer :  Transform = {
+const _singleton: Transform = {
   transform: (source) => {
     source.eachTransformEntry((entry) => {
       if (entry.getParentNode() !== undefined) return;
@@ -13,3 +13,4 @@ export const createDefaultRootPackageNameTransformer :  Transform = {
     });
   },
 };
+export const createDefaultRootPackageNameTransformer = (): Transform => _singleton;

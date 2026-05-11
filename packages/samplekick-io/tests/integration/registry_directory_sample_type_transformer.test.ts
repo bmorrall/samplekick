@@ -12,7 +12,7 @@ describe("DirectorySampleTypeTransformer integration", () => {
       createFileEntry({ path: "Loops/Drums/kick.wav" }),
       createFileEntry({ path: "Loops/Drums/Claps/clap.wav" }),
     ]);
-    registry.applyTransform(createDirectorySampleTypeTransformer);
+    registry.applyTransform(createDirectorySampleTypeTransformer());
     expect(registry.toString()).toBe(
       [
         "root",
@@ -40,8 +40,8 @@ describe("DirectorySampleTypeTransformer integration", () => {
       createFileEntry({ path: "Melodies/Speed House/Loop Stems & MIDI/bass.wav" }),
       createFileEntry({ path: "Melodies/Sunset/Loop Stems & MIDI/reese.wav" }),
     ]);
-    registry.applyTransform(createDirectorySampleTypeTransformer);
-    registry.applyTransform(createDirectorySubcategoryTransformer);
+    registry.applyTransform(createDirectorySampleTypeTransformer());
+    registry.applyTransform(createDirectorySubcategoryTransformer());
     expect(registry.toString()).toBe(
       [
         "Pack.zip",
@@ -66,8 +66,8 @@ describe("DirectorySampleTypeTransformer integration", () => {
       createFileEntry({ path: "Drum Loops & MIDI/kick.wav" }),
       createFileEntry({ path: "Melodies/Speed House & MIDI/bass.wav" }),
     ]);
-    registry.applyTransform(createDirectorySampleTypeTransformer);
-    registry.applyTransform(createDirectorySubcategoryTransformer);
+    registry.applyTransform(createDirectorySampleTypeTransformer());
+    registry.applyTransform(createDirectorySubcategoryTransformer());
     expect(registry.toString()).toBe(
       [
         "Pack.zip",
@@ -85,8 +85,8 @@ describe("DirectorySampleTypeTransformer integration", () => {
     const registry = createRegistry("root", [
       createFileEntry({ path: "Brand - Sci-Fi Horror FX & Foley/Alien Technology/alarm.wav" }),
     ]);
-    registry.applyTransform(createDirectorySampleTypeTransformer);
-    registry.applyTransform(createDirectorySubcategoryTransformer);
+    registry.applyTransform(createDirectorySampleTypeTransformer());
+    registry.applyTransform(createDirectorySubcategoryTransformer());
     expect(registry.toString()).toBe(
       [
         "root",

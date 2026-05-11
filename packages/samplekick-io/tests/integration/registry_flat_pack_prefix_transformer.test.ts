@@ -9,7 +9,7 @@ describe("FlatPackPrefixTransformer integration", () => {
       createFileEntry({ path: "Sounds by Sunwarper - SP404 Pack - 02 E4.wav" }),
       createFileEntry({ path: "album.jpg" }),
     ]);
-    registry.applyTransform(createFlatPackPrefixTransformer);
+    registry.applyTransform(createFlatPackPrefixTransformer());
     expect(registry.toString()).toBe(
       [
         "root [pkg:Sounds by Sunwarper - SP404 Pack, type:Packs]",
@@ -26,7 +26,7 @@ describe("FlatPackPrefixTransformer integration", () => {
       createFileEntry({ path: "Samples/Pack - 01 kick.wav" }),
       createFileEntry({ path: "Samples/Pack - 02 snare.wav" }),
     ]);
-    registry.applyTransform(createFlatPackPrefixTransformer);
+    registry.applyTransform(createFlatPackPrefixTransformer());
     expect(registry.toString()).toBe(
       [
         "root",

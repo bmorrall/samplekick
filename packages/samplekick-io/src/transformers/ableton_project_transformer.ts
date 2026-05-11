@@ -7,7 +7,7 @@ import { ABLETON_PROJECTS } from './folder_lookup';
  * extension, then marks the directory with sampleType "Ableton Projects"
  * and keepStructure.
  */
-export const createAbletonProjectTransformer :  Transform = {
+const _singleton: Transform = {
   transform: (source) => {
     source.eachTransformEntry((entry) => {
       const children = entry.getChildNodes();
@@ -27,4 +27,4 @@ export const createAbletonProjectTransformer :  Transform = {
       }
     });
   },
-};
+};export const createAbletonProjectTransformer = (): Transform => _singleton;

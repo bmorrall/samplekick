@@ -9,7 +9,7 @@ describe("SP404Mk2ProjectTransformer integration", () => {
       createFileEntry({ path: "MY_PROJECT/PTN/PATTERNCHAIN_00.CHN" }),
       createFileEntry({ path: "samples/kick.wav" }),
     ]);
-    registry.applyTransform(createSP404Mk2ProjectTransformer);
+    registry.applyTransform(createSP404Mk2ProjectTransformer());
     expect(registry.toString()).toBe(
       [
         "root",

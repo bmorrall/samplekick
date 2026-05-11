@@ -44,7 +44,7 @@ function findCommonKnownType(entry: TransformEntry): string | undefined {
  * Works with a single child file (no intersection required for uniqueness).
  * Must run after createDirectorySampleTypeTransformer.
  */
-export const createDirectoryChildNameTransformer: Transform = {
+const _singleton: Transform = {
   transform: (source) => {
     source.eachTransformEntry((entry) => {
       if (entry.getOwnSampleType() !== undefined) return;
@@ -54,4 +54,4 @@ export const createDirectoryChildNameTransformer: Transform = {
       entry.setSampleType(sampleType);
     });
   },
-};
+};export const createDirectoryChildNameTransformer = (): Transform => _singleton;

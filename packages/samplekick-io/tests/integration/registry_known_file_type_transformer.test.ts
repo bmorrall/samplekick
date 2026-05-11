@@ -8,7 +8,7 @@ describe("KnownFileTypeTransformer integration", () => {
       createFileEntry({ path: "presets/bass.fxp" }),
       createFileEntry({ path: "samples/kick.wav" }),
     ]);
-    registry.applyTransform(createKnownFileTypeTransformer);
+    registry.applyTransform(createKnownFileTypeTransformer());
     expect(registry.toString()).toBe(
       [
         "root",

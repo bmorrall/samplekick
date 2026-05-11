@@ -9,7 +9,7 @@ describe("NormaliseBracketSpacingTransformer integration", () => {
       createFileEntry({ path: "snare[soft]/sample.wav" }),
       createFileEntry({ path: "hi-hats{open}/sample.wav" }),
     ]);
-    registry.applyTransform(createNormaliseBracketSpacingTransformer);
+    registry.applyTransform(createNormaliseBracketSpacingTransformer());
     expect(registry.toString()).toBe(
       [
         "root",

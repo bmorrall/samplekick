@@ -11,7 +11,7 @@ describe("StripFormatHintsTransformer integration", () => {
       createFileEntry({ path: "Loops [16bit]/loop.wav" }),
       createFileEntry({ path: "Loops [STEMS]/stem.wav" }),
     ]);
-    registry.applyTransform(createStripFormatHintsTransformer);
+    registry.applyTransform(createStripFormatHintsTransformer());
     expect(registry.toString()).toBe(
       [
         "root",

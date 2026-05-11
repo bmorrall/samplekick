@@ -4,7 +4,7 @@ import type { Transform } from '../types';
  * SkipJunkTransformer
  * Marks entries as skipped if their name is "__MACOSX" or starts with ".".
  */
-export const createSkipJunkTransformer :  Transform = {
+const _singleton: Transform = {
   transform: (source) => {
     source.eachTransformEntry((entry) => {
       const name = entry.getName();
@@ -14,3 +14,4 @@ export const createSkipJunkTransformer :  Transform = {
     });
   },
 };
+export const createSkipJunkTransformer = (): Transform => _singleton;

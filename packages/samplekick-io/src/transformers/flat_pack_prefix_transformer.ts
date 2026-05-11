@@ -53,7 +53,7 @@ function isAudioPath(path: string): boolean {
  *   When the prefix has only one segment (no nested " - "), children are stripped
  *   without any prepend (same as the simple strip behaviour).
  */
-export const createFlatPackPrefixTransformer: Transform = {
+const _singleton: Transform = {
   transform: (source) => {
     // Map from parent path → { strip, prepend }, populated in the first pass and
     // consumed in the second pass where we have TransformEntry objects with setName.
@@ -100,3 +100,4 @@ export const createFlatPackPrefixTransformer: Transform = {
     });
   },
 };
+export const createFlatPackPrefixTransformer = (): Transform => _singleton;

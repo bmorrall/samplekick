@@ -17,4 +17,5 @@ function bpmReplacer(_match: string, numBefore: string | undefined, numAfter: st
 const normaliseBpmTag: StringTransformer = (name: string): string =>
   name.replace(BPM_RE, bpmReplacer);
 
-export const createNormaliseBpmTagTransformer: Transform = createSanitiseNameTransformer(normaliseBpmTag);
+const _singleton: Transform = createSanitiseNameTransformer(normaliseBpmTag);
+export const createNormaliseBpmTagTransformer = (): Transform => _singleton;

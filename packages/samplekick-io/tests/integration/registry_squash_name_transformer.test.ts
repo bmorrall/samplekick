@@ -12,7 +12,7 @@ describe("SquashNameTransformer integration", () => {
       createFileEntry({ path: "Other Pack/ride-cymbal.wav" }),
       createFileEntry({ path: "Other Pack/crash - cymbal.wav" }),
     ]);
-    registry.applyTransform(createSquashNameTransformer);
+    registry.applyTransform(createSquashNameTransformer());
     expect(registry.toString()).toBe(
       [
         "root",

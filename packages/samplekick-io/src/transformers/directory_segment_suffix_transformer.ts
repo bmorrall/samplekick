@@ -66,7 +66,7 @@ function resolveSegmentSuffix(segment: string): string | undefined {
  * e.g. "Wet Percussion" → strip "Wet" → "Percussion" → tags as "Percussion".
  * Must run after all other directory transformers.
  */
-export const createDirectorySegmentSuffixTransformer: Transform = {
+const _singleton: Transform = {
   transform: (source) => {
     source.eachTransformEntry((entry) => {
       if (entry.getOwnSampleType() !== undefined) return;
@@ -80,4 +80,4 @@ export const createDirectorySegmentSuffixTransformer: Transform = {
       entry.setSampleType(sampleType);
     });
   },
-};
+};export const createDirectorySegmentSuffixTransformer = (): Transform => _singleton;

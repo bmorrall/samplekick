@@ -9,7 +9,7 @@ const MIDI_PREFIX = 'MIDI';
  * (e.g. "Drum Loops" from a parent directory), the type is prefixed:
  * "MIDI - Drum Loops". Entries with keepStructure already set are skipped.
  */
-export const createMidiFileTransformer: Transform = {
+const _singleton: Transform = {
   transform: (source) => {
     source.eachTransformEntry((entry) => {
       if (entry.isKeepStructure() === true) return;
@@ -26,3 +26,4 @@ export const createMidiFileTransformer: Transform = {
     });
   },
 };
+export const createMidiFileTransformer = (): Transform => _singleton;
