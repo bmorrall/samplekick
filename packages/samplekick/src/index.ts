@@ -11,6 +11,7 @@ import {
   createArchiveFileTransformer,
   CsvConfigWriter,
   createDefaultRootPackageNameTransformer,
+  createDefaultRootSampleTypeTransformer,
   createDirectorySampleTypeTransformer,
   createDirectorySegmentSuffixTransformer,
   createDirectorySubcategoryTransformer,
@@ -110,6 +111,7 @@ Options:
   -o, --output <path>     Export samples to a directory
                           Omit to preview changes without writing files
   -a, --analyse           Analyse pack and save to the auto-config
+  -s, --sanitise          Normalise entry names (trim, spacing, dashes, tags)
   -d, --device <name>     Apply device-specific transforms to sample names
   -c, --convert           Convert audio files to device format
       --allow-junk        Keep junk entries (e.g. __MACOSX, hidden files)
@@ -200,6 +202,7 @@ try {
       "allow-junk": { type: "boolean" },
       "preserve-paths": { type: "boolean" },
       "keep-parents": { type: "boolean" },
+      sanitise: { type: "boolean", short: "s" },
       squash: { type: "boolean" },
       bake: { type: "boolean" },
       rebuild: { type: "boolean" },
@@ -381,22 +384,29 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
     registry.applyTransform(createSkipJunkTransformer());
   }
 
-  if (values.analyse === true) {
+  if (values.analyse === true || values["keep-parents"] === true) {
+    // Root package name: set early from the zip filename so expand runs before
+    // directory analysis, keeping packageName clean for the auto-config.
+    registry.applyTransform(createDefaultRootPackageNameTransformer());
+    registry.applyTransform(createExpandRootPackageNameTransformer());
+  }
+
+  if (values.analyse === true || values.sanitise === true) {
     registry.applyTransform(createTrimNameTransformer());
     registry.applyTransform(createNormaliseQuotesTransformer());
     registry.applyTransform(createNormaliseDashesTransformer());
+  }
 
+  if (values.analyse === true) {
     // File transforms: identify known file types and lock their folder structure
     registry.applyTransform(createKnownFileTypeTransformer());
     registry.applyTransform(createArchiveFileTransformer());
     registry.applyTransform(createAbletonProjectTransformer());
     registry.applyTransform(createFLStudioProjectTransformer());
     registry.applyTransform(createSP404Mk2ProjectTransformer());
+  }
 
-    // Root transforms: derive and expand the package name from the zip filename
-    registry.applyTransform(createDefaultRootPackageNameTransformer());
-    registry.applyTransform(createExpandRootPackageNameTransformer());
-
+  if (values.analyse === true || values.sanitise === true) {
     // Name transforms: run after file transforms so locked entries are skipped
     registry.applyTransform(createGhosthackNameTransformer());
     registry.applyTransform(createNormaliseSpacesTransformer());
@@ -408,7 +418,9 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
     // Tag transforms: normalise embedded BPM and key tags to canonical forms
     registry.applyTransform(createNormaliseBpmTagTransformer());
     registry.applyTransform(createNormaliseKeyTagTransformer());
+  }
 
+  if (values.analyse === true) {
     // Directory transforms: run after name transforms so folder names are normalised first
     registry.applyTransform(createDrumSubcategoryTransformer());
     registry.applyTransform(createDirectorySampleTypeTransformer());
@@ -419,6 +431,12 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
 
     // MIDI transforms: detect MIDI files after directory structure is resolved
     registry.applyTransform(createMidiFileTransformer());
+  }
+
+  if (values.analyse === true || values["keep-parents"] === true) {
+    // Root sample type: runs after directory/MIDI transforms so their sampleType
+    // assignments (e.g. FlatPackPrefixTransformer) are not skipped by the Packs default.
+    registry.applyTransform(createDefaultRootSampleTypeTransformer());
   }
 
   if (values["keep-parents"] === true) {
@@ -435,7 +453,9 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
   });
 
   if (
-    (values.analyse === true || values["keep-parents"] === true) &&
+    (values.analyse === true ||
+      values["keep-parents"] === true ||
+      values.sanitise === true) &&
     autoConfigPath !== undefined &&
     values.bake !== true
   ) {

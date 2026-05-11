@@ -41,7 +41,7 @@ describe("SP-404MKII device preset", () => {
       expect(autoConfig).toBe(
         [
           "path,keepPath,name,packageName,sampleType,skip",
-          ",,test-pack.zip,test-pack,,",
+          ",,test-pack.zip,test-pack,Packs,",
           "Drums,,,,Drums,",
           "Drums/kick.wav,,,,,",
           "Loops,,,,Loops,",
@@ -181,7 +181,7 @@ describe("SP-404MKII device preset", () => {
       expect(autoConfig).toBe(
         [
           "path,keepPath,name,packageName,sampleType,skip",
-          ",,t\u00ebst-pack.zip,t\u00ebst-pack,,",
+          ",,t\u00ebst-pack.zip,t\u00ebst-pack,Packs,",
           "Dr\u00fcms,,,,,",
           "Dr\u00fcms/sn\u00e2re.wav,,,,,",
         ].join("\n"),
@@ -249,7 +249,7 @@ describe("SP-404MKII device preset", () => {
       expect(autoConfig).toBe(
         [
           "path,keepPath,name,packageName,sampleType,skip",
-          ",,t\u00ebst-pack.zip,t\u00ebst-pack,,",
+          ",,t\u00ebst-pack.zip,t\u00ebst-pack,Packs,",
           "Dr\u00fcms,,,,,",
           "Dr\u00fcms/sn\u00e2re.wav,,,,,",
         ].join("\n"),

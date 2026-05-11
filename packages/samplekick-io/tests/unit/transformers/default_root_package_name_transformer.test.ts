@@ -37,4 +37,11 @@ describe("createDefaultRootPackageNameTransformer", () => {
     transformer.transform(singleEntryTransformSource(entry));
     expect(entry.setPackageName).not.toHaveBeenCalled();
   });
+
+  it("does not set sampleType", () => {
+    const entry = createTransformEntry({ name: "Example.zip" });
+    const transformer = createDefaultRootPackageNameTransformer();
+    transformer.transform(singleEntryTransformSource(entry));
+    expect(entry.setSampleType).not.toHaveBeenCalled();
+  });
 });

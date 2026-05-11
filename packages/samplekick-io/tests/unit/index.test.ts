@@ -18,6 +18,10 @@ describe("index exports", () => {
     expect(api.createDefaultRootPackageNameTransformer).toBeDefined();
   });
 
+  test("exports createDefaultRootSampleTypeTransformer", () => {
+    expect(api.createDefaultRootSampleTypeTransformer).toBeDefined();
+  });
+
   test("exports createAbletonProjectTransformer", () => {
     expect(api.createAbletonProjectTransformer).toBeDefined();
   });
@@ -165,6 +169,7 @@ describe("index exports", () => {
       "createAbletonProjectTransformer",
       "createArchiveFileTransformer",
       "createDefaultRootPackageNameTransformer",
+      "createDefaultRootSampleTypeTransformer",
       "createDirectoryChildNameTransformer",
       "createDirectorySampleTypeTransformer",
       "createDirectorySegmentSuffixTransformer",

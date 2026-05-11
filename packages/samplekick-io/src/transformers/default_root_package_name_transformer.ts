@@ -7,7 +7,7 @@ const _singleton: Transform = {
       const name = entry.getName();
       if (name === "") return;
       const dotIdx = name.lastIndexOf(".");
-      if (dotIdx > 0) {
+      if (dotIdx > 0 && entry.getOwnPackageName() === undefined) {
         entry.setPackageName(name.substring(0, dotIdx));
       }
     });

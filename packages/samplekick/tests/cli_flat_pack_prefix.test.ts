@@ -77,7 +77,7 @@ describe("FlatPackPrefixTransformer", () => {
       const [configFile] = await readdir(dataDir);
       const csv = await readFile(join(dataDir, configFile), "utf8");
       const rootRow = csv.split("\n").find((r) => r.startsWith(","));
-      expect(rootRow).not.toContain("Packs");
+      expect(rootRow).toContain(",test-pack,"); // packageName remains zip stem; FlatPackPrefixTransformer did not apply
     } finally {
       await rm(tmpDir, { recursive: true });
     }

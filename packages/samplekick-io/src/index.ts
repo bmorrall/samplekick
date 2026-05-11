@@ -10,6 +10,7 @@ export {
   createAbletonProjectTransformer,
   createArchiveFileTransformer,
   createDefaultRootPackageNameTransformer,
+  createDefaultRootSampleTypeTransformer,
   createDirectoryChildNameTransformer,
   createDirectorySampleTypeTransformer,
   createDirectorySegmentSuffixTransformer,
