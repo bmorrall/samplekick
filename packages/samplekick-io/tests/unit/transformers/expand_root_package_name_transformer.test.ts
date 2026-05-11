@@ -84,6 +84,26 @@ describe("createExpandRootPackageNameTransformer", () => {
     expect(entry.setPackageName).not.toHaveBeenCalled();
   });
 
+  it("replaces underscores with spaces", () => {
+    const entry = createTransformEntry({
+      name: "cool_pack.zip",
+      packageName: "cool_pack",
+    });
+    const transformer = createExpandRootPackageNameTransformer();
+    transformer.transform(singleEntryTransformSource(entry));
+    expect(entry.setPackageName).toHaveBeenCalledWith("cool pack");
+  });
+
+  it("replaces underscores and then expands CamelCase", () => {
+    const entry = createTransformEntry({
+      name: "CoolPack_v2.zip",
+      packageName: "CoolPack_v2",
+    });
+    const transformer = createExpandRootPackageNameTransformer();
+    transformer.transform(singleEntryTransformSource(entry));
+    expect(entry.setPackageName).toHaveBeenCalledWith("Cool Pack v2");
+  });
+
   it("does not call setName", () => {
     const entry = createTransformEntry({
       name: "CoolPack.zip",
