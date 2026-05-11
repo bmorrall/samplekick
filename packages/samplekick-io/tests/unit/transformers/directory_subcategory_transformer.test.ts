@@ -131,6 +131,39 @@ describe("createDirectorySubcategoryTransformer", () => {
       expect(entry.setKeepStructure).not.toHaveBeenCalled();
     });
 
+    it("does not set sampleType when the child name is 'MIDI'", () => {
+      const entry = createTransformEntryInHierarchy(
+        [{ name: "Melodies", sampleType: "Melodies" }],
+        { name: "MIDI", isFile: false },
+        [{ name: "track.mid" }],
+      );
+      createDirectorySubcategoryTransformer(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).not.toHaveBeenCalled();
+      expect(entry.setKeepStructure).not.toHaveBeenCalled();
+    });
+
+    it("does not set sampleType when the child name ends with 'MIDI' (e.g. 'Drum MIDI')", () => {
+      const entry = createTransformEntryInHierarchy(
+        [{ name: "Melodies", sampleType: "Melodies" }],
+        { name: "Drum MIDI", isFile: false },
+        [{ name: "track.mid" }],
+      );
+      createDirectorySubcategoryTransformer(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).not.toHaveBeenCalled();
+      expect(entry.setKeepStructure).not.toHaveBeenCalled();
+    });
+
+     it("does not set sampleType when the child name is 'MIDI'", () => {
+      const entry = createTransformEntryInHierarchy(
+        [{ name: "Melodies", sampleType: "Melodies" }],
+        { name: "MIDI", isFile: false },
+        [{ name: "track.mid" }],
+      );
+      createDirectorySubcategoryTransformer(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).not.toHaveBeenCalled();
+      expect(entry.setKeepStructure).not.toHaveBeenCalled();
+    });
+
     it("does not set sampleType when the child name already contains ' - '", () => {
       const entry = createTransformEntryInHierarchy(
         [{ name: "Drum Loops", sampleType: "Drum Loops" }],
