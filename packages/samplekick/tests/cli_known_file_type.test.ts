@@ -44,6 +44,70 @@ describe("KnownFileTypeTransformer", () => {
     }
   });
 
+  it("tags .dnprj files with sampleType Digitone Projects in the auto-config", async () => {
+    const zipped = zipSync({
+      "Projects/song.dnprj": strToU8("dnprj-data"),
+    });
+
+    const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-analyse-"));
+    const zipPath = join(tmpDir, "test-pack.zip");
+    const dataDir = join(tmpDir, "data");
+
+    try {
+      await writeFile(zipPath, zipped);
+
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--analyse"], {
+        encoding: "utf8",
+        env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+      });
+
+      expect(result.status).toBe(0);
+
+      const [configFile] = await readdir(dataDir);
+      const csv = await readFile(join(dataDir, configFile), "utf8");
+
+      const dnprjRow = csv
+        .split("\n")
+        .find((row) => row.includes("song.dnprj"));
+      expect(dnprjRow).toBeDefined();
+      expect(dnprjRow?.split(",")[4]).toBe("Digitone Projects");
+    } finally {
+      await rm(tmpDir, { recursive: true });
+    }
+  });
+
+  it("tags .dnsnd files with sampleType Digitone Sounds in the auto-config", async () => {
+    const zipped = zipSync({
+      "Sounds/patch.dnsnd": strToU8("dnsnd-data"),
+    });
+
+    const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-analyse-"));
+    const zipPath = join(tmpDir, "test-pack.zip");
+    const dataDir = join(tmpDir, "data");
+
+    try {
+      await writeFile(zipPath, zipped);
+
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--analyse"], {
+        encoding: "utf8",
+        env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+      });
+
+      expect(result.status).toBe(0);
+
+      const [configFile] = await readdir(dataDir);
+      const csv = await readFile(join(dataDir, configFile), "utf8");
+
+      const dnsndRow = csv
+        .split("\n")
+        .find((row) => row.includes("patch.dnsnd"));
+      expect(dnsndRow).toBeDefined();
+      expect(dnsndRow?.split(",")[4]).toBe("Digitone Sounds");
+    } finally {
+      await rm(tmpDir, { recursive: true });
+    }
+  });
+
   it("tags .fxp files with sampleType Serum Presets in the auto-config", async () => {
     const zipped = zipSync({
       "Presets/bass.fxp": strToU8("fxp-data"),
