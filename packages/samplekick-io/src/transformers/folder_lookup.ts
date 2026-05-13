@@ -138,6 +138,19 @@ const STRIP_NOISE_SUFFIX_RE = /\s+(?:collection|bundle|pack|set|library)s?$/iv;
 export const stripIgnoredSuffix = (nameLower: string): string =>
   nameLower.replace(STRIP_SUFFIX_RE, "").replace(STRIP_NOISE_SUFFIX_RE, "");
 
+export function resolveOneShotPrefixType(
+  sampleType: string,
+): string | undefined {
+  const lower = sampleType.toLowerCase();
+  const oneShotSuffix = ONE_SHOT_LABELS.map((l) => ` ${l}`).find((s) =>
+    lower.endsWith(s),
+  );
+  if (oneShotSuffix === undefined) return undefined;
+  const key = lower.slice(0, -oneShotSuffix.length);
+  if (lookupPrefix(key) === undefined) return undefined;
+  return lookupStandalone(key);
+}
+
 export function isKnownTypeFolderName(name: string): boolean {
   const lower = name.toLowerCase();
   if (FOLDER_LOOKUP.has(lower)) return true;
@@ -147,11 +160,5 @@ export function isKnownTypeFolderName(name: string): boolean {
   if (loopSuffix !== undefined) {
     return lookupPrefix(lower.slice(0, -loopSuffix.length)) !== undefined;
   }
-  const oneShotSuffix = ONE_SHOT_LABELS.map((l) => ` ${l}`).find((s) =>
-    lower.endsWith(s),
-  );
-  if (oneShotSuffix !== undefined) {
-    return lookupPrefix(lower.slice(0, -oneShotSuffix.length)) !== undefined;
-  }
-  return false;
+  return resolveOneShotPrefixType(name) !== undefined;
 }
