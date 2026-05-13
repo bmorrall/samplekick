@@ -86,6 +86,30 @@ describe("createReorderBpmKeyTransformer", () => {
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setName).toHaveBeenCalledWith("Loop_Bbmin_100bpm.wav");
     });
+
+    it("reorders 150bpm - D#min (hyphen-spaced sep) to D#min 150bpm", () => {
+      const entry = createTransformEntry({
+        name: "Holiday Kit 03 - 150bpm - D#min.wav",
+      });
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setName).toHaveBeenCalledWith(
+        "Holiday Kit 03 - D#min 150bpm.wav",
+      );
+    });
+
+    it("reorders 120bpm - Cmaj (hyphen-spaced sep) to Cmaj 120bpm", () => {
+      const entry = createTransformEntry({
+        name: "Kick - 120bpm - Cmaj.wav",
+      });
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setName).toHaveBeenCalledWith("Kick - Cmaj 120bpm.wav");
+    });
+
+    it("reorders 120bpm_-_Amin (underscore-hyphen sep) to Amin_120bpm", () => {
+      const entry = createTransformEntry({ name: "Loop_120bpm_-_Amin.wav" });
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setName).toHaveBeenCalledWith("Loop_Amin_120bpm.wav");
+    });
   });
 
   describe("does not act when key already precedes BPM", () => {
@@ -99,6 +123,26 @@ describe("createReorderBpmKeyTransformer", () => {
       const entry = createTransformEntry({ name: "Chord Cmaj 90bpm.wav" });
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setName).toHaveBeenCalledWith("Chord Cmaj 90bpm.wav");
+    });
+  });
+
+  describe("strips hyphen separator when key already precedes BPM", () => {
+    it("strips ' - ' from Cmaj - 120bpm to Cmaj 120bpm", () => {
+      const entry = createTransformEntry({ name: "Kick - Cmaj - 120bpm.wav" });
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setName).toHaveBeenCalledWith("Kick - Cmaj 120bpm.wav");
+    });
+
+    it("strips '_-_' from Amin_-_120bpm to Amin_120bpm", () => {
+      const entry = createTransformEntry({ name: "Loop_Amin_-_120bpm.wav" });
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setName).toHaveBeenCalledWith("Loop_Amin_120bpm.wav");
+    });
+
+    it("does not strip a plain space separator: Amin 120bpm unchanged", () => {
+      const entry = createTransformEntry({ name: "Loop Amin 120bpm.wav" });
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setName).toHaveBeenCalledWith("Loop Amin 120bpm.wav");
     });
   });
 
