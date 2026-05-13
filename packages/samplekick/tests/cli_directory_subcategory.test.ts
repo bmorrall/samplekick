@@ -68,6 +68,73 @@ describe("DirectorySubcategoryTransformer", () => {
     }
   });
 
+  it('normalises "Melody One Shots" directory sampleType to "Melodies"', async () => {
+    const zipped = zipSync({
+      "Melody One Shots/melody.wav": strToU8("data"),
+    });
+
+    const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-dir-subcategory-"));
+    const zipPath = join(tmpDir, "test-pack.zip");
+    const dataDir = join(tmpDir, "data");
+
+    try {
+      await writeFile(zipPath, zipped);
+
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--analyse"], {
+        encoding: "utf8",
+        env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+      });
+
+      expect(result.status).toBe(0);
+
+      const [configFile] = await readdir(dataDir);
+      const csv = await readFile(join(dataDir, configFile), "utf8");
+
+      const row = csv
+        .split("\n")
+        .find((r) => r.startsWith("Melody One Shots,"));
+      expect(row).toBe("Melody One Shots,,,,Melodies,");
+    } finally {
+      await rm(tmpDir, { recursive: true });
+    }
+  });
+
+  it('tags "Latin" under "Melody One Shots" as "Melodies - Latin"', async () => {
+    const zipped = zipSync({
+      "Melody One Shots/Latin/melody.wav": strToU8("data"),
+    });
+
+    const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-dir-subcategory-"));
+    const zipPath = join(tmpDir, "test-pack.zip");
+    const dataDir = join(tmpDir, "data");
+
+    try {
+      await writeFile(zipPath, zipped);
+
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--analyse"], {
+        encoding: "utf8",
+        env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+      });
+
+      expect(result.status).toBe(0);
+
+      const [configFile] = await readdir(dataDir);
+      const csv = await readFile(join(dataDir, configFile), "utf8");
+
+      const parentRow = csv
+        .split("\n")
+        .find((r) => r.startsWith("Melody One Shots,"));
+      expect(parentRow).toBe("Melody One Shots,,,,Melodies,");
+
+      const childRow = csv
+        .split("\n")
+        .find((r) => r.startsWith("Melody One Shots/Latin,"));
+      expect(childRow).toBe("Melody One Shots/Latin,,,,Melodies - Latin,");
+    } finally {
+      await rm(tmpDir, { recursive: true });
+    }
+  });
+
   it('tags "Alien Technology" under a brand-prefixed "FX & Foley" pack as "Foley - Alien Technology"', async () => {
     const zipped = zipSync({
       "Ghosthack x Boom - Sci-Fi Horror FX & Foley/Alien Technology/alarm.wav":

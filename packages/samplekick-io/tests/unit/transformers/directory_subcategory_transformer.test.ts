@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createDirectorySubcategoryTransformer } from "../../../src";
 import {
+  createTransformEntry,
   createTransformEntryInHierarchy,
   singleEntryTransformSource,
 } from "../../support";
@@ -208,6 +209,52 @@ describe("createDirectorySubcategoryTransformer", () => {
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
       expect(entry.setKeepStructure).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('when a directory has sampleType set to a "Prefix One Shots" form', () => {
+    it('normalises "Melody One Shots" to "Melodies"', () => {
+      const entry = createTransformEntry({
+        name: "Melody One Shots",
+        sampleType: "Melody One Shots",
+        isFile: false,
+      });
+      const transformer = createDirectorySubcategoryTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("Melodies");
+    });
+
+    it('normalises "Drum One Shots" to "Drums"', () => {
+      const entry = createTransformEntry({
+        name: "Drum One Shots",
+        sampleType: "Drum One Shots",
+        isFile: false,
+      });
+      const transformer = createDirectorySubcategoryTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("Drums");
+    });
+
+    it("does not call setSampleType when sampleType is already a standalone", () => {
+      const entry = createTransformEntry({
+        name: "Melodies",
+        sampleType: "Melodies",
+        isFile: false,
+      });
+      const transformer = createDirectorySubcategoryTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).not.toHaveBeenCalled();
+    });
+
+    it("does not call setSampleType when entry has no own sampleType", () => {
+      const entry = createTransformEntryInHierarchy(
+        [{ name: "Unknown" }],
+        { name: "Latin", isFile: false },
+        [{ name: "loop.wav" }],
+      );
+      const transformer = createDirectorySubcategoryTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).not.toHaveBeenCalled();
     });
   });
 });

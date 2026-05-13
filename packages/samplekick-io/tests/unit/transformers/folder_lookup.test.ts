@@ -6,6 +6,7 @@ import {
   isKnownTypeFolderName,
   lookupPrefix,
   lookupStandalone,
+  resolveOneShotPrefixType,
   stripIgnoredSuffix,
 } from "../../../src/transformers/folder_lookup";
 
@@ -99,6 +100,40 @@ describe("FOLDER_LOOKUP", () => {
         ).toBeGreaterThan(0);
       }
     });
+  });
+});
+
+describe("resolveOneShotPrefixType", () => {
+  it('resolves "Melody One Shots" to "Melodies"', () => {
+    expect(resolveOneShotPrefixType("Melody One Shots")).toBe("Melodies");
+  });
+
+  it('resolves "Drum One Shots" to "Drums"', () => {
+    expect(resolveOneShotPrefixType("Drum One Shots")).toBe("Drums");
+  });
+
+  it('resolves "Kick One-Shots" (hyphen form) to "Kicks"', () => {
+    expect(resolveOneShotPrefixType("Kick One-Shots")).toBe("Kicks");
+  });
+
+  it('resolves "Kick Oneshots" (no-space form) to "Kicks"', () => {
+    expect(resolveOneShotPrefixType("Kick Oneshots")).toBe("Kicks");
+  });
+
+  it("is case-insensitive", () => {
+    expect(resolveOneShotPrefixType("MELODY ONE SHOTS")).toBe("Melodies");
+  });
+
+  it('returns undefined for a bare standalone like "Melodies"', () => {
+    expect(resolveOneShotPrefixType("Melodies")).toBeUndefined();
+  });
+
+  it('returns undefined for an unknown prefix like "Unknown One Shots"', () => {
+    expect(resolveOneShotPrefixType("Unknown One Shots")).toBeUndefined();
+  });
+
+  it('returns undefined for "Loops One Shots" (loops has no compound prefix)', () => {
+    expect(resolveOneShotPrefixType("Loops One Shots")).toBeUndefined();
   });
 });
 

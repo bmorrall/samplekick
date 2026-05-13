@@ -1,5 +1,8 @@
 import type { Transform, TransformEntry } from "../types";
-import { isKnownTypeFolderName } from "./folder_lookup";
+import {
+  isKnownTypeFolderName,
+  resolveOneShotPrefixType,
+} from "./folder_lookup";
 
 const STRIP_MIDI_STEMS_RE = / (?:&|and) (?:midi|stems?)$/iv;
 
@@ -25,6 +28,11 @@ function trySetSubcategory(entry: TransformEntry): boolean {
 const _singleton: Transform = {
   transform: (source) => {
     source.eachTransformEntry((entry) => {
+      const ownType = entry.getOwnSampleType();
+      if (ownType !== undefined) {
+        const resolved = resolveOneShotPrefixType(ownType);
+        if (resolved !== undefined) entry.setSampleType(resolved);
+      }
       if (entry.getOwnSampleType() !== undefined) return;
       if (entry.getChildNodes().length === 0) return;
       trySetSubcategory(entry);
