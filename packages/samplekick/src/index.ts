@@ -34,6 +34,7 @@ import {
   createStripFormatHintsTransformer,
   createNormaliseBpmTagTransformer,
   createNormaliseKeyTagTransformer,
+  createReorderBpmKeyTransformer,
   createNormaliseSpacesTransformer,
   OrganisedPathStrategy,
   Registry,
@@ -429,6 +430,7 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
     // Tag transforms: normalise embedded BPM and key tags to canonical forms
     registry.applyTransform(createNormaliseBpmTagTransformer());
     registry.applyTransform(createNormaliseKeyTagTransformer());
+    registry.applyTransform(createReorderBpmKeyTransformer());
   }
 
   if (values.analyse === true) {

@@ -76,7 +76,7 @@ function shortMinorBpmBeforeReplacer(
   sep: string,
   num: string,
 ): string {
-  const normSep = sep || " ";
+  const normSep = sep === "" ? " " : sep;
   return `${root[0].toUpperCase()}${root.slice(1)}min${normSep}${num}bpm`;
 }
 

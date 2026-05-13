@@ -13,6 +13,7 @@ export { createNormaliseHyphenSpacingTransformer } from "./normalise_hyphen_tran
 export { createNormaliseDashesTransformer } from "./normalise_dashes_transformer";
 export { createNormaliseBpmTagTransformer } from "./normalise_bpm_tag_transformer";
 export { createNormaliseKeyTagTransformer } from "./normalise_key_tag_transformer";
+export { createReorderBpmKeyTransformer } from "./reorder_bpm_key_transformer";
 export { createNormaliseSpacesTransformer } from "./normalise_spaces_transformer";
 export { createDirectoryChildNameTransformer } from "./directory_child_name_transformer";
 export { createDirectorySampleTypeTransformer } from "./directory_sample_type_transformer";
