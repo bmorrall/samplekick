@@ -90,6 +90,10 @@ describe("index exports", () => {
     expect(api.createNormaliseKeyTagTransformer).toBeDefined();
   });
 
+  test("exports createReorderBpmKeyTransformer", () => {
+    expect(api.createReorderBpmKeyTransformer).toBeDefined();
+  });
+
   test("exports createNormaliseSpacesTransformer", () => {
     expect(api.createNormaliseSpacesTransformer).toBeDefined();
   });
@@ -206,6 +210,7 @@ describe("index exports", () => {
       "createNormaliseDashesTransformer",
       "createNormaliseBpmTagTransformer",
       "createNormaliseKeyTagTransformer",
+      "createReorderBpmKeyTransformer",
       "createNormaliseSpacesTransformer",
       "createSkipJunkTransformer",
       "createStripAccentsTransform",

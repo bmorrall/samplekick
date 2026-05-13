@@ -27,6 +27,7 @@ export {
   createNormaliseDashesTransformer,
   createNormaliseBpmTagTransformer,
   createNormaliseKeyTagTransformer,
+  createReorderBpmKeyTransformer,
   createNormaliseSpacesTransformer,
   createSkipJunkTransformer,
   createStripAccentsTransform,

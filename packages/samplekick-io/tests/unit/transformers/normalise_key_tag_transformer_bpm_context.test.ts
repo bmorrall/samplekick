@@ -21,10 +21,10 @@ describe("createNormaliseKeyTagTransformer (BPM context bare minor)", () => {
       expect(entry.setName).toHaveBeenCalledWith("Loop C#min 120bpm.wav");
     });
 
-    it("normalises C#m120bpm (no sep) to C#min120bpm", () => {
+    it("normalises C#m120bpm (no sep) to C#min 120bpm (space inserted)", () => {
       const entry = createTransformEntry({ name: "Loop C#m120bpm.wav" });
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setName).toHaveBeenCalledWith("Loop C#min120bpm.wav");
+      expect(entry.setName).toHaveBeenCalledWith("Loop C#min 120bpm.wav");
     });
 
     it("normalises a natural-note root: Em_120bpm to Emin_120bpm", () => {
@@ -81,6 +81,24 @@ describe("createNormaliseKeyTagTransformer (BPM context bare minor)", () => {
       const entry = createTransformEntry({ name: "Loop_120bpm_c#m.wav" });
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setName).toHaveBeenCalledWith("Loop_120bpm_C#min.wav");
+    });
+  });
+
+  describe("already-normalised Xmin is not collapsed when adjacent to BPM", () => {
+    it("leaves D#min 140bpm unchanged (does not consume 140 as chord extension)", () => {
+      const entry = createTransformEntry({
+        name: "Ayla_D#min 140bpm_Phrase.wav",
+      });
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setName).toHaveBeenCalledWith(
+        "Ayla_D#min 140bpm_Phrase.wav",
+      );
+    });
+
+    it("leaves Amin 120bpm unchanged", () => {
+      const entry = createTransformEntry({ name: "Loop_Amin 120bpm.wav" });
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setName).toHaveBeenCalledWith("Loop_Amin 120bpm.wav");
     });
   });
 

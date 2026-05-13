@@ -10,8 +10,11 @@ import { createSanitiseNameTransformer } from "./sanitise_name_transformer";
 //          aug/augmented (optionally followed by \d+), add\d+ (bare, no quality prefix) (case-insensitive).
 // Lookbehind (?<![a-zA-Z]) prevents matching note letters inside words (e.g. "grab min").
 // Lookahead (?![a-zA-Z]) prevents partial-word matches (e.g. "Cmajority").
+// (?!\d*[_ ]?bpm) after the optional digit extension prevents consuming any prefix of a BPM
+// value as a chord extension (e.g. "D#min 140bpm" — "14" must not be captured as an extension
+// just because (?!bpm) passes at that position; the full remaining digit sequence is checked).
 const KEY_RE =
-  /(?<![a-zA-Z])(?<root>[A-G][#b]?)[_ ]?(?<quality>(?:major|minor|maj|min)(?:[_ ]?\d+)?(?:[_ ]?\+[_ ]?\d+)*|sus[24](?:[_ ]?add\d+)?|dim\d*|augmented\d*|aug\d*|add\d+)(?![a-zA-Z])/giv;
+  /(?<![a-zA-Z])(?<root>[A-G][#b]?)[_ ]?(?<quality>(?:major|minor|maj|min)(?:[_ ]?\d+(?!\d*[_ ]?bpm))?(?:[_ ]?\+[_ ]?\d+)*|sus[24](?:[_ ]?add\d+)?|dim\d*|augmented\d*|aug\d*|add\d+)(?![a-zA-Z])/giv;
 
 function keyTagReplacer(_match: string, root: string, quality: string): string {
   const normRoot = root[0].toUpperCase() + root.slice(1);
@@ -28,9 +31,10 @@ const normaliseKeyTag: StringTransformer = (name: string): string =>
 
 // Matches short minor+number forms with no spaces, e.g. "Cm7", "F#m9", "Bbm11".
 // Requires a digit — bare "Cm" is intentionally excluded to avoid false positives.
+// (?!\d*bpm) prevents matching a prefix of a BPM number (e.g. "C#m12" inside "C#m120bpm").
 // Separate regex to keep the match explicit and avoid ambiguity with KEY_RE.
 const SHORT_MINOR_RE =
-  /(?<![a-zA-Z])(?<root>[A-G][#b]?)m(?<num>\d+)(?![a-zA-Z])/giv;
+  /(?<![a-zA-Z])(?<root>[A-G][#b]?)m(?<num>\d+)(?!\d*bpm)(?![a-zA-Z])/giv;
 
 function shortMinorReplacer(_match: string, root: string, num: string): string {
   return `${root[0].toUpperCase()}${root.slice(1)}min${num}`;
@@ -61,12 +65,19 @@ const normaliseMinorMaj: StringTransformer = (name: string): string =>
 // The BPM transformer always runs before this one, so the tag is already in
 // NNNbpm form by the time these replacements fire.
 //
-// Case 1 — key before BPM: lookahead so only the key token is replaced.
+// Case 1 — key before BPM: full capture so the replacer can insert a separator when none
+// exists (e.g. "C#m120bpm" → "C#min 120bpm"). An existing _ or space is preserved as-is.
 const SHORT_MINOR_BPM_BEFORE_RE =
-  /(?<![a-zA-Z])(?<root>[A-G][#b]?)m(?=[_ ]?\d{2,3}bpm(?!\d))/giv;
+  /(?<![a-zA-Z])(?<root>[A-G][#b]?)m(?<sep>[_ ]?)(?<num>\d{2,3})bpm(?!\d)/giv;
 
-function shortMinorBpmBeforeReplacer(_match: string, root: string): string {
-  return `${root[0].toUpperCase()}${root.slice(1)}min`;
+function shortMinorBpmBeforeReplacer(
+  _match: string,
+  root: string,
+  sep: string,
+  num: string,
+): string {
+  const normSep = sep === "" ? " " : sep;
+  return `${root[0].toUpperCase()}${root.slice(1)}min${normSep}${num}bpm`;
 }
 
 // Case 2 — key after BPM: capture the full BPM+sep+key triplet and reconstruct.
