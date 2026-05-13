@@ -13,6 +13,7 @@ import {
   createDefaultRootPackageNameTransformer,
   createDefaultRootSampleTypeTransformer,
   createDirectorySampleTypeTransformer,
+  createAcapellaTransformer,
   createDirectorySegmentSuffixTransformer,
   createDirectorySubcategoryTransformer,
   createDirectoryChildNameTransformer,
@@ -437,6 +438,7 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
     // Directory transforms: run after name transforms so folder names are normalised first
     registry.applyTransform(createDrumSubcategoryTransformer());
     registry.applyTransform(createDirectorySampleTypeTransformer());
+    registry.applyTransform(createAcapellaTransformer());
     registry.applyTransform(createDirectoryChildNameTransformer());
     registry.applyTransform(createDirectorySubcategoryTransformer());
     registry.applyTransform(createDirectorySegmentSuffixTransformer());

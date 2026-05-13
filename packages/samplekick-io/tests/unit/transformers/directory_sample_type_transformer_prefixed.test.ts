@@ -7,7 +7,7 @@ import {
 
 describe("createDirectorySampleTypeTransformer", () => {
   describe('when the directory name contains " and " or " & "', () => {
-    it('sets sampleType to "Acapellas and Vocals" for "Acapellas and Vocals"', () => {
+    it('does not set sampleType for "Acapellas and Vocals" (handled by AcapellaTransformer)', () => {
       const entry = createTransformEntryInHierarchy(
         [],
         { name: "Acapellas and Vocals", isFile: false },
@@ -15,10 +15,10 @@ describe("createDirectorySampleTypeTransformer", () => {
       );
       const transformer = createDirectorySampleTypeTransformer();
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setSampleType).toHaveBeenCalledWith("Acapellas and Vocals");
+      expect(entry.setSampleType).not.toHaveBeenCalled();
     });
 
-    it('sets sampleType to "Acapellas and Vocals" for "Acapellas & Vocals"', () => {
+    it('does not set sampleType for "Acapellas & Vocals" (handled by AcapellaTransformer)', () => {
       const entry = createTransformEntryInHierarchy(
         [],
         { name: "Acapellas & Vocals", isFile: false },
@@ -26,18 +26,7 @@ describe("createDirectorySampleTypeTransformer", () => {
       );
       const transformer = createDirectorySampleTypeTransformer();
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setSampleType).toHaveBeenCalledWith("Acapellas and Vocals");
-    });
-
-    it("matches case-insensitively", () => {
-      const entry = createTransformEntryInHierarchy(
-        [],
-        { name: "acapellas and vocals", isFile: false },
-        [{ name: "vocal.wav" }],
-      );
-      const transformer = createDirectorySampleTypeTransformer();
-      transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setSampleType).toHaveBeenCalledWith("Acapellas and Vocals");
+      expect(entry.setSampleType).not.toHaveBeenCalled();
     });
 
     it("does not set sampleType when one part does not match", () => {

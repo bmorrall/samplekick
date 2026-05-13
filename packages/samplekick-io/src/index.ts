@@ -13,6 +13,7 @@ export {
   createDefaultRootSampleTypeTransformer,
   createDirectoryChildNameTransformer,
   createDirectorySampleTypeTransformer,
+  createAcapellaTransformer,
   createDirectorySegmentSuffixTransformer,
   createDirectorySubcategoryTransformer,
   createDrumSubcategoryTransformer,

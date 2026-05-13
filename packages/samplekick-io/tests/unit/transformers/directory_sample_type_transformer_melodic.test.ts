@@ -48,27 +48,7 @@ describe("createDirectorySampleTypeTransformer", () => {
         [{ name: "vocal.wav" }],
       );
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setSampleType).toHaveBeenCalledWith("Acapellas");
-    });
-
-    it('sets sampleType to "Acapellas" for the singular form "Acapella"', () => {
-      const entry = createTransformEntryInHierarchy(
-        [],
-        { name: "Acapella", isFile: false },
-        [{ name: "vocal.wav" }],
-      );
-      transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setSampleType).toHaveBeenCalledWith("Acapellas");
-    });
-
-    it("matches case-insensitively", () => {
-      const entry = createTransformEntryInHierarchy(
-        [],
-        { name: "acapellas", isFile: false },
-        [{ name: "vocal.wav" }],
-      );
-      transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setSampleType).toHaveBeenCalledWith("Acapellas");
+      expect(entry.setSampleType).not.toHaveBeenCalled();
     });
   });
 

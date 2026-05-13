@@ -39,8 +39,6 @@ export const FOLDER_LOOKUP = new Map<string, FolderEntry>([
   ["808s", { prefix: "808", standalone: "808s" }],
   ["909", { prefix: "909", standalone: "909s" }],
   ["909s", { prefix: "909", standalone: "909s" }],
-  ["acapella", { prefix: "Acapella", standalone: "Acapellas" }],
-  ["acapellas", { prefix: "Acapella", standalone: "Acapellas" }],
   ...AMBIENCE_KEYS.map((k): [string, FolderEntry] => [
     k,
     { prefix: "Ambient", standalone: "Ambience" },
