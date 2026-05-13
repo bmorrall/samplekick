@@ -54,6 +54,39 @@ const normaliseMinorMaj: StringTransformer = (name: string): string =>
 // Matches degree symbol ° (diminished) and ø (half-diminished) directly attached to a root
 // note, e.g. "C°", "C°7", "Cø", "Cø7". Separate from KEY_RE to keep unicode symbol matching
 // explicit and avoid widening the main regex character classes.
+// Bare short minor (no digit) is normally left untouched to avoid false
+// positives on words ending in "m". However, when an Xm appears immediately
+// adjacent to an already-normalised BPM tag (NNNbpm), it is unambiguously a
+// key — "C#m 120bpm" cannot mean anything other than C# minor at 120 BPM.
+// The BPM transformer always runs before this one, so the tag is already in
+// NNNbpm form by the time these replacements fire.
+//
+// Case 1 — key before BPM: lookahead so only the key token is replaced.
+const SHORT_MINOR_BPM_BEFORE_RE =
+  /(?<![a-zA-Z])(?<root>[A-G][#b]?)m(?=[_ ]?\d{2,3}bpm(?!\d))/giv;
+
+function shortMinorBpmBeforeReplacer(_match: string, root: string): string {
+  return `${root[0].toUpperCase()}${root.slice(1)}min`;
+}
+
+// Case 2 — key after BPM: capture the full BPM+sep+key triplet and reconstruct.
+const SHORT_MINOR_BPM_AFTER_RE =
+  /(?<!\d)(?<bpm>\d{2,3}bpm)(?<sep>[_ ]?)(?<root>[A-G][#b]?)m(?![a-zA-Z\d])/giv;
+
+function shortMinorBpmAfterReplacer(
+  _match: string,
+  bpm: string,
+  sep: string,
+  root: string,
+): string {
+  return `${bpm}${sep}${root[0].toUpperCase()}${root.slice(1)}min`;
+}
+
+const normaliseShortMinorBpmCtx: StringTransformer = (name: string): string =>
+  name
+    .replace(SHORT_MINOR_BPM_BEFORE_RE, shortMinorBpmBeforeReplacer)
+    .replace(SHORT_MINOR_BPM_AFTER_RE, shortMinorBpmAfterReplacer);
+
 const SYMBOL_CHORD_RE =
   /(?<![a-zA-Z])(?<root>[A-G][#b]?)(?<quality>[°ø]\d*)(?![a-zA-Z])/giv;
 
@@ -72,14 +105,18 @@ const normaliseSymbolChord: StringTransformer = (name: string): string =>
   name.replace(SYMBOL_CHORD_RE, symbolChordReplacer);
 
 const _singleton: Transform = createSanitiseNameTransformer((name) =>
-  normaliseMinorMaj(
-    normaliseSymbolChord(normaliseShortMinor(normaliseKeyTag(name))),
+  normaliseShortMinorBpmCtx(
+    normaliseMinorMaj(
+      normaliseSymbolChord(normaliseShortMinor(normaliseKeyTag(name))),
+    ),
   ),
 );
 // NOT supported (intentional omissions):
 //   - Bare dominant/number chords: "C7", "Bb9", "F#13" — root + number only, no quality word; too
 //     ambiguous (could be a version number, BPM, etc.) and would require its own dedicated regex.
-//   - Short-minor without a number: "Cm" — excluded to avoid false positives on words ending in "m".
+//   - Short-minor without a number in isolation: "Cm" — excluded to avoid false positives on words
+//     ending in "m". Exception: when immediately adjacent to a BPM tag ("C#m 120bpm"), the context
+//     is unambiguous and SHORT_MINOR_BPM_BEFORE/AFTER_RE handle it.
 //     Short-minor WITH a number ("Cm7", "F#m9") is handled via a dedicated SHORT_MINOR_RE pass.
 //   - "C+" (aug plus notation) — uncommon and clashes with other uses of + in file names.
 //   - "Co" (text diminished shorthand) — "co" is a common substring.
