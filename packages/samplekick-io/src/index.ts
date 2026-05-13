@@ -42,6 +42,7 @@ export {
   createSquashNameTransformer,
   createStripFormatHintsTransformer,
   createKeepParentsTransformer,
+  createMultiPackNameTransformer,
 } from "./transformers";
 export { SourcePathStrategy } from "./path_strategies/source_path_strategy";
 export { OrganisedPathStrategy } from "./path_strategies/organised_path_strategy";

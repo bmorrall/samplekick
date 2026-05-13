@@ -48,6 +48,8 @@ describe("samplekick CLI", () => {
           "  -o, --output <path>     Export samples to a directory",
           "                          Omit to preview changes without writing files",
           "  -a, --analyse           Analyse pack and save to the auto-config",
+          "  -m, --analyse-multi-pack",
+          "                          Runs --analyse and tags sub-packs within the ZIP",
           "  -s, --sanitise          Normalise entry names (trim, spacing, dashes, tags)",
           "  -d, --device <name>     Apply device-specific transforms to sample names",
           "  -c, --convert           Convert audio files to device format",
