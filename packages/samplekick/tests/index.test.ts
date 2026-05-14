@@ -60,6 +60,7 @@ describe("samplekick CLI", () => {
           "Device:",
           "  -d, --device <name>     Apply device-specific transforms to sample names",
           "  -c, --convert           Convert audio files to device format",
+          "  -l, --normalise-level   Peak-normalise audio to 0 dBFS (requires --convert)",
           "      --squash            Convert names to camelCase after device transforms",
           "",
           "Digest:",

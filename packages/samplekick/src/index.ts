@@ -60,7 +60,11 @@ import {
   DryRunReporter,
 } from "./exporters";
 import { AudioConverter } from "./post_processors";
-import { createFfmpegRunner, getFfmpegVersion } from "./adaptors";
+import {
+  createFfmpegProbeRunner,
+  createFfmpegRunner,
+  getFfmpegVersion,
+} from "./adaptors";
 import chalk from "chalk";
 import type { ExportReporter } from "./exporters";
 import packageJson from "../package.json" with { type: "json" };
@@ -129,6 +133,7 @@ Output:
 Device:
   -d, --device <name>     Apply device-specific transforms to sample names
   -c, --convert           Convert audio files to device format
+  -l, --normalise-level   Peak-normalise audio to 0 dBFS (requires --convert)
       --squash            Convert names to camelCase after device transforms
 
 Digest:
@@ -218,6 +223,7 @@ try {
       "write-digest": { type: "string" },
       "dump-digest": { type: "boolean" },
       convert: { type: "boolean", short: "c" },
+      "normalise-level": { type: "boolean", short: "l" },
       analyse: { type: "boolean", short: "a" },
       "analyse-multi-pack": { type: "boolean", short: "m" },
       "allow-junk": { type: "boolean" },
@@ -264,6 +270,10 @@ const devicePreset =
   values.device === undefined ? undefined : DEVICE_PRESETS[values.device];
 if (values.convert === true && values.device === undefined) {
   console.error("Error: --convert requires a device preset (use -d/--device)");
+  process.exit(1);
+}
+if (values["normalise-level"] === true && values.convert !== true) {
+  console.error("Error: --normalise-level requires --convert");
   process.exit(1);
 }
 if (values.device !== undefined && devicePreset === undefined) {
@@ -395,17 +405,23 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
     values.verbose === true ? reporter.onDebug.bind(reporter) : undefined;
 
   if (conversion !== undefined) {
+    const normaliseLevel = values["normalise-level"] === true;
     registry.addPostProcessor(
-      new AudioConverter(createFfmpegRunner(), {
-        onError: (destPath, error) => {
-          reporter.onError(
-            `Could not convert ${basename(destPath)}: ${error.message}`,
-          );
+      new AudioConverter(
+        createFfmpegRunner(),
+        {
+          onError: (destPath, error) => {
+            reporter.onError(
+              `Could not convert ${basename(destPath)}: ${error.message}`,
+            );
+          },
+          onDebug: debugLog,
+          targetBitDepth: conversion.targetBitDepth,
+          targetSampleRate: conversion.targetSampleRate,
+          normaliseLevel,
         },
-        onDebug: debugLog,
-        targetBitDepth: conversion.targetBitDepth,
-        targetSampleRate: conversion.targetSampleRate,
-      }),
+        normaliseLevel ? createFfmpegProbeRunner() : undefined,
+      ),
     );
   }
 

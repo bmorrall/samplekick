@@ -9,7 +9,10 @@ import {
   SAMPLE_RATE_48000,
   SAMPLE_RATE_96000,
 } from "samplekick-io";
-import { AudioConverter } from "../../src/post_processors/audio_converter";
+import {
+  AudioConverter,
+  parseMaxVolumedB,
+} from "../../src/post_processors/audio_converter";
 import type { AudioConverterOptions } from "../../src/post_processors/audio_converter";
 import type { FfmpegRunner } from "../../src/adaptors/ffmpeg";
 
@@ -286,6 +289,145 @@ describe("AudioConverter", () => {
       await expect(
         converter.processFile("/output/drums/kick.wav", createEntry()),
       ).resolves.toBeUndefined();
+    });
+  });
+
+  describe("normaliseLevel", () => {
+    const PROBE_STDERR_M3_5 =
+      "[Parsed_volumedetect_0 @ 0x...] mean_volume: -10.0 dB\n[Parsed_volumedetect_0 @ 0x...] max_volume: -3.5 dB\n";
+    const PROBE_STDERR_0 =
+      "[Parsed_volumedetect_0 @ 0x...] max_volume: 0.0 dB\n";
+
+    it("runs the probe with volumedetect args before converting", async () => {
+      const runFfmpeg = vi.fn().mockResolvedValue(undefined);
+      const runFfmpegProbe = vi.fn().mockResolvedValue(PROBE_STDERR_M3_5);
+      const converter = new AudioConverter(
+        runFfmpeg,
+        {
+          targetBitDepth: BIT_DEPTH_16,
+          targetSampleRate: SAMPLE_RATE_48000,
+          onError: vi.fn<(destPath: string, error: Error) => void>(),
+          normaliseLevel: true,
+        },
+        runFfmpegProbe,
+      );
+
+      await converter.processFile("/output/drums/kick.wav", createEntry());
+
+      expect(runFfmpegProbe).toHaveBeenCalledWith([
+        "-i",
+        "/output/drums/kick.wav",
+        "-af",
+        "volumedetect",
+        "-f",
+        "null",
+        "-",
+      ]);
+    });
+
+    it("adds a volume filter to ffmpeg args when peak is below 0 dB", async () => {
+      const runFfmpeg = vi.fn().mockResolvedValue(undefined);
+      const runFfmpegProbe = vi.fn().mockResolvedValue(PROBE_STDERR_M3_5);
+      const converter = new AudioConverter(
+        runFfmpeg,
+        {
+          targetBitDepth: BIT_DEPTH_16,
+          targetSampleRate: SAMPLE_RATE_48000,
+          onError: vi.fn<(destPath: string, error: Error) => void>(),
+          normaliseLevel: true,
+        },
+        runFfmpegProbe,
+      );
+
+      await converter.processFile("/output/drums/kick.wav", createEntry());
+
+      expect(runFfmpeg).toHaveBeenCalledWith([
+        "-i",
+        "/output/drums/kick.wav",
+        "-af",
+        "volume=3.5dB",
+        "-ar",
+        "48000",
+        "-sample_fmt",
+        "s16",
+        "-y",
+        "/output/drums/kick.wav.converting.wav",
+      ]);
+    });
+
+    it("skips the volume filter when max_volume is already 0.0 dB", async () => {
+      const runFfmpeg = vi.fn().mockResolvedValue(undefined);
+      const runFfmpegProbe = vi.fn().mockResolvedValue(PROBE_STDERR_0);
+      const converter = new AudioConverter(
+        runFfmpeg,
+        {
+          targetBitDepth: BIT_DEPTH_16,
+          targetSampleRate: SAMPLE_RATE_48000,
+          onError: vi.fn<(destPath: string, error: Error) => void>(),
+          normaliseLevel: true,
+        },
+        runFfmpegProbe,
+      );
+
+      await converter.processFile("/output/drums/kick.wav", createEntry());
+
+      expect(runFfmpeg).not.toHaveBeenCalledWith(
+        expect.arrayContaining(["-af"]),
+      );
+    });
+
+    it("proceeds without gain when probe output cannot be parsed", async () => {
+      const runFfmpeg = vi.fn().mockResolvedValue(undefined);
+      const runFfmpegProbe = vi.fn().mockResolvedValue("unrecognised output");
+      const converter = new AudioConverter(
+        runFfmpeg,
+        {
+          targetBitDepth: BIT_DEPTH_16,
+          targetSampleRate: SAMPLE_RATE_48000,
+          onError: vi.fn<(destPath: string, error: Error) => void>(),
+          normaliseLevel: true,
+        },
+        runFfmpegProbe,
+      );
+
+      await converter.processFile("/output/drums/kick.wav", createEntry());
+
+      expect(runFfmpeg).not.toHaveBeenCalledWith(
+        expect.arrayContaining(["-af"]),
+      );
+      expect(runFfmpeg).toHaveBeenCalledOnce();
+    });
+
+    it("does not run probe when normaliseLevel is not set", async () => {
+      const runFfmpeg = vi.fn().mockResolvedValue(undefined);
+      const runFfmpegProbe = vi.fn();
+      const converter = new AudioConverter(
+        runFfmpeg,
+        {
+          targetBitDepth: BIT_DEPTH_16,
+          targetSampleRate: SAMPLE_RATE_48000,
+          onError: vi.fn<(destPath: string, error: Error) => void>(),
+        },
+        runFfmpegProbe,
+      );
+
+      await converter.processFile("/output/drums/kick.wav", createEntry());
+
+      expect(runFfmpegProbe).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("parseMaxVolumedB", () => {
+    it("extracts a negative dB value", () => {
+      expect(parseMaxVolumedB("max_volume: -3.5 dB\n")).toBe(-3.5);
+    });
+
+    it("extracts 0.0 dB", () => {
+      expect(parseMaxVolumedB("max_volume: 0.0 dB\n")).toBe(0);
+    });
+
+    it("returns null when max_volume line is absent", () => {
+      expect(parseMaxVolumedB("some other output")).toBeNull();
     });
   });
 });
