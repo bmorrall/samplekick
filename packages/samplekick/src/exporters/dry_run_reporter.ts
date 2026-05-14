@@ -1,13 +1,13 @@
-import type { ConfigEntry, FileNode } from "samplekick-io";
+import type { DigestEntry, FileNode } from "samplekick-io";
 import type { ExportReporter } from "./export_reporter";
 
 interface SuccessItem {
-  entry: ConfigEntry;
+  entry: DigestEntry;
   destRelPath: string;
 }
 
 interface RejectionItem {
-  entry: ConfigEntry;
+  entry: DigestEntry;
   reason: string;
 }
 
@@ -21,7 +21,7 @@ export class DryRunReporter {
     this.inner = inner;
   }
 
-  onAfterWrite(entry: ConfigEntry, destRelPath: string, error?: Error): void {
+  onAfterWrite(entry: DigestEntry, destRelPath: string, error?: Error): void {
     if (error === undefined) {
       this.successes.push({ entry, destRelPath });
     } else {
@@ -29,7 +29,7 @@ export class DryRunReporter {
     }
   }
 
-  onReject(entry: ConfigEntry, reason: string): void {
+  onReject(entry: DigestEntry, reason: string): void {
     this.rejections.push({ entry, reason });
   }
 

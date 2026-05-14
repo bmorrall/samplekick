@@ -46,7 +46,7 @@ describe("samplekick CLI error handling", () => {
     }
   });
 
-  it("exits with code 1 and prints an error when the --config file does not exist", async () => {
+  it("exits with code 1 and prints an error when the --digest file does not exist", async () => {
     const zipped = zipSync({ "Drums/kick.wav": strToU8("kick-data") });
     const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
     const zipPath = join(tmpDir, "test-pack.zip");
@@ -56,11 +56,11 @@ describe("samplekick CLI error handling", () => {
 
       const result = spawnSync(
         "node",
-        [CLI_PATH, zipPath, "--config", join(tmpDir, "nonexistent.csv")],
+        [CLI_PATH, zipPath, "--digest", join(tmpDir, "nonexistent.csv")],
         { encoding: "utf8" },
       );
 
-      expect(result.stderr).toContain("Error: config file not found");
+      expect(result.stderr).toContain("Error: digest file not found");
       expect(result.stderr).toContain("nonexistent.csv");
 
       expect(result.status).toBe(1);
@@ -69,7 +69,7 @@ describe("samplekick CLI error handling", () => {
     }
   });
 
-  it("exits with code 1 and prints an error when the --write-config path is not writable", async () => {
+  it("exits with code 1 and prints an error when the --write-digest path is not writable", async () => {
     const zipped = zipSync({ "Drums/kick.wav": strToU8("kick-data") });
     const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
     const zipPath = join(tmpDir, "test-pack.zip");
@@ -80,7 +80,7 @@ describe("samplekick CLI error handling", () => {
 
       const result = spawnSync(
         "node",
-        [CLI_PATH, zipPath, "--write-config", writePath],
+        [CLI_PATH, zipPath, "--write-digest", writePath],
         {
           encoding: "utf8",
           env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
@@ -125,7 +125,7 @@ describe("samplekick CLI error handling", () => {
     }
   });
 
-  it("exits with code 1 and prints an error when --config is used with multiple input files", async () => {
+  it("exits with code 1 and prints an error when --digest is used with multiple input files", async () => {
     const zipped = zipSync({ "Drums/kick.wav": strToU8("kick-data") });
     const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
     const zipPath1 = join(tmpDir, "pack1.zip");
@@ -137,12 +137,12 @@ describe("samplekick CLI error handling", () => {
 
       const result = spawnSync(
         "node",
-        [CLI_PATH, zipPath1, zipPath2, "--config", join(tmpDir, "config.csv")],
+        [CLI_PATH, zipPath1, zipPath2, "--digest", join(tmpDir, "config.csv")],
         { encoding: "utf8" },
       );
 
       expect(result.stderr).toContain(
-        "Error: --config cannot be used with multiple input files",
+        "Error: --digest cannot be used with multiple input files",
       );
       expect(result.status).toBe(1);
     } finally {
@@ -150,7 +150,7 @@ describe("samplekick CLI error handling", () => {
     }
   });
 
-  it("exits with code 1 and prints an error when --write-config is used with multiple input files", async () => {
+  it("exits with code 1 and prints an error when --write-digest is used with multiple input files", async () => {
     const zipped = zipSync({ "Drums/kick.wav": strToU8("kick-data") });
     const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
     const zipPath1 = join(tmpDir, "pack1.zip");
@@ -166,14 +166,14 @@ describe("samplekick CLI error handling", () => {
           CLI_PATH,
           zipPath1,
           zipPath2,
-          "--write-config",
+          "--write-digest",
           join(tmpDir, "config.csv"),
         ],
         { encoding: "utf8" },
       );
 
       expect(result.stderr).toContain(
-        "Error: --write-config cannot be used with multiple input files",
+        "Error: --write-digest cannot be used with multiple input files",
       );
       expect(result.status).toBe(1);
     } finally {
@@ -181,7 +181,7 @@ describe("samplekick CLI error handling", () => {
     }
   });
 
-  it("exits with code 1 and prints an error when --dump-config is used with multiple input files", async () => {
+  it("exits with code 1 and prints an error when --dump-digest is used with multiple input files", async () => {
     const zipped = zipSync({ "Drums/kick.wav": strToU8("kick-data") });
     const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
     const zipPath1 = join(tmpDir, "pack1.zip");
@@ -193,12 +193,12 @@ describe("samplekick CLI error handling", () => {
 
       const result = spawnSync(
         "node",
-        [CLI_PATH, zipPath1, zipPath2, "--dump-config"],
+        [CLI_PATH, zipPath1, zipPath2, "--dump-digest"],
         { encoding: "utf8" },
       );
 
       expect(result.stderr).toContain(
-        "Error: --dump-config cannot be used with multiple input files",
+        "Error: --dump-digest cannot be used with multiple input files",
       );
       expect(result.status).toBe(1);
     } finally {

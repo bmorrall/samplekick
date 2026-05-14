@@ -282,7 +282,7 @@ describe("--convert flag", () => {
       );
 
       expect(result.stdout).toContain("Using ffmpeg: ffmpeg version");
-      const autoConfigIdx = result.stdout.indexOf("Using auto-config:");
+      const autoConfigIdx = result.stdout.indexOf("Using auto-digest:");
       const ffmpegIdx = result.stdout.indexOf("Using ffmpeg:");
       expect(autoConfigIdx).toBeGreaterThan(-1);
       expect(ffmpegIdx).toBeGreaterThan(autoConfigIdx);

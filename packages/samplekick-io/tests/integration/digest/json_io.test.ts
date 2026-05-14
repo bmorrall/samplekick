@@ -1,8 +1,8 @@
 import { PassThrough, Readable } from "node:stream";
 import { describe, it, expect } from "vitest";
-import { JsonConfigReader, JsonConfigWriter } from "../../../src";
+import { JsonDigestReader, JsonDigestWriter } from "../../../src";
 import {
-  collectConfigEntries,
+  collectDigestEntries,
   createFileEntry,
   createRegistry,
 } from "../../support";
@@ -20,16 +20,16 @@ const collectOutput = (fn: (stream: PassThrough) => void): string => {
 describe("JSON I/O", () => {
   it("writes an empty array when the FileSource has no entries", () => {
     const output = collectOutput((stream) => {
-      const writer = new JsonConfigWriter(stream);
-      writer.writeConfig({
-        eachConfigEntry: () => {
+      const writer = new JsonDigestWriter(stream);
+      writer.writeDigest({
+        eachDigestEntry: () => {
           /* no entries */
         },
       });
     });
-    const reader = new JsonConfigReader(Readable.from([output]));
+    const reader = new JsonDigestReader(Readable.from([output]));
 
-    const result = collectConfigEntries(reader);
+    const result = collectDigestEntries(reader);
 
     expect(result).toEqual([]);
   });
@@ -43,12 +43,12 @@ describe("JSON I/O", () => {
     registry.setPackageName("rock/track01", "rock-pack");
 
     const output = collectOutput((stream) => {
-      const writer = new JsonConfigWriter(stream);
-      writer.writeConfig(registry);
+      const writer = new JsonDigestWriter(stream);
+      writer.writeDigest(registry);
     });
-    const reader = new JsonConfigReader(Readable.from([output]));
+    const reader = new JsonDigestReader(Readable.from([output]));
 
-    const result = collectConfigEntries(reader);
+    const result = collectDigestEntries(reader);
 
     expect(result).toHaveLength(7);
     expect(result.map((e) => e.getPath())).toEqual([
@@ -70,12 +70,12 @@ describe("JSON I/O", () => {
     registry.setSampleType("jazz/bebop", "Melodic Loops - Bebop");
 
     const output = collectOutput((stream) => {
-      const writer = new JsonConfigWriter(stream);
-      writer.writeConfig(registry);
+      const writer = new JsonDigestWriter(stream);
+      writer.writeDigest(registry);
     });
-    const reader = new JsonConfigReader(Readable.from([output]));
+    const reader = new JsonDigestReader(Readable.from([output]));
 
-    const result = collectConfigEntries(reader);
+    const result = collectDigestEntries(reader);
 
     expect(result).toHaveLength(4);
     expect(result.map((e) => e.getPath())).toEqual([
@@ -119,12 +119,12 @@ describe("JSON I/O", () => {
     registry.setSampleType("jazz", "Melodic Loops - Jazz");
 
     const output = collectOutput((stream) => {
-      const writer = new JsonConfigWriter(stream);
-      writer.writeConfig(registry);
+      const writer = new JsonDigestWriter(stream);
+      writer.writeDigest(registry);
     });
-    const reader = new JsonConfigReader(Readable.from([output]));
+    const reader = new JsonDigestReader(Readable.from([output]));
 
-    const result = collectConfigEntries(reader);
+    const result = collectDigestEntries(reader);
 
     expect(result).toHaveLength(6);
     expect(result.map((e) => e.getPath())).toEqual([
@@ -161,12 +161,12 @@ describe("JSON I/O", () => {
     registry.setKeepStructure("jazz", true);
 
     const output = collectOutput((stream) => {
-      const writer = new JsonConfigWriter(stream);
-      writer.writeConfig(registry);
+      const writer = new JsonDigestWriter(stream);
+      writer.writeDigest(registry);
     });
-    const reader = new JsonConfigReader(Readable.from([output]));
+    const reader = new JsonDigestReader(Readable.from([output]));
 
-    const result = collectConfigEntries(reader);
+    const result = collectDigestEntries(reader);
 
     const [, entry] = result;
     expect(entry.isSkipped()).toBe(true);
@@ -180,14 +180,14 @@ describe("JSON I/O", () => {
     registry.setName("jazz/bebop/track01", "Alt Track 01");
 
     const output = collectOutput((stream) => {
-      const writer = new JsonConfigWriter(stream);
-      writer.writeConfig(registry);
+      const writer = new JsonDigestWriter(stream);
+      writer.writeDigest(registry);
     });
 
     const restoredRegistry = createRegistry("library", [
       createFileEntry({ path: "jazz/bebop/track01" }),
     ]);
-    restoredRegistry.loadConfig(new JsonConfigReader(Readable.from([output])));
+    restoredRegistry.loadDigest(new JsonDigestReader(Readable.from([output])));
 
     expect(restoredRegistry.getEntry("jazz/bebop/track01")?.getName()).toBe(
       "Alt Track 01",
@@ -200,13 +200,13 @@ describe("JSON I/O", () => {
     registry.setPackageName("library-pack");
 
     const output = collectOutput((stream) => {
-      const writer = new JsonConfigWriter(stream);
-      writer.writeConfig(registry);
+      const writer = new JsonDigestWriter(stream);
+      writer.writeDigest(registry);
     });
 
     const restoredEmptyRegistry = createRegistry("library", []);
-    restoredEmptyRegistry.loadConfig(
-      new JsonConfigReader(Readable.from([output])),
+    restoredEmptyRegistry.loadDigest(
+      new JsonDigestReader(Readable.from([output])),
     );
     expect(restoredEmptyRegistry.toString()).toBe(
       "Renamed Library [?] [pkg:library-pack]\n",
@@ -215,15 +215,15 @@ describe("JSON I/O", () => {
     const restoredRegistryWithFiles = createRegistry("library", [
       createFileEntry({ path: "jazz/track01" }),
     ]);
-    restoredRegistryWithFiles.loadConfig(
-      new JsonConfigReader(Readable.from([output])),
+    restoredRegistryWithFiles.loadDigest(
+      new JsonDigestReader(Readable.from([output])),
     );
     expect(
       restoredRegistryWithFiles.getEntry("jazz/track01")?.getPackageName(),
     ).toBe("library-pack");
   });
 
-  it("each writeConfig call writes a separate JSON array to the stream", () => {
+  it("each writeDigest call writes a separate JSON array to the stream", () => {
     const registry1 = createRegistry("library1", [
       createFileEntry({ path: "jazz/track01" }),
     ]);
@@ -235,19 +235,19 @@ describe("JSON I/O", () => {
     registry2.setPackageName("rock/track01", "rock-pack");
 
     const output = collectOutput((stream) => {
-      const writer = new JsonConfigWriter(stream);
-      writer.writeConfig(registry1);
-      writer.writeConfig(registry2);
+      const writer = new JsonDigestWriter(stream);
+      writer.writeDigest(registry1);
+      writer.writeDigest(registry2);
     });
     const splitIndex = output.indexOf("][") + 1;
-    const firstReader = new JsonConfigReader(
+    const firstReader = new JsonDigestReader(
       Readable.from([output.slice(0, splitIndex)]),
     );
-    const secondReader = new JsonConfigReader(
+    const secondReader = new JsonDigestReader(
       Readable.from([output.slice(splitIndex)]),
     );
-    const first = collectConfigEntries(firstReader);
-    const second = collectConfigEntries(secondReader);
+    const first = collectDigestEntries(firstReader);
+    const second = collectDigestEntries(secondReader);
     expect(first.map((e) => e.getPath())).toEqual(["", "jazz", "jazz/track01"]);
     expect(second.map((e) => e.getPath())).toEqual([
       "",

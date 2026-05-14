@@ -1,8 +1,8 @@
 import { Readable } from "node:stream";
 import { describe, expect, it, vi } from "vitest";
-import { JsonConfigReader } from "../../../src";
-import type { ConfigEntry } from "../../../src";
-import { collectConfigEntries } from "../../support";
+import { JsonDigestReader } from "../../../src";
+import type { DigestEntry } from "../../../src";
+import { collectDigestEntries } from "../../support";
 
 class NonStringReadable extends Readable {
   private hasReturnedValue = false;
@@ -22,9 +22,9 @@ class NonStringReadable extends Readable {
   }
 }
 
-describe("JsonConfigReader", () => {
+describe("JsonDigestReader", () => {
   it("provides one entry per serialized object", () => {
-    const reader = new JsonConfigReader(
+    const reader = new JsonDigestReader(
       Readable.from([
         JSON.stringify([
           {
@@ -46,7 +46,7 @@ describe("JsonConfigReader", () => {
       ]),
     );
 
-    const entries = collectConfigEntries(reader);
+    const entries = collectDigestEntries(reader);
     expect(entries).toHaveLength(2);
 
     const [firstEntry, secondEntry] = entries;
@@ -65,34 +65,34 @@ describe("JsonConfigReader", () => {
   });
 
   it("does not call the callback when the serialized array is empty", () => {
-    const reader = new JsonConfigReader(Readable.from(["[]"]));
-    const fn = vi.fn<(entry: ConfigEntry) => void>();
+    const reader = new JsonDigestReader(Readable.from(["[]"]));
+    const fn = vi.fn<(entry: DigestEntry) => void>();
 
-    reader.eachConfigEntry(fn);
+    reader.eachDigestEntry(fn);
 
     expect(fn).not.toHaveBeenCalled();
   });
 
   it("throws when the JSON payload is not an array", () => {
-    const reader = new JsonConfigReader(
+    const reader = new JsonDigestReader(
       Readable.from(['{"path":"jazz/track01"}']),
     );
-    const onEntry = vi.fn<(entry: ConfigEntry) => void>();
+    const onEntry = vi.fn<(entry: DigestEntry) => void>();
     const readEntries = (): void => {
-      reader.eachConfigEntry(onEntry);
+      reader.eachDigestEntry(onEntry);
     };
 
     expect(readEntries).toThrow("Expected a JSON array of entries");
   });
 
   it("ignores invalid optional values when an entry has a valid path", () => {
-    const reader = new JsonConfigReader(
+    const reader = new JsonDigestReader(
       Readable.from([
         '[{"path":"jazz/track01","packageName":123,"sampleType":false,"isSkipped":"yes","isKeepStructure":1}]',
       ]),
     );
 
-    const entries = collectConfigEntries(reader);
+    const entries = collectDigestEntries(reader);
     const [entry] = entries;
 
     expect(entries).toHaveLength(1);
@@ -105,11 +105,11 @@ describe("JsonConfigReader", () => {
   });
 
   it("accepts an entry that only contains a path", () => {
-    const reader = new JsonConfigReader(
+    const reader = new JsonDigestReader(
       Readable.from(['[{"path":"jazz/track01"}]']),
     );
 
-    const entries = collectConfigEntries(reader);
+    const entries = collectDigestEntries(reader);
     const [entry] = entries;
 
     expect(entries).toHaveLength(1);
@@ -122,11 +122,11 @@ describe("JsonConfigReader", () => {
   });
 
   it("ignores an invalid name value and falls back to the path basename", () => {
-    const reader = new JsonConfigReader(
+    const reader = new JsonDigestReader(
       Readable.from(['[{"path":"jazz/track01","name":123}]']),
     );
 
-    const entries = collectConfigEntries(reader);
+    const entries = collectDigestEntries(reader);
     const [entry] = entries;
 
     expect(entries).toHaveLength(1);
@@ -134,36 +134,36 @@ describe("JsonConfigReader", () => {
   });
 
   it("throws when an entry does not include a valid path", () => {
-    const reader = new JsonConfigReader(
+    const reader = new JsonDigestReader(
       Readable.from([
         '[{"path":123,"isSkipped":false,"isKeepStructure":false}]',
       ]),
     );
-    const onEntry = vi.fn<(entry: ConfigEntry) => void>();
+    const onEntry = vi.fn<(entry: DigestEntry) => void>();
     const readEntries = (): void => {
-      reader.eachConfigEntry(onEntry);
+      reader.eachDigestEntry(onEntry);
     };
 
     expect(readEntries).toThrow("Expected each JSON entry to include a path");
   });
 
   it("throws when one of the entries is an empty object", () => {
-    const reader = new JsonConfigReader(
+    const reader = new JsonDigestReader(
       Readable.from(['[{"path":"jazz/track01"},{}]']),
     );
-    const onEntry = vi.fn<(entry: ConfigEntry) => void>();
+    const onEntry = vi.fn<(entry: DigestEntry) => void>();
     const readEntries = (): void => {
-      reader.eachConfigEntry(onEntry);
+      reader.eachDigestEntry(onEntry);
     };
 
     expect(readEntries).toThrow("Expected each JSON entry to include a path");
   });
 
   it("throws when the stream yields a non-string chunk", () => {
-    const reader = new JsonConfigReader(new NonStringReadable());
-    const onEntry = vi.fn<(entry: ConfigEntry) => void>();
+    const reader = new JsonDigestReader(new NonStringReadable());
+    const onEntry = vi.fn<(entry: DigestEntry) => void>();
     const readEntries = (): void => {
-      reader.eachConfigEntry(onEntry);
+      reader.eachDigestEntry(onEntry);
     };
 
     expect(readEntries).toThrow("Expected string chunk from stream");

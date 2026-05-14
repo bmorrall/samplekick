@@ -1,5 +1,5 @@
 import type { Readable } from "node:stream";
-import type { ConfigSource, ConfigEntry } from "../types";
+import type { DigestSource, DigestEntry } from "../types";
 import { getPathName } from "../path_utils";
 
 const NOT_FOUND = -1;
@@ -78,7 +78,7 @@ const parseColumnIndices = (header: string): ColumnIndices => {
   };
 };
 
-class CsvConfigEntry implements ConfigEntry {
+class CsvDigestEntry implements DigestEntry {
   private readonly fields: string[];
   private readonly indices: ColumnIndices;
 
@@ -113,14 +113,14 @@ class CsvConfigEntry implements ConfigEntry {
   }
 }
 
-export class CsvConfigReader implements ConfigSource {
+export class CsvDigestReader implements DigestSource {
   private readonly stream: Readable;
 
   constructor(stream: Readable) {
     this.stream = stream;
   }
 
-  eachConfigEntry(fn: (entry: ConfigEntry) => void): void {
+  eachDigestEntry(fn: (entry: DigestEntry) => void): void {
     this.stream.setEncoding("utf8");
     const chunks: string[] = [];
     const readChunk = (): string | null => {
@@ -145,7 +145,7 @@ export class CsvConfigReader implements ConfigSource {
 
     for (const line of dataLines) {
       if (line === "") continue;
-      fn(new CsvConfigEntry(parseCsvRow(line), indices));
+      fn(new CsvDigestEntry(parseCsvRow(line), indices));
     }
   }
 }

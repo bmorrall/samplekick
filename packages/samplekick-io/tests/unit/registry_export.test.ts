@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { Registry, OrganisedPathStrategy, SkipResult } from "../../src";
-import type { ConfigEntry, FileEntry } from "../../src";
+import type { DigestEntry, FileEntry } from "../../src";
 import { createFileEntry, createFileSource } from "../support";
 
 const createCopyableEntry = (path: string): FileEntry => ({
@@ -46,7 +46,7 @@ describe("Registry.exportToDirectory", () => {
     registry.setPathStrategy({
       destinationPathFor: () => new SkipResult("test"),
     });
-    const onReject = vi.fn<(entry: ConfigEntry, reason: string) => void>();
+    const onReject = vi.fn<(entry: DigestEntry, reason: string) => void>();
 
     await registry.exportToDirectory("/output", { onReject });
 
@@ -58,7 +58,7 @@ describe("Registry.exportToDirectory", () => {
     const registry = new Registry(createFileSource("root", [entry]));
     registry.setPathStrategy(OrganisedPathStrategy);
     // no packageName or sampleType set → OrganisedPathStrategy returns undefined
-    const onReject = vi.fn<(entry: ConfigEntry, reason: string) => void>();
+    const onReject = vi.fn<(entry: DigestEntry, reason: string) => void>();
 
     await registry.exportToDirectory("/output", { onReject });
 
@@ -75,7 +75,7 @@ describe("Registry.exportToDirectory", () => {
     registry.setSkipped("a.wav", true);
     registry.setPackageName("my-pack");
     registry.setSampleType("loops");
-    const onReject = vi.fn<(entry: ConfigEntry, reason: string) => void>();
+    const onReject = vi.fn<(entry: DigestEntry, reason: string) => void>();
 
     await registry.exportToDirectory("/output", { onReject });
 
@@ -99,7 +99,7 @@ describe("Registry.exportToDirectory", () => {
     const entry = createCopyableEntry("a.wav");
     const registry = new Registry(createFileSource("root", [entry]));
     registry.setSkipped("a.wav", true);
-    const onSkip = vi.fn<(entry: ConfigEntry) => void>();
+    const onSkip = vi.fn<(entry: DigestEntry) => void>();
 
     await registry.exportToDirectory("/output", { onSkip });
 
@@ -166,7 +166,7 @@ describe("Registry.exportToDirectory", () => {
     registry.setPathStrategy(OrganisedPathStrategy);
     registry.setPackageName("my-pack");
     registry.setSampleType("drums");
-    const onReject = vi.fn<(entry: ConfigEntry, reason: string) => void>();
+    const onReject = vi.fn<(entry: DigestEntry, reason: string) => void>();
 
     await registry.exportToDirectory("/output", { onReject });
 
@@ -198,10 +198,10 @@ describe("Registry.exportToDirectory", () => {
       registry.setPackageName("my-pack");
       registry.setSampleType("loops");
       const onBeforeWrite =
-        vi.fn<(entry: ConfigEntry, destRelPath: string) => void>();
+        vi.fn<(entry: DigestEntry, destRelPath: string) => void>();
       const onAfterWrite =
         vi.fn<
-          (entry: ConfigEntry, destRelPath: string, error?: Error) => void
+          (entry: DigestEntry, destRelPath: string, error?: Error) => void
         >();
 
       await registry.exportToDirectory(undefined, {
@@ -224,7 +224,7 @@ describe("Registry.exportToDirectory", () => {
       registry.setPathStrategy({
         destinationPathFor: () => new SkipResult("test"),
       });
-      const onReject = vi.fn<(entry: ConfigEntry, reason: string) => void>();
+      const onReject = vi.fn<(entry: DigestEntry, reason: string) => void>();
 
       await registry.exportToDirectory(undefined, { onReject });
 

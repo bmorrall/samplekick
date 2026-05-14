@@ -1,14 +1,14 @@
 import { prettyPrint } from "./pretty_print";
 import { getPathName } from "../path_utils";
 import type {
-  ConfigEntry,
+  DigestEntry,
   FileEntry,
   FileNode,
   TransformEntry,
 } from "../types";
 
 export class EntryNode
-  implements ConfigEntry, FileEntry, FileNode, TransformEntry
+  implements DigestEntry, FileEntry, FileNode, TransformEntry
 {
   static buildRootNode(name: string): EntryNode {
     const entry = this.blankEntry("");
@@ -72,7 +72,7 @@ export class EntryNode
     return this.entry !== undefined;
   }
 
-  // ConfigEntry methods
+  // DigestEntry methods
 
   getName(): string {
     return this.name ?? this.entry?.getName() ?? getPathName(this.path);

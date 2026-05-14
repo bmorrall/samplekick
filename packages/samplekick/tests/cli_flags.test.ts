@@ -150,7 +150,7 @@ describe("samplekick CLI flags", () => {
             zipPath,
             "--device",
             "sp404mk2",
-            "--config",
+            "--digest",
             configPath,
             "--preserve-paths",
             "-o",
@@ -190,7 +190,7 @@ describe("samplekick CLI flags", () => {
     });
   });
 
-  describe("--dump-config flag", () => {
+  describe("--dump-digest flag", () => {
     it("prints CSV config to stdout and exits without writing files", async () => {
       const zipped = zipSync({ "Drums/kick.wav": strToU8("kick-data") });
 
@@ -201,7 +201,7 @@ describe("samplekick CLI flags", () => {
       try {
         await writeFile(zipPath, zipped);
 
-        const result = spawnSync("node", [CLI_PATH, zipPath, "--dump-config"], {
+        const result = spawnSync("node", [CLI_PATH, zipPath, "--dump-digest"], {
           encoding: "utf8",
           env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
         });

@@ -47,7 +47,7 @@ describe("SquashNameTransformer", () => {
     }
   });
 
-  it("applies squashed names to --dump-config output", async () => {
+  it("applies squashed names to --dump-digest output", async () => {
     const zipped = zipSync({
       "Bass Loops/kick drum 01.wav": strToU8("kick-data"),
       "Drum-Hits/snare hit.wav": strToU8("snare-data"),
@@ -61,7 +61,7 @@ describe("SquashNameTransformer", () => {
 
       const result = spawnSync(
         "node",
-        [CLI_PATH, zipPath, "--squash", "--dump-config"],
+        [CLI_PATH, zipPath, "--squash", "--dump-digest"],
         {
           encoding: "utf8",
           env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },

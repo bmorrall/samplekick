@@ -3,7 +3,7 @@ import { spawnSync } from "node:child_process";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { Readable } from "node:stream";
-import { CsvConfigReader } from "samplekick-io";
+import { CsvDigestReader } from "samplekick-io";
 import type { Registry } from "samplekick-io";
 
 export const getDataDir = (
@@ -21,7 +21,7 @@ export const getDataDir = (
   }
 };
 
-export const openConfigInEditor = (
+export const openDigestInEditor = (
   configPath: string,
   platform: NodeJS.Platform,
   env: NodeJS.ProcessEnv,
@@ -38,18 +38,18 @@ export const openConfigInEditor = (
   }
 };
 
-export const loadConfig = async (
+export const loadDigest = async (
   registry: Registry,
   configPath: string | undefined,
   dataDir: string,
   options: { skipAutoConfig?: boolean } = {},
 ): Promise<string | undefined> => {
   if (configPath === undefined) {
-    const autoConfigPath = join(dataDir, `${registry.getFingerprint()}.csv`);
+    const autoDigestPath = join(dataDir, `${registry.getFingerprint()}.csv`);
     if (options.skipAutoConfig === true) {
-      return autoConfigPath;
+      return autoDigestPath;
     }
-    const content = await readFile(autoConfigPath, "utf8").catch(
+    const content = await readFile(autoDigestPath, "utf8").catch(
       (err: unknown) => {
         if (
           typeof err === "object" &&
@@ -64,15 +64,15 @@ export const loadConfig = async (
     );
     if (content !== undefined) {
       try {
-        registry.loadConfig(new CsvConfigReader(Readable.from([content])));
+        registry.loadDigest(new CsvDigestReader(Readable.from([content])));
       } catch (err) {
         throw new Error(
-          `Error: auto-config could not be loaded from ${autoConfigPath} — ${String(err)}`,
+          `Error: auto-digest could not be loaded from ${autoDigestPath} — ${String(err)}`,
           { cause: err },
         );
       }
     }
-    return autoConfigPath;
+    return autoDigestPath;
   }
 
   const content = await readFile(configPath, "utf8").catch((err: unknown) => {
@@ -82,10 +82,10 @@ export const loadConfig = async (
       "code" in err &&
       err.code === "ENOENT"
     ) {
-      throw new Error(`Error: config file not found: ${configPath}`);
+      throw new Error(`Error: digest file not found: ${configPath}`);
     }
     throw err;
   });
-  registry.loadConfig(new CsvConfigReader(Readable.from([content])));
+  registry.loadDigest(new CsvDigestReader(Readable.from([content])));
   return undefined;
 };

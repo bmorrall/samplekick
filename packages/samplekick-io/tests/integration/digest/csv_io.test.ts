@@ -1,8 +1,8 @@
 import { PassThrough, Readable } from "node:stream";
 import { describe, it, expect } from "vitest";
-import { CsvConfigReader, CsvConfigWriter } from "../../../src";
+import { CsvDigestReader, CsvDigestWriter } from "../../../src";
 import {
-  collectConfigEntries,
+  collectDigestEntries,
   createFileEntry,
   createRegistry,
 } from "../../support";
@@ -20,16 +20,16 @@ const collectOutput = (fn: (stream: PassThrough) => void): string => {
 describe("CSV I/O", () => {
   it("writes a header-only CSV when the FileSource has no entries", () => {
     const output = collectOutput((stream) => {
-      const writer = new CsvConfigWriter(stream);
-      writer.writeConfig({
-        eachConfigEntry: () => {
+      const writer = new CsvDigestWriter(stream);
+      writer.writeDigest({
+        eachDigestEntry: () => {
           /* no entries */
         },
       });
     });
-    const reader = new CsvConfigReader(Readable.from([output]));
+    const reader = new CsvDigestReader(Readable.from([output]));
 
-    const result = collectConfigEntries(reader);
+    const result = collectDigestEntries(reader);
 
     expect(result).toEqual([]);
   });
@@ -38,8 +38,8 @@ describe("CSV I/O", () => {
     const stream = new PassThrough({ encoding: "utf8" });
     stream.resume();
 
-    const writer = new CsvConfigWriter(stream);
-    writer.writeConfig(createRegistry("library", []));
+    const writer = new CsvDigestWriter(stream);
+    writer.writeDigest(createRegistry("library", []));
 
     expect(stream.writableEnded).toBe(true);
   });
@@ -53,12 +53,12 @@ describe("CSV I/O", () => {
     registry.setPackageName("rock/track01", "rock-pack");
 
     const output = collectOutput((stream) => {
-      const writer = new CsvConfigWriter(stream);
-      writer.writeConfig(registry);
+      const writer = new CsvDigestWriter(stream);
+      writer.writeDigest(registry);
     });
-    const reader = new CsvConfigReader(Readable.from([output]));
+    const reader = new CsvDigestReader(Readable.from([output]));
 
-    const result = collectConfigEntries(reader);
+    const result = collectDigestEntries(reader);
 
     expect(result).toHaveLength(7);
     expect(result.map((e) => e.getPath())).toEqual([
@@ -80,12 +80,12 @@ describe("CSV I/O", () => {
     registry.setSampleType("jazz/bebop", "Melodic Loops - Bebop");
 
     const output = collectOutput((stream) => {
-      const writer = new CsvConfigWriter(stream);
-      writer.writeConfig(registry);
+      const writer = new CsvDigestWriter(stream);
+      writer.writeDigest(registry);
     });
-    const reader = new CsvConfigReader(Readable.from([output]));
+    const reader = new CsvDigestReader(Readable.from([output]));
 
-    const result = collectConfigEntries(reader);
+    const result = collectDigestEntries(reader);
 
     expect(result).toHaveLength(4);
     expect(result.map((e) => e.getPath())).toEqual([
@@ -129,12 +129,12 @@ describe("CSV I/O", () => {
     registry.setSampleType("jazz", "Melodic Loops - Jazz");
 
     const output = collectOutput((stream) => {
-      const writer = new CsvConfigWriter(stream);
-      writer.writeConfig(registry);
+      const writer = new CsvDigestWriter(stream);
+      writer.writeDigest(registry);
     });
-    const reader = new CsvConfigReader(Readable.from([output]));
+    const reader = new CsvDigestReader(Readable.from([output]));
 
-    const result = collectConfigEntries(reader);
+    const result = collectDigestEntries(reader);
 
     expect(result).toHaveLength(6);
     expect(result.map((e) => e.getPath())).toEqual([
@@ -171,15 +171,15 @@ describe("CSV I/O", () => {
     registry.setSampleType("jazz/loops", "Jazz Loops");
 
     const output = collectOutput((stream) => {
-      const writer = new CsvConfigWriter(stream);
-      writer.writeConfig(registry);
+      const writer = new CsvDigestWriter(stream);
+      writer.writeDigest(registry);
     });
 
     const restored = createRegistry("library", [
       createFileEntry({ path: "jazz/loops/track01" }),
       createFileEntry({ path: "jazz/loops/track02" }),
     ]);
-    restored.loadConfig(new CsvConfigReader(Readable.from([output])));
+    restored.loadDigest(new CsvDigestReader(Readable.from([output])));
 
     expect(restored.getEntry("jazz/loops/track01")?.getSampleType()).toBe(
       "Jazz Loops",
@@ -189,8 +189,8 @@ describe("CSV I/O", () => {
     );
 
     const output2 = collectOutput((stream) => {
-      const writer = new CsvConfigWriter(stream);
-      writer.writeConfig(restored);
+      const writer = new CsvDigestWriter(stream);
+      writer.writeDigest(restored);
     });
 
     expect(output2).toBe(output);
@@ -204,12 +204,12 @@ describe("CSV I/O", () => {
     registry.setKeepStructure("jazz", true);
 
     const output = collectOutput((stream) => {
-      const writer = new CsvConfigWriter(stream);
-      writer.writeConfig(registry);
+      const writer = new CsvDigestWriter(stream);
+      writer.writeDigest(registry);
     });
-    const reader = new CsvConfigReader(Readable.from([output]));
+    const reader = new CsvDigestReader(Readable.from([output]));
 
-    const result = collectConfigEntries(reader);
+    const result = collectDigestEntries(reader);
 
     const [, entry] = result;
     expect(entry.isSkipped()).toBe(true);
@@ -224,12 +224,12 @@ describe("CSV I/O", () => {
     registry.setSkipped("__MACOSX", true);
 
     const output = collectOutput((stream) => {
-      const writer = new CsvConfigWriter(stream);
-      writer.writeConfig(registry);
+      const writer = new CsvDigestWriter(stream);
+      writer.writeDigest(registry);
     });
-    const reader = new CsvConfigReader(Readable.from([output]));
+    const reader = new CsvDigestReader(Readable.from([output]));
 
-    const result = collectConfigEntries(reader);
+    const result = collectDigestEntries(reader);
     const paths = result.map((e) => e.getPath());
 
     expect(paths).toContain("__MACOSX");
@@ -246,12 +246,12 @@ describe("CSV I/O", () => {
     registry.setKeepStructure("My Project", true);
 
     const output = collectOutput((stream) => {
-      const writer = new CsvConfigWriter(stream);
-      writer.writeConfig(registry);
+      const writer = new CsvDigestWriter(stream);
+      writer.writeDigest(registry);
     });
-    const reader = new CsvConfigReader(Readable.from([output]));
+    const reader = new CsvDigestReader(Readable.from([output]));
 
-    const result = collectConfigEntries(reader);
+    const result = collectDigestEntries(reader);
     const paths = result.map((e) => e.getPath());
 
     expect(paths).toContain("My Project");
@@ -268,14 +268,14 @@ describe("CSV I/O", () => {
     registry.setName("jazz/bebop/track01", "Alt Track 01");
 
     const output = collectOutput((stream) => {
-      const writer = new CsvConfigWriter(stream);
-      writer.writeConfig(registry);
+      const writer = new CsvDigestWriter(stream);
+      writer.writeDigest(registry);
     });
 
     const restoredRegistry = createRegistry("library", [
       createFileEntry({ path: "jazz/bebop/track01" }),
     ]);
-    restoredRegistry.loadConfig(new CsvConfigReader(Readable.from([output])));
+    restoredRegistry.loadDigest(new CsvDigestReader(Readable.from([output])));
 
     expect(restoredRegistry.getEntry("jazz/bebop/track01")?.getName()).toBe(
       "Alt Track 01",
@@ -288,13 +288,13 @@ describe("CSV I/O", () => {
     registry.setPackageName("library-pack");
 
     const output = collectOutput((stream) => {
-      const writer = new CsvConfigWriter(stream);
-      writer.writeConfig(registry);
+      const writer = new CsvDigestWriter(stream);
+      writer.writeDigest(registry);
     });
 
     const restoredEmptyRegistry = createRegistry("library", []);
-    restoredEmptyRegistry.loadConfig(
-      new CsvConfigReader(Readable.from([output])),
+    restoredEmptyRegistry.loadDigest(
+      new CsvDigestReader(Readable.from([output])),
     );
     expect(restoredEmptyRegistry.toString()).toBe(
       "Renamed Library [?] [pkg:library-pack]\n",
@@ -303,8 +303,8 @@ describe("CSV I/O", () => {
     const restoredRegistryWithFiles = createRegistry("library", [
       createFileEntry({ path: "jazz/track01" }),
     ]);
-    restoredRegistryWithFiles.loadConfig(
-      new CsvConfigReader(Readable.from([output])),
+    restoredRegistryWithFiles.loadDigest(
+      new CsvDigestReader(Readable.from([output])),
     );
     expect(
       restoredRegistryWithFiles.getEntry("jazz/track01")?.getPackageName(),

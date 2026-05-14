@@ -220,7 +220,7 @@ describe("SP-404MKII device preset", () => {
     }
   });
 
-  it("applies device transforms to --dump-config output but not to --analyse auto-config", async () => {
+  it("applies device transforms to --dump-digest output but not to --analyse auto-config", async () => {
     const zipped = zipSync({
       "Dr\u00fcms/sn\u00e2re.wav": strToU8("snare-data"),
     });
@@ -255,10 +255,10 @@ describe("SP-404MKII device preset", () => {
         ].join("\n"),
       );
 
-      // --dump-config: output reflects device-sanitized names
+      // --dump-digest: output reflects device-sanitized names
       const dumpRun = spawnSync(
         "node",
-        [CLI_PATH, zipPath, "-d", "sp404mk2", "--dump-config"],
+        [CLI_PATH, zipPath, "-d", "sp404mk2", "--dump-digest"],
         {
           encoding: "utf8",
           env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },

@@ -1,16 +1,16 @@
 import { PassThrough } from "node:stream";
 import { describe, expect, it } from "vitest";
-import { JsonConfigWriter } from "../../../src";
+import { JsonDigestWriter } from "../../../src";
 import {
-  createConfigSource,
-  createConfigEntry,
+  createDigestSource,
+  createDigestEntry,
   createRegistry,
 } from "../../support";
-import type { ConfigSource } from "../../../src";
+import type { DigestSource } from "../../../src";
 
 const captureOutput = (
-  writer: JsonConfigWriter,
-  configSource: ConfigSource,
+  writer: JsonDigestWriter,
+  configSource: DigestSource,
   stream: PassThrough,
 ): string => {
   const chunks: string[] = [];
@@ -19,24 +19,24 @@ const captureOutput = (
     chunks.push(chunk);
   });
 
-  writer.writeConfig(configSource);
+  writer.writeDigest(configSource);
 
   return chunks.join("");
 };
 
-describe("JsonConfigWriter", () => {
+describe("JsonDigestWriter", () => {
   it("writes an empty JSON array when the data source has no entries", () => {
     const stream = new PassThrough({ encoding: "utf8" });
-    const writer = new JsonConfigWriter(stream);
+    const writer = new JsonDigestWriter(stream);
 
-    expect(captureOutput(writer, createConfigSource([]), stream)).toBe("[]");
+    expect(captureOutput(writer, createDigestSource([]), stream)).toBe("[]");
   });
 
   it("serializes each entry field to JSON", () => {
     const stream = new PassThrough({ encoding: "utf8" });
-    const writer = new JsonConfigWriter(stream);
-    const configSource = createConfigSource([
-      createConfigEntry({
+    const writer = new JsonDigestWriter(stream);
+    const configSource = createDigestSource([
+      createDigestEntry({
         path: "jazz/bebop/track01",
         name: "Alt Track 01",
         packageName: "jazz-pack",
@@ -44,7 +44,7 @@ describe("JsonConfigWriter", () => {
         skipped: true,
         keepStructure: true,
       }),
-      createConfigEntry({
+      createDigestEntry({
         path: "rock/track01",
       }),
     ]);
@@ -73,9 +73,9 @@ describe("JsonConfigWriter", () => {
 
   it("omits the name override when it matches the path basename", () => {
     const stream = new PassThrough({ encoding: "utf8" });
-    const writer = new JsonConfigWriter(stream);
-    const configSource = createConfigSource([
-      createConfigEntry({ path: "jazz/bebop/track01", name: "track01" }),
+    const writer = new JsonDigestWriter(stream);
+    const configSource = createDigestSource([
+      createDigestEntry({ path: "jazz/bebop/track01", name: "track01" }),
     ]);
 
     const output = captureOutput(writer, configSource, stream);
@@ -94,7 +94,7 @@ describe("JsonConfigWriter", () => {
 
   it("serializes the root node for a registry even without overrides", () => {
     const stream = new PassThrough({ encoding: "utf8" });
-    const writer = new JsonConfigWriter(stream);
+    const writer = new JsonDigestWriter(stream);
     const registry = createRegistry("library", []);
 
     const output = captureOutput(writer, registry, stream);
@@ -109,7 +109,7 @@ describe("JsonConfigWriter", () => {
 
   it("serializes root node changes when present on a registry", () => {
     const stream = new PassThrough({ encoding: "utf8" });
-    const writer = new JsonConfigWriter(stream);
+    const writer = new JsonDigestWriter(stream);
     const registry = createRegistry("library", []);
     registry.setName("Renamed Library");
     registry.setPackageName("library-pack");

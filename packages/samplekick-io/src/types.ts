@@ -1,6 +1,6 @@
-// Configuration
+// Digest
 
-export interface ConfigEntry {
+export interface DigestEntry {
   getPath: () => string;
   getName: () => string;
   getPackageName: () => string | undefined;
@@ -9,12 +9,12 @@ export interface ConfigEntry {
   isKeepStructure: () => boolean | undefined;
 }
 
-export interface ConfigSource {
-  eachConfigEntry: (fn: (entry: ConfigEntry) => void) => void;
+export interface DigestSource {
+  eachDigestEntry: (fn: (entry: DigestEntry) => void) => void;
 }
 
-export interface ConfigWriter {
-  writeConfig: (configSource: ConfigSource) => void;
+export interface DigestWriter {
+  writeDigest: (digestSource: DigestSource) => void;
 }
 
 // Files
@@ -33,7 +33,7 @@ export interface FileSource {
 
 // FileNode
 
-export interface FileNode extends ConfigEntry {
+export interface FileNode extends DigestEntry {
   isFile: () => boolean;
   getParentNode: () => FileNode | undefined;
   getChildNodes: () => FileNode[];
@@ -70,7 +70,7 @@ export interface Transform {
 
 export type Validate = (
   destRelPath: string,
-  entry: ConfigEntry,
+  entry: DigestEntry,
 ) => string | undefined;
 
 export interface DevicePreset {
@@ -84,18 +84,18 @@ export interface DevicePreset {
 // Export
 
 export interface PostProcessor {
-  processFile: (destPath: string, entry: ConfigEntry) => Promise<void> | void;
+  processFile: (destPath: string, entry: DigestEntry) => Promise<void> | void;
 }
 
 export interface ExportOptions {
   onSkip?: (entry: FileNode) => void;
-  onBeforeWrite?: (entry: ConfigEntry, destRelPath: string) => void;
+  onBeforeWrite?: (entry: DigestEntry, destRelPath: string) => void;
   onAfterWrite?: (
-    entry: ConfigEntry,
+    entry: DigestEntry,
     destRelPath: string,
     error?: Error,
   ) => void;
-  onReject?: (entry: ConfigEntry, reason: string) => void;
+  onReject?: (entry: DigestEntry, reason: string) => void;
 }
 
 // Path Strategy

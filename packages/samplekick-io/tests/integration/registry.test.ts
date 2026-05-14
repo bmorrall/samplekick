@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { OrganisedPathStrategy, Registry } from "../../src";
-import type { FileSource, ConfigEntry, FileEntry } from "../../src";
+import type { FileSource, DigestEntry, FileEntry } from "../../src";
 import { createFileEntry, createRegistry } from "../support";
 
 describe("Registry load", () => {
@@ -56,8 +56,8 @@ describe("Registry load", () => {
     registry.setPackageName("jazz", "jazz-pack");
     registry.setSampleType("jazz", "Melodic Loops - Jazz");
 
-    const entries: ConfigEntry[] = [];
-    registry.eachConfigEntry((e) => {
+    const entries: DigestEntry[] = [];
+    registry.eachDigestEntry((e) => {
       void entries.push(e);
     });
     expect(entries.map((e) => e.getPath())).toEqual([
@@ -144,7 +144,7 @@ describe("Registry eachFileEntry", () => {
   });
 });
 
-describe("Registry eachConfigEntry", () => {
+describe("Registry eachDigestEntry", () => {
   it("exposes loaded entries as a ConfigSource", () => {
     const registry = createRegistry("library", [
       createFileEntry({ path: "jazz/bebop/track01" }),
@@ -157,8 +157,8 @@ describe("Registry eachConfigEntry", () => {
     registry.setPackageName("rock/track01", "rock-pack");
     registry.setSampleType("rock/track01", "Melodic Loops - Rock");
 
-    const configEntries: ConfigEntry[] = [];
-    registry.eachConfigEntry((entry) => {
+    const configEntries: DigestEntry[] = [];
+    registry.eachDigestEntry((entry) => {
       configEntries.push(entry);
     });
 
@@ -195,10 +195,10 @@ describe("Registry eachConfigEntry", () => {
     source.setSampleType("rock/track01", "Melodic Loops - Rock");
 
     const target = new Registry(source);
-    target.loadConfig(source);
+    target.loadDigest(source);
 
-    const targetEntries: ConfigEntry[] = [];
-    target.eachConfigEntry((e) => {
+    const targetEntries: DigestEntry[] = [];
+    target.eachDigestEntry((e) => {
       void targetEntries.push(e);
     });
 
@@ -326,8 +326,8 @@ describe("Registry eachFileEntry enumeration", () => {
     registry.setPackageName("jazz", "jazz-pack");
     registry.setSampleType("jazz", "Melodic Loops - Jazz");
 
-    const entries: ConfigEntry[] = [];
-    registry.eachConfigEntry((e) => {
+    const entries: DigestEntry[] = [];
+    registry.eachDigestEntry((e) => {
       void entries.push(e);
     });
 

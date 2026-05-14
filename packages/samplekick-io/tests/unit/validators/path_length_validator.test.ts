@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { createPathLengthValidator } from "../../../src/validators/path_length_validator";
-import { createConfigEntry } from "../../support";
+import { createDigestEntry } from "../../support";
 
-const entry = createConfigEntry({ path: "a/b.wav" });
+const entry = createDigestEntry({ path: "a/b.wav" });
 
 describe("createPathLengthValidator", () => {
   it("returns undefined when path is within the limit", () => {

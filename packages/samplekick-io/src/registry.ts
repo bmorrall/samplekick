@@ -7,9 +7,9 @@ import { SkipResult } from "./types";
 import type {
   LeafNode,
   PathStrategy,
-  ConfigSource,
+  DigestSource,
   FileSource,
-  ConfigEntry,
+  DigestEntry,
   FileEntry,
   Transform,
   TransformEntry,
@@ -44,7 +44,7 @@ const buildRootNodeFromFileSource = (fileSource: FileSource): EntryNode => {
   return rootNode;
 };
 
-const toOwnConfigEntry = (node: EntryNode): ConfigEntry => ({
+const toOwnDigestEntry = (node: EntryNode): DigestEntry => ({
   getPath: () => node.getPath(),
   getName: () => node.getOwnName() ?? getPathName(node.getPath()),
   getPackageName: () => node.getOwnPackageName(),
@@ -53,14 +53,14 @@ const toOwnConfigEntry = (node: EntryNode): ConfigEntry => ({
   isKeepStructure: () => node.getOwnKeepStructure(),
 });
 
-const applyEntryConfig = (node: EntryNode, entry: ConfigEntry): void => {
+const applyEntryDigest = (node: EntryNode, entry: DigestEntry): void => {
   const name = entry.getName();
   const packageName = entry.getPackageName();
   const sampleType = entry.getSampleType();
   const skipped = entry.isSkipped();
   const keepStructure = entry.isKeepStructure();
   // Only set name if it differs from the default (path-derived) name, so existing
-  // transformer-set names are not overwritten when a config has no name override
+  // transformer-set names are not overwritten when a digest has no name override
   if (name !== getPathName(entry.getPath())) {
     node.setName(name);
   }
@@ -78,7 +78,7 @@ const applyEntryConfig = (node: EntryNode, entry: ConfigEntry): void => {
   }
 };
 
-export class Registry implements FileSource, ConfigSource {
+export class Registry implements FileSource, DigestSource {
   private readonly rootNode: EntryNode;
   private pathStrategy: PathStrategy = SourcePathStrategy;
   private readonly postProcessors: PostProcessor[] = [];
@@ -104,7 +104,7 @@ export class Registry implements FileSource, ConfigSource {
     this.rootNode.eachLeafNode(fn);
   }
 
-  eachConfigEntry(fn: (entry: ConfigEntry) => void): void {
+  eachDigestEntry(fn: (entry: DigestEntry) => void): void {
     this.rootNode.eachDescendant((node) => {
       const parent = node.getParentNode();
       if (parent?.isSkipped() === true) return;
@@ -114,26 +114,26 @@ export class Registry implements FileSource, ConfigSource {
       ) {
         return;
       }
-      fn(toOwnConfigEntry(node));
+      fn(toOwnDigestEntry(node));
     });
   }
 
-  // Config methods
+  // Digest methods
 
-  loadConfig(configSource: ConfigSource): void {
-    configSource.eachConfigEntry((entry) => {
+  loadDigest(digestSource: DigestSource): void {
+    digestSource.eachDigestEntry((entry) => {
       if (entry.getPath() === "") {
-        applyEntryConfig(this.rootNode, entry);
+        applyEntryDigest(this.rootNode, entry);
         return;
       }
 
-      void this.setEntryConfig(entry);
+      void this.setEntryDigest(entry);
     });
   }
 
   // Entry management methods
 
-  getEntry(path: string): ConfigEntry | undefined {
+  getEntry(path: string): DigestEntry | undefined {
     return this.findEntryNode(path);
   }
 
@@ -141,13 +141,13 @@ export class Registry implements FileSource, ConfigSource {
     return this.rootNode;
   }
 
-  setEntryConfig(entry: ConfigEntry): boolean {
+  setEntryDigest(entry: DigestEntry): boolean {
     const node = this.findEntryNode(entry.getPath());
     if (node === undefined) {
       return false;
     }
 
-    applyEntryConfig(node, entry);
+    applyEntryDigest(node, entry);
     return true;
   }
 

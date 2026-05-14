@@ -78,7 +78,7 @@ describe("--bake flag", () => {
     }
   });
 
-  it("persists to the auto-config path even when --config is provided", async () => {
+  it("persists to the auto-config path even when --digest is provided", async () => {
     const zipped = zipSync({
       "Drum-Hits/snare hit.wav": strToU8("snare-data"),
     });
@@ -101,7 +101,7 @@ describe("--bake flag", () => {
 
       const result = spawnSync(
         "node",
-        [CLI_PATH, zipPath, "--bake", "--squash", "--config", configPath],
+        [CLI_PATH, zipPath, "--bake", "--squash", "--digest", configPath],
         {
           encoding: "utf8",
           env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
@@ -111,7 +111,7 @@ describe("--bake flag", () => {
       expect(result.stderr).toBe("");
       expect(result.status).toBe(0);
 
-      // Auto-config is written to the fingerprint-keyed path even though --config was used.
+      // Auto-config is written to the fingerprint-keyed path even though --digest was used.
       // The squash transform derives names from the paths, overwriting the empty name column.
       const [autoConfigFile] = await readdir(dataDir);
       const csv = await readFile(join(dataDir, autoConfigFile), "utf8");

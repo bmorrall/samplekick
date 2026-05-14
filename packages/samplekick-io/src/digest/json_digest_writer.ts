@@ -1,5 +1,5 @@
 import type { Writable } from "node:stream";
-import type { ConfigSource, ConfigEntry, ConfigWriter } from "../types";
+import type { DigestSource, DigestEntry, DigestWriter } from "../types";
 import { getPathName } from "../path_utils";
 
 export interface DataSourceEntryJSON {
@@ -13,7 +13,7 @@ export interface DataSourceEntryJSON {
 
 const JSON_INDENT = 2;
 
-const serializeEntry = (entry: ConfigEntry): DataSourceEntryJSON => {
+const serializeEntry = (entry: DigestEntry): DataSourceEntryJSON => {
   const name = entry.getName();
   const path = entry.getPath();
 
@@ -27,16 +27,16 @@ const serializeEntry = (entry: ConfigEntry): DataSourceEntryJSON => {
   };
 };
 
-export class JsonConfigWriter implements ConfigWriter {
+export class JsonDigestWriter implements DigestWriter {
   private readonly stream: Writable;
 
   constructor(stream: Writable) {
     this.stream = stream;
   }
 
-  writeConfig(configSource: ConfigSource): void {
+  writeDigest(digestSource: DigestSource): void {
     const entries: DataSourceEntryJSON[] = [];
-    configSource.eachConfigEntry((entry) => {
+    digestSource.eachDigestEntry((entry) => {
       entries.push(serializeEntry(entry));
     });
     this.stream.write(JSON.stringify(entries, null, JSON_INDENT));
