@@ -41,6 +41,7 @@ import {
   Registry,
   createKeepParentsTransformer,
   createMultiPackNameTransformer,
+  createBrandPrefixTransformer,
   createSkipJunkTransformer,
   SourcePathStrategy,
   createTrimNameTransformer,
@@ -404,6 +405,8 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
   if (values["analyse-multi-pack"] === true) {
     // Multi-pack: tag ancestor directories as packageName using ' - ' heuristic
     registry.applyTransform(createMultiPackNameTransformer());
+    // Brand prefix: prefix child packageNames with parent's brand (Ghosthack, Cymatics)
+    registry.applyTransform(createBrandPrefixTransformer());
   }
 
   if (analyse || values["keep-parents"] === true) {

@@ -62,6 +62,10 @@ describe("index exports", () => {
     expect(api.createMultiPackNameTransformer).toBeDefined();
   });
 
+  test("exports createBrandPrefixTransformer", () => {
+    expect(api.createBrandPrefixTransformer).toBeDefined();
+  });
+
   test("exports createKnownFileTypeTransformer", () => {
     expect(api.createKnownFileTypeTransformer).toBeDefined();
   });
@@ -234,6 +238,7 @@ describe("index exports", () => {
       "createStripFormatHintsTransformer",
       "createKeepParentsTransformer",
       "createMultiPackNameTransformer",
+      "createBrandPrefixTransformer",
       "SourcePathStrategy",
       "OrganisedPathStrategy",
       "createPathLengthValidator",

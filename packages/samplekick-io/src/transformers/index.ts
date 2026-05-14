@@ -34,3 +34,4 @@ export { createSquashNameTransformer } from "./squash_name_transformer";
 export { createStripFormatHintsTransformer } from "./strip_format_hints_transformer";
 export { createKeepParentsTransformer } from "./keep_parents_transformer";
 export { createMultiPackNameTransformer } from "./multi_pack_name_transformer";
+export { createBrandPrefixTransformer } from "./brand_prefix_transformer";

@@ -72,7 +72,57 @@ describe("MultiPackNameTransformer", () => {
     }
   });
 
+  it("tags kit-named subdirectories even when parent has ' - '", async () => {
+    const zipped = zipSync({
+      "Ghosthack - Ultimate Freebie Collection/Construction Kits/Ghosthack - Advent Calendar 2019 - Day 12 - Trap Kits/Holiday Kit 04 - 140bpm - Bmaj/04. One-Shot Samples/Synth 2 - C.wav":
+        strToU8("data"),
+    });
 
+    const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-multi-pack-"));
+    const zipPath = join(tmpDir, "test-pack.zip");
+    const dataDir = join(tmpDir, "data");
+
+    try {
+      await writeFile(zipPath, zipped);
+
+      const result = spawnSync(
+        "node",
+        [CLI_PATH, zipPath, "--analyse-multi-pack"],
+        {
+          encoding: "utf8",
+          env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+        },
+      );
+
+      expect(result.status).toBe(0);
+
+      const [configFile] = await readdir(dataDir);
+      const csv = await readFile(join(dataDir, configFile), "utf8");
+      const rows = csv.split("\n").filter(Boolean);
+
+      // Advent Calendar dir: parent is "Construction Kits" (no ' - ') → tagged
+      const adventRow = rows.find((row) =>
+        row.startsWith(
+          "Ghosthack - Ultimate Freebie Collection/Construction Kits/Ghosthack - Advent Calendar 2019 - Day 12 - Trap Kits,",
+        ),
+      );
+      expect(adventRow).toBe(
+        "Ghosthack - Ultimate Freebie Collection/Construction Kits/Ghosthack - Advent Calendar 2019 - Day 12 - Trap Kits,,,Ghosthack - Advent Calendar 2019 - Day 12 - Trap Kits,,",
+      );
+
+      // Holiday Kit dir: has 'Kit' in name → tagged even though parent has ' - '
+      const holidayRow = rows.find((row) =>
+        row.startsWith(
+          "Ghosthack - Ultimate Freebie Collection/Construction Kits/Ghosthack - Advent Calendar 2019 - Day 12 - Trap Kits/Holiday Kit 04 - 140bpm - Bmaj,",
+        ),
+      );
+      expect(holidayRow).toBe(
+        "Ghosthack - Ultimate Freebie Collection/Construction Kits/Ghosthack - Advent Calendar 2019 - Day 12 - Trap Kits/Holiday Kit 04 - 140bpm - Bmaj,,Holiday Kit 04 - Bmaj 140bpm,Ghosthack - Holiday Kit 04 - Bmaj 140bpm,,",
+      );
+    } finally {
+      await rm(tmpDir, { recursive: true });
+    }
+  });
 
   it("accepts -m as a short alias for --analyse-multi-pack", async () => {
     const zipped = zipSync({
