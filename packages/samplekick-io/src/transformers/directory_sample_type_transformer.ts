@@ -54,6 +54,10 @@ function setFromPrefixedName(
       entry.setSampleType(`${prefix} Loops`);
       return true;
     }
+    if (!hasKnownAncestorType(entry) && !nameLower.includes(DASH_SEP)) {
+      entry.setSampleType("Loops");
+      return true;
+    }
   }
   const suffix = ONE_SHOT_LABELS.map((l) => ` ${l}`).find((s) =>
     nameLower.endsWith(s),
@@ -62,6 +66,10 @@ function setFromPrefixedName(
     const prefix = lookupPrefix(nameLower.slice(0, -suffix.length));
     if (prefix !== undefined) {
       entry.setSampleType(`${prefix} One Shots`);
+      return true;
+    }
+    if (!hasKnownAncestorType(entry) && !nameLower.includes(DASH_SEP)) {
+      entry.setSampleType("One Shots");
       return true;
     }
   }

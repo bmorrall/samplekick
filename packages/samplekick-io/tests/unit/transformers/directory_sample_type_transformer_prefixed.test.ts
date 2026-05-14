@@ -108,9 +108,31 @@ describe("createDirectorySampleTypeTransformer", () => {
       expect(entry.setSampleType).toHaveBeenCalledWith("Drum Loops");
     });
 
-    it("does not set sampleType when the base does not match", () => {
+    it('sets sampleType to "Loops" when the base does not match a known type', () => {
       const entry = createTransformEntryInHierarchy(
         [],
+        { name: "Bonk Loops", isFile: false },
+        [{ name: "lead.wav" }],
+      );
+      const transformer = createDirectorySampleTypeTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("Loops");
+    });
+
+    it('sets sampleType to "Loops" for a numbered prefix like "03. WAV Loops"', () => {
+      const entry = createTransformEntryInHierarchy(
+        [],
+        { name: "03. WAV Loops", isFile: false },
+        [{ name: "808 Bass - 140bpm - G.wav" }],
+      );
+      const transformer = createDirectorySampleTypeTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("Loops");
+    });
+
+    it("does not set sampleType when the base does not match and a parent has a sampleType", () => {
+      const entry = createTransformEntryInHierarchy(
+        [{ name: "Drums", sampleType: "Drums" }],
         { name: "Bonk Loops", isFile: false },
         [{ name: "lead.wav" }],
       );
@@ -231,9 +253,20 @@ describe("createDirectorySampleTypeTransformer", () => {
       expect(entry.setSampleType).toHaveBeenCalledWith("Drum One Shots");
     });
 
-    it("does not set sampleType when the base does not match", () => {
+    it('sets sampleType to "One Shots" when the base does not match a known type', () => {
       const entry = createTransformEntryInHierarchy(
         [],
+        { name: "Bonk One Shots", isFile: false },
+        [{ name: "lead.wav" }],
+      );
+      const transformer = createDirectorySampleTypeTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("One Shots");
+    });
+
+    it("does not set sampleType when the base does not match and a parent has a sampleType", () => {
+      const entry = createTransformEntryInHierarchy(
+        [{ name: "Drums", sampleType: "Drums" }],
         { name: "Bonk One Shots", isFile: false },
         [{ name: "lead.wav" }],
       );
