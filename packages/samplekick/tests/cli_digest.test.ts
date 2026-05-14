@@ -261,7 +261,7 @@ describe("samplekick CLI", () => {
     }
   });
 
-  it("outputs sparse CSV to stdout when --dump-digest is used without --bake", async () => {
+  it("outputs sparse CSV to stdout when --dump-digest is used without --bake-digest", async () => {
     const zipped = zipSync({
       "Drums/kick.wav": strToU8("kick-data"),
     });
@@ -291,7 +291,7 @@ describe("samplekick CLI", () => {
     }
   });
 
-  it("outputs explicit CSV to stdout when --dump-digest is used with --bake", async () => {
+  it("outputs explicit CSV to stdout when --dump-digest is used with --bake-digest", async () => {
     const zipped = zipSync({
       "Drums/kick.wav": strToU8("kick-data"),
     });
@@ -304,7 +304,7 @@ describe("samplekick CLI", () => {
 
       const result = spawnSync(
         "node",
-        [CLI_PATH, zipPath, "--dump-digest", "--bake"],
+        [CLI_PATH, zipPath, "--dump-digest", "--bake-digest"],
         {
           encoding: "utf8",
           env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
@@ -399,7 +399,7 @@ describe("samplekick CLI", () => {
     }
   });
 
-  it("writes sparse CSV when --write-digest is used without --bake", async () => {
+  it("writes sparse CSV when --write-digest is used without --bake-digest", async () => {
     const zipped = zipSync({
       "Drums/kick.wav": strToU8("kick-data"),
     });
@@ -435,7 +435,7 @@ describe("samplekick CLI", () => {
     }
   });
 
-  it("writes explicit CSV when --write-digest is used with --bake", async () => {
+  it("writes explicit CSV when --write-digest is used with --bake-digest", async () => {
     const zipped = zipSync({
       "Drums/kick.wav": strToU8("kick-data"),
     });
@@ -449,7 +449,7 @@ describe("samplekick CLI", () => {
 
       const result = spawnSync(
         "node",
-        [CLI_PATH, zipPath, "--write-digest", configPath, "--bake"],
+        [CLI_PATH, zipPath, "--write-digest", configPath, "--bake-digest"],
         {
           encoding: "utf8",
           env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },

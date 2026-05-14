@@ -7,7 +7,7 @@ import { describe, expect, it } from "vitest";
 
 const CLI_PATH = resolve(import.meta.dirname, "../dist/index.mjs");
 
-describe("--bake flag", () => {
+describe("--bake-digest flag", () => {
   it("persists device and squash transforms to the auto-config", async () => {
     const zipped = zipSync({
       "Drum-Hits/snare hit.wav": strToU8("snare-data"),
@@ -22,7 +22,14 @@ describe("--bake flag", () => {
 
       const result = spawnSync(
         "node",
-        [CLI_PATH, zipPath, "--bake", "--device", "sp404mk2", "--squash"],
+        [
+          CLI_PATH,
+          zipPath,
+          "--bake-digest",
+          "--device",
+          "sp404mk2",
+          "--squash",
+        ],
         {
           encoding: "utf8",
           env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
@@ -57,7 +64,7 @@ describe("--bake flag", () => {
 
       const result = spawnSync(
         "node",
-        [CLI_PATH, zipPath, "--bake", "--device", "sp404mk2"],
+        [CLI_PATH, zipPath, "--bake-digest", "--device", "sp404mk2"],
         {
           encoding: "utf8",
           env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
@@ -101,7 +108,14 @@ describe("--bake flag", () => {
 
       const result = spawnSync(
         "node",
-        [CLI_PATH, zipPath, "--bake", "--squash", "--digest", configPath],
+        [
+          CLI_PATH,
+          zipPath,
+          "--bake-digest",
+          "--squash",
+          "--digest",
+          configPath,
+        ],
         {
           encoding: "utf8",
           env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
@@ -137,7 +151,7 @@ describe("--bake flag", () => {
 
       const result = spawnSync(
         "node",
-        [CLI_PATH, zipPath, "--bake", "--analyse"],
+        [CLI_PATH, zipPath, "--bake-digest", "--analyse"],
         {
           encoding: "utf8",
           env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
