@@ -114,16 +114,16 @@ Arguments:
   <zip-file> [zip-file...]  One or more input ZIP files
 
 Analysis:
-  -a, --analyse           Analyse pack and save to the auto-digest
+  -a, --analyse           Analyse pack and save to the auto-tags
   -m, --analyse-multi-pack
                           Runs --analyse and tags sub-packs within the ZIP
-  -s, --sanitise          Normalise entry names (trim, spacing, dashes, tags)
-  -r, --rebuild           Ignore the auto-digest and analyse from scratch
+  -n, --normalise         Normalise entry names (trim, spacing, dashes, tags)
+  -p, --keep-parents      Preserve parent folders for all directories with files
+  -r, --rebuild           Ignore the auto-tags and analyse from scratch
 
 Output:
   -o, --output <path>     Export samples to a directory
                           Omit to preview changes without writing files
-  -p, --keep-parents      Preserve parent folders for all directories with files
       --preserve-paths    Export to original source paths (skip organising)
 
 Device:
@@ -137,8 +137,8 @@ Digest:
                           Write the pack digest as CSV to a file
       --dump-digest       Print the pack digest as CSV to stdout, with device
                           and squash transforms applied
-      --bake              Save the transformed digest as the auto-digest so
-                          transforms are applied automatically on the next run
+      --bake              Persist current transforms so they reapply
+                          automatically on future runs
       --edit              Open the active digest file in $VISUAL/$EDITOR
 
 Behaviour:
@@ -222,7 +222,7 @@ try {
       "allow-junk": { type: "boolean" },
       "preserve-paths": { type: "boolean" },
       "keep-parents": { type: "boolean", short: "p" },
-      sanitise: { type: "boolean", short: "s" },
+      normalise: { type: "boolean", short: "n" },
       squash: { type: "boolean" },
       bake: { type: "boolean" },
       rebuild: { type: "boolean", short: "r" },
@@ -421,12 +421,12 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
 
   if (analyse || values["keep-parents"] === true) {
     // Root package name: set early from the zip filename so expand runs before
-    // directory analysis, keeping packageName clean for the auto-digest.
+    // directory analysis, keeping packageName clean for the auto-tags.
     registry.applyTransform(createDefaultRootPackageNameTransformer());
     registry.applyTransform(createExpandRootPackageNameTransformer());
   }
 
-  if (analyse || values.sanitise === true) {
+  if (analyse || values.normalise === true) {
     registry.applyTransform(createTrimNameTransformer());
     registry.applyTransform(createNormaliseQuotesTransformer());
     registry.applyTransform(createNormaliseDashesTransformer());
@@ -493,7 +493,7 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
   });
 
   if (
-    (analyse || values["keep-parents"] === true || values.sanitise === true) &&
+    (analyse || values["keep-parents"] === true || values.normalise === true) &&
     autoDigestPath !== undefined &&
     values.bake !== true
   ) {
@@ -524,7 +524,7 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
     if (digestPath !== undefined) {
       reporter.onInfo(`Using digest: ${digestPath}`);
     } else if (autoDigestPath !== undefined) {
-      reporter.onInfo(`Using auto-digest: ${autoDigestPath}`);
+      reporter.onInfo(`Using auto-tags: ${autoDigestPath}`);
     }
     if (conversion !== undefined) {
       reporter.onInfo(`Using ffmpeg: ${conversion.ffmpegVersion}`);
@@ -540,7 +540,7 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
     const editPath = digestPath ?? autoDigestPath;
     if (editPath === undefined) {
       console.error(
-        "Error: no digest file to edit. Run an export first to create an auto-digest, or specify one with --digest.",
+        "Error: no digest file to edit. Run an export first to create an auto-tags, or specify one with --digest.",
       );
       process.exit(1);
     }
