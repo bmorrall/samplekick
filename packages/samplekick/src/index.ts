@@ -113,21 +113,25 @@ Usage: samplekick <zip-file> [zip-file...] [-o <output-dir>]
 Arguments:
   <zip-file> [zip-file...]  One or more input ZIP files
 
-Options:
-  -o, --output <path>     Export samples to a directory
-                          Omit to preview changes without writing files
+Analysis:
   -a, --analyse           Analyse pack and save to the auto-config
   -m, --analyse-multi-pack
                           Runs --analyse and tags sub-packs within the ZIP
   -s, --sanitise          Normalise entry names (trim, spacing, dashes, tags)
-  -d, --device <name>     Apply device-specific transforms to sample names
-  -c, --convert           Convert audio files to device format
-      --allow-junk        Keep junk entries (e.g. __MACOSX, hidden files)
+  -r, --rebuild           Ignore the auto-config and analyse from scratch
+
+Output:
+  -o, --output <path>     Export samples to a directory
+                          Omit to preview changes without writing files
   -p, --keep-parents      Preserve parent folders for all directories with files
       --preserve-paths    Export to original source paths (skip organising)
+
+Device:
+  -d, --device <name>     Apply device-specific transforms to sample names
+  -c, --convert           Convert audio files to device format
       --squash            Convert names to camelCase after device transforms
-      --debug             Print the pack structure to stdout for inspection
-      --edit              Open the active config file in $VISUAL/$EDITOR
+
+Config:
       --config <path>     Load a CSV config file to apply to the pack
       --write-config <path>
                           Write the pack config as CSV to a file
@@ -135,10 +139,16 @@ Options:
                           and squash transforms applied
       --bake              Save the transformed config as the auto-config so
                           transforms are applied automatically on the next run
-  -r, --rebuild           Ignore the auto-config and analyse from scratch
+      --edit              Open the active config file in $VISUAL/$EDITOR
+
+Behaviour:
+      --allow-junk        Keep junk entries (e.g. __MACOSX, hidden files)
       --no-packs          Reject files tagged as Packs (sampleType = "Packs")
+      --debug             Print the pack structure to stdout for inspection
       --verbose           Show skipped files, config paths, and inherited tags
       --quiet             Only show errors (suppress per-file success lines)
+
+General:
   -v, --version           Show version number
   -h, --help              Show this help message
 
