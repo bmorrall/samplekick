@@ -114,7 +114,7 @@ Arguments:
   <zip-file> [zip-file...]  One or more input ZIP files
 
 Analysis:
-  -a, --analyse           Analyse pack and save to the auto-tags
+  -a, --analyse           Analyse and normalise the pack, saving auto-tags
   -m, --analyse-multi-pack
                           Runs --analyse and tags sub-packs within the ZIP
   -n, --normalise         Normalise entry names (trim, spacing, dashes, tags)
@@ -137,8 +137,9 @@ Digest:
                           Write the pack digest as CSV to a file
       --dump-digest       Print the pack digest as CSV to stdout, with device
                           and squash transforms applied
-      --bake              Persist current transforms so they reapply
-                          automatically on future runs
+      --save-digest       Save current auto-tags to file for future runs
+      --bake-digest       Lock all tags as explicit values in the auto-tags
+                          (overrides future analysis transforms)
       --edit              Open the active digest file in $VISUAL/$EDITOR
 
 Behaviour:
@@ -224,7 +225,8 @@ try {
       "keep-parents": { type: "boolean", short: "p" },
       normalise: { type: "boolean", short: "n" },
       squash: { type: "boolean" },
-      bake: { type: "boolean" },
+      "save-digest": { type: "boolean" },
+      "bake-digest": { type: "boolean" },
       rebuild: { type: "boolean", short: "r" },
       debug: { type: "boolean" },
       edit: { type: "boolean" },
@@ -492,12 +494,14 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
     process.exit(1);
   });
 
-  if (
+  const shouldAutoSave =
     (analyse || values["keep-parents"] === true || values.normalise === true) &&
     autoDigestPath !== undefined &&
-    values.bake !== true
-  ) {
-    await saveDigestToPath(registry, autoDigestPath);
+    values["bake-digest"] !== true;
+
+  if (shouldAutoSave || values["save-digest"] === true) {
+    const savePath = autoDigestPath ?? buildAutoDigestPath(registry, dataDir);
+    await saveDigestToPath(registry, savePath);
   }
 
   if (devicePreset !== undefined) {
@@ -552,7 +556,7 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
     const writePath = resolve(values["write-digest"]);
     const fileStream = createWriteStream(writePath);
     saveDigestToStream(registry, fileStream, {
-      explicit: values.bake === true,
+      explicit: values["bake-digest"] === true,
     });
     await finished(fileStream).catch((err: unknown) => {
       console.error(
@@ -564,12 +568,12 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
 
   if (values["dump-digest"] === true) {
     saveDigestToStream(registry, process.stdout, {
-      explicit: values.bake === true,
+      explicit: values["bake-digest"] === true,
     });
     process.exit(0);
   }
 
-  if (values.bake === true) {
+  if (values["bake-digest"] === true) {
     await saveDigestToPath(registry, buildAutoDigestPath(registry, dataDir), {
       explicit: true,
     });
