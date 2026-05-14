@@ -1,4 +1,5 @@
 export { createAbletonProjectTransformer } from "./ableton_project_transformer";
+export { createAcapellaTransformer } from "./acapella_transformer";
 export { createArchiveFileTransformer } from "./archive_file_transformer";
 export { createDefaultRootPackageNameTransformer } from "./default_root_package_name_transformer";
 export { createDefaultRootSampleTypeTransformer } from "./default_root_sample_type_transformer";
