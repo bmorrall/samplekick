@@ -8,20 +8,20 @@ import { describe, expect, it } from "vitest";
 const CLI_PATH = resolve(import.meta.dirname, "../dist/index.mjs");
 
 describe("AbletonProjectTransformer", () => {
-  it("sets keepStructure without sampleType when run with --sanitise only", async () => {
+  it("sets keepStructure without sampleType when run with --normalise only", async () => {
     const zipped = zipSync({
       "My Project/My Project.als": strToU8("als-data"),
       "My Project/Samples/kick.wav": strToU8("kick-data"),
     });
 
-    const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-sanitise-"));
+    const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-normalise-"));
     const zipPath = join(tmpDir, "test-pack.zip");
     const dataDir = join(tmpDir, "data");
 
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync("node", [CLI_PATH, zipPath, "--sanitise"], {
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--normalise"], {
         encoding: "utf8",
         env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
       });
