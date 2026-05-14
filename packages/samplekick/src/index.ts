@@ -40,6 +40,8 @@ import {
   OrganisedPathStrategy,
   Registry,
   createKeepParentsTransformer,
+  createMultiPackNameTransformer,
+  createBrandPrefixTransformer,
   createSkipJunkTransformer,
   SourcePathStrategy,
   createTrimNameTransformer,
@@ -111,19 +113,25 @@ Usage: samplekick <zip-file> [zip-file...] [-o <output-dir>]
 Arguments:
   <zip-file> [zip-file...]  One or more input ZIP files
 
-Options:
+Analysis:
+  -a, --analyse           Analyse pack and save to the auto-config
+  -m, --analyse-multi-pack
+                          Runs --analyse and tags sub-packs within the ZIP
+  -s, --sanitise          Normalise entry names (trim, spacing, dashes, tags)
+  -r, --rebuild           Ignore the auto-config and analyse from scratch
+
+Output:
   -o, --output <path>     Export samples to a directory
                           Omit to preview changes without writing files
-  -a, --analyse           Analyse pack and save to the auto-config
-  -s, --sanitise          Normalise entry names (trim, spacing, dashes, tags)
-  -d, --device <name>     Apply device-specific transforms to sample names
-  -c, --convert           Convert audio files to device format
-      --allow-junk        Keep junk entries (e.g. __MACOSX, hidden files)
   -p, --keep-parents      Preserve parent folders for all directories with files
       --preserve-paths    Export to original source paths (skip organising)
+
+Device:
+  -d, --device <name>     Apply device-specific transforms to sample names
+  -c, --convert           Convert audio files to device format
       --squash            Convert names to camelCase after device transforms
-      --debug             Print the pack structure to stdout for inspection
-      --edit              Open the active config file in $VISUAL/$EDITOR
+
+Config:
       --config <path>     Load a CSV config file to apply to the pack
       --write-config <path>
                           Write the pack config as CSV to a file
@@ -131,10 +139,16 @@ Options:
                           and squash transforms applied
       --bake              Save the transformed config as the auto-config so
                           transforms are applied automatically on the next run
-  -r, --rebuild           Ignore the auto-config and analyse from scratch
+      --edit              Open the active config file in $VISUAL/$EDITOR
+
+Behaviour:
+      --allow-junk        Keep junk entries (e.g. __MACOSX, hidden files)
       --no-packs          Reject files tagged as Packs (sampleType = "Packs")
+      --debug             Print the pack structure to stdout for inspection
       --verbose           Show skipped files, config paths, and inherited tags
       --quiet             Only show errors (suppress per-file success lines)
+
+General:
   -v, --version           Show version number
   -h, --help              Show this help message
 
@@ -204,6 +218,7 @@ try {
       "dump-config": { type: "boolean" },
       convert: { type: "boolean", short: "c" },
       analyse: { type: "boolean", short: "a" },
+      "analyse-multi-pack": { type: "boolean", short: "m" },
       "allow-junk": { type: "boolean" },
       "preserve-paths": { type: "boolean" },
       "keep-parents": { type: "boolean", short: "p" },
@@ -323,6 +338,9 @@ if (values.convert === true) {
   conversion = { targetBitDepth, targetSampleRate, ffmpegVersion };
 }
 
+const analyse =
+  values.analyse === true || values["analyse-multi-pack"] === true;
+
 /* eslint-disable no-await-in-loop -- sequential per-file processing is intentional */
 for (const [zipIndex, zipPath] of zipPaths.entries()) {
   if (zipIndex > 0) process.stdout.write(SEPARATOR);
@@ -394,21 +412,28 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
     registry.applyTransform(createSkipJunkTransformer());
   }
 
-  if (values.analyse === true || values["keep-parents"] === true) {
+  if (values["analyse-multi-pack"] === true) {
+    // Multi-pack: tag ancestor directories as packageName using ' - ' heuristic
+    registry.applyTransform(createMultiPackNameTransformer());
+    // Brand prefix: prefix child packageNames with parent's brand (Ghosthack, Cymatics)
+    registry.applyTransform(createBrandPrefixTransformer());
+  }
+
+  if (analyse || values["keep-parents"] === true) {
     // Root package name: set early from the zip filename so expand runs before
     // directory analysis, keeping packageName clean for the auto-config.
     registry.applyTransform(createDefaultRootPackageNameTransformer());
     registry.applyTransform(createExpandRootPackageNameTransformer());
   }
 
-  if (values.analyse === true || values.sanitise === true) {
+  if (analyse || values.sanitise === true) {
     registry.applyTransform(createTrimNameTransformer());
     registry.applyTransform(createNormaliseQuotesTransformer());
     registry.applyTransform(createNormaliseDashesTransformer());
 
     // File transforms: identify known file types and lock their folder structure.
     // sampleType tagging is only applied during --analyse.
-    const tagSampleType = values.analyse === true;
+    const tagSampleType = analyse;
     registry.applyTransform(createKnownFileTypeTransformer({ tagSampleType }));
     registry.applyTransform(createArchiveFileTransformer({ tagSampleType }));
     registry.applyTransform(createAbletonProjectTransformer({ tagSampleType }));
@@ -434,7 +459,7 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
     registry.applyTransform(createReorderBpmKeyTransformer());
   }
 
-  if (values.analyse === true) {
+  if (analyse) {
     // Directory transforms: run after name transforms so folder names are normalised first
     registry.applyTransform(createDrumSubcategoryTransformer());
     registry.applyTransform(createDirectorySampleTypeTransformer());
@@ -448,7 +473,7 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
     registry.applyTransform(createMidiFileTransformer());
   }
 
-  if (values.analyse === true || values["keep-parents"] === true) {
+  if (analyse || values["keep-parents"] === true) {
     // Root sample type: runs after directory/MIDI transforms so their sampleType
     // assignments (e.g. FlatPackPrefixTransformer) are not skipped by the Packs default.
     registry.applyTransform(createDefaultRootSampleTypeTransformer());
@@ -468,9 +493,7 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
   });
 
   if (
-    (values.analyse === true ||
-      values["keep-parents"] === true ||
-      values.sanitise === true) &&
+    (analyse || values["keep-parents"] === true || values.sanitise === true) &&
     autoConfigPath !== undefined &&
     values.bake !== true
   ) {
