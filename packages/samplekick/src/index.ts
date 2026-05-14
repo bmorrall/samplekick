@@ -9,7 +9,7 @@ import { parseArgs } from "node:util";
 import {
   createAbletonProjectTransformer,
   createArchiveFileTransformer,
-  CsvConfigWriter,
+  CsvDigestWriter,
   createDefaultRootPackageNameTransformer,
   createDefaultRootSampleTypeTransformer,
   createDirectorySampleTypeTransformer,
@@ -52,7 +52,7 @@ import {
   formatBitDepth,
   createNoPacksValidator,
 } from "samplekick-io";
-import { loadConfig, openConfigInEditor, getDataDir } from "./config_loader";
+import { loadDigest, openDigestInEditor, getDataDir } from "./digest_loader";
 import type { DevicePreset } from "samplekick-io";
 import {
   SimpleExportReporter,
@@ -114,11 +114,11 @@ Arguments:
   <zip-file> [zip-file...]  One or more input ZIP files
 
 Analysis:
-  -a, --analyse           Analyse pack and save to the auto-config
+  -a, --analyse           Analyse pack and save to the auto-digest
   -m, --analyse-multi-pack
                           Runs --analyse and tags sub-packs within the ZIP
   -s, --sanitise          Normalise entry names (trim, spacing, dashes, tags)
-  -r, --rebuild           Ignore the auto-config and analyse from scratch
+  -r, --rebuild           Ignore the auto-digest and analyse from scratch
 
 Output:
   -o, --output <path>     Export samples to a directory
@@ -131,21 +131,21 @@ Device:
   -c, --convert           Convert audio files to device format
       --squash            Convert names to camelCase after device transforms
 
-Config:
-      --config <path>     Load a CSV config file to apply to the pack
-      --write-config <path>
-                          Write the pack config as CSV to a file
-      --dump-config       Print the pack config as CSV to stdout, with device
+Digest:
+      --digest <path>     Load a CSV digest file to apply to the pack
+      --write-digest <path>
+                          Write the pack digest as CSV to a file
+      --dump-digest       Print the pack digest as CSV to stdout, with device
                           and squash transforms applied
-      --bake              Save the transformed config as the auto-config so
+      --bake              Save the transformed digest as the auto-digest so
                           transforms are applied automatically on the next run
-      --edit              Open the active config file in $VISUAL/$EDITOR
+      --edit              Open the active digest file in $VISUAL/$EDITOR
 
 Behaviour:
       --allow-junk        Keep junk entries (e.g. __MACOSX, hidden files)
       --no-packs          Reject files tagged as Packs (sampleType = "Packs")
       --debug             Print the pack structure to stdout for inspection
-      --verbose           Show skipped files, config paths, and inherited tags
+      --verbose           Show skipped files, digest paths, and inherited tags
       --quiet             Only show errors (suppress per-file success lines)
 
 General:
@@ -177,32 +177,32 @@ const makeSafeStdout = (stream: NodeJS.WriteStream): Writable => {
   });
 };
 
-const saveConfigToStream = (
+const saveDigestToStream = (
   registry: Registry,
   stream: Writable,
   options: { explicit?: boolean } = {},
 ): void => {
-  new CsvConfigWriter(stream, { explicit: options.explicit }).writeConfig(
+  new CsvDigestWriter(stream, { explicit: options.explicit }).writeDigest(
     registry,
   );
 };
 
-const saveConfigToPath = async (
+const saveDigestToPath = async (
   registry: Registry,
   savePath: string,
   options: { explicit?: boolean } = {},
 ): Promise<void> => {
   await mkdir(dirname(savePath), { recursive: true });
   const stream = createWriteStream(savePath);
-  saveConfigToStream(registry, stream, options);
+  saveDigestToStream(registry, stream, options);
   await finished(stream).catch((err: unknown) => {
     console.error(
-      `Warning: could not save config to ${savePath}: ${err instanceof Error ? err.message : String(err)}`,
+      `Warning: could not save digest to ${savePath}: ${err instanceof Error ? err.message : String(err)}`,
     );
   });
 };
 
-const buildAutoConfigPath = (registry: Registry, dataDir: string): string =>
+const buildAutoDigestPath = (registry: Registry, dataDir: string): string =>
   join(dataDir, `${registry.getFingerprint()}.csv`);
 
 // eslint-disable-next-line @typescript-eslint/init-declarations -- assigned in try/catch below
@@ -211,11 +211,11 @@ try {
   parseResult = parseArgs({
     args: process.argv.slice(CLI_ARG_START),
     options: {
-      config: { type: "string" },
+      digest: { type: "string" },
       device: { type: "string", short: "d" },
       output: { type: "string", short: "o" },
-      "write-config": { type: "string" },
-      "dump-config": { type: "boolean" },
+      "write-digest": { type: "string" },
+      "dump-digest": { type: "boolean" },
       convert: { type: "boolean", short: "c" },
       analyse: { type: "boolean", short: "a" },
       "analyse-multi-pack": { type: "boolean", short: "m" },
@@ -273,19 +273,19 @@ if (values.device !== undefined && devicePreset === undefined) {
 const zipPaths = positionals.map((p) => resolve(p));
 
 if (zipPaths.length > 1) {
-  if (values.config !== undefined) {
-    console.error("Error: --config cannot be used with multiple input files");
+  if (values.digest !== undefined) {
+    console.error("Error: --digest cannot be used with multiple input files");
     process.exit(1);
   }
-  if (values["write-config"] !== undefined) {
+  if (values["write-digest"] !== undefined) {
     console.error(
-      "Error: --write-config cannot be used with multiple input files",
+      "Error: --write-digest cannot be used with multiple input files",
     );
     process.exit(1);
   }
-  if (values["dump-config"] === true) {
+  if (values["dump-digest"] === true) {
     console.error(
-      "Error: --dump-config cannot be used with multiple input files",
+      "Error: --dump-digest cannot be used with multiple input files",
     );
     process.exit(1);
   }
@@ -361,7 +361,7 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
 
   if (
     values.debug !== true &&
-    values["dump-config"] !== true &&
+    values["dump-digest"] !== true &&
     values.edit !== true
   ) {
     reporter.onStart(zipPath);
@@ -421,7 +421,7 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
 
   if (analyse || values["keep-parents"] === true) {
     // Root package name: set early from the zip filename so expand runs before
-    // directory analysis, keeping packageName clean for the auto-config.
+    // directory analysis, keeping packageName clean for the auto-digest.
     registry.applyTransform(createDefaultRootPackageNameTransformer());
     registry.applyTransform(createExpandRootPackageNameTransformer());
   }
@@ -483,9 +483,9 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
     registry.applyTransform(createKeepParentsTransformer());
   }
 
-  const configPath =
-    values.config === undefined ? undefined : resolve(values.config);
-  const autoConfigPath = await loadConfig(registry, configPath, dataDir, {
+  const digestPath =
+    values.digest === undefined ? undefined : resolve(values.digest);
+  const autoDigestPath = await loadDigest(registry, digestPath, dataDir, {
     skipAutoConfig: values.rebuild === true,
   }).catch((err: unknown) => {
     console.error(err instanceof Error ? err.message : String(err));
@@ -494,10 +494,10 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
 
   if (
     (analyse || values["keep-parents"] === true || values.sanitise === true) &&
-    autoConfigPath !== undefined &&
+    autoDigestPath !== undefined &&
     values.bake !== true
   ) {
-    await saveConfigToPath(registry, autoConfigPath);
+    await saveDigestToPath(registry, autoDigestPath);
   }
 
   if (devicePreset !== undefined) {
@@ -521,10 +521,10 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
 
   if (values.verbose === true) {
     reporter.onInfo(`Reading: ${zipPath}`);
-    if (configPath !== undefined) {
-      reporter.onInfo(`Using config: ${configPath}`);
-    } else if (autoConfigPath !== undefined) {
-      reporter.onInfo(`Using auto-config: ${autoConfigPath}`);
+    if (digestPath !== undefined) {
+      reporter.onInfo(`Using digest: ${digestPath}`);
+    } else if (autoDigestPath !== undefined) {
+      reporter.onInfo(`Using auto-digest: ${autoDigestPath}`);
     }
     if (conversion !== undefined) {
       reporter.onInfo(`Using ffmpeg: ${conversion.ffmpegVersion}`);
@@ -537,21 +537,21 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
   }
 
   if (values.edit === true) {
-    const editPath = configPath ?? autoConfigPath;
+    const editPath = digestPath ?? autoDigestPath;
     if (editPath === undefined) {
       console.error(
-        "Error: no config file to edit. Run an export first to create an auto-config, or specify one with --config.",
+        "Error: no digest file to edit. Run an export first to create an auto-digest, or specify one with --digest.",
       );
       process.exit(1);
     }
-    openConfigInEditor(editPath, process.platform, process.env);
+    openDigestInEditor(editPath, process.platform, process.env);
     process.exit(0);
   }
 
-  if (values["write-config"] !== undefined) {
-    const writePath = resolve(values["write-config"]);
+  if (values["write-digest"] !== undefined) {
+    const writePath = resolve(values["write-digest"]);
     const fileStream = createWriteStream(writePath);
-    saveConfigToStream(registry, fileStream, {
+    saveDigestToStream(registry, fileStream, {
       explicit: values.bake === true,
     });
     await finished(fileStream).catch((err: unknown) => {
@@ -562,15 +562,15 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
     });
   }
 
-  if (values["dump-config"] === true) {
-    saveConfigToStream(registry, process.stdout, {
+  if (values["dump-digest"] === true) {
+    saveDigestToStream(registry, process.stdout, {
       explicit: values.bake === true,
     });
     process.exit(0);
   }
 
   if (values.bake === true) {
-    await saveConfigToPath(registry, buildAutoConfigPath(registry, dataDir), {
+    await saveDigestToPath(registry, buildAutoDigestPath(registry, dataDir), {
       explicit: true,
     });
   }

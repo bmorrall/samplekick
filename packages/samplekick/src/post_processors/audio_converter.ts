@@ -2,7 +2,7 @@ import { execFile } from "node:child_process";
 import { rename, rm, unlink } from "node:fs/promises";
 import { basename, dirname, extname, join } from "node:path";
 import { promisify } from "node:util";
-import type { ConfigEntry, PostProcessor } from "samplekick-io";
+import type { DigestEntry, PostProcessor } from "samplekick-io";
 import {
   AUDIO_EXTENSIONS,
   BIT_DEPTH_24,
@@ -75,7 +75,7 @@ export class AudioConverter implements PostProcessor {
     this.targetSampleRate = targetSampleRate;
   }
 
-  async processFile(destPath: string, _entry: ConfigEntry): Promise<void> {
+  async processFile(destPath: string, _entry: DigestEntry): Promise<void> {
     const ext = extname(destPath).toLowerCase();
     if (!AUDIO_EXTENSIONS.has(ext)) return;
 

@@ -28,7 +28,7 @@ describe("--debug flag", () => {
 
       const result = spawnSync(
         "node",
-        [CLI_PATH, zipPath, "--config", configPath, "--debug"],
+        [CLI_PATH, zipPath, "--digest", configPath, "--debug"],
         { encoding: "utf8" },
       );
 
@@ -69,14 +69,14 @@ describe("--debug flag", () => {
 
       const result = spawnSync(
         "node",
-        [CLI_PATH, zipPath, "--config", configPath, "--debug", "--verbose"],
+        [CLI_PATH, zipPath, "--digest", configPath, "--debug", "--verbose"],
         { encoding: "utf8" },
       );
 
       expect(result.stderr).toBe("");
       const expected = [
         `Reading: ${zipPath}`,
-        `Using config: ${configPath}`,
+        `Using digest: ${configPath}`,
         "test-pack.zip",
         "├── Drums [pkg:my-pack, type:Percussion]",
         "│   └── kick_01.wav [renamed, pkg:my-pack, type:Percussion, orig:kick.wav]",

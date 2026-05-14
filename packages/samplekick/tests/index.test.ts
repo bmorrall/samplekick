@@ -45,11 +45,11 @@ describe("samplekick CLI", () => {
           "  <zip-file> [zip-file...]  One or more input ZIP files",
           "",
           "Analysis:",
-          "  -a, --analyse           Analyse pack and save to the auto-config",
+          "  -a, --analyse           Analyse pack and save to the auto-digest",
           "  -m, --analyse-multi-pack",
           "                          Runs --analyse and tags sub-packs within the ZIP",
           "  -s, --sanitise          Normalise entry names (trim, spacing, dashes, tags)",
-          "  -r, --rebuild           Ignore the auto-config and analyse from scratch",
+          "  -r, --rebuild           Ignore the auto-digest and analyse from scratch",
           "",
           "Output:",
           "  -o, --output <path>     Export samples to a directory",
@@ -62,21 +62,21 @@ describe("samplekick CLI", () => {
           "  -c, --convert           Convert audio files to device format",
           "      --squash            Convert names to camelCase after device transforms",
           "",
-          "Config:",
-          "      --config <path>     Load a CSV config file to apply to the pack",
-          "      --write-config <path>",
-          "                          Write the pack config as CSV to a file",
-          "      --dump-config       Print the pack config as CSV to stdout, with device",
+          "Digest:",
+          "      --digest <path>     Load a CSV digest file to apply to the pack",
+          "      --write-digest <path>",
+          "                          Write the pack digest as CSV to a file",
+          "      --dump-digest       Print the pack digest as CSV to stdout, with device",
           "                          and squash transforms applied",
-          "      --bake              Save the transformed config as the auto-config so",
+          "      --bake              Save the transformed digest as the auto-digest so",
           "                          transforms are applied automatically on the next run",
-          "      --edit              Open the active config file in $VISUAL/$EDITOR",
+          "      --edit              Open the active digest file in $VISUAL/$EDITOR",
           "",
           "Behaviour:",
           "      --allow-junk        Keep junk entries (e.g. __MACOSX, hidden files)",
           '      --no-packs          Reject files tagged as Packs (sampleType = "Packs")',
           "      --debug             Print the pack structure to stdout for inspection",
-          "      --verbose           Show skipped files, config paths, and inherited tags",
+          "      --verbose           Show skipped files, digest paths, and inherited tags",
           "      --quiet             Only show errors (suppress per-file success lines)",
           "",
           "General:",
@@ -125,7 +125,7 @@ describe("samplekick CLI", () => {
     });
   });
 
-  it("dumps registry config as CSV to stdout when --dump-config is passed", async () => {
+  it("dumps registry config as CSV to stdout when --dump-digest is passed", async () => {
     const zipped = zipSync({
       "Drums/kick.wav": strToU8("kick-data"),
       "Loops/bass.wav": strToU8("bass-data"),
@@ -138,7 +138,7 @@ describe("samplekick CLI", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync("node", [CLI_PATH, zipPath, "--dump-config"], {
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--dump-digest"], {
         encoding: "utf8",
         env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
       });

@@ -1,8 +1,8 @@
 import { Readable } from "node:stream";
 import { describe, expect, it, vi } from "vitest";
-import { CsvConfigReader } from "../../../src";
-import type { ConfigEntry } from "../../../src";
-import { collectConfigEntries } from "../../support";
+import { CsvDigestReader } from "../../../src";
+import type { DigestEntry } from "../../../src";
+import { collectDigestEntries } from "../../support";
 
 class NonStringReadable extends Readable {
   private hasReturnedValue = false;
@@ -22,9 +22,9 @@ class NonStringReadable extends Readable {
   }
 }
 
-describe("CsvConfigReader", () => {
+describe("CsvDigestReader", () => {
   it("provides one entry per data row", () => {
-    const reader = new CsvConfigReader(
+    const reader = new CsvDigestReader(
       Readable.from([
         [
           "path,keepPath,name,packageName,sampleType,skip",
@@ -34,7 +34,7 @@ describe("CsvConfigReader", () => {
       ]),
     );
 
-    const entries = collectConfigEntries(reader);
+    const entries = collectDigestEntries(reader);
     expect(entries).toHaveLength(2);
 
     const [firstEntry, secondEntry] = entries;
@@ -53,27 +53,27 @@ describe("CsvConfigReader", () => {
   });
 
   it("does not call the callback when there are no data rows", () => {
-    const reader = new CsvConfigReader(
+    const reader = new CsvDigestReader(
       Readable.from(["path,keepPath,name,packageName,sampleType,skip"]),
     );
-    const fn = vi.fn<(entry: ConfigEntry) => void>();
+    const fn = vi.fn<(entry: DigestEntry) => void>();
 
-    reader.eachConfigEntry(fn);
+    reader.eachDigestEntry(fn);
 
     expect(fn).not.toHaveBeenCalled();
   });
 
   it("does not call the callback when the file is blank", () => {
     for (const blank of ["", "   ", "\n", "\n\n"]) {
-      const reader = new CsvConfigReader(Readable.from([blank]));
-      const fn = vi.fn<(entry: ConfigEntry) => void>();
-      reader.eachConfigEntry(fn);
+      const reader = new CsvDigestReader(Readable.from([blank]));
+      const fn = vi.fn<(entry: DigestEntry) => void>();
+      reader.eachDigestEntry(fn);
       expect(fn).not.toHaveBeenCalled();
     }
   });
 
   it("accepts an entry that only contains a path", () => {
-    const reader = new CsvConfigReader(
+    const reader = new CsvDigestReader(
       Readable.from([
         [
           "path,keepPath,name,packageName,sampleType,skip",
@@ -82,7 +82,7 @@ describe("CsvConfigReader", () => {
       ]),
     );
 
-    const entries = collectConfigEntries(reader);
+    const entries = collectDigestEntries(reader);
     const [entry] = entries;
 
     expect(entries).toHaveLength(1);
@@ -95,7 +95,7 @@ describe("CsvConfigReader", () => {
   });
 
   it("uses the path basename as name when the name field is empty", () => {
-    const reader = new CsvConfigReader(
+    const reader = new CsvDigestReader(
       Readable.from([
         [
           "path,keepPath,name,packageName,sampleType,skip",
@@ -104,14 +104,14 @@ describe("CsvConfigReader", () => {
       ]),
     );
 
-    const entries = collectConfigEntries(reader);
+    const entries = collectDigestEntries(reader);
     const [entry] = entries;
 
     expect(entry.getName()).toBe("track01");
   });
 
   it("reads the name field when it differs from the path basename", () => {
-    const reader = new CsvConfigReader(
+    const reader = new CsvDigestReader(
       Readable.from([
         [
           "path,keepPath,name,packageName,sampleType,skip",
@@ -120,14 +120,14 @@ describe("CsvConfigReader", () => {
       ]),
     );
 
-    const entries = collectConfigEntries(reader);
+    const entries = collectDigestEntries(reader);
     const [entry] = entries;
 
     expect(entry.getName()).toBe("Custom Name");
   });
 
   it("handles quoted fields containing commas", () => {
-    const reader = new CsvConfigReader(
+    const reader = new CsvDigestReader(
       Readable.from([
         [
           "path,keepPath,name,packageName,sampleType,skip",
@@ -136,14 +136,14 @@ describe("CsvConfigReader", () => {
       ]),
     );
 
-    const entries = collectConfigEntries(reader);
+    const entries = collectDigestEntries(reader);
     const [entry] = entries;
 
     expect(entry.getName()).toBe("Jazz, Bebop");
   });
 
   it("handles quoted fields containing escaped double quotes", () => {
-    const reader = new CsvConfigReader(
+    const reader = new CsvDigestReader(
       Readable.from([
         [
           "path,keepPath,name,packageName,sampleType,skip",
@@ -152,14 +152,14 @@ describe("CsvConfigReader", () => {
       ]),
     );
 
-    const entries = collectConfigEntries(reader);
+    const entries = collectDigestEntries(reader);
     const [entry] = entries;
 
     expect(entry.getName()).toBe('Jazz "Bebop" Track');
   });
 
   it("ignores unrecognised boolean values for skipped and keep", () => {
-    const reader = new CsvConfigReader(
+    const reader = new CsvDigestReader(
       Readable.from([
         [
           "path,keepPath,name,packageName,sampleType,skip",
@@ -168,7 +168,7 @@ describe("CsvConfigReader", () => {
       ]),
     );
 
-    const entries = collectConfigEntries(reader);
+    const entries = collectDigestEntries(reader);
     const [entry] = entries;
 
     expect(entry.isSkipped()).toBeUndefined();
@@ -176,7 +176,7 @@ describe("CsvConfigReader", () => {
   });
 
   it("accepts t/f as boolean aliases", () => {
-    const reader = new CsvConfigReader(
+    const reader = new CsvDigestReader(
       Readable.from([
         [
           "path,keepPath,name,packageName,sampleType,skip",
@@ -185,7 +185,7 @@ describe("CsvConfigReader", () => {
       ]),
     );
 
-    const entries = collectConfigEntries(reader);
+    const entries = collectDigestEntries(reader);
     const [entry] = entries;
 
     expect(entry.isSkipped()).toBe(true);
@@ -193,7 +193,7 @@ describe("CsvConfigReader", () => {
   });
 
   it("accepts 1/0 as boolean aliases", () => {
-    const reader = new CsvConfigReader(
+    const reader = new CsvDigestReader(
       Readable.from([
         [
           "path,keepPath,name,packageName,sampleType,skip",
@@ -202,7 +202,7 @@ describe("CsvConfigReader", () => {
       ]),
     );
 
-    const entries = collectConfigEntries(reader);
+    const entries = collectDigestEntries(reader);
     const [entry] = entries;
 
     expect(entry.isSkipped()).toBe(true);
@@ -210,10 +210,10 @@ describe("CsvConfigReader", () => {
   });
 
   it("throws when the stream yields a non-string chunk", () => {
-    const reader = new CsvConfigReader(new NonStringReadable());
-    const onEntry = vi.fn<(entry: ConfigEntry) => void>();
+    const reader = new CsvDigestReader(new NonStringReadable());
+    const onEntry = vi.fn<(entry: DigestEntry) => void>();
     const readEntries = (): void => {
-      reader.eachConfigEntry(onEntry);
+      reader.eachDigestEntry(onEntry);
     };
 
     expect(readEntries).toThrow("Expected string chunk from stream");

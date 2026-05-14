@@ -1,10 +1,10 @@
 export { Registry } from "./registry";
 export {
-  JsonConfigWriter,
-  JsonConfigReader,
-  CsvConfigWriter,
-  CsvConfigReader,
-} from "./configuration";
+  JsonDigestWriter,
+  JsonDigestReader,
+  CsvDigestWriter,
+  CsvDigestReader,
+} from "./digest";
 export { ZipDataSource } from "./io";
 export {
   createAbletonProjectTransformer,
@@ -75,10 +75,10 @@ export type {
   LeafNode,
   FileSource,
   FileNode,
-  ConfigEntry,
+  DigestEntry,
   FileEntry,
-  ConfigWriter,
-  ConfigSource,
+  DigestWriter,
+  DigestSource,
   Transform,
   TransformEntry,
   TransformSource,

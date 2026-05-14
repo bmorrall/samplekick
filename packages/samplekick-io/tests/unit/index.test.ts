@@ -6,12 +6,12 @@ describe("index exports", () => {
     expect(api.Registry).toBeDefined();
   });
 
-  test("exports JsonConfigWriter", () => {
-    expect(api.JsonConfigWriter).toBeDefined();
+  test("exports JsonDigestWriter", () => {
+    expect(api.JsonDigestWriter).toBeDefined();
   });
 
-  test("exports JsonConfigReader", () => {
-    expect(api.JsonConfigReader).toBeDefined();
+  test("exports JsonDigestReader", () => {
+    expect(api.JsonDigestReader).toBeDefined();
   });
 
   test("exports createDefaultRootPackageNameTransformer", () => {
@@ -197,10 +197,10 @@ describe("index exports", () => {
   test("only exposes runtime exports from the public index", () => {
     expect(Object.keys(api)).toEqual([
       "Registry",
-      "JsonConfigWriter",
-      "JsonConfigReader",
-      "CsvConfigWriter",
-      "CsvConfigReader",
+      "JsonDigestWriter",
+      "JsonDigestReader",
+      "CsvDigestWriter",
+      "CsvDigestReader",
       "ZipDataSource",
       "createAbletonProjectTransformer",
       "createArchiveFileTransformer",

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import type { ConfigEntry, FileNode } from "samplekick-io";
+import type { DigestEntry, FileNode } from "samplekick-io";
 import type { ExportReporter } from "../../src/exporters/export_reporter";
 import { DryRunReporter } from "../../src/exporters/dry_run_reporter";
 
@@ -20,10 +20,10 @@ const createInner = (): ExportReporter => ({
   onInfo: vi.fn<(message: string) => void>(),
   onDebug: vi.fn<(message: string) => void>(),
   onError: vi.fn<(message: string) => void>(),
-  onBeforeWrite: vi.fn<(entry: ConfigEntry, destRelPath: string) => void>(),
+  onBeforeWrite: vi.fn<(entry: DigestEntry, destRelPath: string) => void>(),
   onAfterWrite:
-    vi.fn<(entry: ConfigEntry, destRelPath: string, error?: Error) => void>(),
-  onReject: vi.fn<(entry: ConfigEntry, reason: string) => void>(),
+    vi.fn<(entry: DigestEntry, destRelPath: string, error?: Error) => void>(),
+  onReject: vi.fn<(entry: DigestEntry, reason: string) => void>(),
   onSkip: vi.fn<(entry: FileNode) => void>(),
   onComplete: vi.fn<(dirPath: string) => void>(),
   onPreview: vi.fn<() => void>(),

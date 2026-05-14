@@ -7,9 +7,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { Registry, ZipDataSource } from "samplekick-io";
 import {
   getDataDir,
-  loadConfig,
-  openConfigInEditor,
-} from "../src/config_loader";
+  loadDigest,
+  openDigestInEditor,
+} from "../src/digest_loader";
 
 vi.mock("node:child_process", () => ({
   spawnSync: vi.fn(),
@@ -28,7 +28,7 @@ const createRegistry = async (
   return new Registry(dataSource);
 };
 
-describe("loadConfig", () => {
+describe("loadDigest", () => {
   let tmpDir = "";
 
   beforeEach(async () => {
@@ -46,18 +46,18 @@ describe("loadConfig", () => {
     const registry = await createRegistry({ "Drums/kick.wav": "data" });
     const dataDir = join(tmpDir, "data");
 
-    const result = await loadConfig(registry, undefined, dataDir);
+    const result = await loadDigest(registry, undefined, dataDir);
 
     expect(result).toBe(join(dataDir, `${registry.getFingerprint()}.csv`));
   });
 
   it("auto-persist: does not load any config when no auto-saved file exists", async () => {
     const registry = await createRegistry({ "Drums/kick.wav": "data" });
-    const loadConfigSpy = vi.spyOn(registry, "loadConfig");
+    const loadDigestSpy = vi.spyOn(registry, "loadDigest");
 
-    await loadConfig(registry, undefined, join(tmpDir, "data"));
+    await loadDigest(registry, undefined, join(tmpDir, "data"));
 
-    expect(loadConfigSpy).not.toHaveBeenCalled();
+    expect(loadDigestSpy).not.toHaveBeenCalled();
   });
 
   it("auto-persist: loads config from the auto-saved file when it exists", async () => {
@@ -72,10 +72,10 @@ describe("loadConfig", () => {
       ].join("\n"),
     );
 
-    await loadConfig(registry, undefined, dataDir);
+    await loadDigest(registry, undefined, dataDir);
 
     const entries: string[] = [];
-    registry.eachConfigEntry((e) => {
+    registry.eachDigestEntry((e) => {
       entries.push(e.getName());
     });
     expect(entries).toContain("custom.wav");
@@ -90,8 +90,8 @@ describe("loadConfig", () => {
       "not valid csv",
     );
 
-    await expect(loadConfig(registry, undefined, dataDir)).rejects.toThrow(
-      "auto-config could not be loaded",
+    await expect(loadDigest(registry, undefined, dataDir)).rejects.toThrow(
+      "auto-digest could not be loaded",
     );
   });
 
@@ -108,7 +108,7 @@ describe("loadConfig", () => {
       ].join("\n"),
     );
 
-    const result = await loadConfig(registry, configPath, tmpDir);
+    const result = await loadDigest(registry, configPath, tmpDir);
 
     expect(result).toBeUndefined();
   });
@@ -124,10 +124,10 @@ describe("loadConfig", () => {
       ].join("\n"),
     );
 
-    await loadConfig(registry, configPath, tmpDir);
+    await loadDigest(registry, configPath, tmpDir);
 
     const entries: string[] = [];
-    registry.eachConfigEntry((e) => {
+    registry.eachDigestEntry((e) => {
       entries.push(e.getName());
     });
     expect(entries).toContain("explicit.wav");
@@ -137,8 +137,8 @@ describe("loadConfig", () => {
     const registry = await createRegistry({ "Drums/kick.wav": "data" });
 
     await expect(
-      loadConfig(registry, join(tmpDir, "nonexistent.csv"), tmpDir),
-    ).rejects.toThrow("config file not found");
+      loadDigest(registry, join(tmpDir, "nonexistent.csv"), tmpDir),
+    ).rejects.toThrow("digest file not found");
   });
 });
 
@@ -178,13 +178,13 @@ describe("getDataDir", () => {
   });
 });
 
-describe("openConfigInEditor", () => {
+describe("openDigestInEditor", () => {
   afterEach(() => {
     vi.mocked(spawnSync).mockReset();
   });
 
   it("uses $VISUAL when set", () => {
-    openConfigInEditor("/path/to/config.json", "darwin", {
+    openDigestInEditor("/path/to/config.json", "darwin", {
       VISUAL: "nvim",
       EDITOR: "nano",
     });
@@ -194,14 +194,14 @@ describe("openConfigInEditor", () => {
   });
 
   it("falls back to $EDITOR when $VISUAL is not set", () => {
-    openConfigInEditor("/path/to/config.json", "darwin", { EDITOR: "nano" });
+    openDigestInEditor("/path/to/config.json", "darwin", { EDITOR: "nano" });
     expect(spawnSync).toHaveBeenCalledWith("nano", ["/path/to/config.json"], {
       stdio: "inherit",
     });
   });
 
   it("uses 'open -W' on macOS when no editor env var is set", () => {
-    openConfigInEditor("/path/to/config.json", "darwin", {});
+    openDigestInEditor("/path/to/config.json", "darwin", {});
     expect(spawnSync).toHaveBeenCalledWith(
       "open",
       ["-W", "/path/to/config.json"],
@@ -210,7 +210,7 @@ describe("openConfigInEditor", () => {
   });
 
   it("uses 'xdg-open' on linux when no editor env var is set", () => {
-    openConfigInEditor("/path/to/config.json", "linux", {});
+    openDigestInEditor("/path/to/config.json", "linux", {});
     expect(spawnSync).toHaveBeenCalledWith(
       "xdg-open",
       ["/path/to/config.json"],
@@ -219,7 +219,7 @@ describe("openConfigInEditor", () => {
   });
 
   it("uses 'cmd /c start' on win32 when no editor env var is set", () => {
-    openConfigInEditor("/path/to/config.json", "win32", {});
+    openDigestInEditor("/path/to/config.json", "win32", {});
     expect(spawnSync).toHaveBeenCalledWith(
       "cmd",
       ["/c", "start", "", "/path/to/config.json"],

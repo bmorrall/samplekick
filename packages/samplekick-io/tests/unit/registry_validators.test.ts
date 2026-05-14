@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { Registry } from "../../src";
-import type { ConfigEntry, FileEntry, Validate } from "../../src";
+import type { DigestEntry, FileEntry, Validate } from "../../src";
 import { createFileEntry, createFileSource } from "../support";
 
 const createCopyableEntry = (path: string): FileEntry => ({
@@ -31,7 +31,7 @@ describe("Registry.addValidator", () => {
     const validator = createFailingValidator(
       "path too long: 256 characters (max 255)",
     );
-    const onReject = vi.fn<(entry: ConfigEntry, reason: string) => void>();
+    const onReject = vi.fn<(entry: DigestEntry, reason: string) => void>();
     const registry = new Registry(createFileSource("root", [entry]));
     registry.addValidator(validator);
 
@@ -62,9 +62,9 @@ describe("Registry.addValidator", () => {
     const validator = createFailingValidator(
       "path too long: 256 characters (max 255)",
     );
-    const onBeforeWrite = vi.fn<(entry: ConfigEntry, path: string) => void>();
+    const onBeforeWrite = vi.fn<(entry: DigestEntry, path: string) => void>();
     const onAfterWrite =
-      vi.fn<(entry: ConfigEntry, path: string, error?: Error) => void>();
+      vi.fn<(entry: DigestEntry, path: string, error?: Error) => void>();
     const registry = new Registry(createFileSource("root", [entry]));
     registry.addValidator(validator);
 
@@ -81,7 +81,7 @@ describe("Registry.addValidator", () => {
     const entry = createCopyableEntry("a.wav");
     const first = createFailingValidator("first failure");
     const second = createFailingValidator("second failure");
-    const onReject = vi.fn<(entry: ConfigEntry, reason: string) => void>();
+    const onReject = vi.fn<(entry: DigestEntry, reason: string) => void>();
     const registry = new Registry(createFileSource("root", [entry]));
     registry.addValidator(first);
     registry.addValidator(second);
@@ -98,7 +98,7 @@ describe("Registry.addValidator", () => {
     const validator = createFailingValidator(
       "path too long: 256 characters (max 255)",
     );
-    const onReject = vi.fn<(entry: ConfigEntry, reason: string) => void>();
+    const onReject = vi.fn<(entry: DigestEntry, reason: string) => void>();
     const registry = new Registry(createFileSource("root", [entry]));
     registry.addValidator(validator);
 

@@ -1,6 +1,6 @@
 import { rename, rm, unlink } from "node:fs/promises";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { ConfigEntry } from "samplekick-io";
+import type { DigestEntry } from "samplekick-io";
 import {
   BIT_DEPTH_16,
   BIT_DEPTH_24,
@@ -19,7 +19,7 @@ vi.mock("node:fs/promises", () => ({
   unlink: vi.fn().mockResolvedValue(undefined),
 }));
 
-const createEntry = (path = "drums/kick.wav"): ConfigEntry => ({
+const createEntry = (path = "drums/kick.wav"): DigestEntry => ({
   getPath: () => path,
   getName: () => path.split("/").pop() ?? path,
   getPackageName: () => undefined,

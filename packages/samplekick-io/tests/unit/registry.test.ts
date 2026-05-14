@@ -2,9 +2,9 @@ import { describe, it, expect, vi } from "vitest";
 import type { FileEntry, FileSource, PathStrategy } from "../../src";
 import { PathResult } from "../../src";
 import {
-  createConfigEntry,
+  createDigestEntry,
   createFileEntry,
-  createConfigSource,
+  createDigestSource,
   createRegistry,
   collectFileEntries,
 } from "../support";
@@ -278,15 +278,15 @@ describe("Registry", () => {
     });
   });
 
-  describe("setEntryConfig", () => {
+  describe("setEntryDigest", () => {
     it("updates an existing entry at the given path", () => {
       const registry = createRegistry("root", [
         createFileEntry({ path: "a/b" }),
       ]);
 
       expect(
-        registry.setEntryConfig(
-          createConfigEntry({
+        registry.setEntryDigest(
+          createDigestEntry({
             path: "a/b",
             name: "renamed-b",
             packageName: "my-pack",
@@ -309,8 +309,8 @@ describe("Registry", () => {
       const registry = createRegistry("root", []);
 
       expect(
-        registry.setEntryConfig(
-          createConfigEntry({ path: "a/b", packageName: "my-pack" }),
+        registry.setEntryDigest(
+          createDigestEntry({ path: "a/b", packageName: "my-pack" }),
         ),
       ).toBe(false);
     });
@@ -319,24 +319,24 @@ describe("Registry", () => {
       const registry = createRegistry("root", []);
 
       expect(
-        registry.setEntryConfig(
-          createConfigEntry({ path: "", name: "renamed-root" }),
+        registry.setEntryDigest(
+          createDigestEntry({ path: "", name: "renamed-root" }),
         ),
       ).toBe(false);
     });
   });
 
-  describe("loadConfig", () => {
+  describe("loadDigest", () => {
     it("does not overwrite a transformer-set name when the config has no name override", () => {
       const registry = createRegistry("root", [
         createFileEntry({ path: "a/b" }),
       ]);
       registry.setName("a/b", "Transformer Name");
 
-      const configSource = createConfigSource([
-        createConfigEntry({ path: "a/b", packageName: "my-pack" }),
+      const digestSource = createDigestSource([
+        createDigestEntry({ path: "a/b", packageName: "my-pack" }),
       ]);
-      registry.loadConfig(configSource);
+      registry.loadDigest(digestSource);
 
       expect(registry.getEntry("a/b")?.getName()).toBe("Transformer Name");
     });
@@ -345,8 +345,8 @@ describe("Registry", () => {
       const registry = createRegistry("root", [
         createFileEntry({ path: "a/b" }),
       ]);
-      const configSource = createConfigSource([
-        createConfigEntry({
+      const digestSource = createDigestSource([
+        createDigestEntry({
           path: "a/b",
           packageName: "my-pack",
           sampleType: "drums",
@@ -355,7 +355,7 @@ describe("Registry", () => {
         }),
       ]);
 
-      registry.loadConfig(configSource);
+      registry.loadDigest(digestSource);
 
       const entry = registry.getEntry("a/b");
       expect(entry?.getPackageName()).toBe("my-pack");
@@ -369,10 +369,10 @@ describe("Registry", () => {
         createFileEntry({ path: "a/b" }),
       ]);
 
-      const configSource = createConfigSource([
-        createConfigEntry({ path: "a/b", skipped: true }),
+      const digestSource = createDigestSource([
+        createDigestEntry({ path: "a/b", skipped: true }),
       ]);
-      registry.loadConfig(configSource);
+      registry.loadDigest(digestSource);
 
       const entry = registry.getEntry("a/b");
       expect(entry?.getPackageName()).toBeUndefined();
@@ -383,10 +383,10 @@ describe("Registry", () => {
     it("does not create an entry when the path does not exist", () => {
       const registry = createRegistry("root", []);
 
-      const configSource = createConfigSource([
-        createConfigEntry({ path: "a/b", packageName: "my-pack" }),
+      const digestSource = createDigestSource([
+        createDigestEntry({ path: "a/b", packageName: "my-pack" }),
       ]);
-      registry.loadConfig(configSource);
+      registry.loadDigest(digestSource);
 
       const fn = vi.fn<EachFileEntryCallback>();
       registry.eachFileEntry(fn);
@@ -395,15 +395,15 @@ describe("Registry", () => {
 
     it("updates the root entry directly when the config entry path is empty", () => {
       const registry = createRegistry("root", []);
-      const configSource = createConfigSource([
-        createConfigEntry({
+      const digestSource = createDigestSource([
+        createDigestEntry({
           path: "",
           name: "renamed-root",
           packageName: "root-pack",
         }),
       ]);
 
-      registry.loadConfig(configSource);
+      registry.loadDigest(digestSource);
 
       expect(registry.getRootEntry().getName()).toBe("renamed-root");
       expect(registry.getRootEntry().getPackageName()).toBe("root-pack");

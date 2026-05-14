@@ -1,6 +1,6 @@
 import { extname } from "node:path";
 import type { Writable } from "node:stream";
-import type { ConfigEntry, FileNode } from "samplekick-io";
+import type { DigestEntry, FileNode } from "samplekick-io";
 import { AUDIO_EXTENSIONS } from "samplekick-io";
 import type { ExportReporter } from "./export_reporter";
 
@@ -141,7 +141,7 @@ export class SimpleExportReporter implements ExportReporter {
     this.output.write(`error: ${message}\n`);
   }
 
-  private trackSummary(entry: ConfigEntry, destRelPath: string): void {
+  private trackSummary(entry: DigestEntry, destRelPath: string): void {
     if (!this.organised) return;
     const pkg = entry.getPackageName();
     if (pkg === undefined || pkg.length === 0) return;
@@ -159,7 +159,7 @@ export class SimpleExportReporter implements ExportReporter {
     this.packageSummary.set(pkg, types);
   }
 
-  onAfterWrite(entry: ConfigEntry, destRelPath: string, error?: Error): void {
+  onAfterWrite(entry: DigestEntry, destRelPath: string, error?: Error): void {
     const isAudio = AUDIO_EXTENSIONS.has(extname(destRelPath).toLowerCase());
     if (isAudio) {
       this.totalSampleCount += 1;
@@ -177,7 +177,7 @@ export class SimpleExportReporter implements ExportReporter {
     }
   }
 
-  onReject(entry: ConfigEntry, reason: string): void {
+  onReject(entry: DigestEntry, reason: string): void {
     const isAudio = AUDIO_EXTENSIONS.has(
       extname(entry.getPath()).toLowerCase(),
     );

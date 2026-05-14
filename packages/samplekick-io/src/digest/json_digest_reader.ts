@@ -1,9 +1,9 @@
 import type { Readable } from "node:stream";
-import type { ConfigSource, ConfigEntry } from "../types";
-import type { DataSourceEntryJSON } from "./json_config_writer";
+import type { DigestSource, DigestEntry } from "../types";
+import type { DataSourceEntryJSON } from "./json_digest_writer";
 import { getPathName } from "../path_utils";
 
-class JsonDataSourceEntry implements ConfigEntry {
+class JsonDigestEntry implements DigestEntry {
   private readonly data: DataSourceEntryJSON;
 
   constructor(data: DataSourceEntryJSON) {
@@ -63,14 +63,14 @@ const parseEntry = (value: unknown): DataSourceEntryJSON => {
   };
 };
 
-export class JsonConfigReader implements ConfigSource {
+export class JsonDigestReader implements DigestSource {
   private readonly stream: Readable;
 
   constructor(stream: Readable) {
     this.stream = stream;
   }
 
-  eachConfigEntry(fn: (entry: ConfigEntry) => void): void {
+  eachDigestEntry(fn: (entry: DigestEntry) => void): void {
     this.stream.setEncoding("utf8");
     const chunks: string[] = [];
     const readChunk = (): string | null => {
@@ -91,7 +91,7 @@ export class JsonConfigReader implements ConfigSource {
     }
 
     for (const data of parsed) {
-      fn(new JsonDataSourceEntry(parseEntry(data)));
+      fn(new JsonDigestEntry(parseEntry(data)));
     }
   }
 }

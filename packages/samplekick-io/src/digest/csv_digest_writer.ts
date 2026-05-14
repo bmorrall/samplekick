@@ -1,5 +1,5 @@
 import type { Writable } from "node:stream";
-import type { ConfigSource, ConfigEntry, ConfigWriter } from "../types";
+import type { DigestSource, DigestEntry, DigestWriter } from "../types";
 import { getPathName } from "../path_utils";
 
 export const CSV_HEADER = "path,keepPath,name,packageName,sampleType,skip";
@@ -11,7 +11,7 @@ const quoteCsvField = (value: string): string => {
   return value;
 };
 
-const serializeRow = (entry: ConfigEntry, explicit: boolean): string => {
+const serializeRow = (entry: DigestEntry, explicit: boolean): string => {
   const name = entry.getName();
   const path = entry.getPath();
   const nameField =
@@ -35,23 +35,23 @@ const serializeRow = (entry: ConfigEntry, explicit: boolean): string => {
   ].join(",");
 };
 
-export interface CsvConfigWriterOptions {
+export interface CsvDigestWriterOptions {
   /** When true, always writes the name column even if it matches the path basename. */
   explicit?: boolean;
 }
 
-export class CsvConfigWriter implements ConfigWriter {
+export class CsvDigestWriter implements DigestWriter {
   private readonly stream: Writable;
   private readonly explicit: boolean;
 
-  constructor(stream: Writable, options: CsvConfigWriterOptions = {}) {
+  constructor(stream: Writable, options: CsvDigestWriterOptions = {}) {
     this.stream = stream;
     this.explicit = options.explicit ?? false;
   }
 
-  writeConfig(configSource: ConfigSource): void {
+  writeDigest(digestSource: DigestSource): void {
     const rows: string[] = [CSV_HEADER];
-    configSource.eachConfigEntry((entry) => {
+    digestSource.eachDigestEntry((entry) => {
       rows.push(serializeRow(entry, this.explicit));
     });
     this.stream.end(rows.join("\n"));

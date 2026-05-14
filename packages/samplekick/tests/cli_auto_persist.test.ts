@@ -91,7 +91,7 @@ describe("auto-persist config", () => {
     }
   });
 
-  it("does not auto-save when --config is passed", async () => {
+  it("does not auto-save when --digest is passed", async () => {
     const zipped = zipSync({ "Drums/kick.wav": strToU8("kick-data") });
     const config = [
       "path,keepPath,name,packageName,sampleType,skip",
@@ -107,7 +107,7 @@ describe("auto-persist config", () => {
       await writeFile(zipPath, zipped);
       await writeFile(configPath, config);
 
-      spawnSync("node", [CLI_PATH, zipPath, "--config", configPath], {
+      spawnSync("node", [CLI_PATH, zipPath, "--digest", configPath], {
         encoding: "utf8",
         env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
       });

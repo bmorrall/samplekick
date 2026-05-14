@@ -2,9 +2,9 @@ import { createHash } from "node:crypto";
 import { vi } from "vitest";
 import { zipSync, strToU8 } from "fflate";
 import type {
-  ConfigSource,
+  DigestSource,
   FileSource,
-  ConfigEntry,
+  DigestEntry,
   FileEntry,
   FileNode,
   LeafNode,
@@ -17,7 +17,7 @@ import { getPathName } from "../src/path_utils";
 
 // Entries
 
-export const createConfigEntry = ({
+export const createDigestEntry = ({
   path,
   name,
   packageName,
@@ -31,7 +31,7 @@ export const createConfigEntry = ({
   sampleType?: string;
   skipped?: boolean;
   keepStructure?: boolean;
-}): ConfigEntry => ({
+}): DigestEntry => ({
   getPath: () => path,
   getName: () => name ?? getPathName(path),
   getPackageName: () => packageName,
@@ -234,18 +234,18 @@ export const singleEntryTransformSource = (
   },
 });
 
-export const createConfigSource = (nodes: ConfigEntry[]): ConfigSource => ({
-  eachConfigEntry: (fn: (entry: ConfigEntry) => void) => {
+export const createDigestSource = (nodes: DigestEntry[]): DigestSource => ({
+  eachDigestEntry: (fn: (entry: DigestEntry) => void) => {
     nodes.forEach(fn);
   },
 });
 
-export const collectConfigEntries = (
-  configSource: ConfigSource,
-): ConfigEntry[] => {
-  const entries: ConfigEntry[] = [];
+export const collectDigestEntries = (
+  digestSource: DigestSource,
+): DigestEntry[] => {
+  const entries: DigestEntry[] = [];
 
-  configSource.eachConfigEntry((entry) => {
+  digestSource.eachDigestEntry((entry) => {
     entries.push(entry);
   });
 

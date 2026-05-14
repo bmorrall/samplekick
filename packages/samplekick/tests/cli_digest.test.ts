@@ -14,7 +14,7 @@ import { describe, expect, it } from "vitest";
 const CLI_PATH = resolve(import.meta.dirname, "../dist/index.mjs");
 
 describe("samplekick CLI", () => {
-  it("writes registry config as CSV to a file when --write-config is passed", async () => {
+  it("writes registry config as CSV to a file when --write-digest is passed", async () => {
     const zipped = zipSync({
       "Drums/kick.wav": strToU8("kick-data"),
       "Loops/bass.wav": strToU8("bass-data"),
@@ -29,7 +29,7 @@ describe("samplekick CLI", () => {
 
       const result = spawnSync(
         "node",
-        [CLI_PATH, zipPath, "--write-config", configPath],
+        [CLI_PATH, zipPath, "--write-digest", configPath],
         {
           encoding: "utf8",
           env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
@@ -51,7 +51,7 @@ describe("samplekick CLI", () => {
     }
   });
 
-  it("writes registry config to a file and exports samples when both --write-config and -o are passed", async () => {
+  it("writes registry config to a file and exports samples when both --write-digest and -o are passed", async () => {
     const zipped = zipSync({
       "Drums/kick.wav": strToU8("kick-data"),
     });
@@ -69,7 +69,7 @@ describe("samplekick CLI", () => {
         [
           CLI_PATH,
           zipPath,
-          "--write-config",
+          "--write-digest",
           configPath,
           "--preserve-paths",
           "-o",
@@ -101,7 +101,7 @@ describe("samplekick CLI", () => {
     }
   });
 
-  it("applies config from a CSV file when --config is passed", async () => {
+  it("applies config from a CSV file when --digest is passed", async () => {
     const zipped = zipSync({
       "Drums/kick.wav": strToU8("kick-data"),
       "Loops/bass.wav": strToU8("bass-data"),
@@ -127,7 +127,7 @@ describe("samplekick CLI", () => {
         [
           CLI_PATH,
           zipPath,
-          "--config",
+          "--digest",
           configPath,
           "--preserve-paths",
           "-o",
@@ -175,7 +175,7 @@ describe("samplekick CLI", () => {
         [
           CLI_PATH,
           zipPath,
-          "--config",
+          "--digest",
           configPath,
           "--preserve-paths",
           "-o",
@@ -197,7 +197,7 @@ describe("samplekick CLI", () => {
     }
   });
 
-  it("outputs CSV to stdout when --dump-config is passed", async () => {
+  it("outputs CSV to stdout when --dump-digest is passed", async () => {
     const zipped = zipSync({
       "Drums/kick.wav": strToU8("kick-data"),
     });
@@ -217,7 +217,7 @@ describe("samplekick CLI", () => {
 
       const result = spawnSync(
         "node",
-        [CLI_PATH, zipPath, "--config", configPath, "--dump-config"],
+        [CLI_PATH, zipPath, "--digest", configPath, "--dump-digest"],
         { encoding: "utf8" },
       );
 
@@ -231,7 +231,7 @@ describe("samplekick CLI", () => {
     }
   });
 
-  it("excludes children of __MACOSX from the --dump-config CSV output", async () => {
+  it("excludes children of __MACOSX from the --dump-digest CSV output", async () => {
     const zipped = zipSync({
       "__MACOSX/._kick.wav": strToU8("macosx-data"),
       "Drums/kick.wav": strToU8("kick-data"),
@@ -243,7 +243,7 @@ describe("samplekick CLI", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync("node", [CLI_PATH, zipPath, "--dump-config"], {
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--dump-digest"], {
         encoding: "utf8",
       });
 
@@ -261,7 +261,7 @@ describe("samplekick CLI", () => {
     }
   });
 
-  it("outputs sparse CSV to stdout when --dump-config is used without --bake", async () => {
+  it("outputs sparse CSV to stdout when --dump-digest is used without --bake", async () => {
     const zipped = zipSync({
       "Drums/kick.wav": strToU8("kick-data"),
     });
@@ -272,7 +272,7 @@ describe("samplekick CLI", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync("node", [CLI_PATH, zipPath, "--dump-config"], {
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--dump-digest"], {
         encoding: "utf8",
         env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
       });
@@ -291,7 +291,7 @@ describe("samplekick CLI", () => {
     }
   });
 
-  it("outputs explicit CSV to stdout when --dump-config is used with --bake", async () => {
+  it("outputs explicit CSV to stdout when --dump-digest is used with --bake", async () => {
     const zipped = zipSync({
       "Drums/kick.wav": strToU8("kick-data"),
     });
@@ -304,7 +304,7 @@ describe("samplekick CLI", () => {
 
       const result = spawnSync(
         "node",
-        [CLI_PATH, zipPath, "--dump-config", "--bake"],
+        [CLI_PATH, zipPath, "--dump-digest", "--bake"],
         {
           encoding: "utf8",
           env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
@@ -399,7 +399,7 @@ describe("samplekick CLI", () => {
     }
   });
 
-  it("writes sparse CSV when --write-config is used without --bake", async () => {
+  it("writes sparse CSV when --write-digest is used without --bake", async () => {
     const zipped = zipSync({
       "Drums/kick.wav": strToU8("kick-data"),
     });
@@ -413,7 +413,7 @@ describe("samplekick CLI", () => {
 
       const result = spawnSync(
         "node",
-        [CLI_PATH, zipPath, "--write-config", configPath],
+        [CLI_PATH, zipPath, "--write-digest", configPath],
         {
           encoding: "utf8",
           env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
@@ -435,7 +435,7 @@ describe("samplekick CLI", () => {
     }
   });
 
-  it("writes explicit CSV when --write-config is used with --bake", async () => {
+  it("writes explicit CSV when --write-digest is used with --bake", async () => {
     const zipped = zipSync({
       "Drums/kick.wav": strToU8("kick-data"),
     });
@@ -449,7 +449,7 @@ describe("samplekick CLI", () => {
 
       const result = spawnSync(
         "node",
-        [CLI_PATH, zipPath, "--write-config", configPath, "--bake"],
+        [CLI_PATH, zipPath, "--write-digest", configPath, "--bake"],
         {
           encoding: "utf8",
           env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
