@@ -1,2 +1,10 @@
-export { createFfmpegRunner, getFfmpegVersion } from "./ffmpeg";
-export type { FfmpegRunner, FfmpegVersionRunner } from "./ffmpeg";
+export {
+  createFfmpegProbeRunner,
+  createFfmpegRunner,
+  getFfmpegVersion,
+} from "./ffmpeg";
+export type {
+  FfmpegProbeRunner,
+  FfmpegRunner,
+  FfmpegVersionRunner,
+} from "./ffmpeg";
