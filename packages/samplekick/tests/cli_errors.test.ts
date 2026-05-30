@@ -46,6 +46,25 @@ describe("samplekick CLI error handling", () => {
     }
   });
 
+  it("exits with code 1 and prints an error when the input path is a directory", async () => {
+    const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
+
+    try {
+      const result = spawnSync("node", [CLI_PATH, tmpDir], {
+        encoding: "utf8",
+      });
+
+      expect(result.stderr).toContain(
+        "Error: input is a directory, not a zip file",
+      );
+      expect(result.stderr).toContain(tmpDir);
+
+      expect(result.status).toBe(1);
+    } finally {
+      await rm(tmpDir, { recursive: true });
+    }
+  });
+
   it("exits with code 1 and prints an error when the --digest file does not exist", async () => {
     const zipped = zipSync({ "Drums/kick.wav": strToU8("kick-data") });
     const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));

@@ -381,14 +381,17 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
 
   const dataSource = await ZipDataSource.fromFile(zipPath).catch(
     (err: unknown) => {
-      if (
-        typeof err === "object" &&
-        err !== null &&
-        "code" in err &&
-        err.code === "ENOENT"
-      ) {
-        console.error(`Error: file not found: ${zipPath}`);
-        process.exit(1);
+      if (typeof err === "object" && err !== null && "code" in err) {
+        if (err.code === "ENOENT") {
+          console.error(`Error: file not found: ${zipPath}`);
+          process.exit(1);
+        }
+        if (err.code === "EISDIR") {
+          console.error(
+            `Error: input is a directory, not a zip file: ${zipPath}`,
+          );
+          process.exit(1);
+        }
       }
       if (err instanceof Error && err.message.includes("not zip file")) {
         console.error(`Error: not a valid zip file: ${zipPath}`);
