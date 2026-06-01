@@ -58,6 +58,10 @@ describe("index exports", () => {
     expect(api.createKeepParentsTransformer).toBeDefined();
   });
 
+  test("exports createKeepPathsTransformer", () => {
+    expect(api.createKeepPathsTransformer).toBeDefined();
+  });
+
   test("exports createMultiPackNameTransformer", () => {
     expect(api.createMultiPackNameTransformer).toBeDefined();
   });
@@ -237,6 +241,7 @@ describe("index exports", () => {
       "createSquashNameTransformer",
       "createStripFormatHintsTransformer",
       "createKeepParentsTransformer",
+      "createKeepPathsTransformer",
       "createMultiPackNameTransformer",
       "createBrandPrefixTransformer",
       "SourcePathStrategy",

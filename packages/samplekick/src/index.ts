@@ -51,6 +51,7 @@ import {
   formatSampleRate,
   formatBitDepth,
   createNoPacksValidator,
+  createKeepPathsTransformer,
 } from "samplekick-io";
 import { loadDigest, openDigestInEditor, getDataDir } from "./digest_loader";
 import type { DevicePreset } from "samplekick-io";
@@ -123,6 +124,7 @@ Analysis:
                           Runs --analyse and tags sub-packs within the ZIP
   -n, --normalise         Normalise entry names (trim, spacing, dashes, tags)
   -p, --keep-parents      Preserve parent folders for all directories with files
+      --keep-paths        Preserve full source-relative folder structure
   -r, --rebuild           Ignore the auto-tags and analyse from scratch
 
 Output:
@@ -229,6 +231,7 @@ try {
       "allow-junk": { type: "boolean" },
       "preserve-paths": { type: "boolean" },
       "keep-parents": { type: "boolean", short: "p" },
+      "keep-paths": { type: "boolean" },
       normalise: { type: "boolean", short: "n" },
       squash: { type: "boolean" },
       "save-digest": { type: "boolean" },
@@ -314,6 +317,7 @@ if (zipPaths.length > 1) {
 const dataDir =
   process.env.SAMPLEKICK_DATA_DIR ??
   getDataDir("samplekick", process.platform, process.env);
+const keepPaths = values["keep-paths"] === true;
 const pathStrategy =
   values["preserve-paths"] === true
     ? SourcePathStrategy
@@ -513,8 +517,15 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
     process.exit(1);
   });
 
+  if (keepPaths) {
+    registry.applyTransform(createKeepPathsTransformer());
+  }
+
   const shouldAutoSave =
-    (analyse || values["keep-parents"] === true || values.normalise === true) &&
+    (analyse ||
+      values["keep-parents"] === true ||
+      values.normalise === true ||
+      keepPaths) &&
     autoDigestPath !== undefined &&
     values["bake-digest"] !== true;
 

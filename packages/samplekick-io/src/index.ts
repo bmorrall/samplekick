@@ -42,6 +42,7 @@ export {
   createSquashNameTransformer,
   createStripFormatHintsTransformer,
   createKeepParentsTransformer,
+  createKeepPathsTransformer,
   createMultiPackNameTransformer,
   createBrandPrefixTransformer,
 } from "./transformers";
