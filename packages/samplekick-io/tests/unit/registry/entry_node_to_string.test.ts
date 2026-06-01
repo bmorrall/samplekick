@@ -121,8 +121,8 @@ describe("EntryNode.toString", () => {
         [
           "root",
           "┣━━ a",
-          "┃   ├── b [?]",
-          "┃   └── c [?]",
+          "┃   ┣━━ b [?]",
+          "┃   ┗━━ c [?]",
           "└── d [?]",
           "",
         ].join("\n"),
@@ -138,7 +138,7 @@ describe("EntryNode.toString", () => {
       const b = a.addNode(createFileEntry({ path: "a/b" }));
       b.addNode(createFileEntry({ path: "a/b/c" }));
       expect(root.toString()).toBe(
-        ["root", "┗━━ a", "    └── b", "        └── c [?]", ""].join("\n"),
+        ["root", "┗━━ a", "    ┗━━ b", "        ┗━━ c [?]", ""].join("\n"),
       );
     });
   });

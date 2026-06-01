@@ -51,9 +51,9 @@ describe("SP-404MKII device preset transforms", () => {
       [
         "root",
         "┣━━ Mÿ Prøject [type:Ableton Projects]",
-        "┃   ├── Mÿ Prøject.als [?]",
-        "┃   └── Sämples",
-        "┃       └── kick.wav [?]",
+        "┃   ┣━━ Mÿ Prøject.als [?]",
+        "┃   ┗━━ Sämples",
+        "┃       ┗━━ kick.wav [?]",
         "└── Drums",
         "    └── snare.wav [?] [renamed]",
         "",

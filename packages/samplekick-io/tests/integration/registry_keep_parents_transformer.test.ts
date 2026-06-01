@@ -13,9 +13,9 @@ describe("KeepParentsTransformer integration", () => {
       [
         "Pack.zip",
         "┣━━ Kicks",
-        "┃   └── kick.wav [?]",
+        "┃   ┗━━ kick.wav [?]",
         "┗━━ Snares",
-        "    └── snare.wav [?]",
+        "    ┗━━ snare.wav [?]",
         "",
       ].join("\n"),
     );
@@ -32,9 +32,9 @@ describe("KeepParentsTransformer integration", () => {
         "Pack.zip",
         "└── Drums",
         "    ┣━━ Kicks",
-        "    ┃   └── kick.wav [?]",
+        "    ┃   ┗━━ kick.wav [?]",
         "    ┗━━ Snares",
-        "        └── snare.wav [?]",
+        "        ┗━━ snare.wav [?]",
         "",
       ].join("\n"),
     );
@@ -52,8 +52,8 @@ describe("KeepParentsTransformer integration", () => {
         "└── Guitar Pack",
         "    ┗━━ samples",
         "        ┣━━ guitar_stuff",
-        "        ┃   └── guitar.wav [?]",
-        "        └── readme.txt [?]",
+        "        ┃   ┗━━ guitar.wav [?]",
+        "        ┗━━ readme.txt [?]",
         "",
       ].join("\n"),
     );
