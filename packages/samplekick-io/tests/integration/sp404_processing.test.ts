@@ -55,8 +55,8 @@ describe("SP404 Mk2 end-to-end sample processing", () => {
       [
         "SP404 Pack.zip [pkg:SP404 Pack, type:Melodic Loops]",
         "┣━━ Drums [renamed, type:Drums & Percussion]",
-        "┃   ├── kick-01 (main).wav",
-        "┃   └── snare_alt.wav [renamed, skipped]",
+        "┃   ┣━━ kick-01 (main).wav",
+        "┃   ┗━━ snare_alt.wav [renamed, skipped]",
         "├── Lead Loops [renamed]",
         "│   └── synth-pad.wav",
         "└── Backing Loops",

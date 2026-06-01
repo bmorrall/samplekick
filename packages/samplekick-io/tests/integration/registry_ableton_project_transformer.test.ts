@@ -14,9 +14,9 @@ describe("AbletonProjectTransformer integration", () => {
       [
         "root",
         "┣━━ My Project [type:Ableton Projects]",
-        "┃   ├── My Project.als [?]",
-        "┃   └── Samples",
-        "┃       └── kick.wav [?]",
+        "┃   ┣━━ My Project.als [?]",
+        "┃   ┗━━ Samples",
+        "┃       ┗━━ kick.wav [?]",
         "└── samples",
         "    └── kick.wav [?]",
         "",

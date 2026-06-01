@@ -50,6 +50,7 @@ describe("samplekick CLI", () => {
           "                          Runs --analyse and tags sub-packs within the ZIP",
           "  -n, --normalise         Normalise entry names (trim, spacing, dashes, tags)",
           "  -p, --keep-parents      Preserve parent folders for all directories with files",
+          "      --keep-paths        Preserve full source-relative folder structure",
           "  -r, --rebuild           Ignore the auto-tags and analyse from scratch",
           "",
           "Output:",

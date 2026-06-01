@@ -14,8 +14,8 @@ describe("FLStudioProjectTransformer integration", () => {
       [
         "root",
         "┣━━ My Beat [type:FL Studio Projects]",
-        "┃   ├── My Beat.flp [?]",
-        "┃   └── kick.wav [?]",
+        "┃   ┣━━ My Beat.flp [?]",
+        "┃   ┗━━ kick.wav [?]",
         "└── samples",
         "    └── kick.wav [?]",
         "",

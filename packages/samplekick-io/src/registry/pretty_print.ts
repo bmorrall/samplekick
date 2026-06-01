@@ -28,7 +28,7 @@ function printNode(
   const lastIndex = children.length - 1;
   for (const [i, child] of children.entries()) {
     const isLast = i === lastIndex;
-    const keepStructure = child.getOwnKeepStructure() === true;
+    const keepStructure = child.isKeepStructure() === true;
     const childPrefix = prefix
       .replace(/├── /gv, "│   ")
       .replace(/└── /gv, "    ")
