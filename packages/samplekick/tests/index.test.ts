@@ -57,7 +57,7 @@ describe("samplekick CLI", () => {
           "Output:",
           "  -o, --output <path>     Export samples to a directory",
           "                          Omit to preview changes without writing files",
-          "      --preserve-paths    Export to original source paths (skip organising)",
+          "  -x, --extract <path>    Export to original source paths (skip organising)",
           "",
           "Device:",
           "  -d, --device <name>     Apply device-specific transforms to sample names",
@@ -178,14 +178,10 @@ describe("samplekick CLI", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync(
-        "node",
-        [CLI_PATH, zipPath, "--preserve-paths", "-o", outputDir],
-        {
-          encoding: "utf8",
-          env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
-        },
-      );
+      const result = spawnSync("node", [CLI_PATH, zipPath, "-x", outputDir], {
+        encoding: "utf8",
+        env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
+      });
 
       expect(result.stderr).toBe("");
       expect(await readFile(join(outputDir, "Drums/kick.wav"), "utf8")).toBe(
@@ -224,7 +220,7 @@ describe("samplekick CLI", () => {
 
       const result = spawnSync(
         "node",
-        [CLI_PATH, zipPath, "--verbose", "--preserve-paths", "-o", outputDir],
+        [CLI_PATH, zipPath, "--verbose", "-x", outputDir],
         {
           encoding: "utf8",
           env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },

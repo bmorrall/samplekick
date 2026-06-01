@@ -66,15 +66,7 @@ describe("samplekick CLI", () => {
 
       const result = spawnSync(
         "node",
-        [
-          CLI_PATH,
-          zipPath,
-          "--write-digest",
-          configPath,
-          "--preserve-paths",
-          "-o",
-          outputDir,
-        ],
+        [CLI_PATH, zipPath, "--write-digest", configPath, "-x", outputDir],
         {
           encoding: "utf8",
           env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
@@ -124,15 +116,7 @@ describe("samplekick CLI", () => {
 
       const result = spawnSync(
         "node",
-        [
-          CLI_PATH,
-          zipPath,
-          "--digest",
-          configPath,
-          "--preserve-paths",
-          "-o",
-          outputDir,
-        ],
+        [CLI_PATH, zipPath, "--digest", configPath, "-x", outputDir],
         { encoding: "utf8" },
       );
 
@@ -172,15 +156,7 @@ describe("samplekick CLI", () => {
 
       const result = spawnSync(
         "node",
-        [
-          CLI_PATH,
-          zipPath,
-          "--digest",
-          configPath,
-          "--preserve-paths",
-          "-o",
-          outputDir,
-        ],
+        [CLI_PATH, zipPath, "--digest", configPath, "-x", outputDir],
         { encoding: "utf8" },
       );
 

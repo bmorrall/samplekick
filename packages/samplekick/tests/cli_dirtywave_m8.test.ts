@@ -112,15 +112,7 @@ describe("Dirtywave M8 device preset", () => {
 
       const result = spawnSync(
         "node",
-        [
-          CLI_PATH,
-          zipPath,
-          "--device",
-          "dirtywavem8",
-          "--preserve-paths",
-          "-o",
-          outputDir,
-        ],
+        [CLI_PATH, zipPath, "--device", "dirtywavem8", "-x", outputDir],
         {
           encoding: "utf8",
           env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },

@@ -23,16 +23,7 @@ describe("--convert flag", () => {
 
       const result = spawnSync(
         "node",
-        [
-          CLI_PATH,
-          zipPath,
-          "--convert",
-          "-d",
-          "sp404mk2",
-          "--preserve-paths",
-          "-o",
-          outputDir,
-        ],
+        [CLI_PATH, zipPath, "--convert", "-d", "sp404mk2", "-x", outputDir],
         {
           encoding: "utf8",
           env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
@@ -68,16 +59,7 @@ describe("--convert flag", () => {
 
       const result = spawnSync(
         "node",
-        [
-          CLI_PATH,
-          zipPath,
-          "--convert",
-          "-d",
-          "sp404mk2",
-          "--preserve-paths",
-          "-o",
-          outputDir,
-        ],
+        [CLI_PATH, zipPath, "--convert", "-d", "sp404mk2", "-x", outputDir],
         {
           encoding: "utf8",
           env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
@@ -109,16 +91,7 @@ describe("--convert flag", () => {
 
       const result = spawnSync(
         "node",
-        [
-          CLI_PATH,
-          zipPath,
-          "--convert",
-          "-d",
-          "sp404mk2",
-          "--preserve-paths",
-          "-o",
-          outputDir,
-        ],
+        [CLI_PATH, zipPath, "--convert", "-d", "sp404mk2", "-x", outputDir],
         {
           encoding: "utf8",
           env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
@@ -156,8 +129,7 @@ describe("--convert flag", () => {
           "-d",
           "sp404mk2",
           "--verbose",
-          "--preserve-paths",
-          "-o",
+          "-x",
           outputDir,
         ],
         {
@@ -187,16 +159,7 @@ describe("--convert flag", () => {
 
       const result = spawnSync(
         "node",
-        [
-          CLI_PATH,
-          zipPath,
-          "--convert",
-          "-d",
-          "sp404mk2",
-          "--preserve-paths",
-          "-o",
-          outputDir,
-        ],
+        [CLI_PATH, zipPath, "--convert", "-d", "sp404mk2", "-x", outputDir],
         {
           encoding: "utf8",
           env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
@@ -223,16 +186,7 @@ describe("--convert flag", () => {
 
       const result = spawnSync(
         process.execPath,
-        [
-          CLI_PATH,
-          zipPath,
-          "--convert",
-          "-d",
-          "sp404mk2",
-          "--preserve-paths",
-          "-o",
-          outputDir,
-        ],
+        [CLI_PATH, zipPath, "--convert", "-d", "sp404mk2", "-x", outputDir],
         {
           encoding: "utf8",
           env: {
@@ -271,8 +225,7 @@ describe("--convert flag", () => {
           "-d",
           "sp404mk2",
           "--verbose",
-          "--preserve-paths",
-          "-o",
+          "-x",
           outputDir,
         ],
         {
@@ -305,16 +258,7 @@ describe("--convert flag", () => {
 
       const result = spawnSync(
         "node",
-        [
-          CLI_PATH,
-          zipPath,
-          "-c",
-          "-d",
-          "sp404mk2",
-          "--preserve-paths",
-          "-o",
-          outputDir,
-        ],
+        [CLI_PATH, zipPath, "-c", "-d", "sp404mk2", "-x", outputDir],
         {
           encoding: "utf8",
           env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },

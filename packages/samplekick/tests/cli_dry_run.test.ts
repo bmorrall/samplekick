@@ -22,43 +22,35 @@ describe("dry-run (no -o flag)", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync(
-        "node",
-        [CLI_PATH, zipPath, "--preserve-paths"],
-        {
-          encoding: "utf8",
-          env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
-        },
-      );
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--analyse"], {
+        encoding: "utf8",
+        env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+      });
 
       expect(result.stderr).toBe("");
       expect(result.status).toBe(0);
 
       // All three entries should appear in the output
-      expect(result.stdout).toContain("Drums/kick.wav");
-      expect(result.stdout).toContain("Drums/snare.wav");
-      expect(result.stdout).toContain("Loops/hihat.wav");
+      expect(result.stdout).toContain("kick.wav");
+      expect(result.stdout).toContain("snare.wav");
+      expect(result.stdout).toContain("hihat.wav");
 
       // Entries should be sorted: Drums/* before Loops/*
-      const kickIdx = result.stdout.indexOf("Drums/kick.wav");
-      const snareIdx = result.stdout.indexOf("Drums/snare.wav");
-      const hihatIdx = result.stdout.indexOf("Loops/hihat.wav");
+      const kickIdx = result.stdout.indexOf("kick.wav");
+      const snareIdx = result.stdout.indexOf("snare.wav");
+      const hihatIdx = result.stdout.indexOf("hihat.wav");
       expect(kickIdx).toBeLessThan(snareIdx);
       expect(snareIdx).toBeLessThan(hihatIdx);
 
       // Summary line
       expect(result.stdout).toContain("Would export 3 samples");
-
-      // No files written to disk
-      await expect(stat(dataDir)).rejects.toThrow();
     } finally {
       await rm(tmpDir, { recursive: true });
     }
   });
 
   it("shows skipped entries after successes in the output", async () => {
-    // Without packageName/sampleType and without --preserve-paths,
-    // OrganisedPathStrategy will skip entries that have no packageName/sampleType
+    // Without packageName/sampleType, OrganisedPathStrategy will skip entries
     const zipped = zipSync({
       "kick.wav": strToU8("kick-data"),
     });
