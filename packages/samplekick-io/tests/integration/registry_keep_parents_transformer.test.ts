@@ -58,4 +58,25 @@ describe("KeepParentsTransformer integration", () => {
       ].join("\n"),
     );
   });
+
+  describe("levels=2", () => {
+    it("also keeps ancestor directories up to 2 levels above file children", () => {
+      const registry = createRegistry("Pack.zip", [
+        createFileEntry({ path: "Drums/Kicks/kick.wav" }),
+        createFileEntry({ path: "Drums/Snares/snare.wav" }),
+      ]);
+      registry.applyTransform(createKeepParentsTransformer(2));
+      expect(registry.toString()).toBe(
+        [
+          "Pack.zip",
+          "┗━━ Drums",
+          "    ┣━━ Kicks",
+          "    ┃   ┗━━ kick.wav [?]",
+          "    ┗━━ Snares",
+          "        ┗━━ snare.wav [?]",
+          "",
+        ].join("\n"),
+      );
+    });
+  });
 });

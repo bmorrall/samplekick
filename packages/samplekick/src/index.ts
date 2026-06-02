@@ -123,7 +123,8 @@ Analysis:
   -m, --analyse-multi-pack
                           Runs --analyse and tags sub-packs within the ZIP
   -n, --normalise         Normalise entry names (trim, spacing, dashes, tags)
-  -p, --keep-parents      Preserve parent folders for all directories with files
+  -p, --keep-parents <n>  Preserve parent folders for all directories with files
+                          n levels up
       --keep-paths        Preserve full source-relative folder structure
   -r, --rebuild           Ignore the auto-tags and analyse from scratch
 
@@ -213,11 +214,13 @@ const saveDigestToPath = async (
 const buildAutoDigestPath = (registry: Registry, dataDir: string): string =>
   join(dataDir, `${registry.getFingerprint()}.csv`);
 
+const rawArgs = process.argv.slice(CLI_ARG_START);
+
 // eslint-disable-next-line @typescript-eslint/init-declarations -- assigned in try/catch below
 let parseResult;
 try {
   parseResult = parseArgs({
-    args: process.argv.slice(CLI_ARG_START),
+    args: rawArgs,
     options: {
       digest: { type: "string" },
       device: { type: "string", short: "d" },
@@ -230,7 +233,7 @@ try {
       "analyse-multi-pack": { type: "boolean", short: "m" },
       "allow-junk": { type: "boolean" },
       "preserve-paths": { type: "boolean" },
-      "keep-parents": { type: "boolean", short: "p" },
+      "keep-parents": { type: "string", short: "p" },
       "keep-paths": { type: "boolean" },
       normalise: { type: "boolean", short: "n" },
       squash: { type: "boolean" },
@@ -258,9 +261,19 @@ if (values.version === true) {
   process.exit(0);
 }
 
-if (values.help === true || process.argv.slice(CLI_ARG_START).length === 0) {
+if (values.help === true || rawArgs.length === 0) {
   console.log(buildHelpText());
   process.exit(0);
+}
+
+let keepParentsDepth: number | undefined = undefined;
+if (values["keep-parents"] !== undefined) {
+  const depth = parseInt(values["keep-parents"], 10);
+  if (!/^\d+$/v.test(values["keep-parents"]) || depth < 1) {
+    console.error("Error: --keep-parents requires a positive integer");
+    process.exit(1);
+  }
+  keepParentsDepth = depth;
 }
 
 if (positionals.length === 0) {
@@ -444,7 +457,7 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
     registry.applyTransform(createBrandPrefixTransformer());
   }
 
-  if (analyse || values["keep-parents"] === true) {
+  if (analyse || keepParentsDepth !== undefined) {
     // Root package name: set early from the zip filename so expand runs before
     // directory analysis, keeping packageName clean for the auto-tags.
     registry.applyTransform(createDefaultRootPackageNameTransformer());
@@ -498,14 +511,14 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
     registry.applyTransform(createMidiFileTransformer());
   }
 
-  if (analyse || values["keep-parents"] === true) {
+  if (analyse || keepParentsDepth !== undefined) {
     // Root sample type: runs after directory/MIDI transforms so their sampleType
     // assignments (e.g. FlatPackPrefixTransformer) are not skipped by the Packs default.
     registry.applyTransform(createDefaultRootSampleTypeTransformer());
   }
 
-  if (values["keep-parents"] === true) {
-    registry.applyTransform(createKeepParentsTransformer());
+  if (keepParentsDepth !== undefined) {
+    registry.applyTransform(createKeepParentsTransformer(keepParentsDepth));
   }
 
   const digestPath =
@@ -523,7 +536,7 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
 
   const shouldAutoSave =
     (analyse ||
-      values["keep-parents"] === true ||
+      keepParentsDepth !== undefined ||
       values.normalise === true ||
       keepPaths) &&
     autoDigestPath !== undefined &&
