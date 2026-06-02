@@ -31,7 +31,15 @@ describe("KeepParentsTransformer", () => {
 
       const result = spawnSync(
         "node",
-        [CLI_PATH, zipPath, "--analyse", "--keep-parents", "-o", outputDir],
+        [
+          CLI_PATH,
+          zipPath,
+          "--analyse",
+          "--keep-parents",
+          "1",
+          "-o",
+          outputDir,
+        ],
         {
           encoding: "utf8",
           env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
@@ -113,10 +121,14 @@ describe("KeepParentsTransformer", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync("node", [CLI_PATH, zipPath, "--keep-parents"], {
-        encoding: "utf8",
-        env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
-      });
+      const result = spawnSync(
+        "node",
+        [CLI_PATH, zipPath, "--keep-parents", "1"],
+        {
+          encoding: "utf8",
+          env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+        },
+      );
 
       expect(result.status).toBe(0);
 
@@ -148,10 +160,14 @@ describe("KeepParentsTransformer", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync("node", [CLI_PATH, zipPath, "--keep-parents"], {
-        encoding: "utf8",
-        env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
-      });
+      const result = spawnSync(
+        "node",
+        [CLI_PATH, zipPath, "--keep-parents", "1"],
+        {
+          encoding: "utf8",
+          env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+        },
+      );
 
       expect(result.status).toBe(0);
 
@@ -189,7 +205,7 @@ describe("KeepParentsTransformer", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync("node", [CLI_PATH, zipPath, "-p"], {
+      const result = spawnSync("node", [CLI_PATH, zipPath, "-p", "1"], {
         encoding: "utf8",
         env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
       });
@@ -205,6 +221,70 @@ describe("KeepParentsTransformer", () => {
           "Kicks,true,,,,",
           "Snares,true,,,,",
         ].join("\n"),
+      );
+    } finally {
+      await rm(tmpDir, { recursive: true });
+    }
+  });
+
+  it("sets keepPath=true on ancestor directories when --keep-parents 2 is passed", async () => {
+    const zipped = zipSync({
+      "Drums/Kicks/kick.wav": strToU8("kick-data"),
+      "Drums/Snares/snare.wav": strToU8("snare-data"),
+    });
+
+    const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-keep-parents-"));
+    const zipPath = join(tmpDir, "test-pack.zip");
+    const dataDir = join(tmpDir, "data");
+
+    try {
+      await writeFile(zipPath, zipped);
+
+      const result = spawnSync(
+        "node",
+        [CLI_PATH, zipPath, "--keep-parents", "2"],
+        {
+          encoding: "utf8",
+          env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+        },
+      );
+
+      expect(result.status).toBe(0);
+
+      const [configFile] = await readdir(dataDir);
+      const csv = await readFile(join(dataDir, configFile), "utf8");
+      expect(csv).toBe(
+        [
+          "path,keepPath,name,packageName,sampleType,skip",
+          ",,test-pack.zip,test-pack,Packs,",
+          "Drums,true,,,,",
+          "Drums/Kicks,true,,,,",
+          "Drums/Snares,true,,,,",
+        ].join("\n"),
+      );
+    } finally {
+      await rm(tmpDir, { recursive: true });
+    }
+  });
+
+  it("exits with error when --keep-parents depth is 0", async () => {
+    const zipped = zipSync({ "Kicks/kick.wav": strToU8("kick-data") });
+
+    const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-keep-parents-"));
+    const zipPath = join(tmpDir, "test-pack.zip");
+
+    try {
+      await writeFile(zipPath, zipped);
+
+      const result = spawnSync(
+        "node",
+        [CLI_PATH, zipPath, "--keep-parents", "0"],
+        { encoding: "utf8" },
+      );
+
+      expect(result.status).toBe(1);
+      expect(result.stderr).toContain(
+        "Error: --keep-parents requires a positive integer",
       );
     } finally {
       await rm(tmpDir, { recursive: true });
