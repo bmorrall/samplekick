@@ -126,14 +126,10 @@ describe("samplekick CLI error handling", () => {
       await writeFile(zipPath, zipped);
       await writeFile(outputPath, "not a directory");
 
-      const result = spawnSync(
-        "node",
-        [CLI_PATH, zipPath, "--preserve-paths", "-o", outputPath],
-        {
-          encoding: "utf8",
-          env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
-        },
-      );
+      const result = spawnSync("node", [CLI_PATH, zipPath, "-x", outputPath], {
+        encoding: "utf8",
+        env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
+      });
 
       expect(result.stderr).toContain("Error: could not export to");
       expect(result.stderr).toContain("output");
@@ -284,5 +280,34 @@ describe("samplekick CLI error handling", () => {
     expect(result.stderr).toContain("--unknown-flag");
     expect(result.stderr).not.toContain("\n    at "); // no stack trace
     expect(result.status).toBe(1);
+  });
+
+  it("exits with code 1 and prints an error when --output and --extract are both passed", async () => {
+    const zipped = zipSync({ "kick.wav": strToU8("kick-data") });
+
+    const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
+    const zipPath = join(tmpDir, "test-pack.zip");
+    const outputDir = join(tmpDir, "output");
+    const extractDir = join(tmpDir, "extract");
+
+    try {
+      await writeFile(zipPath, zipped);
+
+      const result = spawnSync(
+        "node",
+        [CLI_PATH, zipPath, "-o", outputDir, "-x", extractDir],
+        {
+          encoding: "utf8",
+          env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
+        },
+      );
+
+      expect(result.stderr).toContain(
+        "Error: --output and --extract cannot be used together",
+      );
+      expect(result.status).toBe(1);
+    } finally {
+      await rm(tmpDir, { recursive: true });
+    }
   });
 });

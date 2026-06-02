@@ -131,7 +131,7 @@ Analysis:
 Output:
   -o, --output <path>     Export samples to a directory
                           Omit to preview changes without writing files
-      --preserve-paths    Export to original source paths (skip organising)
+  -x, --extract <path>    Export to original source paths (skip organising)
 
 Device:
   -d, --device <name>     Apply device-specific transforms to sample names
@@ -232,7 +232,7 @@ try {
       analyse: { type: "boolean", short: "a" },
       "analyse-multi-pack": { type: "boolean", short: "m" },
       "allow-junk": { type: "boolean" },
-      "preserve-paths": { type: "boolean" },
+      extract: { type: "string", short: "x" },
       "keep-parents": { type: "string", short: "p" },
       "keep-paths": { type: "boolean" },
       normalise: { type: "boolean", short: "n" },
@@ -327,14 +327,17 @@ if (zipPaths.length > 1) {
   }
 }
 
+if (values.output !== undefined && values.extract !== undefined) {
+  console.error("Error: --output and --extract cannot be used together");
+  process.exit(1);
+}
+
 const dataDir =
   process.env.SAMPLEKICK_DATA_DIR ??
   getDataDir("samplekick", process.platform, process.env);
 const keepPaths = values["keep-paths"] === true;
 const pathStrategy =
-  values["preserve-paths"] === true
-    ? SourcePathStrategy
-    : OrganisedPathStrategy;
+  values.extract === undefined ? OrganisedPathStrategy : SourcePathStrategy;
 
 let conversion:
   | { targetBitDepth: number; targetSampleRate: number; ffmpegVersion: string }
@@ -379,13 +382,13 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
       ? new PrettyExportReporter(process.stdout, chalk, {
           quiet: values.quiet === true,
           displayName: basename(zipPath),
-          organised: values["preserve-paths"] !== true,
+          organised: values.extract === undefined,
         })
       : new SimpleExportReporter(
           makeSafeStdout(process.stdout),
           values.quiet === true,
           basename(zipPath),
-          values["preserve-paths"] !== true,
+          values.extract === undefined,
         );
 
   if (
@@ -622,7 +625,8 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
     });
   }
 
-  if (values.output === undefined) {
+  const outputPath = values.extract ?? values.output;
+  if (outputPath === undefined) {
     const dryRun = new DryRunReporter(reporter);
     await registry
       .exportToDirectory(undefined, {
@@ -644,7 +648,7 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
       });
     dryRun.flush();
   } else {
-    const destPath = resolve(values.output);
+    const destPath = resolve(outputPath);
     await registry
       .exportToDirectory(destPath, {
         onBeforeWrite: (e, p) => {

@@ -102,7 +102,7 @@ describe("path strategy", () => {
     }
   });
 
-  it("exports to original source paths when --preserve-paths is passed", async () => {
+  it("exports to original source paths when --extract is passed", async () => {
     const zipped = zipSync({
       "Drums/kick.wav": strToU8("kick-data"),
       "Loops/bass.wav": strToU8("bass-data"),
@@ -115,14 +115,10 @@ describe("path strategy", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync(
-        "node",
-        [CLI_PATH, zipPath, "--preserve-paths", "-o", outputDir],
-        {
-          encoding: "utf8",
-          env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
-        },
-      );
+      const result = spawnSync("node", [CLI_PATH, zipPath, "-x", outputDir], {
+        encoding: "utf8",
+        env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
+      });
 
       expect(result.stderr).toBe("");
       expect(await readFile(join(outputDir, "Drums/kick.wav"), "utf8")).toBe(

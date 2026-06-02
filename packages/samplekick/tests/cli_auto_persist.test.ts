@@ -53,14 +53,10 @@ describe("auto-persist config", () => {
       );
 
       // Second run: loads the modified auto-saved config
-      const result2 = spawnSync(
-        "node",
-        [CLI_PATH, zipPath, "--preserve-paths", "-o", outputDir2],
-        {
-          encoding: "utf8",
-          env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
-        },
-      );
+      const result2 = spawnSync("node", [CLI_PATH, zipPath, "-x", outputDir2], {
+        encoding: "utf8",
+        env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+      });
       expect(result2.status).toBe(0);
       expect(
         await readFile(join(outputDir2, "Drums/custom_kick.wav"), "utf8"),
@@ -150,7 +146,7 @@ describe("auto-persist config", () => {
       // Second run with --rebuild: should ignore the custom rename
       const result = spawnSync(
         "node",
-        [CLI_PATH, zipPath, "--rebuild", "--preserve-paths", "-o", outputDir],
+        [CLI_PATH, zipPath, "--rebuild", "-x", outputDir],
         {
           encoding: "utf8",
           env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
@@ -195,7 +191,7 @@ describe("auto-persist config", () => {
 
       const result = spawnSync(
         "node",
-        [CLI_PATH, zipPath, "-r", "--preserve-paths", "-o", outputDir],
+        [CLI_PATH, zipPath, "-r", "-x", outputDir],
         {
           encoding: "utf8",
           env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },

@@ -23,14 +23,7 @@ describe("samplekick CLI flags", () => {
 
       const result = spawnSync(
         "node",
-        [
-          CLI_PATH,
-          zipPath,
-          "--allow-junk",
-          "--preserve-paths",
-          "-o",
-          outputDir,
-        ],
+        [CLI_PATH, zipPath, "--allow-junk", "-x", outputDir],
         {
           encoding: "utf8",
           env: { ...process.env, SAMPLEKICK_DATA_DIR: join(tmpDir, "data") },
@@ -91,15 +84,7 @@ describe("samplekick CLI flags", () => {
 
           const result = spawnSync(
             "node",
-            [
-              CLI_PATH,
-              zipPath,
-              "--device",
-              deviceAlias,
-              "--preserve-paths",
-              "-o",
-              outputDir,
-            ],
+            [CLI_PATH, zipPath, "--device", deviceAlias, "-x", outputDir],
             {
               encoding: "utf8",
               env: {
@@ -152,8 +137,7 @@ describe("samplekick CLI flags", () => {
             "sp404mk2",
             "--digest",
             configPath,
-            "--preserve-paths",
-            "-o",
+            "-x",
             outputDir,
           ],
           { encoding: "utf8" },

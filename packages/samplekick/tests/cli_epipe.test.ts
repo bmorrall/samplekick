@@ -23,19 +23,15 @@ describe("EPIPE handling (pipe to head)", () => {
 
       // Use a shell pipe so head's early exit delivers a real EPIPE to the CLI process.
       // Paths are passed via env vars to avoid shell-escaping issues.
-      const result = spawnSync(
-        "sh",
-        ["-c", 'node "$CLI" "$ZIP" --preserve-paths | head -1'],
-        {
-          encoding: "utf8",
-          env: {
-            ...process.env,
-            CLI: CLI_PATH,
-            ZIP: zipPath,
-            SAMPLEKICK_DATA_DIR: join(tmpDir, "data"),
-          },
+      const result = spawnSync("sh", ["-c", 'node "$CLI" "$ZIP" | head -1'], {
+        encoding: "utf8",
+        env: {
+          ...process.env,
+          CLI: CLI_PATH,
+          ZIP: zipPath,
+          SAMPLEKICK_DATA_DIR: join(tmpDir, "data"),
         },
-      );
+      });
 
       expect(result.stderr).toBe("");
     } finally {
@@ -61,7 +57,7 @@ describe("EPIPE handling (pipe to head)", () => {
       // Paths are passed via env vars to avoid shell-escaping issues.
       const result = spawnSync(
         "sh",
-        ["-c", 'node "$CLI" "$ZIP" --preserve-paths -o "$OUT" | head -1'],
+        ["-c", 'node "$CLI" "$ZIP" -x "$OUT" | head -1'],
         {
           encoding: "utf8",
           env: {

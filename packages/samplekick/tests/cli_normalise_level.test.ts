@@ -58,8 +58,7 @@ describe("--normalise-level flag", () => {
           "-d",
           "sp404mk2",
           "--normalise-level",
-          "--preserve-paths",
-          "-o",
+          "-x",
           outputDir,
         ],
         {
@@ -151,8 +150,7 @@ describe("--normalise-level flag", () => {
           "sp404mk2",
           "--normalise-level",
           "--verbose",
-          "--preserve-paths",
-          "-o",
+          "-x",
           outputDir,
         ],
         {
