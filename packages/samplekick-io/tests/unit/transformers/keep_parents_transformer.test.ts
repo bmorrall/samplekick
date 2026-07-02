@@ -17,7 +17,7 @@ describe("createKeepParentsTransformer", () => {
         [{ name: "kick.wav" }],
       );
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+      expect(entry.setEnabled).toHaveBeenCalledWith(true);
     });
 
     it("sets keepStructure to true for a nested directory with file children", () => {
@@ -27,7 +27,7 @@ describe("createKeepParentsTransformer", () => {
         [{ name: "snare.wav" }],
       );
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+      expect(entry.setEnabled).toHaveBeenCalledWith(true);
     });
   });
 
@@ -39,7 +39,7 @@ describe("createKeepParentsTransformer", () => {
         [],
       );
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setKeepStructure).not.toHaveBeenCalled();
+      expect(entry.setEnabled).not.toHaveBeenCalled();
     });
   });
 
@@ -51,7 +51,7 @@ describe("createKeepParentsTransformer", () => {
         [],
       );
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setKeepStructure).not.toHaveBeenCalled();
+      expect(entry.setEnabled).not.toHaveBeenCalled();
     });
   });
 
@@ -63,7 +63,7 @@ describe("createKeepParentsTransformer", () => {
         [{ name: "kick.wav" }],
       );
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setKeepStructure).not.toHaveBeenCalled();
+      expect(entry.setEnabled).not.toHaveBeenCalled();
     });
   });
 
@@ -93,8 +93,8 @@ describe("createKeepParentsTransformer", () => {
         },
       };
       transformer2.transform(source);
-      expect(guitarStuffEntry.setKeepStructure).toHaveBeenCalledWith(true);
-      expect(samplesEntry.setKeepStructure).toHaveBeenCalledWith(true);
+      expect(guitarStuffEntry.setEnabled).toHaveBeenCalledWith(true);
+      expect(samplesEntry.setEnabled).toHaveBeenCalledWith(true);
     });
 
     it("does not set keepStructure on a direct child of root even with levels=2", () => {
@@ -120,8 +120,8 @@ describe("createKeepParentsTransformer", () => {
         },
       };
       transformer2.transform(source);
-      expect(kicksEntry.setKeepStructure).toHaveBeenCalledWith(true);
-      expect(rootEntry.setKeepStructure).not.toHaveBeenCalled();
+      expect(kicksEntry.setEnabled).toHaveBeenCalledWith(true);
+      expect(rootEntry.setEnabled).not.toHaveBeenCalled();
     });
   });
 });

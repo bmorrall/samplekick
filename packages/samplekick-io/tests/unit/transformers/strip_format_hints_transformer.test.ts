@@ -142,8 +142,8 @@ describe("createStripFormatHintsTransformer", () => {
     const entry = createTransformEntry({ name: "Samples (WAV)" });
     const transformer = createStripFormatHintsTransformer();
     transformer.transform(singleEntryTransformSource(entry));
-    expect(entry.setSkipped).not.toHaveBeenCalled();
-    expect(entry.setKeepStructure).not.toHaveBeenCalled();
+    expect(entry.setEnabled).not.toHaveBeenCalled();
+    expect(entry.setReadOnly).not.toHaveBeenCalled();
   });
 
   it("does not modify any fields when keepStructure is true", () => {
@@ -151,7 +151,7 @@ describe("createStripFormatHintsTransformer", () => {
       name: "Samples (WAV)",
       packageName: "My Pack (WAV)",
       sampleType: "Loops [24bit]",
-      keepStructure: true,
+      readOnly: true,
     });
     const transformer = createStripFormatHintsTransformer();
     transformer.transform(singleEntryTransformSource(entry));
@@ -163,7 +163,7 @@ describe("createStripFormatHintsTransformer", () => {
   it("does not modify any fields when skipped is true", () => {
     const entry = createTransformEntry({
       name: "Samples (WAV)",
-      skipped: true,
+      enabled: false,
     });
     const transformer = createStripFormatHintsTransformer();
     transformer.transform(singleEntryTransformSource(entry));

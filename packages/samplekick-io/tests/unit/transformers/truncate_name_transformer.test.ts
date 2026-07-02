@@ -73,7 +73,7 @@ describe("createTruncateNameTransformer", () => {
   it("does not modify any fields when keepStructure is true", () => {
     const entry = createTransformEntry({
       name: "x".repeat(90),
-      keepStructure: true,
+      readOnly: true,
     });
     createTruncateNameTransformer(80).transform(
       singleEntryTransformSource(entry),
@@ -82,7 +82,10 @@ describe("createTruncateNameTransformer", () => {
   });
 
   it("does not modify any fields when skipped is true", () => {
-    const entry = createTransformEntry({ name: "x".repeat(90), skipped: true });
+    const entry = createTransformEntry({
+      name: "x".repeat(90),
+      enabled: false,
+    });
     createTruncateNameTransformer(80).transform(
       singleEntryTransformSource(entry),
     );

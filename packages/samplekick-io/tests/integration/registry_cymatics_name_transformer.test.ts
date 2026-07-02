@@ -18,16 +18,16 @@ describe("CymaticsNameTransformer integration", () => {
     registry.applyTransform(createCymaticsNameTransformer());
     expect(registry.toString()).toBe(
       [
-        "root",
-        "├── Cymatics - Bass Loops [renamed]",
+        "root [skipped]",
+        "├── Cymatics - Bass Loops [renamed, skipped]",
         "│   └── Cymatics - Bass Loop 01.wav [?] [renamed]",
-        "├── Cymatics - Drum Hits [renamed]",
+        "├── Cymatics - Drum Hits [renamed, skipped]",
         "│   └── Cymatics - Snare Hit.wav [?] [renamed]",
-        "├── Cymatics - Synths [renamed]",
+        "├── Cymatics - Synths [renamed, skipped]",
         "│   └── Cymatics - Pad 01.wav [?] [renamed]",
-        "├── Cymatics - Pads",
+        "├── Cymatics - Pads [skipped]",
         "│   └── Cymatics - Pad 01.wav [?]",
-        "└── Other Pack",
+        "└── Other Pack [skipped]",
         "    └── hat.wav [?]",
         "",
       ].join("\n"),

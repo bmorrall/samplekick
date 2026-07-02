@@ -17,7 +17,7 @@ describe("createArchiveFileTransformer", () => {
       const transformer = createArchiveFileTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Archive");
-      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+      expect(entry.setReadOnly).toHaveBeenCalledWith(true);
     });
 
     it("sets sampleType to Archive when extension is uppercase", () => {
@@ -29,7 +29,7 @@ describe("createArchiveFileTransformer", () => {
       const transformer = createArchiveFileTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Archive");
-      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+      expect(entry.setReadOnly).toHaveBeenCalledWith(true);
     });
 
     it("does not overwrite an existing sampleType but still sets keepStructure", () => {
@@ -41,7 +41,7 @@ describe("createArchiveFileTransformer", () => {
       const transformer = createArchiveFileTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
-      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+      expect(entry.setReadOnly).toHaveBeenCalledWith(true);
     });
   });
 
@@ -55,7 +55,7 @@ describe("createArchiveFileTransformer", () => {
       const transformer = createArchiveFileTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Ableton Projects");
-      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+      expect(entry.setReadOnly).toHaveBeenCalledWith(true);
     });
   });
 
@@ -69,7 +69,7 @@ describe("createArchiveFileTransformer", () => {
       const transformer = createArchiveFileTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("FL Studio Projects");
-      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+      expect(entry.setReadOnly).toHaveBeenCalledWith(true);
     });
   });
 
@@ -83,7 +83,7 @@ describe("createArchiveFileTransformer", () => {
       const transformer = createArchiveFileTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Serum Presets");
-      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+      expect(entry.setReadOnly).toHaveBeenCalledWith(true);
     });
   });
 
@@ -97,7 +97,7 @@ describe("createArchiveFileTransformer", () => {
       const transformer = createArchiveFileTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Phase Plant Presets");
-      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+      expect(entry.setReadOnly).toHaveBeenCalledWith(true);
     });
   });
 
@@ -120,7 +120,7 @@ describe("createArchiveFileTransformer", () => {
       const transformer = createArchiveFileTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
-      expect(entry.setKeepStructure).not.toHaveBeenCalled();
+      expect(entry.setReadOnly).not.toHaveBeenCalled();
     });
   });
 
@@ -134,7 +134,7 @@ describe("createArchiveFileTransformer", () => {
       const transformer = createArchiveFileTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
-      expect(entry.setKeepStructure).not.toHaveBeenCalled();
+      expect(entry.setReadOnly).not.toHaveBeenCalled();
     });
   });
 
@@ -149,7 +149,7 @@ describe("createArchiveFileTransformer", () => {
         tagSampleType: false,
       });
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+      expect(entry.setReadOnly).toHaveBeenCalledWith(true);
       expect(entry.setSampleType).not.toHaveBeenCalled();
     });
 
@@ -159,7 +159,7 @@ describe("createArchiveFileTransformer", () => {
         tagSampleType: false,
       });
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setKeepStructure).not.toHaveBeenCalled();
+      expect(entry.setReadOnly).not.toHaveBeenCalled();
       expect(entry.setSampleType).not.toHaveBeenCalled();
     });
 
@@ -172,7 +172,7 @@ describe("createArchiveFileTransformer", () => {
         tagSampleType: false,
       });
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setKeepStructure).not.toHaveBeenCalled();
+      expect(entry.setReadOnly).not.toHaveBeenCalled();
       expect(entry.setSampleType).not.toHaveBeenCalled();
     });
   });

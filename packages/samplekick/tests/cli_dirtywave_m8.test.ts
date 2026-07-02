@@ -39,12 +39,12 @@ describe("Dirtywave M8 device preset", () => {
       const autoConfig = await readFile(join(dataDir, autoConfigFile), "utf8");
       expect(autoConfig).toBe(
         [
-          "path,keepPath,name,packageName,sampleType,skip",
-          ",,test-pack.zip,test-pack,Packs,",
-          "Drums,,,,Drums,",
-          "Drums/kick.wav,,,,,",
-          "Loops,,,,Loops,",
-          "Loops/bass.wav,,,,,",
+          "path,name,packageName,sampleType,enabled",
+          ",test-pack.zip,test-pack,Packs,false",
+          "Drums,,,Drums,false",
+          "Drums/kick.wav,,,,true",
+          "Loops,,,Loops,false",
+          "Loops/bass.wav,,,,true",
         ].join("\n"),
       );
 
@@ -52,12 +52,12 @@ describe("Dirtywave M8 device preset", () => {
       await writeFile(
         join(dataDir, autoConfigFile),
         [
-          "path,keepPath,name,packageName,sampleType,skip",
-          ",,test-pack.zip,my-pack,,",
-          "Drums,,,,Percussion,",
-          "Drums/kick.wav,,,,,",
-          "Loops,,,,Loops,",
-          "Loops/bass.wav,,,,,",
+          "path,name,packageName,sampleType,enabled",
+          ",test-pack.zip,my-pack,,false",
+          "Drums,,,Percussion,false",
+          "Drums/kick.wav,,,,true",
+          "Loops,,,Loops,false",
+          "Loops/bass.wav,,,,true",
         ].join("\n"),
       );
 

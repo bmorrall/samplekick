@@ -42,24 +42,24 @@ describe("SP404 Mk2 end-to-end sample processing", () => {
     // Apply metadata and manual edits using original paths (paths are immutable)
     registry.setSampleType("Melodic Loops");
     registry.setSampleType("Drüms", "Drums & Percussion");
-    registry.setKeepStructure("Drüms", true);
-    registry.setSkipped("Drüms/snâre.01.wav", true);
+    registry.setEnabled("Drüms", true);
+    registry.setEnabled("Drüms/snâre.01.wav", false);
     registry.setName("Drüms/snâre.01.wav", "snare_alt.wav");
 
     // Verify keepStructure (does not appear in toString)
-    expect(registry.getEntry("Drüms")?.isKeepStructure()).toBe(true);
+    expect(registry.getEntry("Drüms")?.isEnabled()).toBe(true);
 
     // The tree shows sanitized names, own pkg/type tags per node, inherited tags on root,
     // and [skipped] on any node where isSkipped is true
     expect(registry.toString()).toBe(
       [
-        "SP404 Pack.zip [pkg:SP404 Pack, type:Melodic Loops]",
+        "SP404 Pack.zip [pkg:SP404 Pack, type:Melodic Loops, skipped]",
         "┣━━ Drums [renamed, type:Drums & Percussion]",
-        "┃   ┣━━ kick-01 (main).wav",
-        "┃   ┗━━ snare_alt.wav [renamed, skipped]",
-        "├── Lead Loops [renamed]",
+        "┃   ├── kick-01 (main).wav",
+        "┃   └── snare_alt.wav [renamed, skipped]",
+        "├── Lead Loops [renamed, skipped]",
         "│   └── synth-pad.wav",
-        "└── Backing Loops",
+        "└── Backing Loops [skipped]",
         "    └── bass-line.wav",
         "",
       ].join("\n"),

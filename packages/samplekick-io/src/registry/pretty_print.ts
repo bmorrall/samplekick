@@ -4,6 +4,11 @@ export function prettyPrint(node: EntryNode, verbose = false): string {
   return printNode(node, "", true, verbose);
 }
 
+function hasEnabledDescendant(node: EntryNode): boolean {
+  if (node.isFile()) return node.isEnabled();
+  return node.getChildNodes().some(hasEnabledDescendant);
+}
+
 function printNode(
   node: EntryNode,
   prefix: string,
@@ -15,7 +20,7 @@ function printNode(
   const displayName = node.getName();
   let output = `${prefix}${displayName}${tagStr}\n`;
 
-  if (node.isSkipped() === true && children.length > 0) {
+  if (!node.isFile() && children.length > 0 && !hasEnabledDescendant(node)) {
     const childPrefix = prefix
       .replace(/├── /gv, "│   ")
       .replace(/└── /gv, "    ")
@@ -28,13 +33,13 @@ function printNode(
   const lastIndex = children.length - 1;
   for (const [i, child] of children.entries()) {
     const isLast = i === lastIndex;
-    const keepStructure = child.isKeepStructure() === true;
+    const childEnabled = !child.isFile() && child.isEnabled();
     const childPrefix = prefix
       .replace(/├── /gv, "│   ")
       .replace(/└── /gv, "    ")
       .replace(/┣━━ /gv, "┃   ")
       .replace(/┗━━ /gv, "    ");
-    const connector = keepStructure
+    const connector = childEnabled
       ? isLast
         ? "┗━━ "
         : "┣━━ "
@@ -57,6 +62,7 @@ function isNodeRenamed(node: EntryNode): boolean {
 
 function isMissingRequired(node: EntryNode): boolean {
   return (
+    node.isFile() &&
     node.getChildNodes().length === 0 &&
     (node.getPackageName() === undefined || node.getSampleType() === undefined)
   );
@@ -78,7 +84,7 @@ function buildTags(
   if (isRenamed) tags.push("renamed");
   if (packageName !== undefined) tags.push(`pkg:${packageName}`);
   if (sampleType !== undefined) tags.push(`type:${sampleType}`);
-  if (node.isSkipped() === true) tags.push("skipped");
+  if (!node.isEnabled()) tags.push("skipped");
   if (verbose && isRenamed) tags.push(`orig:${node.getEntryName()}`);
   return tags;
 }

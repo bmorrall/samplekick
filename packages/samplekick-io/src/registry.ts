@@ -49,16 +49,22 @@ const toOwnDigestEntry = (node: EntryNode): DigestEntry => ({
   getName: () => node.getOwnName() ?? getPathName(node.getPath()),
   getPackageName: () => node.getOwnPackageName(),
   getSampleType: () => node.getOwnSampleType(),
-  isSkipped: () => node.getOwnSkipped(),
-  isKeepStructure: () => node.getOwnKeepStructure(),
+  isEnabled: () => node.isEnabled(),
 });
+
+interface HasRawEnabled {
+  rawEnabled: () => boolean | undefined;
+}
+
+const hasRawEnabled = (
+  entry: DigestEntry,
+): entry is DigestEntry & HasRawEnabled => "rawEnabled" in entry;
 
 const applyEntryDigest = (node: EntryNode, entry: DigestEntry): void => {
   const name = entry.getName();
   const packageName = entry.getPackageName();
   const sampleType = entry.getSampleType();
-  const skipped = entry.isSkipped();
-  const keepStructure = entry.isKeepStructure();
+  const enabled = hasRawEnabled(entry) ? entry.rawEnabled() : entry.isEnabled();
   // Only set name if it differs from the default (path-derived) name, so existing
   // transformer-set names are not overwritten when a digest has no name override
   if (name !== getPathName(entry.getPath())) {
@@ -70,11 +76,8 @@ const applyEntryDigest = (node: EntryNode, entry: DigestEntry): void => {
   if (sampleType !== undefined) {
     node.setSampleType(sampleType);
   }
-  if (skipped !== undefined) {
-    node.setSkipped(skipped);
-  }
-  if (keepStructure !== undefined) {
-    node.setKeepStructure(keepStructure);
+  if (enabled !== undefined) {
+    node.setEnabled(enabled);
   }
 };
 
@@ -105,17 +108,24 @@ export class Registry implements FileSource, DigestSource {
   }
 
   eachDigestEntry(fn: (entry: DigestEntry) => void): void {
-    this.rootNode.eachDescendant((node) => {
-      const parent = node.getParentNode();
-      if (parent?.isSkipped() === true) return;
-      if (
-        parent?.isKeepStructure() === true &&
-        node.getOwnKeepStructure() === undefined
-      ) {
-        return;
+    const visit = (node: EntryNode, aboveEnabled: boolean): void => {
+      const hasOwnEnabled = node.isEnabled() !== node.isFile();
+      if (!aboveEnabled || hasOwnEnabled) {
+        fn(toOwnDigestEntry(node));
       }
-      fn(toOwnDigestEntry(node));
-    });
+      const childAboveEnabled = aboveEnabled || hasOwnEnabled;
+      const sorted = [...node.getChildNodes()].sort((a, b) =>
+        a.getName().localeCompare(b.getName()),
+      );
+      for (const child of sorted) {
+        visit(child, childAboveEnabled);
+      }
+    };
+    visit(this.rootNode, false);
+  }
+
+  eachEntry(fn: (entry: TransformEntry) => void): void {
+    this.rootNode.eachDescendant(fn);
   }
 
   // Digest methods
@@ -160,7 +170,8 @@ export class Registry implements FileSource, DigestSource {
       },
       eachTransformModification: (fn: (entry: TransformEntry) => void) => {
         this.rootNode.eachDescendant((node) => {
-          if (node.isKeepStructure() === true) return;
+          if (!node.isFile() && node.isEnabled()) return;
+          if (node.isReadOnly() === true) return;
           const facade: TransformEntry = {
             getPath: () => node.getPath(),
             getName: () => node.getName(),
@@ -168,8 +179,8 @@ export class Registry implements FileSource, DigestSource {
             getSampleType: () => node.getOwnSampleType(),
             getOwnPackageName: () => node.getOwnPackageName(),
             getOwnSampleType: () => node.getOwnSampleType(),
-            isSkipped: () => node.getOwnSkipped(),
-            isKeepStructure: () => node.getOwnKeepStructure(),
+            isEnabled: () => node.isEnabled(),
+            isReadOnly: () => node.isReadOnly(),
             isFile: () => node.isFile(),
             getParentNode: () => node.getParentNode(),
             getChildNodes: () => node.getChildNodes(),
@@ -182,11 +193,11 @@ export class Registry implements FileSource, DigestSource {
             setSampleType: (type) => {
               node.setSampleType(type);
             },
-            setSkipped: (skipped) => {
-              node.setSkipped(skipped);
+            setEnabled: (value) => {
+              node.setEnabled(value);
             },
-            setKeepStructure: (value) => {
-              node.setKeepStructure(value);
+            setReadOnly: (value) => {
+              node.setReadOnly(value);
             },
           };
           fn(facade);
@@ -261,32 +272,13 @@ export class Registry implements FileSource, DigestSource {
     return true;
   }
 
-  setSkipped(skipped: boolean): boolean;
-  setSkipped(path: string, skipped: boolean): boolean;
-  setSkipped(
-    ...args: [skipped: boolean] | [path: string, skipped: boolean]
-  ): boolean {
-    if (args.length === 1) {
-      this.rootNode.setSkipped(args[0]);
-      return true;
-    }
-
-    const [path, skipped] = args;
-    const node = this.findEntryNode(path);
-    if (node === undefined) {
-      return false;
-    }
-    node.setSkipped(skipped);
-    return true;
-  }
-
-  setKeepStructure(value: boolean): boolean;
-  setKeepStructure(path: string, value: boolean): boolean;
-  setKeepStructure(
+  setEnabled(value: boolean): boolean;
+  setEnabled(path: string, value: boolean): boolean;
+  setEnabled(
     ...args: [value: boolean] | [path: string, value: boolean]
   ): boolean {
     if (args.length === 1) {
-      this.rootNode.setKeepStructure(args[0]);
+      this.rootNode.setEnabled(args[0]);
       return true;
     }
 
@@ -295,7 +287,7 @@ export class Registry implements FileSource, DigestSource {
     if (node === undefined) {
       return false;
     }
-    node.setKeepStructure(value);
+    node.setEnabled(value);
     return true;
   }
 
@@ -322,7 +314,7 @@ export class Registry implements FileSource, DigestSource {
    */
   destinationPathFor(path: string): string | undefined {
     const node = this.findEntryNode(path);
-    if (node === undefined || node.isSkipped() === true || !isLeafNode(node)) {
+    if (node === undefined || !node.isEnabled() || !isLeafNode(node)) {
       return undefined;
     }
     const result = this.pathStrategy.destinationPathFor(node);
@@ -333,15 +325,11 @@ export class Registry implements FileSource, DigestSource {
     dirPath: string | undefined,
     options: ExportOptions,
   ): Promise<void> {
-    // Report the topmost skipped nodes (directories or files) — children of already-skipped
-    // ancestors are implicitly covered and do not need their own callbacks.
+    // Report skipped file nodes (files with enabled=false).
     if (options.onSkip !== undefined) {
       const { onSkip } = options;
-      this.rootNode.eachDescendant((node) => {
-        if (
-          node.isSkipped() === true &&
-          node.getParentNode()?.isSkipped() !== true
-        ) {
+      this.rootNode.eachLeafNode((node) => {
+        if (!node.isEnabled()) {
           onSkip(node);
         }
       });
@@ -350,7 +338,7 @@ export class Registry implements FileSource, DigestSource {
     const promises: Array<Promise<void>> = [];
     const seenDestPaths = new Set<string>();
     this.rootNode.eachLeafNode((node) => {
-      if (node.isSkipped() === true) {
+      if (!node.isEnabled()) {
         return;
       }
       if (!isLeafNode(node)) {

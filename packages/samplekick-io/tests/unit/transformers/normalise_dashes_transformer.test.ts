@@ -78,7 +78,7 @@ describe("createNormaliseDashesTransformer", () => {
   it("does not act on a keepStructure entry", () => {
     const entry = createTransformEntry({
       name: "foo \u2013 bar.mid",
-      keepStructure: true,
+      readOnly: true,
     });
     const transformer = createNormaliseDashesTransformer();
     transformer.transform(singleEntryTransformSource(entry));
@@ -88,7 +88,7 @@ describe("createNormaliseDashesTransformer", () => {
   it("does not act on a skipped entry", () => {
     const entry = createTransformEntry({
       name: "foo \u2013 bar.wav",
-      skipped: true,
+      enabled: false,
     });
     const transformer = createNormaliseDashesTransformer();
     transformer.transform(singleEntryTransformSource(entry));

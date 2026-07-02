@@ -34,8 +34,8 @@ describe("ZIP I/O", () => {
     const entry = registry.getEntry("a/b.wav");
     expect(entry?.getPackageName()).toBeUndefined();
     expect(entry?.getSampleType()).toBeUndefined();
-    expect(entry?.isSkipped()).toBeUndefined();
-    expect(entry?.isKeepStructure()).toBeUndefined();
+    expect(entry?.isEnabled()).toBe(true);
+    expect(entry?.isEnabled()).toBe(true);
   });
 
   it("exports all entries to a directory via exportToDirectory", async () => {

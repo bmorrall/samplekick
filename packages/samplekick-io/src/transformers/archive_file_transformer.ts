@@ -28,9 +28,9 @@ function resolveArchiveSampleType(path: string): string {
 
 /**
  * ArchiveFileTransformer
- * Detects embedded archive files (e.g. nested .zip files) by extension and
- * sets sampleType to "Archive" with keepStructure enabled so their contents
- * are preserved as-is. If the path contains exactly one recognised keyword
+ * Detects embedded archive files (e.g. nested .zip files) by extension,
+ * marks them readonly (names preserved) and enables their parent directory
+ * in the output path. If the path contains exactly one recognised keyword
  * (e.g. "Ableton", "FL Studio"), a more specific sampleType is used instead.
  * Pass `{ tagSampleType: false }` to lock the folder structure without tagging.
  */
@@ -38,6 +38,8 @@ export const createArchiveFileTransformer = ({
   tagSampleType = true,
 }: { tagSampleType?: boolean } = {}): Transform => ({
   transform: (source) => {
+    const parentPathsToEnable = new Set<string>();
+
     source.eachTransformEntry((entry) => {
       if (entry.getParentNode() === undefined) return; // skip the root archive
 
@@ -47,7 +49,20 @@ export const createArchiveFileTransformer = ({
         if (tagSampleType && entry.getSampleType() === undefined) {
           entry.setSampleType(resolveArchiveSampleType(entry.getPath()));
         }
-        entry.setKeepStructure(true);
+        entry.setReadOnly(true);
+        const parent = entry.getParentNode();
+        if (parent !== undefined) {
+          parentPathsToEnable.add(parent.getPath());
+        }
+      }
+    });
+
+    if (parentPathsToEnable.size === 0) return;
+
+    source.eachTransformEntry((entry) => {
+      if (parentPathsToEnable.has(entry.getPath())) {
+        entry.setEnabled(true);
+        entry.setReadOnly(true);
       }
     });
   },

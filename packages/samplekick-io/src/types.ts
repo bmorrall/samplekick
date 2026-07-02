@@ -5,8 +5,7 @@ export interface DigestEntry {
   getName: () => string;
   getPackageName: () => string | undefined;
   getSampleType: () => string | undefined;
-  isSkipped: () => boolean | undefined;
-  isKeepStructure: () => boolean | undefined;
+  isEnabled: () => boolean;
 }
 
 export interface DigestSource {
@@ -53,8 +52,9 @@ export interface TransformEntry extends FileNode {
   setName: (name: string | undefined) => void;
   setPackageName: (name: string | undefined) => void;
   setSampleType: (type: string | undefined) => void;
-  setSkipped: (skipped: boolean) => void;
-  setKeepStructure: (value: boolean) => void;
+  setEnabled: (value: boolean) => void;
+  setReadOnly: (value: boolean) => void;
+  isReadOnly: () => boolean | undefined;
 }
 
 export interface TransformSource {

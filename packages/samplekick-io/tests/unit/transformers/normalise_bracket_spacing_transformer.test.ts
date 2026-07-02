@@ -107,8 +107,8 @@ describe("createNormaliseBracketSpacingTransformer", () => {
     const entry = createTransformEntry({ name: "kick(hard).wav" });
     const transformer = createNormaliseBracketSpacingTransformer();
     transformer.transform(singleEntryTransformSource(entry));
-    expect(entry.setSkipped).not.toHaveBeenCalled();
-    expect(entry.setKeepStructure).not.toHaveBeenCalled();
+    expect(entry.setEnabled).not.toHaveBeenCalled();
+    expect(entry.setReadOnly).not.toHaveBeenCalled();
   });
 
   it("does not modify any fields when keepStructure is true", () => {
@@ -116,7 +116,7 @@ describe("createNormaliseBracketSpacingTransformer", () => {
       name: "kick(hard).wav",
       packageName: "Pack(1)",
       sampleType: "Drums[soft]",
-      keepStructure: true,
+      readOnly: true,
     });
     const transformer = createNormaliseBracketSpacingTransformer();
     transformer.transform(singleEntryTransformSource(entry));

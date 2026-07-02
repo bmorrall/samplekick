@@ -83,37 +83,37 @@ describe("EntryNode.toString", () => {
     });
   });
 
-  describe("keepStructure connectors", () => {
-    it("uses thick connectors for a non-last child with keepStructure", () => {
+  describe("enabled connectors", () => {
+    it("uses thick connectors for a non-last directory child with enabled=true", () => {
       const root = EntryNode.fromEntry(
         createFileEntry({ path: "", name: "root" }),
       );
-      const a = root.addNode(createFileEntry({ path: "a" }));
-      a.setKeepStructure(true);
+      const a = root.addBlankNode("a", "a");
+      a.setEnabled(true);
       root.addNode(createFileEntry({ path: "b" }));
       expect(root.toString()).toBe(
-        ["root", "┣━━ a [?]", "└── b [?]", ""].join("\n"),
+        ["root", "┣━━ a", "└── b [?]", ""].join("\n"),
       );
     });
 
-    it("uses thick connectors for a last child with keepStructure", () => {
+    it("uses thick connectors for a last directory child with enabled=true", () => {
       const root = EntryNode.fromEntry(
         createFileEntry({ path: "", name: "root" }),
       );
       root.addNode(createFileEntry({ path: "a" }));
-      const b = root.addNode(createFileEntry({ path: "b" }));
-      b.setKeepStructure(true);
+      const b = root.addBlankNode("b", "b");
+      b.setEnabled(true);
       expect(root.toString()).toBe(
-        ["root", "├── a [?]", "┗━━ b [?]", ""].join("\n"),
+        ["root", "├── a [?]", "┗━━ b", ""].join("\n"),
       );
     });
 
-    it("uses thick vertical bar for descendants of a keepStructure node", () => {
+    it("uses thick vertical bar for descendants of an enabled=true node", () => {
       const root = EntryNode.fromEntry(
         createFileEntry({ path: "", name: "root" }),
       );
-      const a = root.addNode(createFileEntry({ path: "a" }));
-      a.setKeepStructure(true);
+      const a = root.addBlankNode("a", "a");
+      a.setEnabled(true);
       a.addNode(createFileEntry({ path: "a/b" }));
       a.addNode(createFileEntry({ path: "a/c" }));
       root.addNode(createFileEntry({ path: "d" }));
@@ -121,59 +121,47 @@ describe("EntryNode.toString", () => {
         [
           "root",
           "┣━━ a",
-          "┃   ┣━━ b [?]",
-          "┃   ┗━━ c [?]",
+          "┃   ├── b [?]",
+          "┃   └── c [?]",
           "└── d [?]",
           "",
         ].join("\n"),
       );
     });
 
-    it("does not use thick connectors for a node with keepStructure inherited but not own", () => {
+    it("does not use thick connectors for children without their own enabled=true", () => {
       const root = EntryNode.fromEntry(
         createFileEntry({ path: "", name: "root" }),
       );
-      const a = root.addNode(createFileEntry({ path: "a" }));
-      a.setKeepStructure(true);
+      const a = root.addBlankNode("a", "a");
+      a.setEnabled(true);
       const b = a.addNode(createFileEntry({ path: "a/b" }));
       b.addNode(createFileEntry({ path: "a/b/c" }));
       expect(root.toString()).toBe(
-        ["root", "┗━━ a", "    ┗━━ b", "        ┗━━ c [?]", ""].join("\n"),
+        ["root", "┗━━ a", "    └── b", "        └── c [?]", ""].join("\n"),
       );
     });
   });
 
   describe("skipped tag", () => {
-    it("appends [skipped] to an entry with isSkipped true", () => {
+    it("appends [skipped] to a file entry with enabled=false", () => {
       const root = EntryNode.fromEntry(
         createFileEntry({ path: "", name: "root" }),
       );
       const child = root.addNode(createFileEntry({ path: "a" }));
-      child.setSkipped(true);
+      child.setEnabled(false);
       expect(root.toString()).toBe(
         ["root", "└── a [?] [skipped]", ""].join("\n"),
       );
     });
 
-    it("does not append [skipped] when isSkipped is false", () => {
+    it("does not append [skipped] when enabled is true", () => {
       const root = EntryNode.fromEntry(
         createFileEntry({ path: "", name: "root" }),
       );
       const child = root.addNode(createFileEntry({ path: "a" }));
-      child.setSkipped(false);
+      child.setEnabled(true);
       expect(root.toString()).toBe(["root", "└── a [?]", ""].join("\n"));
-    });
-
-    it("shows ... instead of children when a directory is skipped", () => {
-      const root = EntryNode.fromEntry(
-        createFileEntry({ path: "", name: "root" }),
-      );
-      const parent = root.addNode(createFileEntry({ path: "a" }));
-      parent.setSkipped(true);
-      parent.addNode(createFileEntry({ path: "a/b" }));
-      expect(root.toString()).toBe(
-        ["root", "└── a [skipped]", "    └── ...", ""].join("\n"),
-      );
     });
 
     it("combines skipped with pkg and type tags", () => {
@@ -183,9 +171,21 @@ describe("EntryNode.toString", () => {
       const child = root.addNode(createFileEntry({ path: "a" }));
       child.setPackageName("my-pack");
       child.setSampleType("Loops");
-      child.setSkipped(true);
+      child.setEnabled(false);
       expect(root.toString()).toBe(
         ["root", "└── a [pkg:my-pack, type:Loops, skipped]", ""].join("\n"),
+      );
+    });
+
+    it("does not append [skipped] to a directory with enabled=false — shows children normally", () => {
+      const root = EntryNode.fromEntry(
+        createFileEntry({ path: "", name: "root" }),
+      );
+      const dir = root.addBlankNode("junk", "junk");
+      dir.setEnabled(false);
+      dir.addNode(createFileEntry({ path: "junk/file.wav" }));
+      expect(root.toString()).toBe(
+        ["root", "└── junk [skipped]", "    └── file.wav [?]", ""].join("\n"),
       );
     });
   });

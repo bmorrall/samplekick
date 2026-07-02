@@ -15,10 +15,10 @@ describe("MidiFileTransformer integration", () => {
     registry.applyTransform(createMidiFileTransformer());
     expect(registry.toString()).toBe(
       [
-        "root",
-        "├── beats",
-        "│   ┗━━ groove.mid [?] [type:MIDI]",
-        "└── samples",
+        "root [skipped]",
+        "├── beats [skipped]",
+        "│   └── groove.mid [?] [type:MIDI]",
+        "└── samples [skipped]",
         "    └── kick.wav [?]",
         "",
       ].join("\n"),
@@ -34,9 +34,9 @@ describe("MidiFileTransformer integration", () => {
     registry.applyTransform(createMidiFileTransformer());
     expect(registry.toString()).toBe(
       [
-        "Pack.zip",
-        "└── Drum Loops [type:Drum Loops]",
-        "    ┣━━ groove.mid [?] [type:MIDI - Drum Loops]",
+        "Pack.zip [skipped]",
+        "└── Drum Loops [type:Drum Loops, skipped]",
+        "    ├── groove.mid [?] [type:MIDI - Drum Loops]",
         "    └── kick.wav [?]",
         "",
       ].join("\n"),
@@ -52,10 +52,10 @@ describe("MidiFileTransformer integration", () => {
     registry.applyTransform(createMidiFileTransformer());
     expect(registry.toString()).toBe(
       [
-        "Pack.zip",
-        "└── Melodies [type:Melodies]",
-        "    └── MIDI",
-        "        ┗━━ groove.mid [?] [type:MIDI - Melodies]",
+        "Pack.zip [skipped]",
+        "└── Melodies [type:Melodies, skipped]",
+        "    └── MIDI [skipped]",
+        "        └── groove.mid [?] [type:MIDI - Melodies]",
         "",
       ].join("\n"),
     );

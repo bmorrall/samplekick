@@ -33,10 +33,10 @@ describe("NormaliseQuotesTransformer", () => {
       const rows = csv.split("\n");
 
       expect(rows.find((r) => r.startsWith("\u2018Kicks\u2019,"))).toBe(
-        "\u2018Kicks\u2019,,'Kicks',,,",
+        "\u2018Kicks\u2019,'Kicks',,,false",
       );
       expect(rows.find((r) => r.startsWith("\u201CSynths\u201D,"))).toBe(
-        '\u201CSynths\u201D,,"""Synths""",,,',
+        '\u201CSynths\u201D,"""Synths""",,,false',
       );
     } finally {
       await rm(tmpDir, { recursive: true });

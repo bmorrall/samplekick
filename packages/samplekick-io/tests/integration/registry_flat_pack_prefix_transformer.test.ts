@@ -12,7 +12,7 @@ describe("FlatPackPrefixTransformer integration", () => {
     registry.applyTransform(createFlatPackPrefixTransformer());
     expect(registry.toString()).toBe(
       [
-        "root [pkg:Sounds by Sunwarper - SP404 Pack, type:Packs]",
+        "root [pkg:Sounds by Sunwarper - SP404 Pack, type:Packs, skipped]",
         "├── Sounds by Sunwarper - 01 D4.wav [renamed]",
         "├── Sounds by Sunwarper - 02 E4.wav [renamed]",
         "└── album.jpg",
@@ -29,8 +29,8 @@ describe("FlatPackPrefixTransformer integration", () => {
     registry.applyTransform(createFlatPackPrefixTransformer());
     expect(registry.toString()).toBe(
       [
-        "root",
-        "└── Samples",
+        "root [skipped]",
+        "└── Samples [skipped]",
         "    ├── Pack - 01 kick.wav [?]",
         "    └── Pack - 02 snare.wav [?]",
         "",

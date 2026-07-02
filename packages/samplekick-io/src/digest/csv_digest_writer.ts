@@ -2,7 +2,7 @@ import type { Writable } from "node:stream";
 import type { DigestSource, DigestEntry, DigestWriter } from "../types";
 import { getPathName } from "../path_utils";
 
-export const CSV_HEADER = "path,keepPath,name,packageName,sampleType,skip";
+export const CSV_HEADER = "path,name,packageName,sampleType,enabled";
 
 const quoteCsvField = (value: string): string => {
   if (value.includes(",") || value.includes('"') || value.includes("\n")) {
@@ -18,20 +18,14 @@ const serializeRow = (entry: DigestEntry, explicit: boolean): string => {
     !explicit && name === getPathName(path) ? "" : quoteCsvField(name);
   const packageName = entry.getPackageName() ?? "";
   const sampleType = entry.getSampleType() ?? "";
-  const skipped = entry.isSkipped();
-  const keepStructure = entry.isKeepStructure();
+  const enabled = entry.isEnabled();
 
   return [
     quoteCsvField(path),
-    keepStructure === undefined
-      ? explicit
-        ? "false"
-        : ""
-      : String(keepStructure),
     nameField,
     quoteCsvField(packageName),
     quoteCsvField(sampleType),
-    skipped === undefined ? (explicit ? "false" : "") : String(skipped),
+    String(enabled),
   ].join(",");
 };
 

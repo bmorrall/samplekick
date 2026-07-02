@@ -10,8 +10,7 @@ const makeRootStub = (): FileNode => ({
   getName: () => "root",
   getPackageName: () => undefined,
   getSampleType: () => undefined,
-  isSkipped: () => undefined,
-  isKeepStructure: () => undefined,
+  isEnabled: () => false,
   isFile: () => false,
   getParentNode: () => undefined,
   getChildNodes: () => [],
@@ -30,7 +29,7 @@ const createFlatPackSource = (
     fn(dirEntry);
   },
   eachTransformModification: (fn) => {
-    childEntries.filter((c) => c.isKeepStructure() !== true).forEach(fn);
+    childEntries.filter((c) => c.isReadOnly() !== true).forEach(fn);
   },
 });
 
@@ -46,20 +45,20 @@ const makeDir = (
   setPackageName: vi.fn<(name: string | undefined) => void>(),
   setSampleType: vi.fn<(name: string | undefined) => void>(),
   setName: vi.fn<(name: string | undefined) => void>(),
-  setSkipped: vi.fn<(skipped: boolean) => void>(),
-  setKeepStructure: vi.fn<(value: boolean) => void>(),
+  setEnabled: vi.fn<(value: boolean) => void>(),
+  setReadOnly: vi.fn<(value: boolean) => void>(),
 });
 
 const makeChild = (
   name: string,
-  opts: { path?: string; keepStructure?: boolean; skipped?: boolean } = {},
+  opts: { path?: string; readOnly?: boolean; enabled?: boolean } = {},
 ): TransformEntry => {
   const rootStub = makeRootStub();
   return createTransformEntry({
     name,
     path: opts.path ?? name,
-    keepStructure: opts.keepStructure,
-    skipped: opts.skipped,
+    readOnly: opts.readOnly,
+    enabled: opts.enabled,
     isFile: true,
     parentNode: rootStub,
   });
@@ -237,7 +236,7 @@ describe("createFlatPackPrefixTransformer", () => {
     it("does not rename a keepStructure child even if it carries the prefix", () => {
       const c1 = makeChild("Pack - 01 kick.wav");
       const c2 = makeChild("Pack - 02 snare.wav");
-      const c3 = makeChild("Pack - project.mid", { keepStructure: true });
+      const c3 = makeChild("Pack - project.mid", { readOnly: true });
       const dir = makeDir([c1, c2, c3]);
 
       const transformer = createFlatPackPrefixTransformer();
@@ -254,9 +253,9 @@ describe("createFlatPackPrefixTransformer", () => {
       const transformer = createFlatPackPrefixTransformer();
       transformer.transform(createFlatPackSource(dir, [c1, c2]));
 
-      expect(dir.setKeepStructure).not.toHaveBeenCalled();
-      expect(c1.setKeepStructure).not.toHaveBeenCalled();
-      expect(c2.setKeepStructure).not.toHaveBeenCalled();
+      expect(dir.setReadOnly).not.toHaveBeenCalled();
+      expect(c1.setReadOnly).not.toHaveBeenCalled();
+      expect(c2.setReadOnly).not.toHaveBeenCalled();
     });
   });
 });

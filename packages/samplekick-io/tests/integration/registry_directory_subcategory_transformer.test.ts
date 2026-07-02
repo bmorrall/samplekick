@@ -16,15 +16,15 @@ describe("DirectorySubcategoryTransformer integration", () => {
     registry.applyTransform(createDirectorySubcategoryTransformer());
     expect(registry.toString()).toBe(
       [
-        "Pack.zip",
-        "├── Drum Loops [type:Drum Loops]",
-        "│   └── Latin [type:Drum Loops - Latin]",
+        "Pack.zip [skipped]",
+        "├── Drum Loops [type:Drum Loops, skipped]",
+        "│   └── Latin [type:Drum Loops - Latin, skipped]",
         "│       └── loop.wav [?]",
-        "├── Melodies [type:Melodies]",
-        "│   └── Speed House [type:Melodies - Speed House]",
+        "├── Melodies [type:Melodies, skipped]",
+        "│   └── Speed House [type:Melodies - Speed House, skipped]",
         "│       └── melody.wav [?]",
-        "└── Bonks",
-        "    └── Unknown",
+        "└── Bonks [skipped]",
+        "    └── Unknown [skipped]",
         "        └── lead.wav [?]",
         "",
       ].join("\n"),
@@ -40,12 +40,12 @@ describe("DirectorySubcategoryTransformer integration", () => {
     registry.applyTransform(createDirectorySubcategoryTransformer());
     expect(registry.toString()).toBe(
       [
-        "Pack.zip",
-        "├── Drum Loops [type:Drum Loops]",
-        "│   └── Latin & Stems [type:Drum Loops - Latin]",
+        "Pack.zip [skipped]",
+        "├── Drum Loops [type:Drum Loops, skipped]",
+        "│   └── Latin & Stems [type:Drum Loops - Latin, skipped]",
         "│       └── loop.wav [?]",
-        "└── Melodies [type:Melodies]",
-        "    └── Speed House & MIDI [type:Melodies - Speed House]",
+        "└── Melodies [type:Melodies, skipped]",
+        "    └── Speed House & MIDI [type:Melodies - Speed House, skipped]",
         "        └── melody.wav [?]",
         "",
       ].join("\n"),
@@ -61,11 +61,11 @@ describe("DirectorySubcategoryTransformer integration", () => {
     registry.applyTransform(createDirectorySubcategoryTransformer());
     expect(registry.toString()).toBe(
       [
-        "Pack.zip",
-        "└── Drum Loops [type:Drum Loops]",
-        "    ├── Loop Stems",
+        "Pack.zip [skipped]",
+        "└── Drum Loops [type:Drum Loops, skipped]",
+        "    ├── Loop Stems [skipped]",
         "    │   └── loop.wav [?]",
-        "    └── Loop Steps",
+        "    └── Loop Steps [skipped]",
         "        └── loop.wav [?]",
         "",
       ].join("\n"),
@@ -80,9 +80,9 @@ describe("DirectorySubcategoryTransformer integration", () => {
     registry.applyTransform(createDirectorySubcategoryTransformer());
     expect(registry.toString()).toBe(
       [
-        "Pack.zip",
-        "└── Melodies [type:Melodies]",
-        "    └── MIDI",
+        "Pack.zip [skipped]",
+        "└── Melodies [type:Melodies, skipped]",
+        "    └── MIDI [skipped]",
         "        └── track.mid [?]",
         "",
       ].join("\n"),
@@ -99,14 +99,14 @@ describe("DirectorySubcategoryTransformer integration", () => {
     registry.applyTransform(createDirectorySubcategoryTransformer());
     expect(registry.toString()).toBe(
       [
-        "Pack.zip",
-        "├── Drums [type:Drums]",
-        "│   ├── 808s [type:Drums - 808s]",
+        "Pack.zip [skipped]",
+        "├── Drums [type:Drums, skipped]",
+        "│   ├── 808s [type:Drums - 808s, skipped]",
         "│   │   └── 808.wav [?]",
-        "│   └── 909s [type:Drums - 909s]",
+        "│   └── 909s [type:Drums - 909s, skipped]",
         "│       └── 909.wav [?]",
-        "└── Drum Loops [type:Drum Loops]",
-        "    └── 808s [type:Drum Loops - 808s]",
+        "└── Drum Loops [type:Drum Loops, skipped]",
+        "    └── 808s [type:Drum Loops - 808s, skipped]",
         "        └── 808.wav [?]",
         "",
       ].join("\n"),

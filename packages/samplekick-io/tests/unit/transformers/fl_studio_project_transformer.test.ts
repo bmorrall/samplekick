@@ -27,7 +27,7 @@ describe("createFLStudioProjectTransformer", () => {
       );
       const transformer = createFLStudioProjectTransformer();
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+      expect(entry.setReadOnly).toHaveBeenCalledWith(true);
     });
 
     it("matches .FLP extension case-insensitively", () => {
@@ -52,7 +52,7 @@ describe("createFLStudioProjectTransformer", () => {
       const transformer = createFLStudioProjectTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
-      expect(entry.setKeepStructure).not.toHaveBeenCalled();
+      expect(entry.setReadOnly).not.toHaveBeenCalled();
     });
   });
 
@@ -62,7 +62,7 @@ describe("createFLStudioProjectTransformer", () => {
       const transformer = createFLStudioProjectTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
-      expect(entry.setKeepStructure).not.toHaveBeenCalled();
+      expect(entry.setReadOnly).not.toHaveBeenCalled();
     });
   });
 
@@ -77,7 +77,7 @@ describe("createFLStudioProjectTransformer", () => {
         tagSampleType: false,
       });
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+      expect(entry.setReadOnly).toHaveBeenCalledWith(true);
       expect(entry.setSampleType).not.toHaveBeenCalled();
     });
 
@@ -91,7 +91,7 @@ describe("createFLStudioProjectTransformer", () => {
         tagSampleType: false,
       });
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setKeepStructure).not.toHaveBeenCalled();
+      expect(entry.setReadOnly).not.toHaveBeenCalled();
       expect(entry.setSampleType).not.toHaveBeenCalled();
     });
   });

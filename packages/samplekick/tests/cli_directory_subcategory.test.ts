@@ -33,7 +33,7 @@ describe("DirectorySubcategoryTransformer", () => {
       const row = csv
         .split("\n")
         .find((r) => r.startsWith("Drum Loops/Latin,"));
-      expect(row).toBe("Drum Loops/Latin,,,,Drum Loops - Latin,");
+      expect(row).toBe("Drum Loops/Latin,,,Drum Loops - Latin,false");
     } finally {
       await rm(tmpDir, { recursive: true });
     }
@@ -62,7 +62,7 @@ describe("DirectorySubcategoryTransformer", () => {
       const csv = await readFile(join(dataDir, configFile), "utf8");
 
       const row = csv.split("\n").find((r) => r.startsWith("Bonks/Latin,"));
-      expect(row).toBe("Bonks/Latin,,,,,");
+      expect(row).toBe("Bonks/Latin,,,,false");
     } finally {
       await rm(tmpDir, { recursive: true });
     }
@@ -93,7 +93,7 @@ describe("DirectorySubcategoryTransformer", () => {
       const row = csv
         .split("\n")
         .find((r) => r.startsWith("Melody One Shots,"));
-      expect(row).toBe("Melody One Shots,,,,Melodies,");
+      expect(row).toBe("Melody One Shots,,,Melodies,false");
     } finally {
       await rm(tmpDir, { recursive: true });
     }
@@ -124,12 +124,12 @@ describe("DirectorySubcategoryTransformer", () => {
       const parentRow = csv
         .split("\n")
         .find((r) => r.startsWith("Melody One Shots,"));
-      expect(parentRow).toBe("Melody One Shots,,,,Melodies,");
+      expect(parentRow).toBe("Melody One Shots,,,Melodies,false");
 
       const childRow = csv
         .split("\n")
         .find((r) => r.startsWith("Melody One Shots/Latin,"));
-      expect(childRow).toBe("Melody One Shots/Latin,,,,Melodies - Latin,");
+      expect(childRow).toBe("Melody One Shots/Latin,,,Melodies - Latin,false");
     } finally {
       await rm(tmpDir, { recursive: true });
     }
@@ -166,7 +166,7 @@ describe("DirectorySubcategoryTransformer", () => {
           ),
         );
       expect(row).toBe(
-        "Ghosthack x Boom - Sci-Fi Horror FX & Foley/Alien Technology,,,,Foley - Alien Technology,",
+        "Ghosthack x Boom - Sci-Fi Horror FX & Foley/Alien Technology,,,Foley - Alien Technology,false",
       );
     } finally {
       await rm(tmpDir, { recursive: true });

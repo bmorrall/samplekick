@@ -14,7 +14,7 @@ describe("createKeepPathsTransformer", () => {
 
     transformer.transform(singleEntryTransformSource(entry));
 
-    expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+    expect(entry.setReadOnly).toHaveBeenCalledWith(true);
   });
 
   it("sets keepStructure on directory entries", () => {
@@ -26,7 +26,7 @@ describe("createKeepPathsTransformer", () => {
 
     transformer.transform(singleEntryTransformSource(entry));
 
-    expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+    expect(entry.setReadOnly).toHaveBeenCalledWith(true);
   });
 
   it("sets keepStructure on the root entry", () => {
@@ -38,6 +38,6 @@ describe("createKeepPathsTransformer", () => {
 
     transformer.transform(singleEntryTransformSource(entry));
 
-    expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+    expect(entry.setReadOnly).toHaveBeenCalledWith(true);
   });
 });

@@ -22,11 +22,12 @@ class JsonDigestEntry implements DigestEntry {
   getSampleType(): string | undefined {
     return this.data.sampleType;
   }
-  isSkipped(): boolean | undefined {
-    return this.data.isSkipped;
+  rawEnabled(): boolean | undefined {
+    return this.data.enabled;
   }
-  isKeepStructure(): boolean | undefined {
-    return this.data.isKeepStructure;
+
+  isEnabled(): boolean {
+    return this.rawEnabled() ?? false;
   }
 }
 
@@ -58,8 +59,7 @@ const parseEntry = (value: unknown): DataSourceEntryJSON => {
     name: getOptionalString(value, "name"),
     packageName: getOptionalString(value, "packageName"),
     sampleType: getOptionalString(value, "sampleType"),
-    isSkipped: getOptionalBoolean(value, "isSkipped"),
-    isKeepStructure: getOptionalBoolean(value, "isKeepStructure"),
+    enabled: getOptionalBoolean(value, "enabled"),
   };
 };
 

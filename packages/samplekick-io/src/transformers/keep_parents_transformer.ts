@@ -35,7 +35,7 @@ export const createKeepParentsTransformer = (levels = 1): Transform => ({
     if (pathsToKeep.size > 0) {
       source.eachTransformEntry((entry) => {
         if (pathsToKeep.has(entry.getPath())) {
-          entry.setKeepStructure(true);
+          entry.setEnabled(true);
         }
       });
     }

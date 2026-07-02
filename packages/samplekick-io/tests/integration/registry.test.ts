@@ -280,10 +280,12 @@ describe("Registry", () => {
     ]);
     registry.setPackageName("my-pack");
     registry.setSampleType("loops");
-    registry.setKeepStructure("a", true);
+    registry.setEnabled("a", true);
     registry.setPathStrategy(OrganisedPathStrategy);
 
-    expect(registry.destinationPathFor("a/b/c")).toBe("loops/my-pack/a/b/c");
+    // Only explicitly-enabled directories appear in the path; non-enabled
+    // intermediaries (b) are skipped.
+    expect(registry.destinationPathFor("a/b/c")).toBe("loops/my-pack/a/c");
   });
 });
 

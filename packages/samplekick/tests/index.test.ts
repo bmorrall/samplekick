@@ -150,12 +150,12 @@ describe("samplekick CLI", () => {
       expect(result.stderr).toBe("");
       const lines = result.stdout.trim().split("\n");
       expect(lines).toHaveLength(7);
-      expect(lines[1]).toBe(",,test-pack.zip,,,");
-      expect(lines[2]).toBe(".DS_Store,,,,,true");
-      expect(lines[3]).toBe("Drums,,,,,");
-      expect(lines[4]).toBe("Drums/kick.wav,,,,,");
-      expect(lines[5]).toBe("Loops,,,,,");
-      expect(lines[6]).toBe("Loops/bass.wav,,,,,");
+      expect(lines[1]).toBe(",test-pack.zip,,,false");
+      expect(lines[2]).toBe(".DS_Store,,,,false");
+      expect(lines[3]).toBe("Drums,,,,false");
+      expect(lines[4]).toBe("Drums/kick.wav,,,,true");
+      expect(lines[5]).toBe("Loops,,,,false");
+      expect(lines[6]).toBe("Loops/bass.wav,,,,true");
 
       expect(result.status).toBe(0);
     } finally {
@@ -229,8 +229,8 @@ describe("samplekick CLI", () => {
 
       expect(result.stderr).toBe("");
       expect(result.stdout).toContain("skipped: Drums/.DS_Store");
-      expect(result.stdout).toContain("skipped: __MACOSX (1 file)");
-      expect(result.stdout).not.toContain("skipped: __MACOSX/Drums/._kick.wav");
+      expect(result.stdout).toContain("skipped: __MACOSX/Drums/._kick.wav");
+      expect(result.stdout).not.toContain("skipped: __MACOSX (1 file)");
       await expect(
         stat(join(outputDir, "__MACOSX/Drums/._kick.wav")),
       ).rejects.toThrow();

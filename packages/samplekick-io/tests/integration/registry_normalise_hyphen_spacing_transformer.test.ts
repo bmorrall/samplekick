@@ -14,16 +14,16 @@ describe("NormaliseHyphenSpacingTransformer integration", () => {
     registry.applyTransform(createNormaliseHyphenSpacingTransformer());
     expect(registry.toString()).toBe(
       [
-        "root",
-        "├── Drums - Bass [renamed]",
+        "root [skipped]",
+        "├── Drums - Bass [renamed, skipped]",
         "│   └── kick.wav [?]",
-        "├── Kicks - Snares [renamed]",
+        "├── Kicks - Snares [renamed, skipped]",
         "│   └── snare.wav [?]",
-        "├── Hi-Hats",
+        "├── Hi-Hats [skipped]",
         "│   └── hat.wav [?]",
-        "├── Drums_-_Bass [renamed]",
+        "├── Drums_-_Bass [renamed, skipped]",
         "│   └── kick.wav [?]",
-        "└── Kicks_-_Snares [renamed]",
+        "└── Kicks_-_Snares [renamed, skipped]",
         "    └── snare.wav [?]",
         "",
       ].join("\n"),

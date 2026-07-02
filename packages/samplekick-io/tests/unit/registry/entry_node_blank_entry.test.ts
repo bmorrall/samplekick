@@ -8,8 +8,8 @@ describe("EntryNode.blankEntry", () => {
     expect(node.getPath()).toBe("test/path");
     expect(node.getPackageName()).toBeUndefined();
     expect(node.getSampleType()).toBeUndefined();
-    expect(node.isSkipped()).toBeUndefined();
-    expect(node.isKeepStructure()).toBeUndefined();
+    expect(node.isEnabled()).toBe(false);
+    expect(node.isEnabled()).toBe(false);
     expect(node.isFile()).toBe(false);
   });
 });
@@ -21,8 +21,8 @@ describe("EntryNode.buildRootNode", () => {
     expect(node.getPath()).toBe("");
     expect(node.getPackageName()).toBeUndefined();
     expect(node.getSampleType()).toBeUndefined();
-    expect(node.isSkipped()).toBeUndefined();
-    expect(node.isKeepStructure()).toBeUndefined();
+    expect(node.isEnabled()).toBe(false);
+    expect(node.isEnabled()).toBe(false);
     expect(node.isFile()).toBe(false);
   });
 });

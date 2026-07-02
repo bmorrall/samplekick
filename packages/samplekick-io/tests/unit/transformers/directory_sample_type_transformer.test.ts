@@ -59,7 +59,7 @@ describe("createDirectorySampleTypeTransformer", () => {
       );
       const transformer = createDirectorySampleTypeTransformer();
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setKeepStructure).not.toHaveBeenCalled();
+      expect(entry.setReadOnly).not.toHaveBeenCalled();
     });
   });
 
@@ -399,7 +399,7 @@ describe("createDirectorySampleTypeTransformer", () => {
       const transformer = createDirectorySampleTypeTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
-      expect(entry.setKeepStructure).not.toHaveBeenCalled();
+      expect(entry.setReadOnly).not.toHaveBeenCalled();
     });
 
     it("does not set sampleType when the parent is also unrecognised", () => {
@@ -411,7 +411,7 @@ describe("createDirectorySampleTypeTransformer", () => {
       const transformer = createDirectorySampleTypeTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
-      expect(entry.setKeepStructure).not.toHaveBeenCalled();
+      expect(entry.setReadOnly).not.toHaveBeenCalled();
     });
   });
 

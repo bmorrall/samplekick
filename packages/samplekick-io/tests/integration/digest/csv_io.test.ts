@@ -106,17 +106,17 @@ describe("CSV I/O", () => {
       "Melodic Loops - Bebop",
       undefined,
     ]);
-    expect(result.map((e) => e.isSkipped())).toEqual([
-      undefined,
-      undefined,
-      undefined,
-      undefined,
+    expect(result.map((e) => e.isEnabled())).toEqual([
+      false,
+      false,
+      false,
+      true,
     ]);
-    expect(result.map((e) => e.isKeepStructure())).toEqual([
-      undefined,
-      undefined,
-      undefined,
-      undefined,
+    expect(result.map((e) => e.isEnabled())).toEqual([
+      false,
+      false,
+      false,
+      true,
     ]);
   });
 
@@ -200,8 +200,8 @@ describe("CSV I/O", () => {
     const registry = createRegistry("library", [
       createFileEntry({ path: "jazz/track01" }),
     ]);
-    registry.setSkipped("jazz", true);
-    registry.setKeepStructure("jazz", true);
+    registry.setEnabled("jazz", false);
+    registry.setEnabled("jazz", true);
 
     const output = collectOutput((stream) => {
       const writer = new CsvDigestWriter(stream);
@@ -212,16 +212,16 @@ describe("CSV I/O", () => {
     const result = collectDigestEntries(reader);
 
     const [, entry] = result;
-    expect(entry.isSkipped()).toBe(true);
-    expect(entry.isKeepStructure()).toBe(true);
+    expect(entry.isEnabled()).toBe(true);
+    expect(entry.isEnabled()).toBe(true);
   });
 
-  it("omits children of skipped directories from config output", () => {
+  it("includes children of disabled directories in config output", () => {
     const registry = createRegistry("library", [
       createFileEntry({ path: "__MACOSX/file1.wav" }),
       createFileEntry({ path: "jazz/track01" }),
     ]);
-    registry.setSkipped("__MACOSX", true);
+    registry.setEnabled("__MACOSX", false);
 
     const output = collectOutput((stream) => {
       const writer = new CsvDigestWriter(stream);
@@ -233,7 +233,7 @@ describe("CSV I/O", () => {
     const paths = result.map((e) => e.getPath());
 
     expect(paths).toContain("__MACOSX");
-    expect(paths).not.toContain("__MACOSX/file1.wav");
+    expect(paths).toContain("__MACOSX/file1.wav");
     expect(paths).toContain("jazz/track01");
   });
 
@@ -243,7 +243,7 @@ describe("CSV I/O", () => {
       createFileEntry({ path: "My Project/samples/kick.wav" }),
       createFileEntry({ path: "jazz/track01" }),
     ]);
-    registry.setKeepStructure("My Project", true);
+    registry.setEnabled("My Project", true);
 
     const output = collectOutput((stream) => {
       const writer = new CsvDigestWriter(stream);
@@ -297,7 +297,7 @@ describe("CSV I/O", () => {
       new CsvDigestReader(Readable.from([output])),
     );
     expect(restoredEmptyRegistry.toString()).toBe(
-      "Renamed Library [?] [pkg:library-pack]\n",
+      "Renamed Library [pkg:library-pack, skipped]\n",
     );
 
     const restoredRegistryWithFiles = createRegistry("library", [

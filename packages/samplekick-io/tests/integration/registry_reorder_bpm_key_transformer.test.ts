@@ -12,12 +12,12 @@ describe("ReorderBpmKeyTransformer integration", () => {
     registry.applyTransform(createReorderBpmKeyTransformer());
     expect(registry.toString()).toBe(
       [
-        "root",
-        "├── Amin 120bpm [renamed]",
+        "root [skipped]",
+        "├── Amin 120bpm [renamed, skipped]",
         "│   └── lead.wav [?]",
-        "├── Cmaj 90bpm",
+        "├── Cmaj 90bpm [skipped]",
         "│   └── bass.wav [?]",
-        "└── Drums",
+        "└── Drums [skipped]",
         "    └── kick.wav [?]",
         "",
       ].join("\n"),

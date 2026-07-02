@@ -27,7 +27,7 @@ describe("createAbletonProjectTransformer", () => {
       );
       const transformer = createAbletonProjectTransformer();
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+      expect(entry.setReadOnly).toHaveBeenCalledWith(true);
     });
 
     it("matches .ALS extension case-insensitively", () => {
@@ -52,7 +52,7 @@ describe("createAbletonProjectTransformer", () => {
       const transformer = createAbletonProjectTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
-      expect(entry.setKeepStructure).not.toHaveBeenCalled();
+      expect(entry.setReadOnly).not.toHaveBeenCalled();
     });
   });
 
@@ -76,7 +76,7 @@ describe("createAbletonProjectTransformer", () => {
       );
       const transformer = createAbletonProjectTransformer();
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+      expect(entry.setReadOnly).toHaveBeenCalledWith(true);
     });
 
     it('does not match a differently-cased "ableton folder info"', () => {
@@ -97,7 +97,7 @@ describe("createAbletonProjectTransformer", () => {
       const transformer = createAbletonProjectTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
-      expect(entry.setKeepStructure).not.toHaveBeenCalled();
+      expect(entry.setReadOnly).not.toHaveBeenCalled();
     });
   });
 
@@ -112,7 +112,7 @@ describe("createAbletonProjectTransformer", () => {
         tagSampleType: false,
       });
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+      expect(entry.setReadOnly).toHaveBeenCalledWith(true);
       expect(entry.setSampleType).not.toHaveBeenCalled();
     });
 
@@ -126,7 +126,7 @@ describe("createAbletonProjectTransformer", () => {
         tagSampleType: false,
       });
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setKeepStructure).not.toHaveBeenCalled();
+      expect(entry.setReadOnly).not.toHaveBeenCalled();
       expect(entry.setSampleType).not.toHaveBeenCalled();
     });
   });

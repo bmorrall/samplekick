@@ -36,7 +36,7 @@ describe("SP404Mk2ProjectTransformer", () => {
       const dirRow = csv
         .split("\n")
         .find((row) => row.startsWith("MY_PROJECT,"));
-      expect(dirRow).toBe("MY_PROJECT,true,,,SP-404MKII Projects,");
+      expect(dirRow).toBe("MY_PROJECT,,,SP-404MKII Projects,true");
     } finally {
       await rm(tmpDir, { recursive: true });
     }

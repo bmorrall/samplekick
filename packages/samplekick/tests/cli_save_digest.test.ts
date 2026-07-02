@@ -36,8 +36,8 @@ describe("--save-digest flag", () => {
   it("saves auto-tags to the data dir when --save-digest is combined with --digest", async () => {
     const zipped = zipSync({ "Drums/kick.wav": strToU8("kick-data") });
     const config = [
-      "path,keepPath,name,packageName,sampleType,skip",
-      "Drums/kick.wav,,custom_kick.wav,,,",
+      "path,name,packageName,sampleType,enabled",
+      "Drums/kick.wav,custom_kick.wav,,,",
     ].join("\n");
 
     const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-save-digest-"));
@@ -72,8 +72,8 @@ describe("--save-digest flag", () => {
   it("does not save to the data dir without --save-digest when --digest is passed", async () => {
     const zipped = zipSync({ "Drums/kick.wav": strToU8("kick-data") });
     const config = [
-      "path,keepPath,name,packageName,sampleType,skip",
-      "Drums/kick.wav,,custom_kick.wav,,,",
+      "path,name,packageName,sampleType,enabled",
+      "Drums/kick.wav,custom_kick.wav,,,",
     ].join("\n");
 
     const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-save-digest-"));

@@ -426,7 +426,7 @@ describe("createNormaliseKeyTagTransformer", () => {
   it("does not act on a keepStructure entry", () => {
     const entry = createTransformEntry({
       name: "Chord C Major.wav",
-      keepStructure: true,
+      readOnly: true,
     });
     const transformer = createNormaliseKeyTagTransformer();
     transformer.transform(singleEntryTransformSource(entry));
@@ -436,7 +436,7 @@ describe("createNormaliseKeyTagTransformer", () => {
   it("does not act on a skipped entry", () => {
     const entry = createTransformEntry({
       name: "Chord C Major.wav",
-      skipped: true,
+      enabled: false,
     });
     const transformer = createNormaliseKeyTagTransformer();
     transformer.transform(singleEntryTransformSource(entry));

@@ -52,10 +52,10 @@ describe("KeepParentsTransformer", () => {
       const csv = await readFile(join(dataDir, configFile), "utf8");
       expect(csv).toBe(
         [
-          "path,keepPath,name,packageName,sampleType,skip",
-          ",,test-pack.zip,test-pack,Packs,",
-          "Kicks,true,,,Kicks,",
-          "Snares,true,,,Snares,",
+          "path,name,packageName,sampleType,enabled",
+          ",test-pack.zip,test-pack,Packs,false",
+          "Kicks,,,Kicks,true",
+          "Snares,,,Snares,true",
         ].join("\n"),
       );
 
@@ -97,10 +97,10 @@ describe("KeepParentsTransformer", () => {
       const csv = await readFile(join(dataDir, configFile), "utf8");
       expect(csv).toBe(
         [
-          "path,keepPath,name,packageName,sampleType,skip",
-          ",,test-pack.zip,test-pack,Packs,",
-          "Kicks,,,,Kicks,",
-          "Kicks/kick.wav,,,,,",
+          "path,name,packageName,sampleType,enabled",
+          ",test-pack.zip,test-pack,Packs,false",
+          "Kicks,,,Kicks,false",
+          "Kicks/kick.wav,,,,true",
         ].join("\n"),
       );
     } finally {
@@ -136,10 +136,10 @@ describe("KeepParentsTransformer", () => {
       const csv = await readFile(join(dataDir, configFile), "utf8");
       expect(csv).toBe(
         [
-          "path,keepPath,name,packageName,sampleType,skip",
-          ",,test-pack.zip,test-pack,Packs,",
-          "Kicks,true,,,,",
-          "Snares,true,,,,",
+          "path,name,packageName,sampleType,enabled",
+          ",test-pack.zip,test-pack,Packs,false",
+          "Kicks,,,,true",
+          "Snares,,,,true",
         ].join("\n"),
       );
     } finally {
@@ -175,16 +175,16 @@ describe("KeepParentsTransformer", () => {
       const csv = await readFile(join(dataDir, configFile), "utf8");
       expect(csv).toBe(
         [
-          "path,keepPath,name,packageName,sampleType,skip",
-          ",,test-pack.zip,test-pack,Packs,",
+          "path,name,packageName,sampleType,enabled",
+          ",test-pack.zip,test-pack,Packs,false",
           // Guitar Pack has no direct file children — appears without keepPath
           // so it can be individually toggled in the config
-          "Guitar Pack,,,,,",
+          "Guitar Pack,,,,false",
           // samples has readme.txt directly, so keepPath=true
-          "Guitar Pack/samples,true,,,,",
+          "Guitar Pack/samples,,,,true",
           // guitar_stuff has its own keepPath=true so it also appears,
           // allowing it to be toggled independently
-          "Guitar Pack/samples/guitar_stuff,true,,,,",
+          "Guitar Pack/samples/guitar_stuff,,,,true",
         ].join("\n"),
       );
     } finally {
@@ -216,10 +216,10 @@ describe("KeepParentsTransformer", () => {
       const csv = await readFile(join(dataDir, configFile), "utf8");
       expect(csv).toBe(
         [
-          "path,keepPath,name,packageName,sampleType,skip",
-          ",,test-pack.zip,test-pack,Packs,",
-          "Kicks,true,,,,",
-          "Snares,true,,,,",
+          "path,name,packageName,sampleType,enabled",
+          ",test-pack.zip,test-pack,Packs,false",
+          "Kicks,,,,true",
+          "Snares,,,,true",
         ].join("\n"),
       );
     } finally {
@@ -255,11 +255,11 @@ describe("KeepParentsTransformer", () => {
       const csv = await readFile(join(dataDir, configFile), "utf8");
       expect(csv).toBe(
         [
-          "path,keepPath,name,packageName,sampleType,skip",
-          ",,test-pack.zip,test-pack,Packs,",
-          "Drums,true,,,,",
-          "Drums/Kicks,true,,,,",
-          "Drums/Snares,true,,,,",
+          "path,name,packageName,sampleType,enabled",
+          ",test-pack.zip,test-pack,Packs,false",
+          "Drums,,,,true",
+          "Drums/Kicks,,,,true",
+          "Drums/Snares,,,,true",
         ].join("\n"),
       );
     } finally {

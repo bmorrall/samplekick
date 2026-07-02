@@ -7,8 +7,7 @@ export interface DataSourceEntryJSON {
   name?: string;
   packageName: string | undefined;
   sampleType: string | undefined;
-  isSkipped: boolean | undefined;
-  isKeepStructure: boolean | undefined;
+  enabled: boolean | undefined;
 }
 
 const JSON_INDENT = 2;
@@ -22,8 +21,7 @@ const serializeEntry = (entry: DigestEntry): DataSourceEntryJSON => {
     name: name === getPathName(path) ? undefined : name,
     packageName: entry.getPackageName(),
     sampleType: entry.getSampleType(),
-    isSkipped: entry.isSkipped(),
-    isKeepStructure: entry.isKeepStructure(),
+    enabled: entry.isEnabled(),
   };
 };
 

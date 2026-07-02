@@ -12,12 +12,12 @@ describe("NormaliseDashesTransformer integration", () => {
     registry.applyTransform(createNormaliseDashesTransformer());
     expect(registry.toString()).toBe(
       [
-        "root",
-        "├── Drums - Bass [renamed]",
+        "root [skipped]",
+        "├── Drums - Bass [renamed, skipped]",
         "│   └── kick.wav [?]",
-        "├── Hi-Hats [renamed]",
+        "├── Hi-Hats [renamed, skipped]",
         "│   └── hat.wav [?]",
-        "└── Normal-Folder",
+        "└── Normal-Folder [skipped]",
         "    └── snare.wav [?]",
         "",
       ].join("\n"),

@@ -149,7 +149,7 @@ describe("createDirectorySampleTypeTransformer", () => {
       );
       const transformer = createDirectorySampleTypeTransformer();
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setKeepStructure).not.toHaveBeenCalled();
+      expect(entry.setReadOnly).not.toHaveBeenCalled();
     });
 
     it('sets sampleType to "Melody Loops" for "Melody Loops"', () => {
@@ -283,7 +283,7 @@ describe("createDirectorySampleTypeTransformer", () => {
       );
       const transformer = createDirectorySampleTypeTransformer();
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setKeepStructure).not.toHaveBeenCalled();
+      expect(entry.setReadOnly).not.toHaveBeenCalled();
     });
 
     it('sets sampleType to "Melody One Shots" for "Melody One Shots"', () => {

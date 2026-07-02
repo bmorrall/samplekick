@@ -92,7 +92,7 @@ describe("createDrumSubcategoryTransformer", () => {
       );
       const transformer = createDrumSubcategoryTransformer();
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setKeepStructure).not.toHaveBeenCalled();
+      expect(entry.setReadOnly).not.toHaveBeenCalled();
     });
   });
 
@@ -150,7 +150,7 @@ describe("createDrumSubcategoryTransformer", () => {
       const transformer = createDrumSubcategoryTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
-      expect(entry.setKeepStructure).not.toHaveBeenCalled();
+      expect(entry.setReadOnly).not.toHaveBeenCalled();
     });
   });
 
@@ -267,7 +267,7 @@ describe("createDrumSubcategoryTransformer", () => {
       const transformer = createDrumSubcategoryTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
-      expect(entry.setKeepStructure).not.toHaveBeenCalled();
+      expect(entry.setReadOnly).not.toHaveBeenCalled();
     });
 
     it("does not set sampleType for a bare 'Drums' folder", () => {
@@ -279,7 +279,7 @@ describe("createDrumSubcategoryTransformer", () => {
       const transformer = createDrumSubcategoryTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
-      expect(entry.setKeepStructure).not.toHaveBeenCalled();
+      expect(entry.setReadOnly).not.toHaveBeenCalled();
     });
   });
 });

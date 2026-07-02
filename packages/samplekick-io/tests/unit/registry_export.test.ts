@@ -72,7 +72,7 @@ describe("Registry.exportToDirectory", () => {
     const entry = createCopyableEntry("a.wav");
     const registry = new Registry(createFileSource("root", [entry]));
     registry.setPathStrategy(OrganisedPathStrategy);
-    registry.setSkipped("a.wav", true);
+    registry.setEnabled("a.wav", false);
     registry.setPackageName("my-pack");
     registry.setSampleType("loops");
     const onReject = vi.fn<(entry: DigestEntry, reason: string) => void>();
@@ -86,7 +86,7 @@ describe("Registry.exportToDirectory", () => {
     const entry = createCopyableEntry("a.wav");
     const registry = new Registry(createFileSource("root", [entry]));
     registry.setPathStrategy(OrganisedPathStrategy);
-    registry.setSkipped("a.wav", true);
+    registry.setEnabled("a.wav", false);
     registry.setPackageName("my-pack");
     registry.setSampleType("loops");
 
@@ -98,7 +98,7 @@ describe("Registry.exportToDirectory", () => {
   it("calls onSkip with the entry when isSkipped is true", async () => {
     const entry = createCopyableEntry("a.wav");
     const registry = new Registry(createFileSource("root", [entry]));
-    registry.setSkipped("a.wav", true);
+    registry.setEnabled("a.wav", false);
     const onSkip = vi.fn<(entry: DigestEntry) => void>();
 
     await registry.exportToDirectory("/output", { onSkip });

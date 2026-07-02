@@ -16,12 +16,12 @@ describe("DirectorySegmentSuffixTransformer integration", () => {
     registry.applyTransform(createDirectorySegmentSuffixTransformer());
     expect(registry.toString()).toBe(
       [
-        "Pack.zip",
-        "├── Cymatics - Phoenix Vocal Loops [type:Vocal Loops]",
+        "Pack.zip [skipped]",
+        "├── Cymatics - Phoenix Vocal Loops [type:Vocal Loops, skipped]",
         "│   └── loop.wav [?]",
-        "├── Brand - My Drum Loops [type:Drum Loops]",
+        "├── Brand - My Drum Loops [type:Drum Loops, skipped]",
         "│   └── kick.wav [?]",
-        "└── Label - Unknown Category",
+        "└── Label - Unknown Category [skipped]",
         "    └── hit.wav [?]",
         "",
       ].join("\n"),
@@ -39,9 +39,9 @@ describe("DirectorySegmentSuffixTransformer integration", () => {
     registry.applyTransform(createDirectorySubcategoryTransformer());
     expect(registry.toString()).toBe(
       [
-        "Pack.zip",
-        "└── Cymatics - Phoenix Vocal Loops [type:Vocal Loops]",
-        "    └── Latin [type:Vocal Loops - Latin]",
+        "Pack.zip [skipped]",
+        "└── Cymatics - Phoenix Vocal Loops [type:Vocal Loops, skipped]",
+        "    └── Latin [type:Vocal Loops - Latin, skipped]",
         "        └── loop.wav [?]",
         "",
       ].join("\n"),
@@ -57,8 +57,8 @@ describe("DirectorySegmentSuffixTransformer integration", () => {
     registry.applyTransform(createDirectorySegmentSuffixTransformer());
     expect(registry.toString()).toBe(
       [
-        "Pack.zip",
-        "└── Brand - Signature Vocals - Phoenix Drum Loops",
+        "Pack.zip [skipped]",
+        "└── Brand - Signature Vocals - Phoenix Drum Loops [skipped]",
         "    └── sample.wav [?]",
         "",
       ].join("\n"),

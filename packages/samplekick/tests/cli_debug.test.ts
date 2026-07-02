@@ -14,8 +14,8 @@ describe("--debug flag", () => {
       "Loops/bass.wav": strToU8("bass-data"),
     });
     const config = [
-      "path,keepPath,name,packageName,sampleType,skip",
-      "Drums/kick.wav,,kick_01.wav,,,",
+      "path,name,packageName,sampleType,enabled",
+      "Drums/kick.wav,kick_01.wav,,,",
     ].join("\n");
 
     const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
@@ -34,10 +34,10 @@ describe("--debug flag", () => {
 
       expect(result.stderr).toBe("");
       const expected = [
-        "test-pack.zip",
-        "├── Drums",
+        "test-pack.zip [skipped]",
+        "├── Drums [skipped]",
         "│   └── kick_01.wav [?] [renamed]",
-        "└── Loops",
+        "└── Loops [skipped]",
         "    └── bass.wav [?]",
       ].join("\n");
       expect(result.stdout.trim()).toBe(expected);
@@ -54,9 +54,9 @@ describe("--debug flag", () => {
       "Loops/bass.wav": strToU8("bass-data"),
     });
     const config = [
-      "path,keepPath,name,packageName,sampleType,skip",
-      "Drums,,,my-pack,Percussion,",
-      "Drums/kick.wav,,kick_01.wav,,,",
+      "path,name,packageName,sampleType,enabled",
+      "Drums,,my-pack,Percussion,",
+      "Drums/kick.wav,kick_01.wav,,,",
     ].join("\n");
 
     const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
@@ -77,10 +77,10 @@ describe("--debug flag", () => {
       const expected = [
         `Reading: ${zipPath}`,
         `Using digest: ${configPath}`,
-        "test-pack.zip",
-        "├── Drums [pkg:my-pack, type:Percussion]",
+        "test-pack.zip [skipped]",
+        "├── Drums [pkg:my-pack, type:Percussion, skipped]",
         "│   └── kick_01.wav [renamed, pkg:my-pack, type:Percussion, orig:kick.wav]",
-        "└── Loops",
+        "└── Loops [skipped]",
         "    └── bass.wav [?]",
       ].join("\n");
       expect(result.stdout.trim()).toBe(expected);

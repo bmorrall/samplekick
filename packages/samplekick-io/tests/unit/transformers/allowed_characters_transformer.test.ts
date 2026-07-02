@@ -74,8 +74,8 @@ describe("createAllowedCharactersTransform", () => {
     transform.transform(singleEntryTransformSource(entry));
     expect(entry.setPackageName).not.toHaveBeenCalled();
     expect(entry.setSampleType).not.toHaveBeenCalled();
-    expect(entry.setSkipped).not.toHaveBeenCalled();
-    expect(entry.setKeepStructure).not.toHaveBeenCalled();
+    expect(entry.setEnabled).not.toHaveBeenCalled();
+    expect(entry.setReadOnly).not.toHaveBeenCalled();
   });
 
   it("does not modify any fields when keepStructure is true", () => {
@@ -83,7 +83,7 @@ describe("createAllowedCharactersTransform", () => {
       name: "Drüms",
       packageName: "Påck",
       sampleType: "Drüms",
-      keepStructure: true,
+      readOnly: true,
     });
     transform.transform(singleEntryTransformSource(entry));
     expect(entry.setName).not.toHaveBeenCalled();

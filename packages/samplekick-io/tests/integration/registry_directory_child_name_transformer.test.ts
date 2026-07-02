@@ -16,11 +16,11 @@ describe("DirectoryChildNameTransformer integration", () => {
     registry.applyTransform(createDirectoryChildNameTransformer());
     expect(registry.toString()).toBe(
       [
-        "Pack.zip",
-        "├── Cymatics - Nebula [type:Foley]",
+        "Pack.zip [skipped]",
+        "├── Cymatics - Nebula [type:Foley, skipped]",
         "│   ├── Cymatics - Foley - Coin Drop 1.wav [?]",
         "│   └── Cymatics - Foley - Metal Hit.wav [?]",
-        "└── Unknown Brand",
+        "└── Unknown Brand [skipped]",
         "    └── Unknown Category - Hit.wav [?]",
         "",
       ].join("\n"),
@@ -35,8 +35,8 @@ describe("DirectoryChildNameTransformer integration", () => {
     registry.applyTransform(createDirectoryChildNameTransformer());
     expect(registry.toString()).toBe(
       [
-        "Pack.zip",
-        "└── My Pack",
+        "Pack.zip [skipped]",
+        "└── My Pack [skipped]",
         "    ├── Brand - Foley - Hit.wav [?]",
         "    └── Brand - Drums - Kick.wav [?]",
         "",
@@ -51,8 +51,8 @@ describe("DirectoryChildNameTransformer integration", () => {
     registry.applyTransform(createDirectoryChildNameTransformer());
     expect(registry.toString()).toBe(
       [
-        "Pack.zip",
-        "└── Foley",
+        "Pack.zip [skipped]",
+        "└── Foley [skipped]",
         "    └── Brand - Drums - Kick.wav [?]",
         "",
       ].join("\n"),

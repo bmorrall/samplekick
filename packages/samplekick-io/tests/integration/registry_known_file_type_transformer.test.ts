@@ -11,10 +11,10 @@ describe("KnownFileTypeTransformer integration", () => {
     registry.applyTransform(createKnownFileTypeTransformer());
     expect(registry.toString()).toBe(
       [
-        "root",
-        "├── projects",
-        "│   ┗━━ song.dnprj [?] [type:Digitone Projects]",
-        "└── samples",
+        "root [skipped]",
+        "├── projects [skipped]",
+        "│   └── song.dnprj [?] [type:Digitone Projects]",
+        "└── samples [skipped]",
         "    └── kick.wav [?]",
         "",
       ].join("\n"),
@@ -29,10 +29,10 @@ describe("KnownFileTypeTransformer integration", () => {
     registry.applyTransform(createKnownFileTypeTransformer());
     expect(registry.toString()).toBe(
       [
-        "root",
-        "├── sounds",
-        "│   ┗━━ patch.dnsnd [?] [type:Digitone Sounds]",
-        "└── samples",
+        "root [skipped]",
+        "├── sounds [skipped]",
+        "│   └── patch.dnsnd [?] [type:Digitone Sounds]",
+        "└── samples [skipped]",
         "    └── kick.wav [?]",
         "",
       ].join("\n"),
@@ -47,10 +47,10 @@ describe("KnownFileTypeTransformer integration", () => {
     registry.applyTransform(createKnownFileTypeTransformer());
     expect(registry.toString()).toBe(
       [
-        "root",
-        "├── presets",
-        "│   ┗━━ bass.fxp [?] [type:Serum Presets]",
-        "└── samples",
+        "root [skipped]",
+        "├── presets [skipped]",
+        "│   └── bass.fxp [?] [type:Serum Presets]",
+        "└── samples [skipped]",
         "    └── kick.wav [?]",
         "",
       ].join("\n"),

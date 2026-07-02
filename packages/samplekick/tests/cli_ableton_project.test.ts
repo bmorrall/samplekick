@@ -35,7 +35,7 @@ describe("AbletonProjectTransformer", () => {
       const dirRow = csv
         .split("\n")
         .find((row) => row.startsWith("My Project,"));
-      expect(dirRow).toBe("My Project,true,,,,");
+      expect(dirRow).toBe("My Project,,,,true");
     } finally {
       await rm(tmpDir, { recursive: true });
     }
@@ -68,7 +68,7 @@ describe("AbletonProjectTransformer", () => {
       const dirRow = csv
         .split("\n")
         .find((row) => row.startsWith("My Project,"));
-      expect(dirRow).toBe("My Project,true,,,Ableton Projects,");
+      expect(dirRow).toBe("My Project,,,Ableton Projects,true");
     } finally {
       await rm(tmpDir, { recursive: true });
     }

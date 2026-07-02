@@ -32,15 +32,13 @@ describe("JsonDigestReader", () => {
             name: "Alt Track 01",
             packageName: "jazz-pack",
             sampleType: "Bebop",
-            isSkipped: true,
-            isKeepStructure: true,
+            enabled: false,
           },
           {
             path: "rock/track01",
             packageName: undefined,
             sampleType: undefined,
-            isSkipped: false,
-            isKeepStructure: false,
+            enabled: true,
           },
         ]),
       ]),
@@ -54,14 +52,12 @@ describe("JsonDigestReader", () => {
     expect(firstEntry.getName()).toBe("Alt Track 01");
     expect(firstEntry.getPackageName()).toBe("jazz-pack");
     expect(firstEntry.getSampleType()).toBe("Bebop");
-    expect(firstEntry.isSkipped()).toBe(true);
-    expect(firstEntry.isKeepStructure()).toBe(true);
+    expect(firstEntry.isEnabled()).toBe(false);
     expect(secondEntry.getPath()).toBe("rock/track01");
     expect(secondEntry.getName()).toBe("track01");
     expect(secondEntry.getPackageName()).toBeUndefined();
     expect(secondEntry.getSampleType()).toBeUndefined();
-    expect(secondEntry.isSkipped()).toBe(false);
-    expect(secondEntry.isKeepStructure()).toBe(false);
+    expect(secondEntry.isEnabled()).toBe(true);
   });
 
   it("does not call the callback when the serialized array is empty", () => {
@@ -88,7 +84,7 @@ describe("JsonDigestReader", () => {
   it("ignores invalid optional values when an entry has a valid path", () => {
     const reader = new JsonDigestReader(
       Readable.from([
-        '[{"path":"jazz/track01","packageName":123,"sampleType":false,"isSkipped":"yes","isKeepStructure":1}]',
+        '[{"path":"jazz/track01","packageName":123,"sampleType":false,"enabled":"yes"}]',
       ]),
     );
 
@@ -100,8 +96,7 @@ describe("JsonDigestReader", () => {
     expect(entry.getName()).toBe("track01");
     expect(entry.getPackageName()).toBeUndefined();
     expect(entry.getSampleType()).toBeUndefined();
-    expect(entry.isSkipped()).toBeUndefined();
-    expect(entry.isKeepStructure()).toBeUndefined();
+    expect(entry.isEnabled()).toBe(false);
   });
 
   it("accepts an entry that only contains a path", () => {
@@ -117,8 +112,7 @@ describe("JsonDigestReader", () => {
     expect(entry.getName()).toBe("track01");
     expect(entry.getPackageName()).toBeUndefined();
     expect(entry.getSampleType()).toBeUndefined();
-    expect(entry.isSkipped()).toBeUndefined();
-    expect(entry.isKeepStructure()).toBeUndefined();
+    expect(entry.isEnabled()).toBe(false);
   });
 
   it("ignores an invalid name value and falls back to the path basename", () => {

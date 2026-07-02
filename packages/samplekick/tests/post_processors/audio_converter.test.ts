@@ -27,8 +27,7 @@ const createEntry = (path = "drums/kick.wav"): DigestEntry => ({
   getName: () => path.split("/").pop() ?? path,
   getPackageName: () => undefined,
   getSampleType: () => undefined,
-  isSkipped: () => undefined,
-  isKeepStructure: () => undefined,
+  isEnabled: () => true,
 });
 
 const buildConverter = (

@@ -16,8 +16,8 @@ describe("DefaultRootSampleTypeTransformer integration", () => {
     registry.applyTransform(createDefaultRootSampleTypeTransformer());
     expect(registry.toString()).toBe(
       [
-        "MyProject.zip [pkg:MyProject, type:Packs]",
-        "├── sub1",
+        "MyProject.zip [pkg:MyProject, type:Packs, skipped]",
+        "├── sub1 [skipped]",
         "│   └── file1.wav",
         "└── file2.wav",
         "",

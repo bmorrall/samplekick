@@ -41,8 +41,7 @@ describe("JsonDigestWriter", () => {
         name: "Alt Track 01",
         packageName: "jazz-pack",
         sampleType: "Bebop",
-        skipped: true,
-        keepStructure: true,
+        enabled: false,
       }),
       createDigestEntry({
         path: "rock/track01",
@@ -57,16 +56,11 @@ describe("JsonDigestWriter", () => {
         name: "Alt Track 01",
         packageName: "jazz-pack",
         sampleType: "Bebop",
-        isSkipped: true,
-        isKeepStructure: true,
+        enabled: false,
       },
       {
         path: "rock/track01",
-        name: undefined,
-        packageName: undefined,
-        sampleType: undefined,
-        isSkipped: undefined,
-        isKeepStructure: undefined,
+        enabled: false,
       },
     ]);
   });
@@ -83,11 +77,7 @@ describe("JsonDigestWriter", () => {
     expect(JSON.parse(output)).toEqual([
       {
         path: "jazz/bebop/track01",
-        name: undefined,
-        packageName: undefined,
-        sampleType: undefined,
-        isSkipped: undefined,
-        isKeepStructure: undefined,
+        enabled: false,
       },
     ]);
   });
@@ -103,6 +93,7 @@ describe("JsonDigestWriter", () => {
       {
         path: "",
         name: "library",
+        enabled: false,
       },
     ]);
   });
@@ -121,6 +112,7 @@ describe("JsonDigestWriter", () => {
         path: "",
         name: "Renamed Library",
         packageName: "library-pack",
+        enabled: false,
       },
     ]);
   });

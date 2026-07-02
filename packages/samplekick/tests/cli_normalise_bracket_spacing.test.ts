@@ -34,13 +34,13 @@ describe("NormaliseBracketSpacingTransformer", () => {
       const rows = csv.split("\n");
 
       expect(rows.find((r) => r.startsWith("kick(hard),"))).toBe(
-        "kick(hard),,kick (hard),,,",
+        "kick(hard),kick (hard),,,false",
       );
       expect(rows.find((r) => r.startsWith("snare[soft],"))).toBe(
-        "snare[soft],,snare [soft],,,",
+        "snare[soft],snare [soft],,,false",
       );
       expect(rows.find((r) => r.startsWith("hats{open},"))).toBe(
-        "hats{open},,hats {open},,,",
+        "hats{open},hats {open},,,false",
       );
     } finally {
       await rm(tmpDir, { recursive: true });

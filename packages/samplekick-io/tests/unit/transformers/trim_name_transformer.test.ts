@@ -72,8 +72,8 @@ describe("createTrimNameTransformer", () => {
     const entry = createTransformEntry({ name: " kick.wav" });
     const transformer = createTrimNameTransformer();
     transformer.transform(singleEntryTransformSource(entry));
-    expect(entry.setSkipped).not.toHaveBeenCalled();
-    expect(entry.setKeepStructure).not.toHaveBeenCalled();
+    expect(entry.setEnabled).not.toHaveBeenCalled();
+    expect(entry.setReadOnly).not.toHaveBeenCalled();
   });
 
   it("does not modify any fields when keepStructure is true", () => {
@@ -81,7 +81,7 @@ describe("createTrimNameTransformer", () => {
       name: " kick.wav",
       packageName: " pack ",
       sampleType: " drums ",
-      keepStructure: true,
+      readOnly: true,
     });
     const transformer = createTrimNameTransformer();
     transformer.transform(singleEntryTransformSource(entry));

@@ -234,97 +234,97 @@ describe("EntryNode", () => {
     });
   });
 
-  describe("isSkipped", () => {
-    it("returns undefined when skipped has not been set", () => {
+  describe("isEnabled", () => {
+    it("returns false for a directory when enabled has not been set", () => {
       const node = EntryNode.blankEntry("node");
-      expect(node.isSkipped()).toBeUndefined();
+      expect(node.isEnabled()).toBe(false);
     });
 
-    it("returns true when skipped is set to true", () => {
+    it("returns false when set to false", () => {
       const node = EntryNode.blankEntry("node");
-      node.setSkipped(true);
-      expect(node.isSkipped()).toBe(true);
+      node.setEnabled(false);
+      expect(node.isEnabled()).toBe(false);
     });
 
-    it("returns false when skipped is set to false", () => {
+    it("returns true when set to true", () => {
       const node = EntryNode.blankEntry("node");
-      node.setSkipped(false);
-      expect(node.isSkipped()).toBe(false);
+      node.setEnabled(true);
+      expect(node.isEnabled()).toBe(true);
     });
 
-    it("inherits skipped from parent if not set on node", () => {
+    it("is not inherited from parent — child dir returns false by default when only parent has value", () => {
+      const parent = EntryNode.buildRootNode("parent");
+      parent.setEnabled(true);
+      const child = parent.addBlankNode("child", "child");
+
+      expect(child.isEnabled()).toBe(false);
+    });
+
+    it("returns the child's own value when set, regardless of parent", () => {
       const parent = EntryNode.blankEntry("parent");
-      parent.setSkipped(true);
+      parent.setEnabled(false);
       const child = parent.addNode(EntryNode.blankEntry("child"));
-
-      expect(child.isSkipped()).toBe(true);
+      child.setEnabled(true);
+      expect(child.isEnabled()).toBe(true);
     });
 
-    it("prefers the child entry skipped value over the parent entry skipped value", () => {
-      const parent = EntryNode.blankEntry("parent");
-      parent.setSkipped(false);
-      const child = parent.addNode(EntryNode.blankEntry("child"));
-      child.setSkipped(true);
-      expect(child.isSkipped()).toBe(true);
-    });
-
-    it("returns false if the child entry skipped value is false", () => {
+    it("returns false when set directly on the child", () => {
       const root = EntryNode.blankEntry("root");
-      root.setSkipped(false);
+      root.setEnabled(false);
       const child = root.addNode(EntryNode.blankEntry("child"));
-      child.setSkipped(false);
-      expect(child.isSkipped()).toBe(false);
+      child.setEnabled(false);
+      expect(child.isEnabled()).toBe(false);
     });
   });
 
-  describe("setSkipped", () => {
-    it("sets skipped to true for a node", () => {
+  describe("setEnabled", () => {
+    it("sets enabled to false for a node", () => {
       const node = EntryNode.blankEntry("node");
-      node.setSkipped(true);
-      expect(node.isSkipped()).toBe(true);
+      node.setEnabled(false);
+      expect(node.isEnabled()).toBe(false);
     });
 
-    it("sets skipped to false for a node", () => {
+    it("sets enabled to true for a node", () => {
       const node = EntryNode.blankEntry("node");
-      node.setSkipped(true);
-      node.setSkipped(false);
-      expect(node.isSkipped()).toBe(false);
+      node.setEnabled(false);
+      node.setEnabled(true);
+      expect(node.isEnabled()).toBe(true);
     });
 
-    it("overrides inherited skipped value", () => {
+    it("sets own value independently of parent", () => {
       const parent = EntryNode.blankEntry("parent");
-      parent.setSkipped(true);
+      parent.setEnabled(true);
       const child = parent.addNode(EntryNode.blankEntry("child"));
-      child.setSkipped(false);
-      expect(child.isSkipped()).toBe(false);
+      child.setEnabled(false);
+      expect(child.isEnabled()).toBe(false);
     });
   });
 
-  describe("isKeepStructure", () => {
-    it("returns undefined when keepStructure has not been set", () => {
+  describe("isReadOnly", () => {
+    it("returns undefined when readOnly has not been set", () => {
       const node = EntryNode.blankEntry("node");
-      expect(node.isKeepStructure()).toBeUndefined();
+      expect(node.isReadOnly()).toBeUndefined();
     });
 
-    it("falls back to the entry keepStructure value when no override exists", () => {
+    it("returns true when set to true", () => {
       const node = EntryNode.blankEntry("node");
-      node.setKeepStructure(true);
-      expect(node.isKeepStructure()).toBe(true);
+      node.setReadOnly(true);
+      expect(node.isReadOnly()).toBe(true);
     });
 
-    it("inherits keepStructure from parent if not set on node", () => {
+    it("inherits readOnly from parent if not set on node", () => {
       const parent = EntryNode.blankEntry("parent");
-      parent.setKeepStructure(true);
+      parent.setReadOnly(true);
       const child = parent.addNode(EntryNode.blankEntry("child"));
-      expect(child.isKeepStructure()).toBe(true);
+      expect(child.isReadOnly()).toBe(true);
     });
 
-    it("prefers the child entry keepStructure value over the parent entry keepStructure value", () => {
+    it("prefers the child entry readOnly value over the parent entry readOnly value", () => {
       const parent = EntryNode.blankEntry("parent");
-      parent.setKeepStructure(false);
+      parent.setReadOnly(false);
       const child = parent.addNode(EntryNode.blankEntry("child"));
-      child.setKeepStructure(true);
-      expect(child.isKeepStructure()).toBe(true);
+      child.setReadOnly(true);
+      expect(child.isReadOnly()).toBe(true);
     });
   });
 
@@ -404,14 +404,14 @@ describe("EntryNode", () => {
   describe("toString", () => {
     it("renders a leaf node", () => {
       const node = EntryNode.blankEntry("root");
-      expect(node.toString()).toBe("root [?]\n");
+      expect(node.toString()).toBe("root [skipped]\n");
     });
 
     it("renders the renamed node name", () => {
       const node = EntryNode.blankEntry("node");
       node.setName("renamed-node");
 
-      expect(node.toString()).toBe("renamed-node [?] [renamed]\n");
+      expect(node.toString()).toBe("renamed-node [renamed, skipped]\n");
     });
 
     it("renders a node with children", () => {
@@ -419,7 +419,7 @@ describe("EntryNode", () => {
       root.addNode(EntryNode.blankEntry("a"));
       root.addNode(EntryNode.blankEntry("b"));
       expect(root.toString()).toBe(
-        ["root", "├── a [?]", "└── b [?]", ""].join("\n"),
+        ["root [skipped]", "├── a [?]", "└── b [?]", ""].join("\n"),
       );
     });
 
@@ -427,7 +427,7 @@ describe("EntryNode", () => {
       const node = EntryNode.blankEntry("root");
       node.setPackageName("my-pkg");
       node.setSampleType("typeA");
-      expect(node.toString()).toBe("root [pkg:my-pkg, type:typeA]\n");
+      expect(node.toString()).toBe("root [pkg:my-pkg, type:typeA, skipped]\n");
     });
 
     it("renders inherited tags on the root node", () => {
@@ -464,16 +464,33 @@ describe("EntryNode", () => {
     });
   });
 
-  describe("getOwnSkipped", () => {
-    it("returns undefined when skipped has not been set", () => {
-      const node = EntryNode.blankEntry("root");
-      expect(node.getOwnSkipped()).toBeUndefined();
+  describe("eachMutatedEntry", () => {
+    it("includes root and leaf file nodes", () => {
+      const root = EntryNode.buildRootNode("pack");
+      const folder = root.addBlankNode("drums", "drums");
+      const leaf = folder.addNode(createFileEntry({ path: "drums/kick.wav" }));
+
+      const visited: string[] = [];
+      root.eachMutatedEntry((node) => {
+        visited.push(node.getPath());
+      });
+
+      expect(visited).toEqual(["", "drums/kick.wav"]);
+      expect(leaf.isFile()).toBe(true);
     });
 
-    it("returns the skipped value after setSkipped is called", () => {
-      const node = EntryNode.blankEntry("root");
-      node.setSkipped(true);
-      expect(node.getOwnSkipped()).toBe(true);
+    it("includes nodes that mutate relative to their parent", () => {
+      const root = EntryNode.buildRootNode("pack");
+      const folder = root.addBlankNode("drums", "drums");
+      folder.setPackageName("drum-pack");
+
+      const visited: string[] = [];
+      root.eachMutatedEntry((node) => {
+        visited.push(node.getPath());
+      });
+
+      expect(visited).toContain("");
+      expect(visited).toContain("drums");
     });
   });
 });

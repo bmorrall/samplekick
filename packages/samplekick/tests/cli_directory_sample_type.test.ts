@@ -32,7 +32,7 @@ describe("DirectorySampleTypeTransformer", () => {
       const csv = await readFile(join(dataDir, configFile), "utf8");
 
       const dirRow = csv.split("\n").find((row) => row.startsWith("Drums,"));
-      expect(dirRow).toBe("Drums,,,,Drums,");
+      expect(dirRow).toBe("Drums,,,Drums,false");
     } finally {
       await rm(tmpDir, { recursive: true });
     }
@@ -63,7 +63,7 @@ describe("DirectorySampleTypeTransformer", () => {
       const dirRow = csv
         .split("\n")
         .find((row) => row.startsWith("Percussion,"));
-      expect(dirRow).toBe("Percussion,,,,Percussion,");
+      expect(dirRow).toBe("Percussion,,,Percussion,false");
     } finally {
       await rm(tmpDir, { recursive: true });
     }
@@ -94,7 +94,7 @@ describe("DirectorySampleTypeTransformer", () => {
       const dirRow = csv
         .split("\n")
         .find((row) => row.startsWith("Loop Stems & MIDI,"));
-      expect(dirRow).toBe("Loop Stems & MIDI,,,,Loops,");
+      expect(dirRow).toBe("Loop Stems & MIDI,,,Loops,false");
     } finally {
       await rm(tmpDir, { recursive: true });
     }
@@ -123,7 +123,7 @@ describe("DirectorySampleTypeTransformer", () => {
       const csv = await readFile(join(dataDir, configFile), "utf8");
 
       const dirRow = csv.split("\n").find((row) => row.startsWith("Bonks,"));
-      expect(dirRow).toBe("Bonks,,,,,");
+      expect(dirRow).toBe("Bonks,,,,false");
     } finally {
       await rm(tmpDir, { recursive: true });
     }
@@ -154,7 +154,9 @@ describe("DirectorySampleTypeTransformer", () => {
       const dirRow = csv
         .split("\n")
         .find((row) => row.startsWith("Cymatics - SESSIONS - Drum Breaks,"));
-      expect(dirRow).toBe("Cymatics - SESSIONS - Drum Breaks,,,,Drum Breaks,");
+      expect(dirRow).toBe(
+        "Cymatics - SESSIONS - Drum Breaks,,,Drum Breaks,false",
+      );
     } finally {
       await rm(tmpDir, { recursive: true });
     }

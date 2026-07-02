@@ -41,7 +41,7 @@ describe("BrandPrefixTransformer", () => {
         row.startsWith("Ghosthack - Ultimate Freebie Collection,"),
       );
       expect(topLevelRow).toBe(
-        "Ghosthack - Ultimate Freebie Collection,,,Ghosthack - Ultimate Freebie Collection,,",
+        "Ghosthack - Ultimate Freebie Collection,,Ghosthack - Ultimate Freebie Collection,,false",
       );
 
       // Advent Calendar: tagged by MultiPackNameTransformer, should be prefixed by BrandPrefixTransformer
@@ -98,7 +98,7 @@ describe("BrandPrefixTransformer", () => {
         row.startsWith("Cymatics - Mystery Pack Vol 4,"),
       );
       expect(topLevelRow).toBe(
-        "Cymatics - Mystery Pack Vol 4,,,Cymatics - Mystery Pack Vol 4,,",
+        "Cymatics - Mystery Pack Vol 4,,Cymatics - Mystery Pack Vol 4,,false",
       );
 
       // Bundle: has no ' - ' in name, so MultiPackNameTransformer does not tag it,
@@ -106,7 +106,9 @@ describe("BrandPrefixTransformer", () => {
       const bundleRow = rows.find((row) =>
         row.startsWith("Cymatics - Mystery Pack Vol 4/Bundle 01,"),
       );
-      expect(bundleRow).toBe("Cymatics - Mystery Pack Vol 4/Bundle 01,,,,,");
+      expect(bundleRow).toBe(
+        "Cymatics - Mystery Pack Vol 4/Bundle 01,,,,false",
+      );
     } finally {
       await rm(tmpDir, { recursive: true });
     }

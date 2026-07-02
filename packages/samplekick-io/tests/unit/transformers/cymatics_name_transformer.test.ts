@@ -83,8 +83,8 @@ describe("createCymaticsNameTransformer", () => {
   it("does not call setSkipped or setKeepStructure", () => {
     const entry = createTransformEntry({ name: "Cymatics-Pack.wav" });
     transformer.transform(singleEntryTransformSource(entry));
-    expect(entry.setSkipped).not.toHaveBeenCalled();
-    expect(entry.setKeepStructure).not.toHaveBeenCalled();
+    expect(entry.setEnabled).not.toHaveBeenCalled();
+    expect(entry.setReadOnly).not.toHaveBeenCalled();
   });
 
   it('leaves "Cymatics x Collab Name" unchanged (cross-collab prefix)', () => {
@@ -101,7 +101,7 @@ describe("createCymaticsNameTransformer", () => {
     const entry = createTransformEntry({
       name: "Cymatics-Pack.wav",
       packageName: "Cymatics-Pack",
-      keepStructure: true,
+      readOnly: true,
     });
     transformer.transform(singleEntryTransformSource(entry));
     expect(entry.setName).not.toHaveBeenCalled();

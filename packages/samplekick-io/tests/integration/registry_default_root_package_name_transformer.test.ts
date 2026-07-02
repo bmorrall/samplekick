@@ -13,11 +13,11 @@ describe("DefaultRootPackageNameTransformer integration", () => {
     registry.applyTransform(createDefaultRootPackageNameTransformer());
     expect(registry.toString()).toBe(
       [
-        "MyProject.zip [pkg:MyProject]",
-        "├── sub1",
+        "MyProject.zip [pkg:MyProject, skipped]",
+        "├── sub1 [skipped]",
         "│   ├── file1.wav [?]",
         "│   └── file2.wav [?]",
-        "├── sub2",
+        "├── sub2 [skipped]",
         "│   └── file3.wav [?]",
         "└── file4.wav [?]",
         "",

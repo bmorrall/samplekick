@@ -67,8 +67,8 @@ describe("loadDigest", () => {
     await writeFile(
       join(dataDir, `${registry.getFingerprint()}.csv`),
       [
-        "path,keepPath,name,packageName,sampleType,skip",
-        "Drums/kick.wav,,custom.wav,,,",
+        "path,name,packageName,sampleType,enabled",
+        "Drums/kick.wav,custom.wav,,,",
       ].join("\n"),
     );
 
@@ -103,8 +103,8 @@ describe("loadDigest", () => {
     await writeFile(
       configPath,
       [
-        "path,keepPath,name,packageName,sampleType,skip",
-        "Drums/kick.wav,,explicit.wav,,,",
+        "path,name,packageName,sampleType,enabled",
+        "Drums/kick.wav,explicit.wav,,,",
       ].join("\n"),
     );
 
@@ -119,8 +119,8 @@ describe("loadDigest", () => {
     await writeFile(
       configPath,
       [
-        "path,keepPath,name,packageName,sampleType,skip",
-        "Drums/kick.wav,,explicit.wav,,,",
+        "path,name,packageName,sampleType,enabled",
+        "Drums/kick.wav,explicit.wav,,,",
       ].join("\n"),
     );
 

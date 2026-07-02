@@ -10,34 +10,34 @@ describe("createSkipJunkTransformer", () => {
     const entry = createTransformEntry({ name: "__MACOSX" });
     const transformer = createSkipJunkTransformer();
     transformer.transform(singleEntryTransformSource(entry));
-    expect(entry.setSkipped).toHaveBeenCalledWith(true);
+    expect(entry.setEnabled).toHaveBeenCalledWith(false);
   });
 
   it("should skip hidden files starting with '.'", () => {
     const entry = createTransformEntry({ name: ".DS_Store" });
     const transformer = createSkipJunkTransformer();
     transformer.transform(singleEntryTransformSource(entry));
-    expect(entry.setSkipped).toHaveBeenCalledWith(true);
+    expect(entry.setEnabled).toHaveBeenCalledWith(false);
   });
 
   it("should skip any entry whose name starts with '.'", () => {
     const entry = createTransformEntry({ name: ".hidden" });
     const transformer = createSkipJunkTransformer();
     transformer.transform(singleEntryTransformSource(entry));
-    expect(entry.setSkipped).toHaveBeenCalledWith(true);
+    expect(entry.setEnabled).toHaveBeenCalledWith(false);
   });
 
   it("should not skip normal entries", () => {
     const entry = createTransformEntry({ name: "kick_01.wav" });
     const transformer = createSkipJunkTransformer();
     transformer.transform(singleEntryTransformSource(entry));
-    expect(entry.setSkipped).not.toHaveBeenCalled();
+    expect(entry.setEnabled).not.toHaveBeenCalled();
   });
 
   it("should not skip entries that merely contain __MACOSX in their name", () => {
     const entry = createTransformEntry({ name: "not__MACOSX" });
     const transformer = createSkipJunkTransformer();
     transformer.transform(singleEntryTransformSource(entry));
-    expect(entry.setSkipped).not.toHaveBeenCalled();
+    expect(entry.setEnabled).not.toHaveBeenCalled();
   });
 });

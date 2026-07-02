@@ -93,8 +93,8 @@ describe("createGhosthackNameTransformer", () => {
     const entry = createTransformEntry({ name: "Ghosthack-Pack.wav" });
     const transformer = createGhosthackNameTransformer();
     transformer.transform(singleEntryTransformSource(entry));
-    expect(entry.setSkipped).not.toHaveBeenCalled();
-    expect(entry.setKeepStructure).not.toHaveBeenCalled();
+    expect(entry.setEnabled).not.toHaveBeenCalled();
+    expect(entry.setReadOnly).not.toHaveBeenCalled();
   });
 
   it('leaves "Ghosthack x Collab Name" unchanged (cross-collab prefix)', () => {
@@ -112,7 +112,7 @@ describe("createGhosthackNameTransformer", () => {
     const entry = createTransformEntry({
       name: "Ghosthack-Pack.wav",
       packageName: "Ghosthack-Pack",
-      keepStructure: true,
+      readOnly: true,
     });
     const transformer = createGhosthackNameTransformer();
     transformer.transform(singleEntryTransformSource(entry));

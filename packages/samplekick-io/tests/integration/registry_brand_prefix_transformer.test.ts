@@ -16,10 +16,10 @@ describe("BrandPrefixTransformer integration", () => {
     registry.applyTransform(createBrandPrefixTransformer());
     expect(registry.toString()).toBe(
       [
-        "root",
-        "└── Ghosthack - Ultimate Freebie Collection [pkg:Ghosthack - Ultimate Freebie Collection]",
-        "    └── Construction Kits",
-        "        └── Ghosthack - Day 12 Kits [pkg:Ghosthack - Day 12 Kits]",
+        "root [skipped]",
+        "└── Ghosthack - Ultimate Freebie Collection [pkg:Ghosthack - Ultimate Freebie Collection, skipped]",
+        "    └── Construction Kits [skipped]",
+        "        └── Ghosthack - Day 12 Kits [pkg:Ghosthack - Day 12 Kits, skipped]",
         "            └── file.wav [?]",
         "",
       ].join("\n"),
@@ -36,9 +36,9 @@ describe("BrandPrefixTransformer integration", () => {
     registry.applyTransform(createBrandPrefixTransformer());
     expect(registry.toString()).toBe(
       [
-        "root",
-        "└── Cymatics - Mystery Pack Vol 4 [pkg:Cymatics - Mystery Pack Vol 4]",
-        "    └── Cymatics - Bundle 01 Kit [pkg:Cymatics - Bundle 01 Kit]",
+        "root [skipped]",
+        "└── Cymatics - Mystery Pack Vol 4 [pkg:Cymatics - Mystery Pack Vol 4, skipped]",
+        "    └── Cymatics - Bundle 01 Kit [pkg:Cymatics - Bundle 01 Kit, skipped]",
         "        └── file.wav [?]",
         "",
       ].join("\n"),
@@ -55,9 +55,9 @@ describe("BrandPrefixTransformer integration", () => {
     registry.applyTransform(createBrandPrefixTransformer());
     expect(registry.toString()).toBe(
       [
-        "root",
-        "└── Acapellas and Vocals",
-        "    └── Collection",
+        "root [skipped]",
+        "└── Acapellas and Vocals [skipped]",
+        "    └── Collection [skipped]",
         "        └── file.wav [?]",
         "",
       ].join("\n"),

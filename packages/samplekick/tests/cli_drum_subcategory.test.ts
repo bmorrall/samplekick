@@ -35,7 +35,7 @@ describe("DrumSubcategoryTransformer", () => {
       const dirRow = csv
         .split("\n")
         .find((row) => row.startsWith("Drum Fills,"));
-      expect(dirRow).toBe("Drum Fills,,,,Drum Fills,");
+      expect(dirRow).toBe("Drum Fills,,,Drum Fills,false");
     } finally {
       await rm(tmpDir, { recursive: true });
     }
@@ -68,7 +68,7 @@ describe("DrumSubcategoryTransformer", () => {
       const dirRow = csv
         .split("\n")
         .find((row) => row.startsWith("Drums/Fills,"));
-      expect(dirRow).toBe("Drums/Fills,,,,Drum Fills,");
+      expect(dirRow).toBe("Drums/Fills,,,Drum Fills,false");
     } finally {
       await rm(tmpDir, { recursive: true });
     }
@@ -101,7 +101,7 @@ describe("DrumSubcategoryTransformer", () => {
       const dirRow = csv
         .split("\n")
         .find((row) => row.startsWith("Drum - Fills,"));
-      expect(dirRow).toBe("Drum - Fills,,,,Drum Fills,");
+      expect(dirRow).toBe("Drum - Fills,,,Drum Fills,false");
     } finally {
       await rm(tmpDir, { recursive: true });
     }
@@ -134,7 +134,7 @@ describe("DrumSubcategoryTransformer", () => {
       const dirRow = csv
         .split("\n")
         .find((row) => row.startsWith("Drum Breaks,"));
-      expect(dirRow).toBe("Drum Breaks,,,,Drum Breaks,");
+      expect(dirRow).toBe("Drum Breaks,,,Drum Breaks,false");
     } finally {
       await rm(tmpDir, { recursive: true });
     }
