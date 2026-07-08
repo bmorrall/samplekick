@@ -27,9 +27,9 @@ describe("CsvDigestReader", () => {
     const reader = new CsvDigestReader(
       Readable.from([
         [
-          "path,keepPath,name,packageName,sampleType,skip",
-          "jazz/bebop/track01,true,Alt Track 01,jazz-pack,Bebop,true",
-          "rock/track01,false,,,,false",
+          "path,name,packageName,sampleType,enabled",
+          "jazz/bebop/track01,Alt Track 01,jazz-pack,Bebop,false",
+          "rock/track01,,,,true",
         ].join("\n"),
       ]),
     );
@@ -42,19 +42,17 @@ describe("CsvDigestReader", () => {
     expect(firstEntry.getName()).toBe("Alt Track 01");
     expect(firstEntry.getPackageName()).toBe("jazz-pack");
     expect(firstEntry.getSampleType()).toBe("Bebop");
-    expect(firstEntry.isSkipped()).toBe(true);
-    expect(firstEntry.isKeepStructure()).toBe(true);
+    expect(firstEntry.isEnabled()).toBe(false);
     expect(secondEntry.getPath()).toBe("rock/track01");
     expect(secondEntry.getName()).toBe("track01");
     expect(secondEntry.getPackageName()).toBeUndefined();
     expect(secondEntry.getSampleType()).toBeUndefined();
-    expect(secondEntry.isSkipped()).toBe(false);
-    expect(secondEntry.isKeepStructure()).toBe(false);
+    expect(secondEntry.isEnabled()).toBe(true);
   });
 
   it("does not call the callback when there are no data rows", () => {
     const reader = new CsvDigestReader(
-      Readable.from(["path,keepPath,name,packageName,sampleType,skip"]),
+      Readable.from(["path,name,packageName,sampleType,enabled"]),
     );
     const fn = vi.fn<(entry: DigestEntry) => void>();
 
@@ -75,10 +73,9 @@ describe("CsvDigestReader", () => {
   it("accepts an entry that only contains a path", () => {
     const reader = new CsvDigestReader(
       Readable.from([
-        [
-          "path,keepPath,name,packageName,sampleType,skip",
-          "jazz/track01,,,,,",
-        ].join("\n"),
+        ["path,name,packageName,sampleType,enabled", "jazz/track01,,,,"].join(
+          "\n",
+        ),
       ]),
     );
 
@@ -90,17 +87,15 @@ describe("CsvDigestReader", () => {
     expect(entry.getName()).toBe("track01");
     expect(entry.getPackageName()).toBeUndefined();
     expect(entry.getSampleType()).toBeUndefined();
-    expect(entry.isSkipped()).toBeUndefined();
-    expect(entry.isKeepStructure()).toBeUndefined();
+    expect(entry.isEnabled()).toBe(false);
   });
 
   it("uses the path basename as name when the name field is empty", () => {
     const reader = new CsvDigestReader(
       Readable.from([
-        [
-          "path,keepPath,name,packageName,sampleType,skip",
-          "jazz/track01,,,,,",
-        ].join("\n"),
+        ["path,name,packageName,sampleType,enabled", "jazz/track01,,,,"].join(
+          "\n",
+        ),
       ]),
     );
 
@@ -114,8 +109,8 @@ describe("CsvDigestReader", () => {
     const reader = new CsvDigestReader(
       Readable.from([
         [
-          "path,keepPath,name,packageName,sampleType,skip",
-          "jazz/track01,,Custom Name,,,",
+          "path,name,packageName,sampleType,enabled",
+          "jazz/track01,Custom Name,,,",
         ].join("\n"),
       ]),
     );
@@ -130,8 +125,8 @@ describe("CsvDigestReader", () => {
     const reader = new CsvDigestReader(
       Readable.from([
         [
-          "path,keepPath,name,packageName,sampleType,skip",
-          'jazz/track01,,"Jazz, Bebop",,,',
+          "path,name,packageName,sampleType,enabled",
+          'jazz/track01,"Jazz, Bebop",,,',
         ].join("\n"),
       ]),
     );
@@ -146,8 +141,8 @@ describe("CsvDigestReader", () => {
     const reader = new CsvDigestReader(
       Readable.from([
         [
-          "path,keepPath,name,packageName,sampleType,skip",
-          'jazz/track01,,"Jazz ""Bebop"" Track",,,',
+          "path,name,packageName,sampleType,enabled",
+          'jazz/track01,"Jazz ""Bebop"" Track",,,',
         ].join("\n"),
       ]),
     );
@@ -158,12 +153,12 @@ describe("CsvDigestReader", () => {
     expect(entry.getName()).toBe('Jazz "Bebop" Track');
   });
 
-  it("ignores unrecognised boolean values for skipped and keep", () => {
+  it("returns false for unrecognised boolean values for enabled", () => {
     const reader = new CsvDigestReader(
       Readable.from([
         [
-          "path,keepPath,name,packageName,sampleType,skip",
-          "jazz/track01,yes,,,,,",
+          "path,name,packageName,sampleType,enabled",
+          "jazz/track01,yes,,,",
         ].join("\n"),
       ]),
     );
@@ -171,42 +166,37 @@ describe("CsvDigestReader", () => {
     const entries = collectDigestEntries(reader);
     const [entry] = entries;
 
-    expect(entry.isSkipped()).toBeUndefined();
-    expect(entry.isKeepStructure()).toBeUndefined();
+    expect(entry.isEnabled()).toBe(false);
   });
 
   it("accepts t/f as boolean aliases", () => {
     const reader = new CsvDigestReader(
       Readable.from([
-        [
-          "path,keepPath,name,packageName,sampleType,skip",
-          "jazz/track01,f,,,,t",
-        ].join("\n"),
+        ["path,name,packageName,sampleType,enabled", "jazz/track01,,,,t"].join(
+          "\n",
+        ),
       ]),
     );
 
     const entries = collectDigestEntries(reader);
     const [entry] = entries;
 
-    expect(entry.isSkipped()).toBe(true);
-    expect(entry.isKeepStructure()).toBe(false);
+    expect(entry.isEnabled()).toBe(true);
   });
 
   it("accepts 1/0 as boolean aliases", () => {
     const reader = new CsvDigestReader(
       Readable.from([
-        [
-          "path,keepPath,name,packageName,sampleType,skip",
-          "jazz/track01,0,,,,1",
-        ].join("\n"),
+        ["path,name,packageName,sampleType,enabled", "jazz/track01,,,,0"].join(
+          "\n",
+        ),
       ]),
     );
 
     const entries = collectDigestEntries(reader);
     const [entry] = entries;
 
-    expect(entry.isSkipped()).toBe(true);
-    expect(entry.isKeepStructure()).toBe(false);
+    expect(entry.isEnabled()).toBe(false);
   });
 
   it("throws when the stream yields a non-string chunk", () => {
@@ -217,5 +207,36 @@ describe("CsvDigestReader", () => {
     };
 
     expect(readEntries).toThrow("Expected string chunk from stream");
+  });
+
+  it("throws for unrecognised CSV headers", () => {
+    const reader = new CsvDigestReader(
+      Readable.from(["path,name,packageName,sampleType"]),
+    );
+
+    expect(() => {
+      reader.eachDigestEntry(() => {
+        // noop
+      });
+    }).toThrow("Unrecognised CSV header");
+  });
+
+  it("skips blank rows between data rows", () => {
+    const reader = new CsvDigestReader(
+      Readable.from([
+        [
+          "path,name,packageName,sampleType,enabled",
+          "pack/one.wav,,,,true",
+          "",
+          "pack/two.wav,,,,false",
+        ].join("\n"),
+      ]),
+    );
+
+    const entries = collectDigestEntries(reader);
+
+    expect(entries).toHaveLength(2);
+    expect(entries[0]?.getPath()).toBe("pack/one.wav");
+    expect(entries[1]?.getPath()).toBe("pack/two.wav");
   });
 });

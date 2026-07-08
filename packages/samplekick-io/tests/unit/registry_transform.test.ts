@@ -40,7 +40,7 @@ const renameAndSkipAtPath = (path: string, name: string): Transform => ({
     source.eachTransformEntry((entry: TransformEntry) => {
       if (entry.getPath() === path) {
         entry.setName(name);
-        entry.setSkipped(true);
+        entry.setEnabled(false);
       }
     });
   },
@@ -150,9 +150,9 @@ describe("Registry applyTransform", () => {
     registry.applyTransform(renameAndSkipAtPath("a/b", "renamed-b"));
 
     expect(registry.getEntry("a/b")?.getName()).toBe("renamed-b");
-    expect(registry.getEntry("a/b")?.isSkipped()).toBe(true);
+    expect(registry.getEntry("a/b")?.isEnabled()).toBe(false);
     expect(registry.getEntry("a/c")?.getName()).toBe("c");
-    expect(registry.getEntry("a/c")?.isSkipped()).toBeUndefined();
+    expect(registry.getEntry("a/c")?.isEnabled()).toBe(true);
   });
 });
 
@@ -212,7 +212,7 @@ describe("Registry applyTransform eachTransformModification", () => {
       createFileEntry({ path: "Loops/bass.wav" }),
       createFileEntry({ path: "Drums/kick.wav" }),
     ]);
-    registry.setKeepStructure("Loops", true);
+    registry.setEnabled("Loops", true);
 
     const visitedPaths: string[] = [];
     registry.applyTransform(collectModifiedPaths(visitedPaths));
@@ -222,11 +222,19 @@ describe("Registry applyTransform eachTransformModification", () => {
     expect(visitedPaths).toContain("Drums/kick.wav");
   });
 
-  it("skips children of a keepStructure node due to inheritance", () => {
+  it("skips children of a readOnly node due to inheritance", () => {
     const registry = createRegistry("root", [
       createFileEntry({ path: "Loops/bass.wav" }),
     ]);
-    registry.setKeepStructure("Loops", true);
+
+    // Mark Loops as readOnly via a transform — readOnly is inherited by children
+    registry.applyTransform({
+      transform: (source) => {
+        source.eachTransformEntry((entry) => {
+          if (entry.getPath() === "Loops") entry.setReadOnly(true);
+        });
+      },
+    });
 
     const visitedPaths: string[] = [];
     registry.applyTransform(collectModifiedPaths(visitedPaths));

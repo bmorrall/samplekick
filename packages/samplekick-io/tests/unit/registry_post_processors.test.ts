@@ -86,7 +86,7 @@ describe("Registry.addPostProcessor", () => {
     const entry = createCopyableEntry("a.wav");
     const processor = createPostProcessor();
     const registry = new Registry(createFileSource("root", [entry]));
-    registry.setSkipped("a.wav", true);
+    registry.setEnabled("a.wav", false);
     registry.addPostProcessor(processor);
 
     await registry.exportToDirectory("/output", {});

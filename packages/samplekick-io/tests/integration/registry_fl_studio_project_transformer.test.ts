@@ -12,11 +12,11 @@ describe("FLStudioProjectTransformer integration", () => {
     registry.applyTransform(createFLStudioProjectTransformer());
     expect(registry.toString()).toBe(
       [
-        "root",
+        "root [skipped]",
         "┣━━ My Beat [type:FL Studio Projects]",
-        "┃   ┣━━ My Beat.flp [?]",
-        "┃   ┗━━ kick.wav [?]",
-        "└── samples",
+        "┃   ├── My Beat.flp [?]",
+        "┃   └── kick.wav [?]",
+        "└── samples [skipped]",
         "    └── kick.wav [?]",
         "",
       ].join("\n"),

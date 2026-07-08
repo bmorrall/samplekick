@@ -15,12 +15,12 @@ describe("MultiPackNameTransformer integration", () => {
     registry.applyTransform(createMultiPackNameTransformer());
     expect(registry.toString()).toBe(
       [
-        "root",
-        "└── Vendor - Top Level Pack [pkg:Vendor - Top Level Pack]",
-        "    ├── Sub Category",
-        "    │   └── Vendor - Sub Pack [pkg:Vendor - Sub Pack]",
+        "root [skipped]",
+        "└── Vendor - Top Level Pack [pkg:Vendor - Top Level Pack, skipped]",
+        "    ├── Sub Category [skipped]",
+        "    │   └── Vendor - Sub Pack [pkg:Vendor - Sub Pack, skipped]",
         "    │       └── file.wav [?]",
-        "    └── Holiday Kit 01 - 100bpm [pkg:Holiday Kit 01 - 100bpm]",
+        "    └── Holiday Kit 01 - 100bpm [pkg:Holiday Kit 01 - 100bpm, skipped]",
         "        └── file.wav [?]",
         "",
       ].join("\n"),

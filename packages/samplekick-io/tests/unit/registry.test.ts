@@ -53,7 +53,7 @@ describe("Registry", () => {
 
       expect(registry.setName("library")).toBe(true);
 
-      expect(registry.toString()).toBe("library [?]\n");
+      expect(registry.toString()).toBe("library [skipped]\n");
     });
 
     it("clears the renamed entry name when undefined is passed as the second argument", () => {
@@ -173,70 +173,42 @@ describe("Registry", () => {
     });
   });
 
-  describe("setSkipped", () => {
-    it("sets skipped to true for the entry at the given path", () => {
+  describe("setEnabled", () => {
+    it("sets enabled to false for the entry at the given path", () => {
       const registry = createRegistry("root", [
         createFileEntry({ path: "a/b" }),
       ]);
 
-      expect(registry.setSkipped("a/b", true)).toBe(true);
+      expect(registry.setEnabled("a/b", false)).toBe(true);
 
-      expect(registry.getEntry("a/b")?.isSkipped()).toBe(true);
+      expect(registry.getEntry("a/b")?.isEnabled()).toBe(false);
     });
 
-    it("sets skipped to false for the entry at the given path", () => {
+    it("sets enabled to true for the entry at the given path", () => {
       const registry = createRegistry("root", [
         createFileEntry({ path: "a/b" }),
       ]);
 
-      expect(registry.setSkipped("a/b", true)).toBe(true);
-      expect(registry.setSkipped("a/b", false)).toBe(true);
+      expect(registry.setEnabled("a/b", false)).toBe(true);
+      expect(registry.setEnabled("a/b", true)).toBe(true);
 
-      expect(registry.getEntry("a/b")?.isSkipped()).toBe(false);
+      expect(registry.getEntry("a/b")?.isEnabled()).toBe(true);
     });
 
     it("returns false when the entry does not exist", () => {
       const registry = createRegistry("root", []);
 
-      expect(registry.setSkipped("a/b", true)).toBe(false);
+      expect(registry.setEnabled("a/b", false)).toBe(false);
     });
 
-    it("sets skipped on the root node when called with only a value", () => {
+    it("sets enabled on the root node when called with only a value", () => {
       const registry = createRegistry("root", [
         createFileEntry({ path: "a/b" }),
       ]);
 
-      expect(registry.setSkipped(true)).toBe(true);
+      expect(registry.setEnabled(false)).toBe(true);
 
-      expect(registry.getEntry("a/b")?.isSkipped()).toBe(true);
-    });
-  });
-
-  describe("setKeepStructure", () => {
-    it("sets keepStructure for the entry at the given path", () => {
-      const registry = createRegistry("root", [
-        createFileEntry({ path: "a/b" }),
-      ]);
-
-      expect(registry.setKeepStructure("a/b", true)).toBe(true);
-
-      expect(registry.getEntry("a/b")?.isKeepStructure()).toBe(true);
-    });
-
-    it("returns false when the entry does not exist", () => {
-      const registry = createRegistry("root", []);
-
-      expect(registry.setKeepStructure("a/b", true)).toBe(false);
-    });
-
-    it("sets keepStructure on the root node when called with only a value", () => {
-      const registry = createRegistry("root", [
-        createFileEntry({ path: "a/b" }),
-      ]);
-
-      expect(registry.setKeepStructure(true)).toBe(true);
-
-      expect(registry.getEntry("a/b")?.isKeepStructure()).toBe(true);
+      expect(registry.getRootEntry().isEnabled()).toBe(false);
     });
   });
 
@@ -291,8 +263,7 @@ describe("Registry", () => {
             name: "renamed-b",
             packageName: "my-pack",
             sampleType: "drums",
-            skipped: true,
-            keepStructure: true,
+            enabled: true,
           }),
         ),
       ).toBe(true);
@@ -301,8 +272,7 @@ describe("Registry", () => {
       expect(entry?.getName()).toBe("renamed-b");
       expect(entry?.getPackageName()).toBe("my-pack");
       expect(entry?.getSampleType()).toBe("drums");
-      expect(entry?.isSkipped()).toBe(true);
-      expect(entry?.isKeepStructure()).toBe(true);
+      expect(entry?.isEnabled()).toBe(true);
     });
 
     it("returns false when the entry path does not exist", () => {
@@ -350,8 +320,7 @@ describe("Registry", () => {
           path: "a/b",
           packageName: "my-pack",
           sampleType: "drums",
-          skipped: true,
-          keepStructure: true,
+          enabled: true,
         }),
       ]);
 
@@ -360,8 +329,7 @@ describe("Registry", () => {
       const entry = registry.getEntry("a/b");
       expect(entry?.getPackageName()).toBe("my-pack");
       expect(entry?.getSampleType()).toBe("drums");
-      expect(entry?.isSkipped()).toBe(true);
-      expect(entry?.isKeepStructure()).toBe(true);
+      expect(entry?.isEnabled()).toBe(true);
     });
 
     it("does not set packageName or sampleType when the entry provides neither", () => {
@@ -370,14 +338,14 @@ describe("Registry", () => {
       ]);
 
       const digestSource = createDigestSource([
-        createDigestEntry({ path: "a/b", skipped: true }),
+        createDigestEntry({ path: "a/b", enabled: false }),
       ]);
       registry.loadDigest(digestSource);
 
       const entry = registry.getEntry("a/b");
       expect(entry?.getPackageName()).toBeUndefined();
       expect(entry?.getSampleType()).toBeUndefined();
-      expect(entry?.isSkipped()).toBe(true);
+      expect(entry?.isEnabled()).toBe(false);
     });
 
     it("does not create an entry when the path does not exist", () => {

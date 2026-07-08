@@ -13,11 +13,11 @@ describe("SkipJunkTransformer integration", () => {
     registry.applyTransform(createSkipJunkTransformer());
     expect(registry.toString()).toBe(
       [
-        "root",
+        "root [skipped]",
         "├── __MACOSX [skipped]",
         "│   └── ...",
         "├── .DS_Store [?] [skipped]",
-        "└── sub1",
+        "└── sub1 [skipped]",
         "    ├── file1.wav [?]",
         "    └── .hidden [?] [skipped]",
         "",

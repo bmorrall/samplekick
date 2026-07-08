@@ -36,9 +36,9 @@ describe("KeepPathsTransformer", () => {
       const csv = await readFile(join(dataDir, configFile), "utf8");
       const lines = csv.trimEnd().split("\n");
 
-      expect(lines[0]).toBe("path,keepPath,name,packageName,sampleType,skip");
+      expect(lines[0]).toBe("path,name,packageName,sampleType,enabled");
       for (const line of lines.slice(1)) {
-        expect(line.split(",")[1]).toBe("true");
+        expect(line.split(",")[4]).toBe("true");
       }
     } finally {
       await rm(tmpDir, { recursive: true });

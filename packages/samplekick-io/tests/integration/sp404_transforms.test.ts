@@ -13,7 +13,7 @@ describe("SP-404MKII device preset transforms", () => {
     ]);
     applyDeviceTransforms(registry, SP404Mk2Preset);
     expect(registry.toString()).toBe(
-      ["root", "└── A _-!&()+,=@[]{}'.wav [?]", ""].join("\n"),
+      ["root [skipped]", "└── A _-!&()+,=@[]{}'.wav [?]", ""].join("\n"),
     );
   });
 
@@ -29,7 +29,7 @@ describe("SP-404MKII device preset transforms", () => {
     applyDeviceTransforms(registry, SP404Mk2Preset);
     expect(registry.toString()).toBe(
       [
-        "root",
+        "root [skipped]",
         "├── NameWithAccents.wav [?] [renamed]",
         "├── Invalid_Char_.mp3 [?] [renamed]",
         "├── ThisIsAVeryLongNameThatShouldBeTruncatedBecauseItIsWayTooLongToFitTheLimitOf.wav [?] [renamed]",
@@ -49,12 +49,12 @@ describe("SP-404MKII device preset transforms", () => {
     applyDeviceTransforms(registry, SP404Mk2Preset);
     expect(registry.toString()).toBe(
       [
-        "root",
+        "root [skipped]",
         "┣━━ Mÿ Prøject [type:Ableton Projects]",
-        "┃   ┣━━ Mÿ Prøject.als [?]",
+        "┃   ├── Mÿ Prøject.als [?]",
         "┃   ┗━━ Sämples",
-        "┃       ┗━━ kick.wav [?]",
-        "└── Drums",
+        "┃       └── kick.wav [?]",
+        "└── Drums [skipped]",
         "    └── snare.wav [?] [renamed]",
         "",
       ].join("\n"),
@@ -69,7 +69,7 @@ describe("SP-404MKII device preset transforms", () => {
     applyDeviceTransforms(registry, SP404Mk2Preset);
     expect(registry.toString()).toBe(
       [
-        "root",
+        "root [skipped]",
         "├── kick_01_alt.wav [?] [renamed]",
         "└── snare_02.wav [?] [renamed]",
         "",
@@ -86,7 +86,7 @@ describe("SP-404MKII device preset transforms", () => {
     applyDeviceTransforms(registry, SP404Mk2Preset);
     expect(registry.toString()).toBe(
       [
-        "root",
+        "root [skipped]",
         "└── kick.wav [pkg:Pack Name, type:Drums & Percussion]",
         "",
       ].join("\n"),

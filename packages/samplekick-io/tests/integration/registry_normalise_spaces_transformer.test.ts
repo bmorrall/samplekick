@@ -11,10 +11,10 @@ describe("NormaliseSpacesTransformer integration", () => {
     registry.applyTransform(createNormaliseSpacesTransformer());
     expect(registry.toString()).toBe(
       [
-        "root",
-        "├── Drums Bass [renamed]",
+        "root [skipped]",
+        "├── Drums Bass [renamed, skipped]",
         "│   └── kick.wav [?]",
-        "└── Hi Hats",
+        "└── Hi Hats [skipped]",
         "    └── hat.wav [?]",
         "",
       ].join("\n"),

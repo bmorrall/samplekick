@@ -107,8 +107,8 @@ describe("createNormaliseCommaSpacingTransformer", () => {
     const entry = createTransformEntry({ name: "kick , snare.wav" });
     const transformer = createNormaliseCommaSpacingTransformer();
     transformer.transform(singleEntryTransformSource(entry));
-    expect(entry.setSkipped).not.toHaveBeenCalled();
-    expect(entry.setKeepStructure).not.toHaveBeenCalled();
+    expect(entry.setEnabled).not.toHaveBeenCalled();
+    expect(entry.setReadOnly).not.toHaveBeenCalled();
   });
 
   it("does not modify any fields when keepStructure is true", () => {
@@ -116,7 +116,7 @@ describe("createNormaliseCommaSpacingTransformer", () => {
       name: "kick , snare.wav",
       packageName: "Drums , Bass",
       sampleType: "Kicks ,Snares",
-      keepStructure: true,
+      readOnly: true,
     });
     const transformer = createNormaliseCommaSpacingTransformer();
     transformer.transform(singleEntryTransformSource(entry));

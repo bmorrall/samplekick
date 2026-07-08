@@ -15,12 +15,12 @@ describe("SquashNameTransformer integration", () => {
     registry.applyTransform(createSquashNameTransformer());
     expect(registry.toString()).toBe(
       [
-        "root",
-        "├── BassLoops [renamed]",
+        "root [skipped]",
+        "├── BassLoops [renamed, skipped]",
         "│   └── kickDrum01.wav [?] [renamed]",
-        "├── DrumHits [renamed]",
+        "├── DrumHits [renamed, skipped]",
         "│   └── SnareHit.wav [?] [renamed]",
-        "└── OtherPack [renamed]",
+        "└── OtherPack [renamed, skipped]",
         "    ├── hat.wav [?]",
         "    ├── OpenHat.wav [?] [renamed]",
         "    ├── rideCymbal.wav [?] [renamed]",

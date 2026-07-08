@@ -12,7 +12,7 @@ describe("TruncateNameTransformer integration", () => {
     registry.applyTransform(createTruncateNameTransformer(80));
     expect(registry.toString()).toBe(
       [
-        "root",
+        "root [skipped]",
         `├── short.wav [?]`,
         `├── ${"x".repeat(76)}.wav [?] [renamed]`,
         `└── ${"x".repeat(80)} [?] [renamed]`,

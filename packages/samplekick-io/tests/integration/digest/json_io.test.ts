@@ -96,17 +96,17 @@ describe("JSON I/O", () => {
       "Melodic Loops - Bebop",
       undefined,
     ]);
-    expect(result.map((e) => e.isSkipped())).toEqual([
-      undefined,
-      undefined,
-      undefined,
-      undefined,
+    expect(result.map((e) => e.isEnabled())).toEqual([
+      false,
+      false,
+      false,
+      true,
     ]);
-    expect(result.map((e) => e.isKeepStructure())).toEqual([
-      undefined,
-      undefined,
-      undefined,
-      undefined,
+    expect(result.map((e) => e.isEnabled())).toEqual([
+      false,
+      false,
+      false,
+      true,
     ]);
   });
 
@@ -157,8 +157,8 @@ describe("JSON I/O", () => {
     const registry = createRegistry("library", [
       createFileEntry({ path: "jazz/track01" }),
     ]);
-    registry.setSkipped("jazz", true);
-    registry.setKeepStructure("jazz", true);
+    registry.setEnabled("jazz", false);
+    registry.setEnabled("jazz", true);
 
     const output = collectOutput((stream) => {
       const writer = new JsonDigestWriter(stream);
@@ -169,8 +169,8 @@ describe("JSON I/O", () => {
     const result = collectDigestEntries(reader);
 
     const [, entry] = result;
-    expect(entry.isSkipped()).toBe(true);
-    expect(entry.isKeepStructure()).toBe(true);
+    expect(entry.isEnabled()).toBe(true);
+    expect(entry.isEnabled()).toBe(true);
   });
 
   it("round-trips renamed entries through JSON", () => {
@@ -209,7 +209,7 @@ describe("JSON I/O", () => {
       new JsonDigestReader(Readable.from([output])),
     );
     expect(restoredEmptyRegistry.toString()).toBe(
-      "Renamed Library [?] [pkg:library-pack]\n",
+      "Renamed Library [pkg:library-pack, skipped]\n",
     );
 
     const restoredRegistryWithFiles = createRegistry("library", [

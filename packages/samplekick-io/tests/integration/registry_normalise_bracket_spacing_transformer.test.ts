@@ -12,12 +12,12 @@ describe("NormaliseBracketSpacingTransformer integration", () => {
     registry.applyTransform(createNormaliseBracketSpacingTransformer());
     expect(registry.toString()).toBe(
       [
-        "root",
-        "├── kick (hard) [renamed]",
+        "root [skipped]",
+        "├── kick (hard) [renamed, skipped]",
         "│   └── sample.wav [?]",
-        "├── snare [soft] [renamed]",
+        "├── snare [soft] [renamed, skipped]",
         "│   └── sample.wav [?]",
-        "└── hi-hats {open} [renamed]",
+        "└── hi-hats {open} [renamed, skipped]",
         "    └── sample.wav [?]",
         "",
       ].join("\n"),

@@ -28,7 +28,7 @@ describe("createStripAccentsTransform", () => {
   });
 
   it("does not modify any fields when keepStructure is true", () => {
-    const entry = createTransformEntry({ name: "Drüms", keepStructure: true });
+    const entry = createTransformEntry({ name: "Drüms", readOnly: true });
     const transformer = createStripAccentsTransform();
     transformer.transform(singleEntryTransformSource(entry));
     expect(entry.setName).not.toHaveBeenCalled();
@@ -40,8 +40,8 @@ describe("createStripAccentsTransform", () => {
     transformer.transform(singleEntryTransformSource(entry));
     expect(entry.setPackageName).not.toHaveBeenCalled();
     expect(entry.setSampleType).not.toHaveBeenCalled();
-    expect(entry.setSkipped).not.toHaveBeenCalled();
-    expect(entry.setKeepStructure).not.toHaveBeenCalled();
+    expect(entry.setEnabled).not.toHaveBeenCalled();
+    expect(entry.setReadOnly).not.toHaveBeenCalled();
   });
 
   it("normalises accents in packageName when the entry has one", () => {

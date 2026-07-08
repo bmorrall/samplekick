@@ -12,7 +12,7 @@ describe("createMidiFileTransformer", () => {
       const transformer = createMidiFileTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("MIDI");
-      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+      expect(entry.setReadOnly).toHaveBeenCalledWith(true);
     });
 
     it("sets sampleType to MIDI when extension is uppercase", () => {
@@ -20,7 +20,7 @@ describe("createMidiFileTransformer", () => {
       const transformer = createMidiFileTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("MIDI");
-      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+      expect(entry.setReadOnly).toHaveBeenCalledWith(true);
     });
 
     it("prefixes an existing inherited sampleType with MIDI -", () => {
@@ -31,18 +31,18 @@ describe("createMidiFileTransformer", () => {
       const transformer = createMidiFileTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("MIDI - Drum Loops");
-      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+      expect(entry.setReadOnly).toHaveBeenCalledWith(true);
     });
 
     it("does not modify an entry that already has keepStructure set", () => {
       const entry = createTransformEntry({
         name: "song.mid",
-        keepStructure: true,
+        readOnly: true,
       });
       const transformer = createMidiFileTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
-      expect(entry.setKeepStructure).not.toHaveBeenCalled();
+      expect(entry.setReadOnly).not.toHaveBeenCalled();
     });
   });
 
@@ -55,7 +55,7 @@ describe("createMidiFileTransformer", () => {
       const transformer = createMidiFileTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("MIDI");
-      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+      expect(entry.setReadOnly).toHaveBeenCalledWith(true);
     });
   });
 
@@ -65,7 +65,7 @@ describe("createMidiFileTransformer", () => {
       const transformer = createMidiFileTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
-      expect(entry.setKeepStructure).not.toHaveBeenCalled();
+      expect(entry.setReadOnly).not.toHaveBeenCalled();
     });
 
     it("does not set sampleType for files whose name merely contains .mid", () => {

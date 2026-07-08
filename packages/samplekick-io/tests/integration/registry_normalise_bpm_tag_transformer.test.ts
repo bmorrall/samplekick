@@ -12,12 +12,12 @@ describe("NormaliseBpmTagTransformer integration", () => {
     registry.applyTransform(createNormaliseBpmTagTransformer());
     expect(registry.toString()).toBe(
       [
-        "root",
-        "├── Drums 120bpm [renamed]",
+        "root [skipped]",
+        "├── Drums 120bpm [renamed, skipped]",
         "│   └── kick.wav [?]",
-        "├── Bass - 90bpm [renamed]",
+        "├── Bass - 90bpm [renamed, skipped]",
         "│   └── bass.wav [?]",
-        "└── Keys",
+        "└── Keys [skipped]",
         "    └── piano.wav [?]",
         "",
       ].join("\n"),

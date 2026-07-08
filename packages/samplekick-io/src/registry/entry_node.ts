@@ -34,12 +34,13 @@ export class EntryNode
   private name?: string;
   private packageName?: string;
   private sampleType?: string;
-  private skipped?: boolean;
-  private keepStructure?: boolean;
+  private enabled: boolean;
+  private readonly_?: boolean;
 
   constructor(path: string, entry?: FileEntry, parentNode?: EntryNode) {
     this.path = path;
     this.parentNode = parentNode;
+    this.enabled = entry !== undefined;
 
     if (entry !== undefined) {
       this.replaceEntry(entry);
@@ -98,12 +99,12 @@ export class EntryNode
     return this.sampleType ?? this.parentNode?.getSampleType();
   }
 
-  isSkipped(): boolean | undefined {
-    return this.skipped ?? this.parentNode?.isSkipped();
+  isEnabled(): boolean {
+    return this.enabled;
   }
 
-  isKeepStructure(): boolean | undefined {
-    return this.keepStructure ?? this.parentNode?.isKeepStructure();
+  isReadOnly(): boolean | undefined {
+    return this.readonly_ ?? this.parentNode?.isReadOnly();
   }
 
   async copyToPath(path: string): Promise<void> {
@@ -148,20 +149,12 @@ export class EntryNode
     this.sampleType = type;
   }
 
-  getOwnKeepStructure(): boolean | undefined {
-    return this.keepStructure;
+  setEnabled(value: boolean): void {
+    this.enabled = value;
   }
 
-  getOwnSkipped(): boolean | undefined {
-    return this.skipped;
-  }
-
-  setSkipped(skipped: boolean): void {
-    this.skipped = skipped;
-  }
-
-  setKeepStructure(value: boolean): void {
-    this.keepStructure = value;
+  setReadOnly(value: boolean): void {
+    this.readonly_ = value;
   }
 
   // Node management methods
@@ -251,8 +244,7 @@ export class EntryNode
     // other properties have been changed
     if (this.getPackageName() !== node.getPackageName()) return true;
     if (this.getSampleType() !== node.getSampleType()) return true;
-    if (this.isSkipped() !== node.isSkipped()) return true;
-    if (this.isKeepStructure() !== node.isKeepStructure()) return true;
+    if (this.isEnabled() !== node.isEnabled()) return true;
     return false;
   }
 

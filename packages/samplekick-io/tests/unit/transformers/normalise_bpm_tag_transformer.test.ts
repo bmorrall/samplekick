@@ -110,7 +110,7 @@ describe("createNormaliseBpmTagTransformer", () => {
   it("does not act on a keepStructure entry", () => {
     const entry = createTransformEntry({
       name: "Drums 120BPM.wav",
-      keepStructure: true,
+      readOnly: true,
     });
     const transformer = createNormaliseBpmTagTransformer();
     transformer.transform(singleEntryTransformSource(entry));
@@ -120,7 +120,7 @@ describe("createNormaliseBpmTagTransformer", () => {
   it("does not act on a skipped entry", () => {
     const entry = createTransformEntry({
       name: "Drums 120BPM.wav",
-      skipped: true,
+      enabled: false,
     });
     const transformer = createNormaliseBpmTagTransformer();
     transformer.transform(singleEntryTransformSource(entry));

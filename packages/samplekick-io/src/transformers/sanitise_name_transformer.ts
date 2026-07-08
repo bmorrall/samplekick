@@ -5,8 +5,7 @@ export const createSanitiseNameTransformer = (
 ): Transform => ({
   transform: (source) => {
     source.eachTransformModification((entry) => {
-      if (entry.isKeepStructure() === true) return;
-      if (entry.isSkipped() === true) return;
+      if (entry.isFile() && !entry.isEnabled()) return;
       entry.setName(sanitize(entry.getName()));
       const packageName = entry.getPackageName();
       if (packageName !== undefined) {

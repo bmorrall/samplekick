@@ -43,8 +43,8 @@ describe("--bake-digest flag", () => {
       const csv = await readFile(join(dataDir, configFile), "utf8");
 
       // Device and squash transforms are baked into the saved config
-      expect(csv).toContain("Drum-Hits,false,DrumHits,");
-      expect(csv).toContain("Drum-Hits/snare hit.wav,false,snareHit.wav,");
+      expect(csv).toContain("Drum-Hits,DrumHits,,,false");
+      expect(csv).toContain("Drum-Hits/snare hit.wav,snareHit.wav,,,true");
     } finally {
       await rm(tmpDir, { recursive: true });
     }
@@ -78,8 +78,8 @@ describe("--bake-digest flag", () => {
       const csv = await readFile(join(dataDir, configFile), "utf8");
 
       // SP-404MkII name sanitization is baked in
-      expect(csv).toContain("Dr\u00fcms,false,Drums,");
-      expect(csv).toContain("Dr\u00fcms/sn\u00e2re.wav,false,snare.wav,");
+      expect(csv).toContain("Dr\u00fcms,Drums,,,false");
+      expect(csv).toContain("Dr\u00fcms/sn\u00e2re.wav,snare.wav,,,true");
     } finally {
       await rm(tmpDir, { recursive: true });
     }
@@ -101,8 +101,8 @@ describe("--bake-digest flag", () => {
       await writeFile(
         configPath,
         [
-          "path,keepPath,name,packageName,sampleType,skip",
-          "Drum-Hits,,,,Drums,",
+          "path,name,packageName,sampleType,enabled",
+          "Drum-Hits,,,Drums,false",
         ].join("\n"),
       );
 
@@ -130,8 +130,8 @@ describe("--bake-digest flag", () => {
       const [autoConfigFile] = await readdir(dataDir);
       const csv = await readFile(join(dataDir, autoConfigFile), "utf8");
 
-      expect(csv).toContain("Drum-Hits,false,DrumHits,"); // was: "Drum-Hits,,,"
-      expect(csv).toContain("Drum-Hits/snare hit.wav,false,snareHit.wav,"); // was: "Drum-Hits/snare hit.wav,,,"
+      expect(csv).toContain("Drum-Hits,DrumHits,,Drums,false"); // was: "Drum-Hits,,,"
+      expect(csv).toContain("Drum-Hits/snare hit.wav,snareHit.wav,,,true"); // was: "Drum-Hits/snare hit.wav,,,"
     } finally {
       await rm(tmpDir, { recursive: true });
     }
@@ -166,10 +166,10 @@ describe("--bake-digest flag", () => {
 
       expect(csv).toBe(
         [
-          "path,keepPath,name,packageName,sampleType,skip",
-          ",false,test-pack.zip,test-pack,Packs,false", // root: name is zip filename; packageName derived from it
-          "Drums,false,Drums,,Drums,false", // directory: sampleType set by analyse
-          "Drums/kick.wav,false,kick.wav,,,false", // file: name locked in explicitly
+          "path,name,packageName,sampleType,enabled",
+          ",test-pack.zip,test-pack,Packs,false",
+          "Drums,Drums,,Drums,false",
+          "Drums/kick.wav,kick.wav,,,true",
         ].join("\n"),
       );
     } finally {

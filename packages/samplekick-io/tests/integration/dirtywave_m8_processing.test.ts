@@ -34,11 +34,11 @@ describe("Dirtywave M8 end-to-end sample processing", () => {
 
     expect(registry.toString()).toBe(
       [
-        "M8 Pack.zip [pkg:M8 Pack, type:Percussion]",
-        "├── Drums [type:Drums]",
+        "M8 Pack.zip [pkg:M8 Pack, type:Percussion, skipped]",
+        "├── Drums [type:Drums, skipped]",
         "│   ├── kick.wav",
         "│   └── snare.wav",
-        "└── Loops [type:Loops]",
+        "└── Loops [type:Loops, skipped]",
         "    └── bass.wav",
         "",
       ].join("\n"),

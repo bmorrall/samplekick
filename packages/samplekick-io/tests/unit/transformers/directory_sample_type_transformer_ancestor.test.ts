@@ -13,7 +13,7 @@ describe("createDirectorySampleTypeTransformer", () => {
       const transformer = createDirectorySampleTypeTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
-      expect(entry.setKeepStructure).not.toHaveBeenCalled();
+      expect(entry.setReadOnly).not.toHaveBeenCalled();
     });
   });
 

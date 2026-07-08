@@ -14,16 +14,16 @@ describe("StripFormatHintsTransformer integration", () => {
     registry.applyTransform(createStripFormatHintsTransformer());
     expect(registry.toString()).toBe(
       [
-        "root",
-        "├── Samples [renamed]",
+        "root [skipped]",
+        "├── Samples [renamed, skipped]",
         "│   └── kick.wav [?] [renamed]",
-        "├── Drums [renamed]",
+        "├── Drums [renamed, skipped]",
         "│   └── snare.wav [?]",
-        "├── Bass [renamed]",
+        "├── Bass [renamed, skipped]",
         "│   └── bass.wav [?]",
-        "├── Loops [renamed]",
+        "├── Loops [renamed, skipped]",
         "│   └── loop.wav [?]",
-        "└── Loops [STEMS]",
+        "└── Loops [STEMS] [skipped]",
         "    └── stem.wav [?]",
         "",
       ].join("\n"),

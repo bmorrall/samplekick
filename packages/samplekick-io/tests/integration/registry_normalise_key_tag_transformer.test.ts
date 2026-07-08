@@ -12,12 +12,12 @@ describe("NormaliseKeyTagTransformer integration", () => {
     registry.applyTransform(createNormaliseKeyTagTransformer());
     expect(registry.toString()).toBe(
       [
-        "root",
-        "├── Loops Cmaj [renamed]",
+        "root [skipped]",
+        "├── Loops Cmaj [renamed, skipped]",
         "│   └── piano.wav [?]",
-        "├── Bass F#min [renamed]",
+        "├── Bass F#min [renamed, skipped]",
         "│   └── bass.wav [?]",
-        "└── Drums",
+        "└── Drums [skipped]",
         "    └── kick.wav [?]",
         "",
       ].join("\n"),
@@ -33,12 +33,12 @@ describe("NormaliseKeyTagTransformer integration", () => {
     registry.applyTransform(createNormaliseKeyTagTransformer());
     expect(registry.toString()).toBe(
       [
-        "root",
-        "├── Loops C#min 120bpm [renamed]",
+        "root [skipped]",
+        "├── Loops C#min 120bpm [renamed, skipped]",
         "│   └── lead.wav [?]",
-        "├── Loops 120bpm Emin [renamed]",
+        "├── Loops 120bpm Emin [renamed, skipped]",
         "│   └── bass.wav [?]",
-        "└── Chord Cm",
+        "└── Chord Cm [skipped]",
         "    └── piano.wav [?]",
         "",
       ].join("\n"),
@@ -54,12 +54,12 @@ describe("NormaliseKeyTagTransformer integration", () => {
     registry.applyTransform(createNormaliseKeyTagTransformer());
     expect(registry.toString()).toBe(
       [
-        "root",
-        "├── Chords Cdim7 [renamed]",
+        "root [skipped]",
+        "├── Chords Cdim7 [renamed, skipped]",
         "│   └── lead.wav [?]",
-        "├── Chords Chdim7 [renamed]",
+        "├── Chords Chdim7 [renamed, skipped]",
         "│   └── lead.wav [?]",
-        "└── Chords CminMaj7 [renamed]",
+        "└── Chords CminMaj7 [renamed, skipped]",
         "    └── lead.wav [?]",
         "",
       ].join("\n"),

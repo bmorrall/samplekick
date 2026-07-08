@@ -18,19 +18,19 @@ describe("DirectorySampleTypeTransformer integration", () => {
     registry.applyTransform(createDirectorySampleTypeTransformer());
     expect(registry.toString()).toBe(
       [
-        "root",
-        "├── Drums [type:Drums]",
+        "root [skipped]",
+        "├── Drums [type:Drums, skipped]",
         "│   ├── kick.wav [?]",
-        "│   └── One Shots [type:Drum One Shots]",
+        "│   └── One Shots [type:Drum One Shots, skipped]",
         "│       └── snare.wav [?]",
-        "├── Percussion [type:Percussion]",
+        "├── Percussion [type:Percussion, skipped]",
         "│   └── shaker.wav [?]",
-        "├── Bonks",
+        "├── Bonks [skipped]",
         "│   └── lead.wav [?]",
-        "└── Loops [type:Loops]",
-        "    └── Drums [type:Drum Loops]",
+        "└── Loops [type:Loops, skipped]",
+        "    └── Drums [type:Drum Loops, skipped]",
         "        ├── kick.wav [?]",
-        "        └── Claps [type:Clap Loops]",
+        "        └── Claps [type:Clap Loops, skipped]",
         "            └── clap.wav [?]",
         "",
       ].join("\n"),
@@ -49,17 +49,17 @@ describe("DirectorySampleTypeTransformer integration", () => {
     registry.applyTransform(createDirectorySubcategoryTransformer());
     expect(registry.toString()).toBe(
       [
-        "Pack.zip",
-        "├── Drum Loops [type:Drum Loops]",
-        "│   └── Latin [type:Drum Loops - Latin]",
-        "│       └── Loop Stems",
+        "Pack.zip [skipped]",
+        "├── Drum Loops [type:Drum Loops, skipped]",
+        "│   └── Latin [type:Drum Loops - Latin, skipped]",
+        "│       └── Loop Stems [skipped]",
         "│           └── loop.wav [?]",
-        "└── Melodies [type:Melodies]",
-        "    ├── Speed House [type:Melodies - Speed House]",
-        "    │   └── Loop Stems & MIDI",
+        "└── Melodies [type:Melodies, skipped]",
+        "    ├── Speed House [type:Melodies - Speed House, skipped]",
+        "    │   └── Loop Stems & MIDI [skipped]",
         "    │       └── bass.wav [?]",
-        "    └── Sunset [type:Melodies - Sunset]",
-        "        └── Loop Stems & MIDI",
+        "    └── Sunset [type:Melodies - Sunset, skipped]",
+        "        └── Loop Stems & MIDI [skipped]",
         "            └── reese.wav [?]",
         "",
       ].join("\n"),
@@ -75,11 +75,11 @@ describe("DirectorySampleTypeTransformer integration", () => {
     registry.applyTransform(createDirectorySubcategoryTransformer());
     expect(registry.toString()).toBe(
       [
-        "Pack.zip",
-        "├── Drum Loops & MIDI [type:Drum Loops]",
+        "Pack.zip [skipped]",
+        "├── Drum Loops & MIDI [type:Drum Loops, skipped]",
         "│   └── kick.wav [?]",
-        "└── Melodies [type:Melodies]",
-        "    └── Speed House & MIDI [type:Melodies - Speed House]",
+        "└── Melodies [type:Melodies, skipped]",
+        "    └── Speed House & MIDI [type:Melodies - Speed House, skipped]",
         "        └── bass.wav [?]",
         "",
       ].join("\n"),
@@ -96,9 +96,9 @@ describe("DirectorySampleTypeTransformer integration", () => {
     registry.applyTransform(createDirectorySubcategoryTransformer());
     expect(registry.toString()).toBe(
       [
-        "root",
-        "└── Brand - Sci-Fi Horror FX & Foley [type:Foley]",
-        "    └── Alien Technology [type:Foley - Alien Technology]",
+        "root [skipped]",
+        "└── Brand - Sci-Fi Horror FX & Foley [type:Foley, skipped]",
+        "    └── Alien Technology [type:Foley - Alien Technology, skipped]",
         "        └── alarm.wav [?]",
         "",
       ].join("\n"),

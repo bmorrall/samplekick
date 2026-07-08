@@ -55,8 +55,7 @@ interface ColumnIndices {
   name: number;
   packageName: number;
   sampleType: number;
-  skip: number;
-  keepPath: number;
+  enabled: number;
 }
 
 const parseColumnIndices = (header: string): ColumnIndices => {
@@ -73,8 +72,7 @@ const parseColumnIndices = (header: string): ColumnIndices => {
     name: idx("name"),
     packageName: idx("packageName"),
     sampleType: idx("sampleType"),
-    skip: idx("skip"),
-    keepPath: idx("keepPath"),
+    enabled: idx("enabled"),
   };
 };
 
@@ -104,12 +102,12 @@ class CsvDigestEntry implements DigestEntry {
     return optionalString(this.fields[this.indices.sampleType] ?? "");
   }
 
-  isSkipped(): boolean | undefined {
-    return optionalBoolean(this.fields[this.indices.skip] ?? "");
+  rawEnabled(): boolean | undefined {
+    return optionalBoolean(this.fields[this.indices.enabled] ?? "");
   }
 
-  isKeepStructure(): boolean | undefined {
-    return optionalBoolean(this.fields[this.indices.keepPath] ?? "");
+  isEnabled(): boolean {
+    return this.rawEnabled() ?? false;
   }
 }
 

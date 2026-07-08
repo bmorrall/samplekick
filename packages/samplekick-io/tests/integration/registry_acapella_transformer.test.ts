@@ -14,16 +14,16 @@ describe("AcapellaTransformer integration", () => {
     registry.applyTransform(createAcapellaTransformer());
     expect(registry.toString()).toBe(
       [
-        "root",
-        "├── Acapellas [type:Vocals - Acapellas]",
+        "root [skipped]",
+        "├── Acapellas [type:Vocals - Acapellas, skipped]",
         "│   └── vocal.wav [?]",
-        "├── Acapella [type:Vocals - Acapellas]",
+        "├── Acapella [type:Vocals - Acapellas, skipped]",
         "│   └── chant.wav [?]",
-        "├── Acapellas and Vocals [type:Vocals - Acapellas]",
+        "├── Acapellas and Vocals [type:Vocals - Acapellas, skipped]",
         "│   └── dry.wav [?]",
-        "├── Acapellas & Vocals [type:Vocals - Acapellas]",
+        "├── Acapellas & Vocals [type:Vocals - Acapellas, skipped]",
         "│   └── wet.wav [?]",
-        "└── Vocals",
+        "└── Vocals [skipped]",
         "    └── main.wav [?]",
         "",
       ].join("\n"),

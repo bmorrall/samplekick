@@ -27,7 +27,7 @@ describe("createSP404Mk2ProjectTransformer", () => {
       );
       const transformer = createSP404Mk2ProjectTransformer();
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+      expect(entry.setReadOnly).toHaveBeenCalledWith(true);
     });
 
     it("matches SMPL case-insensitively", () => {
@@ -62,7 +62,7 @@ describe("createSP404Mk2ProjectTransformer", () => {
       );
       const transformer = createSP404Mk2ProjectTransformer();
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+      expect(entry.setReadOnly).toHaveBeenCalledWith(true);
     });
 
     it("matches PTN case-insensitively", () => {
@@ -87,7 +87,7 @@ describe("createSP404Mk2ProjectTransformer", () => {
       const transformer = createSP404Mk2ProjectTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
-      expect(entry.setKeepStructure).not.toHaveBeenCalled();
+      expect(entry.setReadOnly).not.toHaveBeenCalled();
     });
   });
 
@@ -97,7 +97,7 @@ describe("createSP404Mk2ProjectTransformer", () => {
       const transformer = createSP404Mk2ProjectTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
-      expect(entry.setKeepStructure).not.toHaveBeenCalled();
+      expect(entry.setReadOnly).not.toHaveBeenCalled();
     });
   });
 
@@ -112,7 +112,7 @@ describe("createSP404Mk2ProjectTransformer", () => {
         tagSampleType: false,
       });
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+      expect(entry.setReadOnly).toHaveBeenCalledWith(true);
       expect(entry.setSampleType).not.toHaveBeenCalled();
     });
 
@@ -126,7 +126,7 @@ describe("createSP404Mk2ProjectTransformer", () => {
         tagSampleType: false,
       });
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setKeepStructure).not.toHaveBeenCalled();
+      expect(entry.setReadOnly).not.toHaveBeenCalled();
       expect(entry.setSampleType).not.toHaveBeenCalled();
     });
   });

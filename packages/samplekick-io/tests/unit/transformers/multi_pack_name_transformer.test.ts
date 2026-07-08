@@ -105,6 +105,6 @@ describe("createMultiPackNameTransformer", () => {
       [{ name: "file.wav" }],
     );
     transformer.transform(singleEntryTransformSource(entry));
-    expect(entry.setKeepStructure).not.toHaveBeenCalled();
+    expect(entry.setReadOnly).not.toHaveBeenCalled();
   });
 });

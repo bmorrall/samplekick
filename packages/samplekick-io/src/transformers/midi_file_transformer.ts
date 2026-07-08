@@ -5,7 +5,7 @@ const MIDI_PREFIX = "MIDI";
 const _singleton: Transform = {
   transform: (source) => {
     source.eachTransformEntry((entry) => {
-      if (entry.isKeepStructure() === true) return;
+      if (entry.isReadOnly() === true) return;
 
       const name = entry.getName().toLowerCase();
       const path = entry.getPath().toLowerCase();
@@ -17,7 +17,7 @@ const _singleton: Transform = {
             ? MIDI_PREFIX
             : `${MIDI_PREFIX} - ${existingType}`;
         entry.setSampleType(sampleType);
-        entry.setKeepStructure(true);
+        entry.setReadOnly(true);
       }
     });
   },

@@ -12,12 +12,12 @@ describe("AbletonProjectTransformer integration", () => {
     registry.applyTransform(createAbletonProjectTransformer());
     expect(registry.toString()).toBe(
       [
-        "root",
+        "root [skipped]",
         "┣━━ My Project [type:Ableton Projects]",
-        "┃   ┣━━ My Project.als [?]",
+        "┃   ├── My Project.als [?]",
         "┃   ┗━━ Samples",
-        "┃       ┗━━ kick.wav [?]",
-        "└── samples",
+        "┃       └── kick.wav [?]",
+        "└── samples [skipped]",
         "    └── kick.wav [?]",
         "",
       ].join("\n"),

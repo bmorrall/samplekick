@@ -12,7 +12,7 @@ describe("createKnownFileTypeTransformer", () => {
       const transformer = createKnownFileTypeTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Digitone Projects");
-      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+      expect(entry.setReadOnly).toHaveBeenCalledWith(true);
     });
 
     it("sets sampleType to Digitone Projects when extension is uppercase", () => {
@@ -20,7 +20,7 @@ describe("createKnownFileTypeTransformer", () => {
       const transformer = createKnownFileTypeTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Digitone Projects");
-      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+      expect(entry.setReadOnly).toHaveBeenCalledWith(true);
     });
 
     it("does not overwrite an existing sampleType but still sets keepStructure", () => {
@@ -31,7 +31,7 @@ describe("createKnownFileTypeTransformer", () => {
       const transformer = createKnownFileTypeTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
-      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+      expect(entry.setReadOnly).toHaveBeenCalledWith(true);
     });
 
     it("sets sampleType when extension is on the path", () => {
@@ -42,7 +42,7 @@ describe("createKnownFileTypeTransformer", () => {
       const transformer = createKnownFileTypeTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Digitone Projects");
-      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+      expect(entry.setReadOnly).toHaveBeenCalledWith(true);
     });
   });
 
@@ -52,7 +52,7 @@ describe("createKnownFileTypeTransformer", () => {
       const transformer = createKnownFileTypeTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Digitone Sounds");
-      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+      expect(entry.setReadOnly).toHaveBeenCalledWith(true);
     });
 
     it("sets sampleType to Digitone Sounds when extension is uppercase", () => {
@@ -60,7 +60,7 @@ describe("createKnownFileTypeTransformer", () => {
       const transformer = createKnownFileTypeTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Digitone Sounds");
-      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+      expect(entry.setReadOnly).toHaveBeenCalledWith(true);
     });
 
     it("does not overwrite an existing sampleType but still sets keepStructure", () => {
@@ -71,7 +71,7 @@ describe("createKnownFileTypeTransformer", () => {
       const transformer = createKnownFileTypeTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
-      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+      expect(entry.setReadOnly).toHaveBeenCalledWith(true);
     });
 
     it("sets sampleType when extension is on the path", () => {
@@ -82,7 +82,7 @@ describe("createKnownFileTypeTransformer", () => {
       const transformer = createKnownFileTypeTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Digitone Sounds");
-      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+      expect(entry.setReadOnly).toHaveBeenCalledWith(true);
     });
   });
 
@@ -92,7 +92,7 @@ describe("createKnownFileTypeTransformer", () => {
       const transformer = createKnownFileTypeTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Serum Presets");
-      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+      expect(entry.setReadOnly).toHaveBeenCalledWith(true);
     });
 
     it("sets sampleType to Serum Presets when extension is uppercase", () => {
@@ -100,7 +100,7 @@ describe("createKnownFileTypeTransformer", () => {
       const transformer = createKnownFileTypeTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Serum Presets");
-      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+      expect(entry.setReadOnly).toHaveBeenCalledWith(true);
     });
 
     it("does not overwrite an existing sampleType but still sets keepStructure", () => {
@@ -111,7 +111,7 @@ describe("createKnownFileTypeTransformer", () => {
       const transformer = createKnownFileTypeTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
-      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+      expect(entry.setReadOnly).toHaveBeenCalledWith(true);
     });
   });
 
@@ -121,7 +121,7 @@ describe("createKnownFileTypeTransformer", () => {
       const transformer = createKnownFileTypeTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Phase Plant Presets");
-      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+      expect(entry.setReadOnly).toHaveBeenCalledWith(true);
     });
 
     it("sets sampleType to Phase Plant Presets when extension is uppercase", () => {
@@ -129,7 +129,7 @@ describe("createKnownFileTypeTransformer", () => {
       const transformer = createKnownFileTypeTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Phase Plant Presets");
-      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+      expect(entry.setReadOnly).toHaveBeenCalledWith(true);
     });
 
     it("does not overwrite an existing sampleType but still sets keepStructure", () => {
@@ -140,7 +140,7 @@ describe("createKnownFileTypeTransformer", () => {
       const transformer = createKnownFileTypeTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
-      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+      expect(entry.setReadOnly).toHaveBeenCalledWith(true);
     });
 
     it("sets sampleType when extension is on the path", () => {
@@ -151,7 +151,7 @@ describe("createKnownFileTypeTransformer", () => {
       const transformer = createKnownFileTypeTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Phase Plant Presets");
-      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+      expect(entry.setReadOnly).toHaveBeenCalledWith(true);
     });
   });
 
@@ -161,7 +161,7 @@ describe("createKnownFileTypeTransformer", () => {
       const transformer = createKnownFileTypeTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
-      expect(entry.setKeepStructure).not.toHaveBeenCalled();
+      expect(entry.setReadOnly).not.toHaveBeenCalled();
     });
 
     it("does not set sampleType for .mid files (handled by MidiFileTransformer)", () => {
@@ -179,7 +179,7 @@ describe("createKnownFileTypeTransformer", () => {
         tagSampleType: false,
       });
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+      expect(entry.setReadOnly).toHaveBeenCalledWith(true);
       expect(entry.setSampleType).not.toHaveBeenCalled();
     });
 
@@ -189,7 +189,7 @@ describe("createKnownFileTypeTransformer", () => {
         tagSampleType: false,
       });
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+      expect(entry.setReadOnly).toHaveBeenCalledWith(true);
       expect(entry.setSampleType).not.toHaveBeenCalled();
     });
 
@@ -199,7 +199,7 @@ describe("createKnownFileTypeTransformer", () => {
         tagSampleType: false,
       });
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+      expect(entry.setReadOnly).toHaveBeenCalledWith(true);
       expect(entry.setSampleType).not.toHaveBeenCalled();
     });
 
@@ -209,7 +209,7 @@ describe("createKnownFileTypeTransformer", () => {
         tagSampleType: false,
       });
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setKeepStructure).toHaveBeenCalledWith(true);
+      expect(entry.setReadOnly).toHaveBeenCalledWith(true);
       expect(entry.setSampleType).not.toHaveBeenCalled();
     });
 
@@ -219,7 +219,7 @@ describe("createKnownFileTypeTransformer", () => {
         tagSampleType: false,
       });
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setKeepStructure).not.toHaveBeenCalled();
+      expect(entry.setReadOnly).not.toHaveBeenCalled();
       expect(entry.setSampleType).not.toHaveBeenCalled();
     });
   });

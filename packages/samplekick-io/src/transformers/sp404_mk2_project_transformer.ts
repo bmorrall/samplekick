@@ -8,6 +8,8 @@ export const createSP404Mk2ProjectTransformer = ({
   tagSampleType = true,
 }: { tagSampleType?: boolean } = {}): Transform => ({
   transform: (source) => {
+    const projectPaths = new Set<string>();
+
     source.eachTransformEntry((entry) => {
       const children = entry.getChildNodes();
       if (children.length === 0) return;
@@ -22,7 +24,23 @@ export const createSP404Mk2ProjectTransformer = ({
 
       if (hasSMPLFolder || hasPTNFolder) {
         if (tagSampleType) entry.setSampleType(SP404_MK2_PROJECTS);
-        entry.setKeepStructure(true);
+        entry.setEnabled(true);
+        entry.setReadOnly(true);
+        projectPaths.add(entry.getPath());
+      }
+    });
+
+    if (projectPaths.size === 0) return;
+
+    source.eachTransformEntry((entry) => {
+      if (entry.isFile()) return;
+      const path = entry.getPath();
+      for (const projectPath of projectPaths) {
+        if (path.startsWith(`${projectPath}/`)) {
+          entry.setEnabled(true);
+          entry.setReadOnly(true);
+          break;
+        }
       }
     });
   },

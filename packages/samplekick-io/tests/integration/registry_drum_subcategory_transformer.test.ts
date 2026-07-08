@@ -17,18 +17,18 @@ describe("DrumSubcategoryTransformer integration", () => {
     registry.applyTransform(createDrumSubcategoryTransformer());
     expect(registry.toString()).toBe(
       [
-        "root",
-        "├── Drums",
-        "│   ├── Fills [type:Drum Fills]",
+        "root [skipped]",
+        "├── Drums [skipped]",
+        "│   ├── Fills [type:Drum Fills, skipped]",
         "│   │   └── fill.wav [?]",
-        "│   └── Breaks [type:Drum Breaks]",
+        "│   └── Breaks [type:Drum Breaks, skipped]",
         "│       └── break.wav [?]",
-        "├── Drum Fills [type:Drum Fills]",
+        "├── Drum Fills [type:Drum Fills, skipped]",
         "│   └── fill.wav [?]",
-        "├── Drum - Breaks [type:Drum Breaks]",
+        "├── Drum - Breaks [type:Drum Breaks, skipped]",
         "│   └── break.wav [?]",
-        "└── Percussion",
-        "    └── Fills",
+        "└── Percussion [skipped]",
+        "    └── Fills [skipped]",
         "        └── shaker.wav [?]",
         "",
       ].join("\n"),
@@ -44,10 +44,10 @@ describe("DrumSubcategoryTransformer integration", () => {
     registry.applyTransform(createDirectorySampleTypeTransformer());
     expect(registry.toString()).toBe(
       [
-        "root",
-        "├── Drum - Fills [type:Drum Fills]",
+        "root [skipped]",
+        "├── Drum - Fills [type:Drum Fills, skipped]",
         "│   └── fill.wav [?]",
-        "└── Drums - Breaks [type:Drum Breaks]",
+        "└── Drums - Breaks [type:Drum Breaks, skipped]",
         "    └── break.wav [?]",
         "",
       ].join("\n"),
@@ -62,9 +62,9 @@ describe("DrumSubcategoryTransformer integration", () => {
     registry.applyTransform(createDirectorySampleTypeTransformer());
     expect(registry.toString()).toBe(
       [
-        "root",
-        "└── Drums [type:Drums]",
-        "    └── Fills [type:Drum Fills]",
+        "root [skipped]",
+        "└── Drums [type:Drums, skipped]",
+        "    └── Fills [type:Drum Fills, skipped]",
         "        └── fill.wav [?]",
         "",
       ].join("\n"),

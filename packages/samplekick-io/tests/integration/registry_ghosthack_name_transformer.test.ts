@@ -18,16 +18,16 @@ describe("GhosthackNameTransformer integration", () => {
     registry.applyTransform(createGhosthackNameTransformer());
     expect(registry.toString()).toBe(
       [
-        "root",
-        "├── Ghosthack - Bass Loops [renamed]",
+        "root [skipped]",
+        "├── Ghosthack - Bass Loops [renamed, skipped]",
         "│   └── Ghosthack - Bass Loop 01.wav [?] [renamed]",
-        "├── Ghosthack - Drum Hits [renamed]",
+        "├── Ghosthack - Drum Hits [renamed, skipped]",
         "│   └── Ghosthack - Snare Hit.wav [?] [renamed]",
-        "├── Ghosthack - Synths [renamed]",
+        "├── Ghosthack - Synths [renamed, skipped]",
         "│   └── Ghosthack - Pad 01.wav [?] [renamed]",
-        "├── Ghosthack - Pads",
+        "├── Ghosthack - Pads [skipped]",
         "│   └── Ghosthack - Pad 01.wav [?]",
-        "└── Other Pack",
+        "└── Other Pack [skipped]",
         "    └── hat.wav [?]",
         "",
       ].join("\n"),

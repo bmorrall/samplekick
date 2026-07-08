@@ -43,7 +43,7 @@ export const createKnownFileTypeTransformer = ({
       if (tagSampleType && entry.getSampleType() === undefined) {
         entry.setSampleType(sampleType);
       }
-      entry.setKeepStructure(true);
+      entry.setReadOnly(true);
     });
   },
 });

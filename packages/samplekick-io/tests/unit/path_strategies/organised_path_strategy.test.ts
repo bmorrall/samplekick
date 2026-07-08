@@ -52,13 +52,13 @@ describe("OrganisedPathStrategy", () => {
 
   it("keeps the path from the grandparent node when it has keepStructure set", () => {
     const leaf = createFileNodeHierarchy("example.zip", [
-      { name: "jazz", keepStructure: true },
-      { name: "bebop", keepStructure: true },
+      { name: "jazz", enabled: true },
+      { name: "bebop", enabled: true },
       {
         name: "track01.wav",
         sampleType: "loops",
         packageName: "my-pack",
-        keepStructure: true,
+        enabled: true,
       },
     ]);
     const result = OrganisedPathStrategy.destinationPathFor(leaf);
@@ -71,13 +71,13 @@ describe("OrganisedPathStrategy", () => {
 
   it("keeps the path from the parent node when it has keepStructure set", () => {
     const leaf = createFileNodeHierarchy("example.zip", [
-      { name: "jazz", keepStructure: false },
-      { name: "bebop", keepStructure: true },
+      { name: "jazz", enabled: false },
+      { name: "bebop", enabled: true },
       {
         name: "track01.wav",
         sampleType: "loops",
         packageName: "my-pack",
-        keepStructure: true,
+        enabled: true,
       },
     ]);
     const result = OrganisedPathStrategy.destinationPathFor(leaf);
@@ -85,31 +85,31 @@ describe("OrganisedPathStrategy", () => {
     expect(result).toHaveProperty("path", "loops/my-pack/bebop/track01.wav");
   });
 
-  it("uses only the entry name when an explicit false overrides an inherited keepStructure", () => {
+  it("skips a disabled directory but still includes enabled ancestors above it", () => {
     const leaf = createFileNodeHierarchy("example.zip", [
-      { name: "jazz", keepStructure: true },
-      { name: "bebop", keepStructure: false },
+      { name: "jazz", enabled: true },
+      { name: "bebop", enabled: false },
       {
         name: "track01.wav",
         sampleType: "loops",
         packageName: "my-pack",
-        keepStructure: true,
+        enabled: true,
       },
     ]);
     const result = OrganisedPathStrategy.destinationPathFor(leaf);
     expect(result).toBeInstanceOf(PathResult);
-    expect(result).toHaveProperty("path", "loops/my-pack/track01.wav");
+    expect(result).toHaveProperty("path", "loops/my-pack/jazz/track01.wav");
   });
 
   it("keeps only the entry name when self has keepStructure set", () => {
     const leaf = createFileNodeHierarchy("example.zip", [
-      { name: "jazz", keepStructure: false },
-      { name: "bebop", keepStructure: false },
+      { name: "jazz", enabled: false },
+      { name: "bebop", enabled: false },
       {
         name: "track01.wav",
         sampleType: "loops",
         packageName: "my-pack",
-        keepStructure: true,
+        enabled: true,
       },
     ]);
     const result = OrganisedPathStrategy.destinationPathFor(leaf);

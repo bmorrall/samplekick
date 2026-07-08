@@ -69,12 +69,14 @@ describe("SquashNameTransformer", () => {
       );
 
       expect(result.status).toBe(0);
-      expect(result.stdout).toContain("Bass Loops,,BassLoops,");
-      expect(result.stdout).toContain("Drum-Hits,,DrumHits,");
+      expect(result.stdout).toContain("Bass Loops,BassLoops,,,false");
+      expect(result.stdout).toContain("Drum-Hits,DrumHits,,,false");
       expect(result.stdout).toContain(
-        "Bass Loops/kick drum 01.wav,,kickDrum01.wav,",
+        "Bass Loops/kick drum 01.wav,kickDrum01.wav,,,true",
       );
-      expect(result.stdout).toContain("Drum-Hits/snare hit.wav,,snareHit.wav,");
+      expect(result.stdout).toContain(
+        "Drum-Hits/snare hit.wav,snareHit.wav,,,true",
+      );
     } finally {
       await rm(tmpDir, { recursive: true });
     }

@@ -35,11 +35,13 @@ describe("NormaliseHyphenTransformer", () => {
       const drumsRow = csv
         .split("\n")
         .find((row) => row.startsWith("Drums- Bass,"));
-      expect(drumsRow).toBe("Drums- Bass,,Drums - Bass,,Drums - Bass,");
+      expect(drumsRow).toBe("Drums- Bass,Drums - Bass,,Drums - Bass,false");
       const kicksRow = csv
         .split("\n")
         .find((row) => row.startsWith("Kicks -Snares,"));
-      expect(kicksRow).toBe("Kicks -Snares,,Kicks - Snares,,Kicks - Snares,");
+      expect(kicksRow).toBe(
+        "Kicks -Snares,Kicks - Snares,,Kicks - Snares,false",
+      );
     } finally {
       await rm(tmpDir, { recursive: true });
     }
@@ -68,7 +70,7 @@ describe("NormaliseHyphenTransformer", () => {
       const [configFile] = await readdir(dataDir);
       const configPath = join(dataDir, configFile);
       const staleConfig =
-        "path,keepPath,name,packageName,sampleType,skip\nDrums- Bass,,,,,\nDrums- Bass/kick.wav,,,,,";
+        "path,name,packageName,sampleType,enabled\nDrums- Bass,,,,,\nDrums- Bass/kick.wav,true,,,";
       await writeFile(configPath, staleConfig);
 
       // Second run: transformer should still normalise despite the stale config not having a name
@@ -82,7 +84,7 @@ describe("NormaliseHyphenTransformer", () => {
       const drumsRow = csv
         .split("\n")
         .find((row) => row.startsWith("Drums- Bass,"));
-      expect(drumsRow).toBe("Drums- Bass,,Drums - Bass,,Drums - Bass,");
+      expect(drumsRow).toBe("Drums- Bass,Drums - Bass,,Drums - Bass,false");
     } finally {
       await rm(tmpDir, { recursive: true });
     }

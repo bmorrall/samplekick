@@ -96,6 +96,8 @@ export const FOLDER_LOOKUP = new Map<string, FolderEntry>([
   ["rides", { prefix: "Ride", standalone: "Rides" }],
   ["snare", { prefix: "Snare", standalone: "Snares" }],
   ["snares", { prefix: "Snare", standalone: "Snares" }],
+  ["tom", { prefix: "Tom", standalone: "Toms" }],
+  ["toms", { prefix: "Tom", standalone: "Toms" }],
   ["sound fx", { prefix: "Sound FX", standalone: "Sound FX" }],
   ["fx", { prefix: "Sound FX", standalone: "Sound FX" }],
   ["foley", { prefix: "Foley", standalone: "Foley" }],

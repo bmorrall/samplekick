@@ -35,13 +35,15 @@ describe("NormaliseCommaSpacingTransformer", () => {
       const kicksRow = csv
         .split("\n")
         .find((row) => row.startsWith('"Kicks , Snares",'));
-      expect(kicksRow).toBe('"Kicks , Snares",,"Kicks, Snares",,,');
+      expect(kicksRow).toBe('"Kicks , Snares","Kicks, Snares",,,false');
 
       // "Hi-Hats ,Percussion" should be renamed to "Hi-Hats, Percussion"
       const hatsRow = csv
         .split("\n")
         .find((row) => row.startsWith('"Hi-Hats ,Percussion",'));
-      expect(hatsRow).toBe('"Hi-Hats ,Percussion",,"Hi-Hats, Percussion",,,');
+      expect(hatsRow).toBe(
+        '"Hi-Hats ,Percussion","Hi-Hats, Percussion",,,false',
+      );
     } finally {
       await rm(tmpDir, { recursive: true });
     }
@@ -73,7 +75,7 @@ describe("NormaliseCommaSpacingTransformer", () => {
       const kicksRow = csv
         .split("\n")
         .find((row) => row.startsWith('"Kicks_,_Snares",'));
-      expect(kicksRow).toBe('"Kicks_,_Snares",,"Kicks,_Snares",,,');
+      expect(kicksRow).toBe('"Kicks_,_Snares","Kicks,_Snares",,,false');
     } finally {
       await rm(tmpDir, { recursive: true });
     }

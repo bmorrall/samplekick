@@ -9,7 +9,7 @@ describe("Registry.toString", () => {
     ]);
 
     expect(registry.toString()).toBe(
-      ["library", "├── jazz [?]", "└── rock [?]", ""].join("\n"),
+      ["library [skipped]", "├── jazz [?]", "└── rock [?]", ""].join("\n"),
     );
   });
 
@@ -22,12 +22,12 @@ describe("Registry.toString", () => {
 
     expect(registry.toString()).toBe(
       [
-        "library",
-        "└── jazz",
-        "    ├── bebop",
+        "library [skipped]",
+        "└── jazz [skipped]",
+        "    ├── bebop [skipped]",
         "    │   ├── track01 [?]",
         "    │   └── track02 [?]",
-        "    └── swing",
+        "    └── swing [skipped]",
         "        └── track01 [?]",
         "",
       ].join("\n"),
@@ -44,8 +44,8 @@ describe("Registry.toString", () => {
 
     expect(registry.toString()).toBe(
       [
-        "library",
-        "└── Jazz Loops [renamed, pkg:jazz-pack, type:Melodic Loops - Jazz]",
+        "library [skipped]",
+        "└── Jazz Loops [renamed, pkg:jazz-pack, type:Melodic Loops - Jazz, skipped]",
         "    └── track01",
         "",
       ].join("\n"),
@@ -61,8 +61,8 @@ describe("Registry.toString", () => {
 
     expect(registry.toString()).toBe(
       [
-        "library",
-        "└── jazz [pkg:jazz-pack, type:Melodic Loops - Jazz]",
+        "library [skipped]",
+        "└── jazz [pkg:jazz-pack, type:Melodic Loops - Jazz, skipped]",
         "    └── track01",
         "",
       ].join("\n"),

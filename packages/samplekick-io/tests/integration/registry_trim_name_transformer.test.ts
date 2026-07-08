@@ -12,12 +12,12 @@ describe("TrimNameTransformer integration", () => {
     registry.applyTransform(createTrimNameTransformer());
     expect(registry.toString()).toBe(
       [
-        "root",
-        "├── Kicks [renamed]",
+        "root [skipped]",
+        "├── Kicks [renamed, skipped]",
         "│   └── kick.wav [?]",
-        "├── Snares [renamed]",
+        "├── Snares [renamed, skipped]",
         "│   └── snare.wav [?]",
-        "└── hi-hats",
+        "└── hi-hats [skipped]",
         "    └── hat.wav [?]",
         "",
       ].join("\n"),

@@ -39,9 +39,7 @@ describe("samplekick CLI", () => {
       expect(result.stderr).toBe("");
 
       const fileContent = await readFile(configPath, "utf8");
-      expect(fileContent).toContain(
-        "path,keepPath,name,packageName,sampleType,skip",
-      );
+      expect(fileContent).toContain("path,name,packageName,sampleType,enabled");
       expect(fileContent).toContain("Drums/kick.wav");
       expect(fileContent).toContain("Loops/bass.wav");
 
@@ -75,9 +73,7 @@ describe("samplekick CLI", () => {
 
       expect(result.stderr).toBe("");
       const fileContent = await readFile(configPath, "utf8");
-      expect(fileContent).toContain(
-        "path,keepPath,name,packageName,sampleType,skip",
-      );
+      expect(fileContent).toContain("path,name,packageName,sampleType,enabled");
       expect(fileContent).toContain("Drums/kick.wav");
 
       expect(await readFile(join(outputDir, "Drums/kick.wav"), "utf8")).toBe(
@@ -100,9 +96,9 @@ describe("samplekick CLI", () => {
     });
 
     const config = [
-      "path,keepPath,name,packageName,sampleType,skip",
-      "Drums/kick.wav,,My Kick.wav,,,",
-      "Loops/bass.wav,,,,,true",
+      "path,name,packageName,sampleType,enabled",
+      "Drums/kick.wav,My Kick.wav,,,",
+      "Loops/bass.wav,,,,false",
     ].join("\n");
 
     const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
@@ -141,8 +137,10 @@ describe("samplekick CLI", () => {
     });
 
     const config = [
-      "path,keepPath,name,packageName,sampleType,skip",
-      "Loops,,,,,true",
+      "path,name,packageName,sampleType,enabled",
+      "Loops,,,Drums,false",
+      "Loops/bass.wav,,,,false",
+      "Loops/synth.wav,,,,false",
     ].join("\n");
 
     const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
@@ -179,8 +177,8 @@ describe("samplekick CLI", () => {
     });
 
     const config = [
-      "path,keepPath,name,packageName,sampleType,skip",
-      "Drums/kick.wav,,Percussion,,,",
+      "path,name,packageName,sampleType,enabled",
+      "Drums/kick.wav,Percussion,,,",
     ].join("\n");
 
     const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
@@ -230,7 +228,7 @@ describe("samplekick CLI", () => {
       const paths = rows.slice(1).map((row) => row.split(",")[0]);
 
       expect(paths).toContain("__MACOSX");
-      expect(paths).not.toContain("__MACOSX/._kick.wav");
+      expect(paths).toContain("__MACOSX/._kick.wav");
       expect(paths).toContain("Drums/kick.wav");
     } finally {
       await rm(tmpDir, { recursive: true });
@@ -261,7 +259,7 @@ describe("samplekick CLI", () => {
         .split("\n")
         .find((row) => row.startsWith("Drums/kick.wav,"));
       // name matching basename is omitted, boolean defaults are empty
-      expect(fileRow).toBe("Drums/kick.wav,,,,,");
+      expect(fileRow).toBe("Drums/kick.wav,,,,true");
     } finally {
       await rm(tmpDir, { recursive: true });
     }
@@ -294,8 +292,8 @@ describe("samplekick CLI", () => {
         .trim()
         .split("\n")
         .find((row) => row.startsWith("Drums/kick.wav,"));
-      // name always written, false for unset booleans
-      expect(fileRow).toBe("Drums/kick.wav,false,kick.wav,,,false");
+      // name always written, true for enabled files
+      expect(fileRow).toBe("Drums/kick.wav,kick.wav,,,true");
     } finally {
       await rm(tmpDir, { recursive: true });
     }
@@ -328,11 +326,11 @@ describe("samplekick CLI", () => {
       const paths = rows.slice(1).map((row) => row.split(",")[0]);
 
       expect(paths).toContain("__MACOSX");
-      expect(paths).not.toContain("__MACOSX/._kick.wav");
+      expect(paths).toContain("__MACOSX/._kick.wav");
       expect(paths).toContain("Drums/kick.wav");
 
       const macosxRow = rows.find((row) => row.startsWith("__MACOSX,"));
-      expect(macosxRow?.split(",")[5]).toBe("true");
+      expect(macosxRow?.split(",")[4]).toBe("false");
     } finally {
       await rm(tmpDir, { recursive: true });
     }
@@ -367,7 +365,7 @@ describe("samplekick CLI", () => {
 
       expect(paths).toContain("My Project");
       expect(paths).not.toContain("My Project/My Project.als");
-      expect(paths).not.toContain("My Project/samples");
+      expect(paths).toContain("My Project/samples");
       expect(paths).not.toContain("My Project/samples/kick.wav");
       expect(paths).toContain("Drums/snare.wav");
     } finally {
@@ -405,7 +403,7 @@ describe("samplekick CLI", () => {
         .split("\n")
         .find((row) => row.startsWith("Drums/kick.wav,"));
       // name matching basename is omitted, boolean defaults are empty
-      expect(fileRow).toBe("Drums/kick.wav,,,,,");
+      expect(fileRow).toBe("Drums/kick.wav,,,,true");
     } finally {
       await rm(tmpDir, { recursive: true });
     }
@@ -440,8 +438,8 @@ describe("samplekick CLI", () => {
         .trim()
         .split("\n")
         .find((row) => row.startsWith("Drums/kick.wav,"));
-      // name always written, false for unset booleans
-      expect(fileRow).toBe("Drums/kick.wav,false,kick.wav,,,false");
+      // name always written, true for enabled files
+      expect(fileRow).toBe("Drums/kick.wav,kick.wav,,,true");
     } finally {
       await rm(tmpDir, { recursive: true });
     }

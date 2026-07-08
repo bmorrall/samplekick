@@ -12,12 +12,12 @@ describe("NormaliseQuotesTransformer integration", () => {
     registry.applyTransform(createNormaliseQuotesTransformer());
     expect(registry.toString()).toBe(
       [
-        "root",
-        "\u251C\u2500\u2500 'Kicks' [renamed]",
+        "root [skipped]",
+        "\u251C\u2500\u2500 'Kicks' [renamed, skipped]",
         "\u2502   \u2514\u2500\u2500 kick.wav [?]",
-        '\u251C\u2500\u2500 "Synths" [renamed]',
+        '\u251C\u2500\u2500 "Synths" [renamed, skipped]',
         "\u2502   \u2514\u2500\u2500 pad.wav [?]",
-        "\u2514\u2500\u2500 Drums",
+        "\u2514\u2500\u2500 Drums [skipped]",
         "    \u2514\u2500\u2500 snare.wav [?]",
         "",
       ].join("\n"),

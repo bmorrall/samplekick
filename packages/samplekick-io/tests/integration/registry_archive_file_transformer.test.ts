@@ -11,10 +11,10 @@ describe("ArchiveFileTransformer integration", () => {
     registry.applyTransform(createArchiveFileTransformer());
     expect(registry.toString()).toBe(
       [
-        "root",
-        "├── extras",
-        "│   ┗━━ bonus.zip [?] [type:Archive]",
-        "└── samples",
+        "root [skipped]",
+        "┣━━ extras",
+        "┃   └── bonus.zip [?] [type:Archive]",
+        "└── samples [skipped]",
         "    └── kick.wav [?]",
         "",
       ].join("\n"),
@@ -29,10 +29,10 @@ describe("ArchiveFileTransformer integration", () => {
     registry.applyTransform(createArchiveFileTransformer());
     expect(registry.toString()).toBe(
       [
-        "root",
-        "├── Ableton",
-        "│   ┗━━ My Set.zip [?] [type:Ableton Projects]",
-        "└── samples",
+        "root [skipped]",
+        "┣━━ Ableton",
+        "┃   └── My Set.zip [?] [type:Ableton Projects]",
+        "└── samples [skipped]",
         "    └── kick.wav [?]",
         "",
       ].join("\n"),
@@ -47,10 +47,10 @@ describe("ArchiveFileTransformer integration", () => {
     registry.applyTransform(createArchiveFileTransformer());
     expect(registry.toString()).toBe(
       [
-        "root",
-        "├── FL Studio",
-        "│   ┗━━ My Song.zip [?] [type:FL Studio Projects]",
-        "└── samples",
+        "root [skipped]",
+        "┣━━ FL Studio",
+        "┃   └── My Song.zip [?] [type:FL Studio Projects]",
+        "└── samples [skipped]",
         "    └── kick.wav [?]",
         "",
       ].join("\n"),

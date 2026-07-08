@@ -16,6 +16,12 @@
   "engines": {
     "node": ">=20"
   },
+  "exports": {
+    "./pipeline": {
+      "import": "./dist/pipeline.mjs",
+      "types": "./dist/pipeline.d.mts"
+    }
+  },
   "bin": {
     "samplekick": "./dist/index.mjs"
   },

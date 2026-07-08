@@ -86,8 +86,8 @@ describe("createSquashNameTransformer", () => {
     const entry = createTransformEntry({ name: "Bass Loops" });
     const transformer = createSquashNameTransformer();
     transformer.transform(singleEntryTransformSource(entry));
-    expect(entry.setSkipped).not.toHaveBeenCalled();
-    expect(entry.setKeepStructure).not.toHaveBeenCalled();
+    expect(entry.setEnabled).not.toHaveBeenCalled();
+    expect(entry.setReadOnly).not.toHaveBeenCalled();
   });
 
   it("does not modify any fields when keepStructure is true", () => {
@@ -95,7 +95,7 @@ describe("createSquashNameTransformer", () => {
       name: "Bass Loops",
       packageName: "My Pack",
       sampleType: "Drum Hits",
-      keepStructure: true,
+      readOnly: true,
     });
     const transformer = createSquashNameTransformer();
     transformer.transform(singleEntryTransformSource(entry));

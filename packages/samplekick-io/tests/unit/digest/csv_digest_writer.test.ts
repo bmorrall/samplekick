@@ -30,7 +30,7 @@ describe("CsvDigestWriter", () => {
     const writer = new CsvDigestWriter(stream);
 
     expect(captureOutput(writer, createDigestSource([]), stream)).toBe(
-      "path,keepPath,name,packageName,sampleType,skip",
+      "path,name,packageName,sampleType,enabled",
     );
   });
 
@@ -43,8 +43,7 @@ describe("CsvDigestWriter", () => {
         name: "Alt Track 01",
         packageName: "jazz-pack",
         sampleType: "Bebop",
-        skipped: true,
-        keepStructure: true,
+        enabled: false,
       }),
       createDigestEntry({
         path: "rock/track01",
@@ -55,11 +54,11 @@ describe("CsvDigestWriter", () => {
     const lines = output.split("\n");
 
     expect(lines).toHaveLength(3);
-    expect(lines[0]).toBe("path,keepPath,name,packageName,sampleType,skip");
+    expect(lines[0]).toBe("path,name,packageName,sampleType,enabled");
     expect(lines[1]).toBe(
-      "jazz/bebop/track01,true,Alt Track 01,jazz-pack,Bebop,true",
+      "jazz/bebop/track01,Alt Track 01,jazz-pack,Bebop,false",
     );
-    expect(lines[2]).toBe("rock/track01,,,,,");
+    expect(lines[2]).toBe("rock/track01,,,,false");
   });
 
   it("omits the name override when it matches the path basename", () => {
@@ -72,7 +71,7 @@ describe("CsvDigestWriter", () => {
     const output = captureOutput(writer, configSource, stream);
     const lines = output.split("\n");
 
-    expect(lines[1]).toBe("jazz/bebop/track01,,,,,");
+    expect(lines[1]).toBe("jazz/bebop/track01,,,,false");
   });
 
   it("quotes fields that contain commas", () => {
@@ -85,7 +84,7 @@ describe("CsvDigestWriter", () => {
     const output = captureOutput(writer, configSource, stream);
     const lines = output.split("\n");
 
-    expect(lines[1]).toBe('jazz/track01,,"Jazz, Bebop",,,');
+    expect(lines[1]).toBe('jazz/track01,"Jazz, Bebop",,,false');
   });
 
   it("quotes fields that contain double quotes", () => {
@@ -98,7 +97,7 @@ describe("CsvDigestWriter", () => {
     const output = captureOutput(writer, configSource, stream);
     const lines = output.split("\n");
 
-    expect(lines[1]).toBe('jazz/track01,,"Jazz ""Bebop"" Track",,,');
+    expect(lines[1]).toBe('jazz/track01,"Jazz ""Bebop"" Track",,,false');
   });
 
   it("serializes the root node for a registry even without overrides", () => {
@@ -110,7 +109,7 @@ describe("CsvDigestWriter", () => {
     const lines = output.split("\n");
 
     expect(lines).toHaveLength(2);
-    expect(lines[1]).toBe(",,library,,,");
+    expect(lines[1]).toBe(",library,,,false");
   });
 
   it("serializes root node changes when present on a registry", () => {
@@ -124,7 +123,7 @@ describe("CsvDigestWriter", () => {
     const lines = output.split("\n");
 
     expect(lines).toHaveLength(2);
-    expect(lines[1]).toBe(",,Renamed Library,library-pack,,");
+    expect(lines[1]).toBe(",Renamed Library,library-pack,,false");
   });
 });
 
@@ -145,13 +144,11 @@ describe("CsvDigestWriter { explicit: true }", () => {
     const output = captureOutput(writer, configSource, stream);
     const lines = output.split("\n");
 
-    expect(lines[1]).toBe("jazz/bebop/track01,false,track01,,,false");
-    expect(lines[2]).toBe(
-      "jazz/bebop/track02,false,Alt Track,jazz-pack,Bebop,false",
-    );
+    expect(lines[1]).toBe("jazz/bebop/track01,track01,,,false");
+    expect(lines[2]).toBe("jazz/bebop/track02,Alt Track,jazz-pack,Bebop,false");
   });
 
-  it("still omits the name column and boolean defaults when not in explicit mode", () => {
+  it("still omits the name column when not in explicit mode", () => {
     const stream = new PassThrough({ encoding: "utf8" });
     const writer = new CsvDigestWriter(stream);
     const configSource = createDigestSource([
@@ -161,6 +158,6 @@ describe("CsvDigestWriter { explicit: true }", () => {
     const output = captureOutput(writer, configSource, stream);
     const lines = output.split("\n");
 
-    expect(lines[1]).toBe("jazz/bebop/track01,,,,,");
+    expect(lines[1]).toBe("jazz/bebop/track01,,,,false");
   });
 });

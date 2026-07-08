@@ -22,22 +22,19 @@ export const createDigestEntry = ({
   name,
   packageName,
   sampleType,
-  skipped,
-  keepStructure,
+  enabled,
 }: {
   path: string;
   name?: string;
   packageName?: string;
   sampleType?: string;
-  skipped?: boolean;
-  keepStructure?: boolean;
+  enabled?: boolean;
 }): DigestEntry => ({
   getPath: () => path,
   getName: () => name ?? getPathName(path),
   getPackageName: () => packageName,
   getSampleType: () => sampleType,
-  isSkipped: () => skipped,
-  isKeepStructure: () => keepStructure,
+  isEnabled: () => enabled ?? false,
 });
 
 export const createFileEntry = (opts: {
@@ -58,8 +55,8 @@ export const createTransformEntry = (opts: {
   path?: string;
   packageName?: string;
   sampleType?: string;
-  skipped?: boolean;
-  keepStructure?: boolean;
+  enabled?: boolean;
+  readOnly?: boolean;
   isFile?: boolean;
   parentNode?: FileNode;
 }): TransformEntry => ({
@@ -76,9 +73,9 @@ export const createTransformEntry = (opts: {
   // istanbul ignore next
   getOwnSampleType: () => opts.sampleType,
   // istanbul ignore next
-  isSkipped: () => opts.skipped,
+  isEnabled: () => opts.enabled ?? opts.isFile !== false,
   // istanbul ignore next
-  isKeepStructure: () => opts.keepStructure,
+  isReadOnly: () => opts.readOnly,
   // istanbul ignore next
   isFile: () => opts.isFile ?? true,
   // istanbul ignore next
@@ -92,9 +89,9 @@ export const createTransformEntry = (opts: {
   // istanbul ignore next
   setSampleType: vi.fn<(name: string | undefined) => void>(),
   // istanbul ignore next
-  setSkipped: vi.fn<(name: boolean | undefined) => void>(),
+  setEnabled: vi.fn<(value: boolean) => void>(),
   // istanbul ignore next
-  setKeepStructure: vi.fn<(name: boolean | undefined) => void>(),
+  setReadOnly: vi.fn<(value: boolean) => void>(),
 });
 
 export const createTransformEntryInHierarchy = (
@@ -102,24 +99,22 @@ export const createTransformEntryInHierarchy = (
     name: string;
     packageName?: string;
     sampleType?: string;
-    skipped?: boolean;
-    keepStructure?: boolean;
+    enabled?: boolean;
   }> = [],
   part: {
     name: string;
     path?: string;
     packageName?: string;
     sampleType?: string;
-    skipped?: boolean;
-    keepStructure?: boolean;
+    enabled?: boolean;
+    readOnly?: boolean;
     isFile?: boolean;
   },
   children: Array<{
     name: string;
     packageName?: string;
     sampleType?: string;
-    skipped?: boolean;
-    keepStructure?: boolean;
+    enabled?: boolean;
   }> = [],
 ): TransformEntry => {
   // Build parent chain using mutable refs so each node can reference its child
@@ -142,8 +137,7 @@ export const createTransformEntryInHierarchy = (
       getName: () => parentPart.name,
       getPackageName: () => parentPart.packageName,
       getSampleType: () => parentPart.sampleType,
-      isSkipped: () => parentPart.skipped,
-      isKeepStructure: () => parentPart.keepStructure,
+      isEnabled: () => parentPart.enabled ?? false,
       isFile: () => false,
       getParentNode: () => currentParent,
       getChildNodes: () =>
@@ -176,9 +170,9 @@ export const createTransformEntryInHierarchy = (
     // istanbul ignore next
     getOwnSampleType: () => part.sampleType,
     // istanbul ignore next
-    isSkipped: () => part.skipped,
+    isEnabled: () => part.enabled ?? false,
     // istanbul ignore next
-    isKeepStructure: () => part.keepStructure,
+    isReadOnly: () => part.readOnly,
     // istanbul ignore next
     isFile: () => part.isFile ?? true,
     // istanbul ignore next
@@ -192,9 +186,9 @@ export const createTransformEntryInHierarchy = (
     // istanbul ignore next
     setSampleType: vi.fn<(name: string | undefined) => void>(),
     // istanbul ignore next
-    setSkipped: vi.fn<(name: boolean | undefined) => void>(),
+    setEnabled: vi.fn<(value: boolean) => void>(),
     // istanbul ignore next
-    setKeepStructure: vi.fn<(name: boolean | undefined) => void>(),
+    setReadOnly: vi.fn<(value: boolean) => void>(),
   };
 
   // Wire last parent's child ref to entry
@@ -210,8 +204,7 @@ export const createTransformEntryInHierarchy = (
       getName: () => childPart.name,
       getPackageName: () => childPart.packageName,
       getSampleType: () => childPart.sampleType,
-      isSkipped: () => childPart.skipped,
-      isKeepStructure: () => childPart.keepStructure,
+      isEnabled: () => childPart.enabled ?? false,
       isFile: () => true,
       getParentNode: () => entry,
       getChildNodes: () => [],
@@ -230,6 +223,8 @@ export const singleEntryTransformSource = (
     fn(entry);
   },
   eachTransformModification: (fn: (e: TransformEntry) => void) => {
+    if (!entry.isFile() && entry.isEnabled()) return;
+    if (entry.isReadOnly() === true) return;
     fn(entry);
   },
 });
@@ -256,8 +251,7 @@ interface NodePart {
   name: string;
   packageName?: string;
   sampleType?: string;
-  skipped?: boolean;
-  keepStructure?: boolean;
+  enabled?: boolean;
 }
 
 export function createFileNodeHierarchy(rootName: string, parts: []): FileNode;
@@ -278,8 +272,7 @@ export function createFileNodeHierarchy(
     getName: () => rootName,
     getPackageName: () => undefined,
     getSampleType: () => undefined,
-    isSkipped: () => undefined,
-    isKeepStructure: () => undefined,
+    isEnabled: () => false,
     isFile: () => false,
     getParentNode: () => undefined,
     getChildNodes: () =>
@@ -302,8 +295,7 @@ export function createFileNodeHierarchy(
       getName: () => part.name,
       getPackageName: () => part.packageName,
       getSampleType: () => part.sampleType,
-      isSkipped: () => part.skipped,
-      isKeepStructure: () => part.keepStructure,
+      isEnabled: () => part.enabled ?? false,
       isFile: () => true,
       getParentNode: () => currentParent,
       getChildNodes: () =>

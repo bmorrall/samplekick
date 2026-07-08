@@ -12,13 +12,13 @@ describe("SP404Mk2ProjectTransformer integration", () => {
     registry.applyTransform(createSP404Mk2ProjectTransformer());
     expect(registry.toString()).toBe(
       [
-        "root",
+        "root [skipped]",
         "┣━━ MY_PROJECT [type:SP-404MKII Projects]",
         "┃   ┣━━ SMPL",
-        "┃   ┃   ┗━━ BANK1-01.SMP [?]",
+        "┃   ┃   └── BANK1-01.SMP [?]",
         "┃   ┗━━ PTN",
-        "┃       ┗━━ PATTERNCHAIN_00.CHN [?]",
-        "└── samples",
+        "┃       └── PATTERNCHAIN_00.CHN [?]",
+        "└── samples [skipped]",
         "    └── kick.wav [?]",
         "",
       ].join("\n"),

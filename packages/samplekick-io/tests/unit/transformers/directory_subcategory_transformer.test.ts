@@ -124,7 +124,7 @@ describe("createDirectorySubcategoryTransformer", () => {
       const transformer = createDirectorySubcategoryTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
-      expect(entry.setKeepStructure).not.toHaveBeenCalled();
+      expect(entry.setReadOnly).not.toHaveBeenCalled();
     });
 
     it("does not set sampleType when the child name ends with 'Stems'", () => {
@@ -136,7 +136,7 @@ describe("createDirectorySubcategoryTransformer", () => {
       const transformer = createDirectorySubcategoryTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
-      expect(entry.setKeepStructure).not.toHaveBeenCalled();
+      expect(entry.setReadOnly).not.toHaveBeenCalled();
     });
 
     it("does not set sampleType when the child name ends with 'Steps'", () => {
@@ -148,7 +148,7 @@ describe("createDirectorySubcategoryTransformer", () => {
       const transformer = createDirectorySubcategoryTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
-      expect(entry.setKeepStructure).not.toHaveBeenCalled();
+      expect(entry.setReadOnly).not.toHaveBeenCalled();
     });
 
     it("does not set sampleType when the child name is 'MIDI'", () => {
@@ -160,7 +160,7 @@ describe("createDirectorySubcategoryTransformer", () => {
       const transformer = createDirectorySubcategoryTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
-      expect(entry.setKeepStructure).not.toHaveBeenCalled();
+      expect(entry.setReadOnly).not.toHaveBeenCalled();
     });
 
     it("does not set sampleType when the child name ends with 'MIDI' (e.g. 'Drum MIDI')", () => {
@@ -172,7 +172,7 @@ describe("createDirectorySubcategoryTransformer", () => {
       const transformer = createDirectorySubcategoryTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
-      expect(entry.setKeepStructure).not.toHaveBeenCalled();
+      expect(entry.setReadOnly).not.toHaveBeenCalled();
     });
 
     it("does not set sampleType when the child name is 'MIDI'", () => {
@@ -184,7 +184,7 @@ describe("createDirectorySubcategoryTransformer", () => {
       const transformer = createDirectorySubcategoryTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
-      expect(entry.setKeepStructure).not.toHaveBeenCalled();
+      expect(entry.setReadOnly).not.toHaveBeenCalled();
     });
 
     it("does not set sampleType when the child name already contains ' - '", () => {
@@ -196,7 +196,7 @@ describe("createDirectorySubcategoryTransformer", () => {
       const transformer = createDirectorySubcategoryTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
-      expect(entry.setKeepStructure).not.toHaveBeenCalled();
+      expect(entry.setReadOnly).not.toHaveBeenCalled();
     });
 
     it("does not set sampleType when the parent sampleType is not a known folder name", () => {
@@ -208,7 +208,7 @@ describe("createDirectorySubcategoryTransformer", () => {
       const transformer = createDirectorySubcategoryTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
-      expect(entry.setKeepStructure).not.toHaveBeenCalled();
+      expect(entry.setReadOnly).not.toHaveBeenCalled();
     });
   });
 

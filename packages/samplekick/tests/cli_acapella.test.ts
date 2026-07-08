@@ -33,7 +33,7 @@ describe("AcapellaTransformer", () => {
       const dirRow = csv
         .split("\n")
         .find((row) => row.startsWith("Acapellas,"));
-      expect(dirRow).toBe("Acapellas,,,,Vocals - Acapellas,");
+      expect(dirRow).toBe("Acapellas,,,Vocals - Acapellas,false");
     } finally {
       await rm(tmpDir, { recursive: true });
     }
@@ -64,7 +64,7 @@ describe("AcapellaTransformer", () => {
       const dirRow = csv
         .split("\n")
         .find((row) => row.startsWith("Acapellas and Vocals,"));
-      expect(dirRow).toBe("Acapellas and Vocals,,,,Vocals - Acapellas,");
+      expect(dirRow).toBe("Acapellas and Vocals,,,Vocals - Acapellas,false");
     } finally {
       await rm(tmpDir, { recursive: true });
     }

@@ -47,7 +47,7 @@ describe("MultiPackNameTransformer", () => {
         row.startsWith("Ghosthack - Ultimate Freebie Collection,"),
       );
       expect(topLevelRow).toBe(
-        "Ghosthack - Ultimate Freebie Collection,,,Ghosthack - Ultimate Freebie Collection,,",
+        "Ghosthack - Ultimate Freebie Collection,,Ghosthack - Ultimate Freebie Collection,,false",
       );
 
       const subPackRow = rows.find((row) =>
@@ -56,7 +56,7 @@ describe("MultiPackNameTransformer", () => {
         ),
       );
       expect(subPackRow).toBe(
-        "Ghosthack - Ultimate Freebie Collection/Acapellas and Vocals/Ghosthack - UPB2022 Vocal Freebie,,,Ghosthack - UPB2022 Vocal Freebie,,",
+        "Ghosthack - Ultimate Freebie Collection/Acapellas and Vocals/Ghosthack - UPB2022 Vocal Freebie,,Ghosthack - UPB2022 Vocal Freebie,,false",
       );
 
       const neutralRow = rows.find((row) =>
@@ -65,7 +65,7 @@ describe("MultiPackNameTransformer", () => {
         ),
       );
       expect(neutralRow).toBe(
-        "Ghosthack - Ultimate Freebie Collection/Acapellas and Vocals,,,,Vocals - Acapellas,",
+        "Ghosthack - Ultimate Freebie Collection/Acapellas and Vocals,,,Vocals - Acapellas,false",
       );
     } finally {
       await rm(tmpDir, { recursive: true });
@@ -107,7 +107,7 @@ describe("MultiPackNameTransformer", () => {
         ),
       );
       expect(adventRow).toBe(
-        "Ghosthack - Ultimate Freebie Collection/Construction Kits/Ghosthack - Advent Calendar 2019 - Day 12 - Trap Kits,,,Ghosthack - Advent Calendar 2019 - Day 12 - Trap Kits,,",
+        "Ghosthack - Ultimate Freebie Collection/Construction Kits/Ghosthack - Advent Calendar 2019 - Day 12 - Trap Kits,,Ghosthack - Advent Calendar 2019 - Day 12 - Trap Kits,,false",
       );
 
       // Holiday Kit dir: has 'Kit' in name → tagged even though parent has ' - '
@@ -117,7 +117,7 @@ describe("MultiPackNameTransformer", () => {
         ),
       );
       expect(holidayRow).toBe(
-        "Ghosthack - Ultimate Freebie Collection/Construction Kits/Ghosthack - Advent Calendar 2019 - Day 12 - Trap Kits/Holiday Kit 04 - 140bpm - Bmaj,,Holiday Kit 04 - Bmaj 140bpm,Ghosthack - Holiday Kit 04 - Bmaj 140bpm,,",
+        "Ghosthack - Ultimate Freebie Collection/Construction Kits/Ghosthack - Advent Calendar 2019 - Day 12 - Trap Kits/Holiday Kit 04 - 140bpm - Bmaj,Holiday Kit 04 - Bmaj 140bpm,Ghosthack - Holiday Kit 04 - Bmaj 140bpm,,false",
       );
     } finally {
       await rm(tmpDir, { recursive: true });
@@ -214,7 +214,7 @@ describe("MultiPackNameTransformer", () => {
 
       // "Loops" has no ' - ' so should not be tagged as packageName
       const loopsRow = rows.find((row) => row.startsWith("Loops,"));
-      expect(loopsRow).toBe("Loops,,,,Loops,");
+      expect(loopsRow).toBe("Loops,,,Loops,false");
     } finally {
       await rm(tmpDir, { recursive: true });
     }

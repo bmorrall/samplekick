@@ -5,23 +5,20 @@ function makeNode({
   name,
   packageName,
   sampleType,
-  skipped,
-  keepStructure,
+  enabled,
   path = "foo",
 }: {
   name?: string;
   packageName?: string;
   sampleType?: string;
-  skipped?: boolean;
-  keepStructure?: boolean;
+  enabled?: boolean;
   path?: string;
 } = {}): EntryNode {
   const node = EntryNode.blankEntry(path);
   if (name !== undefined) node.setName(name);
   if (packageName !== undefined) node.setPackageName(packageName);
   if (sampleType !== undefined) node.setSampleType(sampleType);
-  if (skipped !== undefined) node.setSkipped(skipped);
-  if (keepStructure !== undefined) node.setKeepStructure(keepStructure);
+  if (enabled !== undefined) node.setEnabled(enabled);
   return node;
 }
 
@@ -50,15 +47,9 @@ describe("EntryNode.mutatesNode", () => {
     expect(a.mutatesNode(b)).toBe(true);
   });
 
-  it("returns true if skipped differs", () => {
-    const a = makeNode({ path: "foo", skipped: true });
-    const b = makeNode({ path: "foo", skipped: false });
-    expect(a.mutatesNode(b)).toBe(true);
-  });
-
-  it("returns true if keepStructure differs", () => {
-    const a = makeNode({ path: "foo", keepStructure: true });
-    const b = makeNode({ path: "foo", keepStructure: false });
+  it("returns true if enabled differs", () => {
+    const a = makeNode({ path: "foo", enabled: false });
+    const b = makeNode({ path: "foo", enabled: true });
     expect(a.mutatesNode(b)).toBe(true);
   });
 

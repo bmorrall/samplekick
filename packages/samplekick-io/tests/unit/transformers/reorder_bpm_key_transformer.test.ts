@@ -193,7 +193,7 @@ describe("createReorderBpmKeyTransformer", () => {
   it("does not act on a keepStructure entry", () => {
     const entry = createTransformEntry({
       name: "120bpm Amin.wav",
-      keepStructure: true,
+      readOnly: true,
     });
     transformer.transform(singleEntryTransformSource(entry));
     expect(entry.setName).not.toHaveBeenCalled();
@@ -202,7 +202,7 @@ describe("createReorderBpmKeyTransformer", () => {
   it("does not act on a skipped entry", () => {
     const entry = createTransformEntry({
       name: "120bpm Amin.wav",
-      skipped: true,
+      enabled: false,
     });
     transformer.transform(singleEntryTransformSource(entry));
     expect(entry.setName).not.toHaveBeenCalled();

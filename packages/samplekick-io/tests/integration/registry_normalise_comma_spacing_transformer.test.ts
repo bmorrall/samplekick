@@ -12,12 +12,12 @@ describe("NormaliseCommaSpacingTransformer integration", () => {
     registry.applyTransform(createNormaliseCommaSpacingTransformer());
     expect(registry.toString()).toBe(
       [
-        "root",
-        "├── Hihat, Kicks and Claps [renamed]",
+        "root [skipped]",
+        "├── Hihat, Kicks and Claps [renamed, skipped]",
         "│   └── hat.wav [?]",
-        "├── Kicks, Snares [renamed]",
+        "├── Kicks, Snares [renamed, skipped]",
         "│   └── kick.wav [?]",
-        "└── Hihat,_Kicks_and_Claps [renamed]",
+        "└── Hihat,_Kicks_and_Claps [renamed, skipped]",
         "    └── hat.wav [?]",
         "",
       ].join("\n"),

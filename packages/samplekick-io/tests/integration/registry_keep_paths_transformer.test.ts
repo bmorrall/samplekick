@@ -16,9 +16,9 @@ describe("KeepPathsTransformer integration", () => {
         "Pack.zip",
         "┗━━ Drums",
         "    ┣━━ Kicks",
-        "    ┃   ┗━━ kick.wav [?]",
+        "    ┃   └── kick.wav [?]",
         "    ┗━━ Snares",
-        "        ┗━━ snare.wav [?]",
+        "        └── snare.wav [?]",
         "",
       ].join("\n"),
     );

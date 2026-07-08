@@ -11,11 +11,11 @@ describe("KeepParentsTransformer integration", () => {
     registry.applyTransform(createKeepParentsTransformer());
     expect(registry.toString()).toBe(
       [
-        "Pack.zip",
+        "Pack.zip [skipped]",
         "┣━━ Kicks",
-        "┃   ┗━━ kick.wav [?]",
+        "┃   └── kick.wav [?]",
         "┗━━ Snares",
-        "    ┗━━ snare.wav [?]",
+        "    └── snare.wav [?]",
         "",
       ].join("\n"),
     );
@@ -29,12 +29,12 @@ describe("KeepParentsTransformer integration", () => {
     registry.applyTransform(createKeepParentsTransformer());
     expect(registry.toString()).toBe(
       [
-        "Pack.zip",
-        "└── Drums",
+        "Pack.zip [skipped]",
+        "└── Drums [skipped]",
         "    ┣━━ Kicks",
-        "    ┃   ┗━━ kick.wav [?]",
+        "    ┃   └── kick.wav [?]",
         "    ┗━━ Snares",
-        "        ┗━━ snare.wav [?]",
+        "        └── snare.wav [?]",
         "",
       ].join("\n"),
     );
@@ -48,12 +48,12 @@ describe("KeepParentsTransformer integration", () => {
     registry.applyTransform(createKeepParentsTransformer());
     expect(registry.toString()).toBe(
       [
-        "Pack.zip",
-        "└── Guitar Pack",
+        "Pack.zip [skipped]",
+        "└── Guitar Pack [skipped]",
         "    ┗━━ samples",
         "        ┣━━ guitar_stuff",
-        "        ┃   ┗━━ guitar.wav [?]",
-        "        ┗━━ readme.txt [?]",
+        "        ┃   └── guitar.wav [?]",
+        "        └── readme.txt [?]",
         "",
       ].join("\n"),
     );
@@ -68,12 +68,12 @@ describe("KeepParentsTransformer integration", () => {
       registry.applyTransform(createKeepParentsTransformer(2));
       expect(registry.toString()).toBe(
         [
-          "Pack.zip",
+          "Pack.zip [skipped]",
           "┗━━ Drums",
           "    ┣━━ Kicks",
-          "    ┃   ┗━━ kick.wav [?]",
+          "    ┃   └── kick.wav [?]",
           "    ┗━━ Snares",
-          "        ┗━━ snare.wav [?]",
+          "        └── snare.wav [?]",
           "",
         ].join("\n"),
       );
