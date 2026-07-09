@@ -27,6 +27,7 @@ import {
   createSquashNameTransformer,
   createNormaliseQuotesTransformer,
   createKnownFileTypeTransformer,
+  createInfoFileTransformer,
   createMidiFileTransformer,
   createNormaliseBracketSpacingTransformer,
   createNormaliseCommaSpacingTransformer,
@@ -512,6 +513,9 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
 
     // MIDI transforms: detect MIDI files after directory structure is resolved
     registry.applyTransform(createMidiFileTransformer());
+
+    // Info file transforms: disable documentation files not needed in exports
+    registry.applyTransform(createInfoFileTransformer());
   }
 
   if (analyse || keepParentsDepth !== undefined) {

@@ -41,6 +41,7 @@ export {
   createGhosthackNameTransformer,
   createSquashNameTransformer,
   createStripFormatHintsTransformer,
+  createInfoFileTransformer,
   createKeepParentsTransformer,
   createKeepPathsTransformer,
   createMultiPackNameTransformer,
