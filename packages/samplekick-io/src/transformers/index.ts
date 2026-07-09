@@ -18,6 +18,7 @@ export { createReorderBpmKeyTransformer } from "./reorder_bpm_key_transformer";
 export { createNormaliseSpacesTransformer } from "./normalise_spaces_transformer";
 export { createDirectoryChildNameTransformer } from "./directory_child_name_transformer";
 export { createDirectorySampleTypeTransformer } from "./directory_sample_type_transformer";
+export { createConstructionKitTransformer } from "./construction_kit_transformer";
 export { createDirectorySegmentSuffixTransformer } from "./directory_segment_suffix_transformer";
 export { createDirectorySubcategoryTransformer } from "./directory_subcategory_transformer";
 export { createDrumSubcategoryTransformer } from "./drum_subcategory_transformer";

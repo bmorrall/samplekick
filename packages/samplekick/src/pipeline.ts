@@ -6,6 +6,7 @@ import {
   createCymaticsNameTransformer,
   createDefaultRootPackageNameTransformer,
   createDefaultRootSampleTypeTransformer,
+  createConstructionKitTransformer,
   createDirectoryChildNameTransformer,
   createDirectorySampleTypeTransformer,
   createDirectorySegmentSuffixTransformer,
@@ -93,6 +94,7 @@ export function applyAnalysisPipeline(
   registry.applyTransform(createDirectoryChildNameTransformer());
   registry.applyTransform(createDirectorySubcategoryTransformer());
   registry.applyTransform(createDirectorySegmentSuffixTransformer());
+  registry.applyTransform(createConstructionKitTransformer());
   registry.applyTransform(createFlatPackPrefixTransformer());
 
   registry.applyTransform(createMidiFileTransformer());

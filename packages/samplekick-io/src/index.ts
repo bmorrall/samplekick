@@ -12,6 +12,7 @@ export {
   createDefaultRootPackageNameTransformer,
   createDefaultRootSampleTypeTransformer,
   createDirectoryChildNameTransformer,
+  createConstructionKitTransformer,
   createDirectorySampleTypeTransformer,
   createAcapellaTransformer,
   createDirectorySegmentSuffixTransformer,

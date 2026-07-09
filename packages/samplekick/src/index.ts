@@ -12,6 +12,7 @@ import {
   CsvDigestWriter,
   createDefaultRootPackageNameTransformer,
   createDefaultRootSampleTypeTransformer,
+  createConstructionKitTransformer,
   createDirectorySampleTypeTransformer,
   createAcapellaTransformer,
   createDirectorySegmentSuffixTransformer,
@@ -509,6 +510,7 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
     registry.applyTransform(createDirectoryChildNameTransformer());
     registry.applyTransform(createDirectorySubcategoryTransformer());
     registry.applyTransform(createDirectorySegmentSuffixTransformer());
+    registry.applyTransform(createConstructionKitTransformer());
     registry.applyTransform(createFlatPackPrefixTransformer());
 
     // MIDI transforms: detect MIDI files after directory structure is resolved
