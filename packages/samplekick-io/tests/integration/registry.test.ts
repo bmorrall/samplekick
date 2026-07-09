@@ -356,3 +356,124 @@ describe("Registry eachFileEntry enumeration", () => {
     ]);
   });
 });
+
+describe("Registry eachDigestEntry enabled-parent filtering", () => {
+  it("emits all nodes when no directory is explicitly enabled", () => {
+    const registry = createRegistry("library", [
+      createFileEntry({ path: "rock/track01" }),
+      createFileEntry({ path: "rock/track02" }),
+    ]);
+
+    const paths: string[] = [];
+    registry.eachDigestEntry((e) => {
+      void paths.push(e.getPath());
+    });
+
+    expect(paths).toEqual(["", "rock", "rock/track01", "rock/track02"]);
+  });
+
+  it("emits the enabled directory itself", () => {
+    const registry = createRegistry("library", [
+      createFileEntry({ path: "kits/kit01/sample.wav" }),
+    ]);
+    registry.setEnabled("kits/kit01", true);
+
+    const paths: string[] = [];
+    registry.eachDigestEntry((e) => {
+      void paths.push(e.getPath());
+    });
+
+    expect(paths).toContain("kits/kit01");
+  });
+
+  it("suppresses unmodified file nodes below an enabled directory", () => {
+    const registry = createRegistry("library", [
+      createFileEntry({ path: "kits/kit01/sample.wav" }),
+    ]);
+    registry.setEnabled("kits/kit01", true);
+
+    const paths: string[] = [];
+    registry.eachDigestEntry((e) => {
+      void paths.push(e.getPath());
+    });
+
+    expect(paths).not.toContain("kits/kit01/sample.wav");
+  });
+
+  it("emits a file with a changed name below an enabled directory", () => {
+    const registry = createRegistry("library", [
+      createFileEntry({ path: "kits/kit01/sample.wav" }),
+    ]);
+    registry.setEnabled("kits/kit01", true);
+    registry.setName("kits/kit01/sample.wav", "Renamed Sample");
+
+    const paths: string[] = [];
+    registry.eachDigestEntry((e) => {
+      void paths.push(e.getPath());
+    });
+
+    expect(paths).toContain("kits/kit01/sample.wav");
+  });
+
+  it("does not emit a file whose name was set to the same value as its basename", () => {
+    // sanitise-name transformers call setName unconditionally; setting the
+    // name to the same string as the basename must not trigger emission
+    const registry = createRegistry("library", [
+      createFileEntry({ path: "kits/kit01/sample.wav" }),
+    ]);
+    registry.setEnabled("kits/kit01", true);
+    registry.setName("kits/kit01/sample.wav", "sample.wav");
+
+    const paths: string[] = [];
+    registry.eachDigestEntry((e) => {
+      void paths.push(e.getPath());
+    });
+
+    expect(paths).not.toContain("kits/kit01/sample.wav");
+  });
+
+  it("emits a file with packageName set below an enabled directory", () => {
+    const registry = createRegistry("library", [
+      createFileEntry({ path: "kits/kit01/sample.wav" }),
+    ]);
+    registry.setEnabled("kits/kit01", true);
+    registry.setPackageName("kits/kit01/sample.wav", "my-pack");
+
+    const paths: string[] = [];
+    registry.eachDigestEntry((e) => {
+      void paths.push(e.getPath());
+    });
+
+    expect(paths).toContain("kits/kit01/sample.wav");
+  });
+
+  it("emits a file with sampleType set below an enabled directory", () => {
+    const registry = createRegistry("library", [
+      createFileEntry({ path: "kits/kit01/sample.wav" }),
+    ]);
+    registry.setEnabled("kits/kit01", true);
+    registry.setSampleType("kits/kit01/sample.wav", "One-shots");
+
+    const paths: string[] = [];
+    registry.eachDigestEntry((e) => {
+      void paths.push(e.getPath());
+    });
+
+    expect(paths).toContain("kits/kit01/sample.wav");
+  });
+
+  it("suppresses unmodified intermediate directories below an enabled directory", () => {
+    const registry = createRegistry("library", [
+      createFileEntry({ path: "kits/kit01/sub/sample.wav" }),
+    ]);
+    registry.setEnabled("kits/kit01", true);
+
+    const paths: string[] = [];
+    registry.eachDigestEntry((e) => {
+      void paths.push(e.getPath());
+    });
+
+    expect(paths).not.toContain("kits/kit01/sub");
+    expect(paths).not.toContain("kits/kit01/sub/sample.wav");
+  });
+});

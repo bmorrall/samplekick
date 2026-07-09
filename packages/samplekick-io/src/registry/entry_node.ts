@@ -107,6 +107,27 @@ export class EntryNode
     return this.readonly_ ?? this.parentNode?.isReadOnly();
   }
 
+  /**
+   * Returns true if this node has been meaningfully changed from its defaults:
+   * - name was set to a value that differs from the path-derived basename
+   *   (sanitise-name transformers call setName unconditionally even when the
+   *   value is unchanged, so `name !== undefined` alone is not reliable)
+   * - packageName was explicitly set
+   * - sampleType was explicitly set
+   * - enabled state differs from the node-type default (files default enabled,
+   *   directories default disabled)
+   */
+  isModified(): boolean {
+    const hasChangedName =
+      this.name !== undefined && this.name !== getPathName(this.path);
+    return (
+      hasChangedName ||
+      this.packageName !== undefined ||
+      this.sampleType !== undefined ||
+      this.enabled !== this.isFile()
+    );
+  }
+
   async copyToPath(path: string): Promise<void> {
     await this.entry?.copyToPath(path);
   }

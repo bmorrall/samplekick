@@ -110,7 +110,7 @@ export class Registry implements FileSource, DigestSource {
   eachDigestEntry(fn: (entry: DigestEntry) => void): void {
     const visit = (node: EntryNode, aboveEnabled: boolean): void => {
       const hasOwnEnabled = node.isEnabled() !== node.isFile();
-      if (!aboveEnabled || hasOwnEnabled) {
+      if (!aboveEnabled || node.isModified()) {
         fn(toOwnDigestEntry(node));
       }
       const childAboveEnabled = aboveEnabled || hasOwnEnabled;

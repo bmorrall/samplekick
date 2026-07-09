@@ -146,6 +146,10 @@ describe("index exports", () => {
     expect(api.createDirectorySampleTypeTransformer).toBeDefined();
   });
 
+  test("exports createConstructionKitTransformer", () => {
+    expect(api.createConstructionKitTransformer).toBeDefined();
+  });
+
   test("exports createDirectorySegmentSuffixTransformer", () => {
     expect(api.createDirectorySegmentSuffixTransformer).toBeDefined();
   });
@@ -215,6 +219,7 @@ describe("index exports", () => {
       "createDefaultRootPackageNameTransformer",
       "createDefaultRootSampleTypeTransformer",
       "createDirectoryChildNameTransformer",
+      "createConstructionKitTransformer",
       "createDirectorySampleTypeTransformer",
       "createAcapellaTransformer",
       "createDirectorySegmentSuffixTransformer",
