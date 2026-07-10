@@ -12,15 +12,7 @@ import {
   CsvDigestWriter,
   createDefaultRootPackageNameTransformer,
   createDefaultRootSampleTypeTransformer,
-  createConstructionKitTransformer,
-  createDirectorySampleTypeTransformer,
-  createAcapellaTransformer,
-  createDirectorySegmentSuffixTransformer,
-  createDirectorySubcategoryTransformer,
-  createDirectoryChildNameTransformer,
-  createDrumSubcategoryTransformer,
   createExpandRootPackageNameTransformer,
-  createFlatPackPrefixTransformer,
   createFLStudioProjectTransformer,
   createSP404Mk2ProjectTransformer,
   createGhosthackNameTransformer,
@@ -28,8 +20,6 @@ import {
   createSquashNameTransformer,
   createNormaliseQuotesTransformer,
   createKnownFileTypeTransformer,
-  createInfoFileTransformer,
-  createMidiFileTransformer,
   createNormaliseBracketSpacingTransformer,
   createNormaliseCommaSpacingTransformer,
   createNormaliseHyphenSpacingTransformer,
@@ -56,6 +46,7 @@ import {
   createKeepPathsTransformer,
 } from "samplekick-io";
 import { loadDigest, openDigestInEditor, getDataDir } from "./digest_loader";
+import { applyAnalysisPipeline } from "./pipeline.js";
 import type { DevicePreset } from "samplekick-io";
 import {
   SimpleExportReporter,
@@ -450,80 +441,74 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
     );
   }
 
-  if (values["allow-junk"] !== true) {
-    // Junk transforms: mark OS metadata and hidden files as skipped
-    registry.applyTransform(createSkipJunkTransformer());
-  }
-
-  if (values["analyse-multi-pack"] === true) {
-    // Multi-pack: tag ancestor directories as packageName using ' - ' heuristic
-    registry.applyTransform(createMultiPackNameTransformer());
-    // Brand prefix: prefix child packageNames with parent's brand (Ghosthack, Cymatics)
-    registry.applyTransform(createBrandPrefixTransformer());
-  }
-
-  if (analyse || keepParentsDepth !== undefined) {
-    // Root package name: set early from the zip filename so expand runs before
-    // directory analysis, keeping packageName clean for the auto-tags.
-    registry.applyTransform(createDefaultRootPackageNameTransformer());
-    registry.applyTransform(createExpandRootPackageNameTransformer());
-  }
-
-  if (analyse || values.normalise === true) {
-    registry.applyTransform(createTrimNameTransformer());
-    registry.applyTransform(createNormaliseQuotesTransformer());
-    registry.applyTransform(createNormaliseDashesTransformer());
-
-    // File transforms: identify known file types and lock their folder structure.
-    // sampleType tagging is only applied during --analyse.
-    const tagSampleType = analyse;
-    registry.applyTransform(createKnownFileTypeTransformer({ tagSampleType }));
-    registry.applyTransform(createArchiveFileTransformer({ tagSampleType }));
-    registry.applyTransform(createAbletonProjectTransformer({ tagSampleType }));
-    registry.applyTransform(
-      createFLStudioProjectTransformer({ tagSampleType }),
-    );
-    registry.applyTransform(
-      createSP404Mk2ProjectTransformer({ tagSampleType }),
-    );
-
-    // Name transforms: run after file transforms so locked entries are skipped
-    registry.applyTransform(createGhosthackNameTransformer());
-    registry.applyTransform(createCymaticsNameTransformer());
-    registry.applyTransform(createNormaliseSpacesTransformer());
-    registry.applyTransform(createNormaliseBracketSpacingTransformer());
-    registry.applyTransform(createNormaliseCommaSpacingTransformer());
-    registry.applyTransform(createNormaliseHyphenSpacingTransformer());
-    registry.applyTransform(createStripFormatHintsTransformer());
-
-    // Tag transforms: normalise embedded BPM and key tags to canonical forms
-    registry.applyTransform(createNormaliseBpmTagTransformer());
-    registry.applyTransform(createNormaliseKeyTagTransformer());
-    registry.applyTransform(createReorderBpmKeyTransformer());
-  }
-
   if (analyse) {
-    // Directory transforms: run after name transforms so folder names are normalised first
-    registry.applyTransform(createDrumSubcategoryTransformer());
-    registry.applyTransform(createDirectorySampleTypeTransformer());
-    registry.applyTransform(createAcapellaTransformer());
-    registry.applyTransform(createDirectoryChildNameTransformer());
-    registry.applyTransform(createDirectorySubcategoryTransformer());
-    registry.applyTransform(createDirectorySegmentSuffixTransformer());
-    registry.applyTransform(createConstructionKitTransformer());
-    registry.applyTransform(createFlatPackPrefixTransformer());
+    applyAnalysisPipeline(registry, {
+      allowJunk: values["allow-junk"] === true,
+      multiPack: values["analyse-multi-pack"] === true,
+    });
+  } else {
+    if (values["allow-junk"] !== true) {
+      // Junk transforms: mark OS metadata and hidden files as skipped
+      registry.applyTransform(createSkipJunkTransformer());
+    }
 
-    // MIDI transforms: detect MIDI files after directory structure is resolved
-    registry.applyTransform(createMidiFileTransformer());
+    if (values["analyse-multi-pack"] === true) {
+      // Multi-pack: tag ancestor directories as packageName using ' - ' heuristic
+      registry.applyTransform(createMultiPackNameTransformer());
+      // Brand prefix: prefix child packageNames with parent's brand (Ghosthack, Cymatics)
+      registry.applyTransform(createBrandPrefixTransformer());
+    }
 
-    // Info file transforms: disable documentation files not needed in exports
-    registry.applyTransform(createInfoFileTransformer());
-  }
+    if (keepParentsDepth !== undefined) {
+      // Root package name: set early from the zip filename so expand runs before
+      // directory analysis, keeping packageName clean for the auto-tags.
+      registry.applyTransform(createDefaultRootPackageNameTransformer());
+      registry.applyTransform(createExpandRootPackageNameTransformer());
+    }
 
-  if (analyse || keepParentsDepth !== undefined) {
-    // Root sample type: runs after directory/MIDI transforms so their sampleType
-    // assignments (e.g. FlatPackPrefixTransformer) are not skipped by the Packs default.
-    registry.applyTransform(createDefaultRootSampleTypeTransformer());
+    if (values.normalise === true) {
+      registry.applyTransform(createTrimNameTransformer());
+      registry.applyTransform(createNormaliseQuotesTransformer());
+      registry.applyTransform(createNormaliseDashesTransformer());
+
+      // File transforms: identify known file types and lock their folder structure.
+      // sampleType tagging is not applied in normalise-only mode.
+      registry.applyTransform(
+        createKnownFileTypeTransformer({ tagSampleType: false }),
+      );
+      registry.applyTransform(
+        createArchiveFileTransformer({ tagSampleType: false }),
+      );
+      registry.applyTransform(
+        createAbletonProjectTransformer({ tagSampleType: false }),
+      );
+      registry.applyTransform(
+        createFLStudioProjectTransformer({ tagSampleType: false }),
+      );
+      registry.applyTransform(
+        createSP404Mk2ProjectTransformer({ tagSampleType: false }),
+      );
+
+      // Name transforms: run after file transforms so locked entries are skipped
+      registry.applyTransform(createGhosthackNameTransformer());
+      registry.applyTransform(createCymaticsNameTransformer());
+      registry.applyTransform(createNormaliseSpacesTransformer());
+      registry.applyTransform(createNormaliseBracketSpacingTransformer());
+      registry.applyTransform(createNormaliseCommaSpacingTransformer());
+      registry.applyTransform(createNormaliseHyphenSpacingTransformer());
+      registry.applyTransform(createStripFormatHintsTransformer());
+
+      // Tag transforms: normalise embedded BPM and key tags to canonical forms
+      registry.applyTransform(createNormaliseBpmTagTransformer());
+      registry.applyTransform(createNormaliseKeyTagTransformer());
+      registry.applyTransform(createReorderBpmKeyTransformer());
+    }
+
+    if (keepParentsDepth !== undefined) {
+      // Root sample type: runs after directory/MIDI transforms so their sampleType
+      // assignments (e.g. FlatPackPrefixTransformer) are not skipped by the Packs default.
+      registry.applyTransform(createDefaultRootSampleTypeTransformer());
+    }
   }
 
   if (keepParentsDepth !== undefined) {

@@ -1,4 +1,9 @@
+import { createWriteStream } from "node:fs";
+import { mkdir } from "node:fs/promises";
+import { dirname, join } from "node:path";
+import { finished } from "node:stream/promises";
 import {
+  CsvDigestWriter,
   createAbletonProjectTransformer,
   createAcapellaTransformer,
   createArchiveFileTransformer,
@@ -16,6 +21,7 @@ import {
   createFlatPackPrefixTransformer,
   createFLStudioProjectTransformer,
   createGhosthackNameTransformer,
+  createInfoFileTransformer,
   createKnownFileTypeTransformer,
   createMidiFileTransformer,
   createMultiPackNameTransformer,
@@ -37,18 +43,37 @@ import type { Registry } from "samplekick-io";
 
 export { loadDigest, getDataDir } from "./digest_loader.js";
 
+/** Saves the current registry digest to the auto-config CSV path in dataDir. */
+export async function saveDigest(
+  registry: Registry,
+  dataDir: string,
+): Promise<void> {
+  const savePath = join(dataDir, `${registry.getFingerprint()}.csv`);
+  await mkdir(dirname(savePath), { recursive: true });
+  const stream = createWriteStream(savePath);
+  new CsvDigestWriter(stream).writeDigest(registry);
+  await finished(stream);
+}
+
 export interface AnalysisPipelineOptions {
-  multiPack: boolean;
+  /** Skip OS metadata and hidden files. Default: false (junk is filtered by default). */
+  allowJunk?: boolean;
+  /** Tag ancestor directories as package names using the ' - ' heuristic. Default: false */
+  multiPack?: boolean;
 }
 
 /** Applies the full analysis transform pipeline to a Registry. */
 export function applyAnalysisPipeline(
   registry: Registry,
-  options: AnalysisPipelineOptions,
+  options: AnalysisPipelineOptions = {},
 ): void {
-  registry.applyTransform(createSkipJunkTransformer());
+  const { allowJunk = false, multiPack = false } = options;
 
-  if (options.multiPack) {
+  if (!allowJunk) {
+    registry.applyTransform(createSkipJunkTransformer());
+  }
+
+  if (multiPack) {
     registry.applyTransform(createMultiPackNameTransformer());
     registry.applyTransform(createBrandPrefixTransformer());
   }
@@ -98,6 +123,9 @@ export function applyAnalysisPipeline(
   registry.applyTransform(createFlatPackPrefixTransformer());
 
   registry.applyTransform(createMidiFileTransformer());
+
+  // Info file transforms: disable documentation files not needed in exports
+  registry.applyTransform(createInfoFileTransformer());
 
   registry.applyTransform(createDefaultRootSampleTypeTransformer());
 }
