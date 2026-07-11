@@ -10,7 +10,7 @@ const STRIP_MIDI_STEMS_RE = / (?:&|and) (?:midi|stems?)$/iv;
 // e.g. "Latin Stems", "Loop Steps", or bare "MIDI" under a known-type parent are excluded.
 // MIDI directories are always transparent: the MidiFileTransformer computes the correct
 // sampleType from the ancestor context, avoiding "Melodies - MIDI" → "MIDI - Melodies - MIDI".
-const SUBCATEGORY_EXCLUDED_SUFFIX_RE = /(?:^| )(?:stems?|steps?|midi)$/iv;
+const SUBCATEGORY_EXCLUDED_SUFFIX_RE = /(?:^| )(?:stems?|steps?|midi|kits?)$/iv;
 
 function trySetSubcategory(entry: TransformEntry): boolean {
   const parent = entry.getParentNode();

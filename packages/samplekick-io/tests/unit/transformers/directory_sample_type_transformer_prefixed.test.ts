@@ -308,4 +308,50 @@ describe("createDirectorySampleTypeTransformer", () => {
       expect(entry.setSampleType).toHaveBeenCalledWith("Melody One Shots");
     });
   });
+
+  describe('when the directory name ends with " Kits" or " Kit"', () => {
+    it('sets sampleType to "Melody Loops" for "Melody Kits" under a Loops parent', () => {
+      const entry = createTransformEntryInHierarchy(
+        [{ name: "Loops" }],
+        { name: "Melody Kits", isFile: false },
+        [{ name: "loop.wav" }],
+      );
+      const transformer = createDirectorySampleTypeTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("Melody Loops");
+    });
+
+    it('sets sampleType to "Melodies" for standalone "Melody Kits"', () => {
+      const entry = createTransformEntryInHierarchy(
+        [],
+        { name: "Melody Kits", isFile: false },
+        [{ name: "loop.wav" }],
+      );
+      const transformer = createDirectorySampleTypeTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("Melodies");
+    });
+
+    it("matches case-insensitively", () => {
+      const entry = createTransformEntryInHierarchy(
+        [{ name: "Loops" }],
+        { name: "MELODY KITS", isFile: false },
+        [{ name: "loop.wav" }],
+      );
+      const transformer = createDirectorySampleTypeTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("Melody Loops");
+    });
+
+    it('does not set sampleType for bare "Kits" with no known prefix', () => {
+      const entry = createTransformEntryInHierarchy(
+        [],
+        { name: "Kits", isFile: false },
+        [{ name: "loop.wav" }],
+      );
+      const transformer = createDirectorySampleTypeTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).not.toHaveBeenCalled();
+    });
+  });
 });

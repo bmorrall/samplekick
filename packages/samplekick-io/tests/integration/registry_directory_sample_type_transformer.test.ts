@@ -104,4 +104,21 @@ describe("DirectorySampleTypeTransformer integration", () => {
       ].join("\n"),
     );
   });
+
+  it('resolves "Melody Kits" under a "Loops" parent to "Melody Loops", not a subcategory', () => {
+    const registry = createRegistry("Pack.zip", [
+      createFileEntry({ path: "Loops/Melody Kits/loop.wav" }),
+    ]);
+    registry.applyTransform(createDirectorySampleTypeTransformer());
+    registry.applyTransform(createDirectorySubcategoryTransformer());
+    expect(registry.toString()).toBe(
+      [
+        "Pack.zip [skipped]",
+        "└── Loops [type:Loops, skipped]",
+        "    └── Melody Kits [type:Melody Loops, skipped]",
+        "        └── loop.wav [?]",
+        "",
+      ].join("\n"),
+    );
+  });
 });
