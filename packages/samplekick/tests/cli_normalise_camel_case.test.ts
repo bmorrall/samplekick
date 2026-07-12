@@ -20,11 +20,10 @@ describe("ExpandRootPackageNameTransformer", () => {
     try {
       await writeFile(zipPath, zipped);
 
-      const result = spawnSync(
-        "node",
-        [CLI_PATH, zipPath, "--analyse"],
-        { encoding: "utf8", env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir } },
-      );
+      const result = spawnSync("node", [CLI_PATH, zipPath, "--analyse"], {
+        encoding: "utf8",
+        env: { ...process.env, SAMPLEKICK_DATA_DIR: dataDir },
+      });
 
       expect(result.status).toBe(0);
 
@@ -33,7 +32,7 @@ describe("ExpandRootPackageNameTransformer", () => {
 
       // Root row: name stays as zip filename, packageName expanded to "Cool Pack - v2"
       const rootRow = csv.split("\n").find((row) => row.startsWith(","));
-      expect(rootRow).toBe(",CoolPack-v2.zip,Cool Pack - v2,,,");
+      expect(rootRow).toBe(",CoolPack-v2.zip,Cool Pack - v2,Packs,false");
     } finally {
       await rm(tmpDir, { recursive: true });
     }

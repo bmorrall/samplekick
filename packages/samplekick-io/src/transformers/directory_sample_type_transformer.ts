@@ -42,37 +42,35 @@ function findAncestorLoopsContext(
   return undefined;
 }
 
+function trySetFromLabelSuffix(
+  entry: TransformEntry,
+  nameLower: string,
+  labels: readonly string[],
+  label: string,
+): boolean {
+  const suffix = labels.map((l) => ` ${l}`).find((s) => nameLower.endsWith(s));
+  if (suffix === undefined) return false;
+  const prefix = lookupPrefix(nameLower.slice(0, -suffix.length));
+  if (prefix !== undefined) {
+    entry.setSampleType(`${prefix} ${label}`);
+    return true;
+  }
+  if (!hasKnownAncestorType(entry) && !nameLower.includes(DASH_SEP)) {
+    entry.setSampleType(label);
+    return true;
+  }
+  return false;
+}
+
 function setFromPrefixedName(
   entry: TransformEntry,
   nameLower: string,
 ): boolean {
-  const loopSuffix = LOOP_LABELS.map((l) => ` ${l}`).find((s) =>
-    nameLower.endsWith(s),
-  );
-  if (loopSuffix !== undefined) {
-    const prefix = lookupPrefix(nameLower.slice(0, -loopSuffix.length));
-    if (prefix !== undefined) {
-      entry.setSampleType(`${prefix} Loops`);
-      return true;
-    }
-    if (!hasKnownAncestorType(entry) && !nameLower.includes(DASH_SEP)) {
-      entry.setSampleType("Loops");
-      return true;
-    }
+  if (trySetFromLabelSuffix(entry, nameLower, LOOP_LABELS, "Loops")) {
+    return true;
   }
-  const suffix = ONE_SHOT_LABELS.map((l) => ` ${l}`).find((s) =>
-    nameLower.endsWith(s),
-  );
-  if (suffix !== undefined) {
-    const prefix = lookupPrefix(nameLower.slice(0, -suffix.length));
-    if (prefix !== undefined) {
-      entry.setSampleType(`${prefix} One Shots`);
-      return true;
-    }
-    if (!hasKnownAncestorType(entry) && !nameLower.includes(DASH_SEP)) {
-      entry.setSampleType("One Shots");
-      return true;
-    }
+  if (trySetFromLabelSuffix(entry, nameLower, ONE_SHOT_LABELS, "One Shots")) {
+    return true;
   }
   const shotSuffix = SHOT_LABELS.map((l) => ` ${l}`).find((s) =>
     nameLower.endsWith(s),
