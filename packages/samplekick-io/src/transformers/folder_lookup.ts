@@ -32,6 +32,7 @@ export const ONE_SHOT_LABELS = [
   "one-shots",
   "oneshots",
 ] as const;
+export const SHOT_LABELS = ["shot", "shots"] as const;
 const PERCUSSION_KEYS = ["percussion", "percussions", "perc", "percs"] as const;
 
 export const FOLDER_LOOKUP = new Map<string, FolderEntry>([

@@ -4,6 +4,7 @@ import {
   lookupStandalone,
   LOOP_LABELS,
   ONE_SHOT_LABELS,
+  SHOT_LABELS,
   isKnownTypeFolderName,
   stripIgnoredSuffix,
 } from "./folder_lookup";
@@ -70,6 +71,16 @@ function setFromPrefixedName(
     }
     if (!hasKnownAncestorType(entry) && !nameLower.includes(DASH_SEP)) {
       entry.setSampleType("One Shots");
+      return true;
+    }
+  }
+  const shotSuffix = SHOT_LABELS.map((l) => ` ${l}`).find((s) =>
+    nameLower.endsWith(s),
+  );
+  if (shotSuffix !== undefined) {
+    const standalone = lookupStandalone(nameLower.slice(0, -shotSuffix.length));
+    if (standalone !== undefined) {
+      entry.setSampleType(standalone);
       return true;
     }
   }

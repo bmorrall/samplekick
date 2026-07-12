@@ -389,6 +389,63 @@ describe("createDirectorySampleTypeTransformer", () => {
     });
   });
 
+  describe('when the directory name has a "Shots" suffix', () => {
+    it('sets sampleType to "Synths" for "Synth Shots"', () => {
+      const entry = createTransformEntryInHierarchy(
+        [],
+        { name: "Synth Shots", isFile: false },
+        [{ name: "synth.wav" }],
+      );
+      const transformer = createDirectorySampleTypeTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("Synths");
+    });
+
+    it('sets sampleType to "Bass" for "Bass Shots"', () => {
+      const entry = createTransformEntryInHierarchy(
+        [],
+        { name: "Bass Shots", isFile: false },
+        [{ name: "bass.wav" }],
+      );
+      const transformer = createDirectorySampleTypeTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("Bass");
+    });
+
+    it('sets sampleType to "Vocals" for "Vocal Shots"', () => {
+      const entry = createTransformEntryInHierarchy(
+        [],
+        { name: "Vocal Shots", isFile: false },
+        [{ name: "vox.wav" }],
+      );
+      const transformer = createDirectorySampleTypeTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("Vocals");
+    });
+
+    it("matches case-insensitively", () => {
+      const entry = createTransformEntryInHierarchy(
+        [],
+        { name: "SYNTH SHOTS", isFile: false },
+        [{ name: "synth.wav" }],
+      );
+      const transformer = createDirectorySampleTypeTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("Synths");
+    });
+
+    it('sets sampleType to "Synths" for "Synth Shots" under "One Shots"', () => {
+      const entry = createTransformEntryInHierarchy(
+        [{ name: "One Shots" }],
+        { name: "Synth Shots", isFile: false },
+        [{ name: "synth.wav" }],
+      );
+      const transformer = createDirectorySampleTypeTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("Synths");
+    });
+  });
+
   describe("when the directory name does not match any known sampleType", () => {
     it("does not set sampleType", () => {
       const entry = createTransformEntryInHierarchy(
