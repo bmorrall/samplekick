@@ -32,6 +32,7 @@ export const ONE_SHOT_LABELS = [
   "one-shots",
   "oneshots",
 ] as const;
+export const SHOT_LABELS = ["shot", "shots"] as const;
 const PERCUSSION_KEYS = ["percussion", "percussions", "perc", "percs"] as const;
 
 export const FOLDER_LOOKUP = new Map<string, FolderEntry>([
@@ -135,8 +136,9 @@ export const SERUM_PRESETS = "Serum Presets" as const;
 // e.g. "Various Stems" → "Various", "Trap Stems and MIDI" → "Trap", "Drum Loops & MIDI" → "Drum Loops".
 const STRIP_SUFFIX_RE =
   / (?:(?:(?:&|and) )?stems?(?:(?: (?:&|and) midi)?)|(?:&|and) midi)$/v;
-// e.g. "Drum Loops Collection" → "Drum Loops", "Hihat Bundle" → "Hihat".
-const STRIP_NOISE_SUFFIX_RE = /\s+(?:collection|bundle|pack|set|library)s?$/iv;
+// e.g. "Drum Loops Collection" → "Drum Loops", "Hihat Bundle" → "Hihat", "Melody Kits" → "Melody".
+const STRIP_NOISE_SUFFIX_RE =
+  /\s+(?:collection|bundle|pack|set|library|kit)s?$/iv;
 export const stripIgnoredSuffix = (nameLower: string): string =>
   nameLower.replace(STRIP_SUFFIX_RE, "").replace(STRIP_NOISE_SUFFIX_RE, "");
 

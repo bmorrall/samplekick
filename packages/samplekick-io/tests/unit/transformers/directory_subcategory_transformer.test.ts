@@ -256,5 +256,29 @@ describe("createDirectorySubcategoryTransformer", () => {
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
     });
+
+    it("does not set sampleType when the child name ends with 'Kits'", () => {
+      const entry = createTransformEntryInHierarchy(
+        [{ name: "Loops", sampleType: "Loops" }],
+        { name: "Melody Kits", isFile: false },
+        [{ name: "loop.wav" }],
+      );
+      const transformer = createDirectorySubcategoryTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).not.toHaveBeenCalled();
+      expect(entry.setReadOnly).not.toHaveBeenCalled();
+    });
+
+    it("does not set sampleType when the child name ends with 'Kit'", () => {
+      const entry = createTransformEntryInHierarchy(
+        [{ name: "Loops", sampleType: "Loops" }],
+        { name: "Melody Kit", isFile: false },
+        [{ name: "loop.wav" }],
+      );
+      const transformer = createDirectorySubcategoryTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).not.toHaveBeenCalled();
+      expect(entry.setReadOnly).not.toHaveBeenCalled();
+    });
   });
 });
