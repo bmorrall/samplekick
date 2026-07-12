@@ -98,9 +98,9 @@ describe("Dirtywave M8 device preset", () => {
     }
   });
 
-  it("rejects files whose relative path exceeds the 127 character limit", async () => {
-    // 124 'a's + ".wav" = 128 characters — one over the 127 limit
-    const longName = `${"a".repeat(124)}.wav`;
+  it("rejects files whose path exceeds 127 characters when combined with the 'Samples/' prefix", async () => {
+    // "Samples/" prefix (8) + 116 'a's + ".wav" (120) = 128 characters — one over the 127 limit
+    const longName = `${"a".repeat(116)}.wav`;
     const zipped = zipSync({ [longName]: makeMinimalWav() });
 
     const tmpDir = await mkdtemp(join(tmpdir(), "samplekick-cli-"));
@@ -123,7 +123,7 @@ describe("Dirtywave M8 device preset", () => {
       expect(result.status).toBe(0);
       expect(result.stdout).toContain("rejected:");
       expect(result.stdout).toContain(
-        "path too long: 128 characters (max 127)",
+        "path too long: 8 + 120 = 128 characters (max 127)",
       );
     } finally {
       await rm(tmpDir, { recursive: true });

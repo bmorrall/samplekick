@@ -1,10 +1,19 @@
 import type { Validate } from "../types";
 
+interface PathLengthValidatorOptions {
+  pathPrefix?: string;
+}
+
 export const createPathLengthValidator =
-  (maxLength: number): Validate =>
+  (maxLength: number, options?: PathLengthValidatorOptions): Validate =>
   (destRelPath) => {
-    if (destRelPath.length <= maxLength) {
+    const prefix = options?.pathPrefix ?? "";
+    const totalLength = prefix.length + destRelPath.length;
+    if (totalLength <= maxLength) {
       return undefined;
+    }
+    if (prefix.length > 0) {
+      return `path too long: ${prefix.length} + ${destRelPath.length} = ${totalLength} characters (max ${maxLength})`;
     }
     return `path too long: ${destRelPath.length} characters (max ${maxLength})`;
   };
