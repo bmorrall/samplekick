@@ -3,11 +3,16 @@ import { BIT_DEPTH_16, SAMPLE_RATE_44100 } from "../audio_format";
 import { createPathLengthValidator } from "../validators";
 
 const MAX_PATH_LENGTH = 127;
+const SAMPLES_DIR_PREFIX = "Samples/";
 
 export const DirtywaveM8Preset: DevicePreset = {
   displayName: "Dirtywave M8",
   transforms: [],
-  validators: [createPathLengthValidator(MAX_PATH_LENGTH)],
+  validators: [
+    createPathLengthValidator(MAX_PATH_LENGTH, {
+      pathPrefix: SAMPLES_DIR_PREFIX,
+    }),
+  ],
   targetBitDepth: BIT_DEPTH_16,
   targetSampleRate: SAMPLE_RATE_44100,
 };

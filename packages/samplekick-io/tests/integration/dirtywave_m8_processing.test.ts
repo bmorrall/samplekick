@@ -25,7 +25,7 @@ describe("Dirtywave M8 end-to-end sample processing", () => {
     applyDeviceTransforms(registry, DirtywaveM8Preset);
 
     // Register Dirtywave M8 validators to enforce path length limits on export:
-    //   max path length is 127 characters
+    //   max path length is 127 characters including the "Samples/" prefix (8 chars)
     applyDeviceValidators(registry, DirtywaveM8Preset);
 
     registry.setSampleType("Percussion");
