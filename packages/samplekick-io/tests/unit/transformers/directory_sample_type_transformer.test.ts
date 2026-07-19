@@ -63,6 +63,30 @@ describe("createDirectorySampleTypeTransformer", () => {
     });
   });
 
+  describe('when the directory is named "Drum Hits"', () => {
+    it('sets sampleType to "Drums"', () => {
+      const entry = createTransformEntryInHierarchy(
+        [],
+        { name: "Drum Hits", isFile: false },
+        [{ name: "kick.wav" }],
+      );
+      const transformer = createDirectorySampleTypeTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("Drums");
+    });
+
+    it("matches case-insensitively", () => {
+      const entry = createTransformEntryInHierarchy(
+        [],
+        { name: "DRUM HITS", isFile: false },
+        [{ name: "kick.wav" }],
+      );
+      const transformer = createDirectorySampleTypeTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("Drums");
+    });
+  });
+
   describe('when the directory is named "Percussion"', () => {
     it('sets sampleType to "Percussion"', () => {
       const entry = createTransformEntryInHierarchy(

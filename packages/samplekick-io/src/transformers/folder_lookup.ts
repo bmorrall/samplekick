@@ -58,6 +58,7 @@ export const FOLDER_LOOKUP = new Map<string, FolderEntry>([
   ["cymbals", { prefix: "Cymbal", standalone: "Cymbals" }],
   ["drum", { prefix: "Drum", standalone: "Drums" }],
   ["drums", { prefix: "Drum", standalone: "Drums" }],
+  ["drum hits", { prefix: "Drum", standalone: "Drums" }],
   ...DRUM_AND_BASS_KEYS.map((k): [string, FolderEntry] => [
     k,
     { prefix: "Drum and Bass", standalone: "Drum and Bass" },
