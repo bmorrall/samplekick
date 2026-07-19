@@ -47,7 +47,7 @@ describe("MultiPackNameTransformer", () => {
         row.startsWith("Ghosthack - Ultimate Freebie Collection,"),
       );
       expect(topLevelRow).toBe(
-        "Ghosthack - Ultimate Freebie Collection,,Ghosthack - Ultimate Freebie Collection,,false",
+        "Ghosthack - Ultimate Freebie Collection,Ultimate Freebie Collection,Ghosthack - Ultimate Freebie Collection,,false",
       );
 
       const subPackRow = rows.find((row) =>
@@ -56,7 +56,7 @@ describe("MultiPackNameTransformer", () => {
         ),
       );
       expect(subPackRow).toBe(
-        "Ghosthack - Ultimate Freebie Collection/Acapellas and Vocals/Ghosthack - UPB2022 Vocal Freebie,,Ghosthack - UPB2022 Vocal Freebie,,false",
+        "Ghosthack - Ultimate Freebie Collection/Acapellas and Vocals/Ghosthack - UPB2022 Vocal Freebie,UPB2022 Vocal Freebie,Ghosthack - UPB2022 Vocal Freebie,,false",
       );
 
       const neutralRow = rows.find((row) =>
@@ -107,7 +107,7 @@ describe("MultiPackNameTransformer", () => {
         ),
       );
       expect(adventRow).toBe(
-        "Ghosthack - Ultimate Freebie Collection/Construction Kits/Ghosthack - Advent Calendar 2019 - Day 12 - Trap Kits,,Ghosthack - Advent Calendar 2019 - Day 12 - Trap Kits,,false",
+        "Ghosthack - Ultimate Freebie Collection/Construction Kits/Ghosthack - Advent Calendar 2019 - Day 12 - Trap Kits,Advent Calendar 2019 - Day 12 - Trap Kits,Ghosthack - Advent Calendar 2019 - Day 12 - Trap Kits,,false",
       );
 
       // Holiday Kit dir: has 'Kit' in name → tagged even though parent has ' - '

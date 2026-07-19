@@ -46,6 +46,10 @@ describe("index exports", () => {
     expect(api.createGhosthackNameTransformer).toBeDefined();
   });
 
+  test("exports createStripGhosthackPrefixTransformer", () => {
+    expect(api.createStripGhosthackPrefixTransformer).toBeDefined();
+  });
+
   test("exports createSquashNameTransformer", () => {
     expect(api.createSquashNameTransformer).toBeDefined();
   });
@@ -252,6 +256,7 @@ describe("index exports", () => {
       "createStripCommonPrefixTransformer",
       "createCymaticsNameTransformer",
       "createGhosthackNameTransformer",
+      "createStripGhosthackPrefixTransformer",
       "createSquashNameTransformer",
       "createStripFormatHintsTransformer",
       "createInfoFileTransformer",

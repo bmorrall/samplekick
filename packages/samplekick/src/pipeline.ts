@@ -37,6 +37,7 @@ import {
   createSkipJunkTransformer,
   createSP404Mk2ProjectTransformer,
   createStripFormatHintsTransformer,
+  createStripGhosthackPrefixTransformer,
   createTrimNameTransformer,
 } from "samplekick-io";
 import type { Registry } from "samplekick-io";
@@ -102,6 +103,7 @@ export function applyAnalysisPipeline(
   );
 
   registry.applyTransform(createGhosthackNameTransformer());
+  registry.applyTransform(createStripGhosthackPrefixTransformer());
   registry.applyTransform(createCymaticsNameTransformer());
   registry.applyTransform(createNormaliseSpacesTransformer());
   registry.applyTransform(createNormaliseBracketSpacingTransformer());

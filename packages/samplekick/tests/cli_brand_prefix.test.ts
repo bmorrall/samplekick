@@ -41,7 +41,7 @@ describe("BrandPrefixTransformer", () => {
         row.startsWith("Ghosthack - Ultimate Freebie Collection,"),
       );
       expect(topLevelRow).toBe(
-        "Ghosthack - Ultimate Freebie Collection,,Ghosthack - Ultimate Freebie Collection,,false",
+        "Ghosthack - Ultimate Freebie Collection,Ultimate Freebie Collection,Ghosthack - Ultimate Freebie Collection,,false",
       );
 
       // Advent Calendar: tagged by MultiPackNameTransformer, should be prefixed by BrandPrefixTransformer
