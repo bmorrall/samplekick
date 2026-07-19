@@ -203,7 +203,7 @@ describe("createConstructionKitTransformer", () => {
     expect(kitEntry.setSampleType).not.toHaveBeenCalled();
   });
 
-  it("does not act when parent does not contain kits", () => {
+  it("does not act when parent does not contain kits and has only one kit sibling", () => {
     const nonKitsParent = createDirectoryNode("Song Folder", "Song Folder");
     const kitChild = createDirectoryNode(
       "Song Kit 01 - 103BPM Gbmaj",
@@ -239,5 +239,76 @@ describe("createConstructionKitTransformer", () => {
 
     expect(kitEntry.setEnabled).not.toHaveBeenCalled();
     expect(kitEntry.setReadOnly).not.toHaveBeenCalled();
+  });
+
+  it("enables kit directories directly under a non-kits-named parent with 2+ kit siblings", () => {
+    const packRoot = createDirectoryNode(
+      "Chillwave Elements",
+      "Chillwave Elements",
+    );
+    const kitChild1 = createDirectoryNode(
+      "Kit 01 - Sway - Gmin 70bpm",
+      "Chillwave Elements/Kit 01 - Sway - Gmin 70bpm",
+      packRoot,
+    );
+    const kitChild2 = createDirectoryNode(
+      "Kit 02 - Mellow - Cmin 70bpm",
+      "Chillwave Elements/Kit 02 - Mellow - Cmin 70bpm",
+      packRoot,
+    );
+    const nonKitChild = createDirectoryNode(
+      "Additional Content",
+      "Chillwave Elements/Additional Content",
+      packRoot,
+    );
+
+    const parentEntry = createEntry({
+      name: "Chillwave Elements",
+      path: "Chillwave Elements",
+      isFile: false,
+      children: [kitChild1, kitChild2, nonKitChild],
+    });
+    const kitEntry1 = createEntry({
+      name: "Kit 01 - Sway - Gmin 70bpm",
+      path: "Chillwave Elements/Kit 01 - Sway - Gmin 70bpm",
+      isFile: false,
+      parent: packRoot,
+    });
+    const kitEntry2 = createEntry({
+      name: "Kit 02 - Mellow - Cmin 70bpm",
+      path: "Chillwave Elements/Kit 02 - Mellow - Cmin 70bpm",
+      isFile: false,
+      parent: packRoot,
+    });
+    const otherEntry = createEntry({
+      name: "Additional Content",
+      path: "Chillwave Elements/Additional Content",
+      isFile: false,
+      parent: packRoot,
+    });
+
+    const source: TransformSource = {
+      eachTransformEntry: (fn) => {
+        fn(parentEntry);
+        fn(kitEntry1);
+        fn(kitEntry2);
+        fn(otherEntry);
+      },
+      eachTransformModification: (fn) => {
+        fn(parentEntry);
+        fn(kitEntry1);
+        fn(kitEntry2);
+        fn(otherEntry);
+      },
+    };
+
+    transformer.transform(source);
+
+    expect(kitEntry1.setEnabled).toHaveBeenCalledWith(true);
+    expect(kitEntry1.setReadOnly).toHaveBeenCalledWith(true);
+    expect(kitEntry2.setEnabled).toHaveBeenCalledWith(true);
+    expect(kitEntry2.setReadOnly).toHaveBeenCalledWith(true);
+    expect(otherEntry.setEnabled).not.toHaveBeenCalled();
+    expect(otherEntry.setReadOnly).not.toHaveBeenCalled();
   });
 });
