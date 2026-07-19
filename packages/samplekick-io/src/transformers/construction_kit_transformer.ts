@@ -5,6 +5,7 @@ const KITS_RE = /\bkits\b/iv;
 const KIT_RE = /\bkit\b/iv;
 const PATH_SEPARATOR = "/";
 const MIN_KIT_FILES = 2;
+const MIN_KIT_SIBLINGS = 2;
 const MIN_PREFIX_LENGTH = 2;
 const MIDI_EXTENSION = ".mid";
 
@@ -56,16 +57,25 @@ const _singleton: Transform = {
   transform: (source) => {
     const kitRootPaths = new Set<string>();
 
-    // Pass 1: find kit root paths
+    // Pass 1: find kit root paths.
+    // A directory is treated as a kits container either when its own name
+    // contains "kits" (e.g. "Construction Kits"), or when it directly holds
+    // 2+ child directories whose names contain "kit" (e.g. numbered kit
+    // folders sitting at a pack's top level with no "Kits" wrapper folder).
     source.eachTransformEntry((entry) => {
       if (entry.isFile()) return;
 
-      if (!KITS_RE.test(entry.getName())) return;
-
       const children = entry.getChildNodes();
-      for (const child of children) {
-        if (child.isFile()) continue;
-        if (!KIT_RE.test(child.getName())) continue;
+      const kitChildren = children.filter(
+        (child) => !child.isFile() && KIT_RE.test(child.getName()),
+      );
+
+      const isExplicitKitsContainer = KITS_RE.test(entry.getName());
+      const looksLikeKitsContainer =
+        isExplicitKitsContainer || kitChildren.length >= MIN_KIT_SIBLINGS;
+      if (!looksLikeKitsContainer) return;
+
+      for (const child of kitChildren) {
         kitRootPaths.add(child.getPath());
       }
     });
@@ -201,10 +211,13 @@ const _singleton: Transform = {
 
 /**
  * ConstructionKitTransformer
- * Under any directory containing "kits", marks direct child directories
- * containing "kit" as keep-path roots and enables readonly structure
- * preservation for those roots and all their descendant directories.
- * Descendant directories also have packageName and sampleType cleared.
+ * Under any directory containing "kits", or any directory that directly
+ * holds 2+ child directories containing "kit" (e.g. numbered kit folders
+ * sitting at a pack's top level with no "Kits" wrapper folder), marks those
+ * matching child directories as keep-path roots and enables readonly
+ * structure preservation for those roots and all their descendant
+ * directories. Descendant directories also have packageName and sampleType
+ * cleared.
  *
  * Additionally strips any common name prefix shared by audio files within
  * each kit subdirectory, provided the prefix ends at a word boundary.
