@@ -16,6 +16,7 @@ import {
   createFLStudioProjectTransformer,
   createSP404Mk2ProjectTransformer,
   createGhosthackNameTransformer,
+  createStripGhosthackPrefixTransformer,
   createCymaticsNameTransformer,
   createSquashNameTransformer,
   createNormaliseQuotesTransformer,
@@ -491,6 +492,7 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
 
       // Name transforms: run after file transforms so locked entries are skipped
       registry.applyTransform(createGhosthackNameTransformer());
+      registry.applyTransform(createStripGhosthackPrefixTransformer());
       registry.applyTransform(createCymaticsNameTransformer());
       registry.applyTransform(createNormaliseSpacesTransformer());
       registry.applyTransform(createNormaliseBracketSpacingTransformer());

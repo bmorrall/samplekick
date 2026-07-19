@@ -32,6 +32,7 @@ export { createFlatPackPrefixTransformer } from "./flat_pack_prefix_transformer"
 export { createStripCommonPrefixTransformer } from "./strip_common_prefix_transformer";
 export { createCymaticsNameTransformer } from "./cymatics_name_transformer";
 export { createGhosthackNameTransformer } from "./ghosthack_name_transformer";
+export { createStripGhosthackPrefixTransformer } from "./strip_ghosthack_prefix_transformer";
 export { createSquashNameTransformer } from "./squash_name_transformer";
 export { createStripFormatHintsTransformer } from "./strip_format_hints_transformer";
 export { createInfoFileTransformer } from "./info_file_transformer";
