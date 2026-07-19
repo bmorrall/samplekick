@@ -38,6 +38,7 @@ export {
   createNormaliseQuotesTransformer,
   createTruncateNameTransformer,
   createFlatPackPrefixTransformer,
+  createStripCommonPrefixTransformer,
   createCymaticsNameTransformer,
   createGhosthackNameTransformer,
   createSquashNameTransformer,
