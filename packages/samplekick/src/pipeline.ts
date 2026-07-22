@@ -36,6 +36,7 @@ import {
   createReorderBpmKeyTransformer,
   createSkipJunkTransformer,
   createSP404Mk2ProjectTransformer,
+  createStripCymaticsPrefixTransformer,
   createStripFormatHintsTransformer,
   createStripGhosthackPrefixTransformer,
   createTrimNameTransformer,
@@ -105,6 +106,7 @@ export function applyAnalysisPipeline(
   registry.applyTransform(createGhosthackNameTransformer());
   registry.applyTransform(createStripGhosthackPrefixTransformer());
   registry.applyTransform(createCymaticsNameTransformer());
+  registry.applyTransform(createStripCymaticsPrefixTransformer());
   registry.applyTransform(createNormaliseSpacesTransformer());
   registry.applyTransform(createNormaliseBracketSpacingTransformer());
   registry.applyTransform(createNormaliseCommaSpacingTransformer());

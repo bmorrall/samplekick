@@ -94,3 +94,32 @@ describe("Registry.addPostProcessor", () => {
     expect(processor.processFile).not.toHaveBeenCalled();
   });
 });
+
+describe("Registry.clearPostProcessors", () => {
+  it("removes previously added post-processors", async () => {
+    const entry = createCopyableEntry("a.wav");
+    const processor = createPostProcessor();
+    const registry = new Registry(createFileSource("root", [entry]));
+    registry.addPostProcessor(processor);
+    registry.clearPostProcessors();
+
+    await registry.exportToDirectory("/output", {});
+
+    expect(processor.processFile).not.toHaveBeenCalled();
+  });
+
+  it("allows re-adding post-processors after clearing", async () => {
+    const entry = createCopyableEntry("a.wav");
+    const processorA = createPostProcessor();
+    const processorB = createPostProcessor();
+    const registry = new Registry(createFileSource("root", [entry]));
+    registry.addPostProcessor(processorA);
+    registry.clearPostProcessors();
+    registry.addPostProcessor(processorB);
+
+    await registry.exportToDirectory("/output", {});
+
+    expect(processorA.processFile).not.toHaveBeenCalled();
+    expect(processorB.processFile).toHaveBeenCalledOnce();
+  });
+});

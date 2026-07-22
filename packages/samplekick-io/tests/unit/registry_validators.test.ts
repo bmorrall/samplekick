@@ -108,3 +108,33 @@ describe("Registry.addValidator", () => {
     expect(entry.copyToPath).not.toHaveBeenCalled();
   });
 });
+
+describe("Registry.clearValidators", () => {
+  it("removes previously added validators", async () => {
+    const entry = createCopyableEntry("a.wav");
+    const validator = createFailingValidator("should not run");
+    const registry = new Registry(createFileSource("root", [entry]));
+    registry.addValidator(validator);
+    registry.clearValidators();
+
+    await registry.exportToDirectory("/output", {});
+
+    expect(entry.copyToPath).toHaveBeenCalledOnce();
+  });
+
+  it("allows re-adding validators after clearing", async () => {
+    const entry = createCopyableEntry("a.wav");
+    const first = createFailingValidator("first failure");
+    const second = createFailingValidator("second failure");
+    const onReject = vi.fn<(entry: DigestEntry, reason: string) => void>();
+    const registry = new Registry(createFileSource("root", [entry]));
+    registry.addValidator(first);
+    registry.clearValidators();
+    registry.addValidator(second);
+
+    await registry.exportToDirectory("/output", { onReject });
+
+    expect(first).not.toHaveBeenCalled();
+    expect(onReject).toHaveBeenCalledWith(expect.anything(), "second failure");
+  });
+});

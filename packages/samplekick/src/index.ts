@@ -18,6 +18,7 @@ import {
   createGhosthackNameTransformer,
   createStripGhosthackPrefixTransformer,
   createCymaticsNameTransformer,
+  createStripCymaticsPrefixTransformer,
   createSquashNameTransformer,
   createNormaliseQuotesTransformer,
   createKnownFileTypeTransformer,
@@ -494,6 +495,7 @@ for (const [zipIndex, zipPath] of zipPaths.entries()) {
       registry.applyTransform(createGhosthackNameTransformer());
       registry.applyTransform(createStripGhosthackPrefixTransformer());
       registry.applyTransform(createCymaticsNameTransformer());
+      registry.applyTransform(createStripCymaticsPrefixTransformer());
       registry.applyTransform(createNormaliseSpacesTransformer());
       registry.applyTransform(createNormaliseBracketSpacingTransformer());
       registry.applyTransform(createNormaliseCommaSpacingTransformer());

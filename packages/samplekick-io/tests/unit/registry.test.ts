@@ -56,6 +56,14 @@ describe("Registry", () => {
       expect(registry.toString()).toBe("library [skipped]\n");
     });
 
+    it("sets the name on the root node when called with the empty path, like any other directory", () => {
+      const registry = createRegistry("root", []);
+
+      expect(registry.setName("", "library")).toBe(true);
+
+      expect(registry.getRootEntry().getName()).toBe("library");
+    });
+
     it("clears the renamed entry name when undefined is passed as the second argument", () => {
       const registry = createRegistry("root", [
         createFileEntry({ path: "a/b" }),
@@ -95,6 +103,17 @@ describe("Registry", () => {
 
       expect(registry.setPackageName("my-pack")).toBe(true);
 
+      expect(registry.getEntry("a/b")?.getPackageName()).toBe("my-pack");
+    });
+
+    it("sets the package name on the root node when called with the empty path, like any other directory", () => {
+      const registry = createRegistry("root", [
+        createFileEntry({ path: "a/b" }),
+      ]);
+
+      expect(registry.setPackageName("", "my-pack")).toBe(true);
+
+      expect(registry.getRootEntry().getPackageName()).toBe("my-pack");
       expect(registry.getEntry("a/b")?.getPackageName()).toBe("my-pack");
     });
 
@@ -146,6 +165,17 @@ describe("Registry", () => {
 
       expect(registry.setSampleType("drums")).toBe(true);
 
+      expect(registry.getEntry("a/b")?.getSampleType()).toBe("drums");
+    });
+
+    it("sets the sample type on the root node when called with the empty path, like any other directory", () => {
+      const registry = createRegistry("root", [
+        createFileEntry({ path: "a/b" }),
+      ]);
+
+      expect(registry.setSampleType("", "drums")).toBe(true);
+
+      expect(registry.getRootEntry().getSampleType()).toBe("drums");
       expect(registry.getEntry("a/b")?.getSampleType()).toBe("drums");
     });
 
@@ -210,6 +240,16 @@ describe("Registry", () => {
 
       expect(registry.getRootEntry().isEnabled()).toBe(false);
     });
+
+    it("sets enabled on the root node when called with the empty path, like any other directory", () => {
+      const registry = createRegistry("root", [
+        createFileEntry({ path: "a/b" }),
+      ]);
+
+      expect(registry.setEnabled("", true)).toBe(true);
+
+      expect(registry.getRootEntry().isEnabled()).toBe(true);
+    });
   });
 
   describe("getEntry", () => {
@@ -236,6 +276,11 @@ describe("Registry", () => {
       const entry1 = registry.getEntry("a/b");
       const entry2 = registry.getEntry("a/b");
       expect(entry1).toBe(entry2);
+    });
+
+    it("returns the root node for the empty path", () => {
+      const registry = createRegistry("root", []);
+      expect(registry.getEntry("")).toBe(registry.getRootEntry());
     });
 
     it("shares metadata through intermediate paths", () => {
@@ -285,14 +330,16 @@ describe("Registry", () => {
       ).toBe(false);
     });
 
-    it("returns false when given an empty path", () => {
+    it("applies the digest to the root node when given an empty path", () => {
       const registry = createRegistry("root", []);
 
       expect(
         registry.setEntryDigest(
           createDigestEntry({ path: "", name: "renamed-root" }),
         ),
-      ).toBe(false);
+      ).toBe(true);
+
+      expect(registry.getRootEntry().getName()).toBe("renamed-root");
     });
   });
 

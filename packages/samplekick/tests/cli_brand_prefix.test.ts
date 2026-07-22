@@ -98,7 +98,7 @@ describe("BrandPrefixTransformer", () => {
         row.startsWith("Cymatics - Mystery Pack Vol 4,"),
       );
       expect(topLevelRow).toBe(
-        "Cymatics - Mystery Pack Vol 4,,Cymatics - Mystery Pack Vol 4,,false",
+        "Cymatics - Mystery Pack Vol 4,Mystery Pack Vol 4,Cymatics - Mystery Pack Vol 4,,false",
       );
 
       // Bundle: has no ' - ' in name, so MultiPackNameTransformer does not tag it,
