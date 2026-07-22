@@ -41,7 +41,7 @@ describe("DirectorySegmentSuffixTransformer integration", () => {
       [
         "Pack.zip [skipped]",
         "└── Cymatics - Phoenix Vocal Loops [type:Vocal Loops, skipped]",
-        "    └── Latin [type:Vocal Loops - Latin, skipped]",
+        "    ┗━━ Latin",
         "        └── loop.wav [?]",
         "",
       ].join("\n"),

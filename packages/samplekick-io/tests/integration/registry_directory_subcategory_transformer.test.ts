@@ -6,7 +6,7 @@ import {
 import { createRegistry, createFileEntry } from "../support";
 
 describe("DirectorySubcategoryTransformer integration", () => {
-  it("tags unrecognised child directories under known-type parents", () => {
+  it("enables unrecognised child directories under known-type parents as kept subcategory folders", () => {
     const registry = createRegistry("Pack.zip", [
       createFileEntry({ path: "Drum Loops/Latin/loop.wav" }),
       createFileEntry({ path: "Melodies/Speed House/melody.wav" }),
@@ -18,10 +18,10 @@ describe("DirectorySubcategoryTransformer integration", () => {
       [
         "Pack.zip [skipped]",
         "├── Drum Loops [type:Drum Loops, skipped]",
-        "│   └── Latin [type:Drum Loops - Latin, skipped]",
+        "│   ┗━━ Latin",
         "│       └── loop.wav [?]",
         "├── Melodies [type:Melodies, skipped]",
-        "│   └── Speed House [type:Melodies - Speed House, skipped]",
+        "│   ┗━━ Speed House",
         "│       └── melody.wav [?]",
         "└── Bonks [skipped]",
         "    └── Unknown [skipped]",
@@ -31,7 +31,7 @@ describe("DirectorySubcategoryTransformer integration", () => {
     );
   });
 
-  it("strips & MIDI and & Stems suffixes from the subcategory display name", () => {
+  it("enables directories whose names have & MIDI or & Stems suffixes and renames them to the stripped display name", () => {
     const registry = createRegistry("Pack.zip", [
       createFileEntry({ path: "Drum Loops/Latin & Stems/loop.wav" }),
       createFileEntry({ path: "Melodies/Speed House & MIDI/melody.wav" }),
@@ -42,10 +42,10 @@ describe("DirectorySubcategoryTransformer integration", () => {
       [
         "Pack.zip [skipped]",
         "├── Drum Loops [type:Drum Loops, skipped]",
-        "│   └── Latin & Stems [type:Drum Loops - Latin, skipped]",
+        "│   ┗━━ Latin [renamed]",
         "│       └── loop.wav [?]",
         "└── Melodies [type:Melodies, skipped]",
-        "    └── Speed House & MIDI [type:Melodies - Speed House, skipped]",
+        "    ┗━━ Speed House [renamed]",
         "        └── melody.wav [?]",
         "",
       ].join("\n"),
@@ -101,12 +101,12 @@ describe("DirectorySubcategoryTransformer integration", () => {
       [
         "Pack.zip [skipped]",
         "├── Drums [type:Drums, skipped]",
-        "│   ├── 808s [type:Drums - 808s, skipped]",
-        "│   │   └── 808.wav [?]",
-        "│   └── 909s [type:Drums - 909s, skipped]",
+        "│   ┣━━ 808s",
+        "│   ┃   └── 808.wav [?]",
+        "│   ┗━━ 909s",
         "│       └── 909.wav [?]",
         "└── Drum Loops [type:Drum Loops, skipped]",
-        "    └── 808s [type:Drum Loops - 808s, skipped]",
+        "    ┗━━ 808s",
         "        └── 808.wav [?]",
         "",
       ].join("\n"),
