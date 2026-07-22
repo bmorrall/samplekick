@@ -2,7 +2,12 @@ import love from "eslint-config-love";
 
 export default [
   {
-    ignores: ["coverage/**", "packages/*/dist/**", "packages/*/coverage/**"],
+    ignores: [
+      "coverage/**",
+      "packages/*/dist/**",
+      "packages/*/out/**",
+      "packages/*/coverage/**",
+    ],
   },
   {
     ...love,
