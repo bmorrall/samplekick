@@ -42,6 +42,7 @@ export {
   createCymaticsNameTransformer,
   createGhosthackNameTransformer,
   createStripGhosthackPrefixTransformer,
+  createStripCymaticsPrefixTransformer,
   createSquashNameTransformer,
   createStripFormatHintsTransformer,
   createInfoFileTransformer,

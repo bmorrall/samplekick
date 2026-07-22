@@ -39,16 +39,16 @@ describe("FlatPackPrefixTransformer", () => {
       expect(rootRow).toContain("Sounds by Sunwarper - SP404 Pack");
       expect(rootRow).toContain("Packs");
 
-      // Audio children have the prefix stripped and the first segment prepended
+      // Audio children have the full shared prefix stripped
       const wav1Row = rows.find((r) =>
         r.startsWith("Sounds by Sunwarper - SP404 Pack - 01 D4.wav,"),
       );
-      expect(wav1Row).toContain("Sounds by Sunwarper - 01 D4.wav");
+      expect(wav1Row).toContain(",01 D4.wav,");
 
       const wav2Row = rows.find((r) =>
         r.startsWith("Sounds by Sunwarper - SP404 Pack - 02 E4.wav,"),
       );
-      expect(wav2Row).toContain("Sounds by Sunwarper - 02 E4.wav");
+      expect(wav2Row).toContain(",02 E4.wav,");
     } finally {
       await rm(tmpDir, { recursive: true });
     }

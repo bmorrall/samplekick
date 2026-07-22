@@ -20,6 +20,14 @@
     "./pipeline": {
       "import": "./dist/pipeline.mjs",
       "types": "./dist/pipeline.d.mts"
+    },
+    "./post_processors": {
+      "import": "./dist/post_processors/index.mjs",
+      "types": "./dist/post_processors/index.d.mts"
+    },
+    "./adaptors": {
+      "import": "./dist/adaptors/index.mjs",
+      "types": "./dist/adaptors/index.d.mts"
     }
   },
   "bin": {

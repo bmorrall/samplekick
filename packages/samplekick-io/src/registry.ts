@@ -132,11 +132,6 @@ export class Registry implements FileSource, DigestSource {
 
   loadDigest(digestSource: DigestSource): void {
     digestSource.eachDigestEntry((entry) => {
-      if (entry.getPath() === "") {
-        applyEntryDigest(this.rootNode, entry);
-        return;
-      }
-
       void this.setEntryDigest(entry);
     });
   }
@@ -303,10 +298,20 @@ export class Registry implements FileSource, DigestSource {
     this.postProcessors.push(processor);
   }
 
+  /** Removes all previously added post-processors. */
+  clearPostProcessors(): void {
+    this.postProcessors.length = 0;
+  }
+
   // Validator methods
 
   addValidator(validate: Validate): void {
     this.validators.push(validate);
+  }
+
+  /** Removes all previously added validators. */
+  clearValidators(): void {
+    this.validators.length = 0;
   }
 
   /**

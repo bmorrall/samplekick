@@ -80,7 +80,7 @@ describe("createFlatPackPrefixTransformer", () => {
       expect(dir.setSampleType).toHaveBeenCalledWith("Packs");
     });
 
-    it("strips the shared prefix and prepends the first segment to each child", () => {
+    it("strips the full shared prefix from each child", () => {
       const c1 = makeChild("Sounds by Sunwarper - SP404 Pack - 01 D4.wav");
       const c2 = makeChild("Sounds by Sunwarper - SP404 Pack - 02 E4.wav");
       const dir = makeDir([c1, c2]);
@@ -88,15 +88,11 @@ describe("createFlatPackPrefixTransformer", () => {
       const transformer = createFlatPackPrefixTransformer();
       transformer.transform(createFlatPackSource(dir, [c1, c2]));
 
-      expect(c1.setName).toHaveBeenCalledWith(
-        "Sounds by Sunwarper - 01 D4.wav",
-      );
-      expect(c2.setName).toHaveBeenCalledWith(
-        "Sounds by Sunwarper - 02 E4.wav",
-      );
+      expect(c1.setName).toHaveBeenCalledWith("01 D4.wav");
+      expect(c2.setName).toHaveBeenCalledWith("02 E4.wav");
     });
 
-    it("only strips (no prepend) when the prefix has a single segment", () => {
+    it("strips the prefix when it has a single segment", () => {
       const c1 = makeChild("Pack - 01 kick.wav");
       const c2 = makeChild("Pack - 02 snare.wav");
       const dir = makeDir([c1, c2]);
@@ -117,9 +113,7 @@ describe("createFlatPackPrefixTransformer", () => {
       const transformer = createFlatPackPrefixTransformer();
       transformer.transform(createFlatPackSource(dir, [c1, c2, c3]));
 
-      expect(c3.setName).toHaveBeenCalledWith(
-        "Sounds by Sunwarper - LICENSE.pdf",
-      );
+      expect(c3.setName).toHaveBeenCalledWith("LICENSE.pdf");
     });
 
     it("does not strip the prefix from children that do not carry it", () => {

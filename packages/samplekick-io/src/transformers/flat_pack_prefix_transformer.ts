@@ -27,11 +27,6 @@ function trimToLastSeparator(prefix: string): string | undefined {
   return prefix.slice(0, idx);
 }
 
-function firstSegment(s: string): string {
-  const idx = s.indexOf(SEPARATOR);
-  return idx === NOT_FOUND ? s : s.slice(0, idx);
-}
-
 function isAudioPath(path: string): boolean {
   const lower = path.toLowerCase();
   for (const ext of AUDIO_EXTENSIONS) {
@@ -42,12 +37,9 @@ function isAudioPath(path: string): boolean {
 
 const _singleton: Transform = {
   transform: (source) => {
-    // Map from parent path → { strip, prepend }, populated in the first pass and
+    // Map from parent path → strip prefix, populated in the first pass and
     // consumed in the second pass where we have TransformEntry objects with setName.
-    const renameInfoByParentPath = new Map<
-      string,
-      { strip: string; prepend: string }
-    >();
+    const stripByParentPath = new Map<string, string>();
 
     source.eachTransformEntry((entry) => {
       if (entry.getOwnSampleType() !== undefined) return;
@@ -73,10 +65,7 @@ const _singleton: Transform = {
       entry.setPackageName(prefix);
       entry.setSampleType(SAMPLE_TYPE_PACKS);
 
-      const vendor = firstSegment(prefix);
-      const strip = `${prefix}${SEPARATOR}`;
-      const prepend = vendor === prefix ? "" : `${vendor}${SEPARATOR}`;
-      renameInfoByParentPath.set(entry.getPath(), { strip, prepend });
+      stripByParentPath.set(entry.getPath(), `${prefix}${SEPARATOR}`);
     });
 
     // Second pass: rename children using TransformEntry objects (which expose setName).
@@ -84,12 +73,12 @@ const _singleton: Transform = {
       const parent = entry.getParentNode();
       if (parent === undefined) return;
 
-      const info = renameInfoByParentPath.get(parent.getPath());
-      if (info === undefined) return;
+      const strip = stripByParentPath.get(parent.getPath());
+      if (strip === undefined) return;
 
       const name = entry.getName();
-      if (name.startsWith(info.strip)) {
-        entry.setName(`${info.prepend}${name.slice(info.strip.length)}`);
+      if (name.startsWith(strip)) {
+        entry.setName(name.slice(strip.length));
       }
     });
   },
@@ -102,12 +91,10 @@ const _singleton: Transform = {
  * When detected:
  * - Sets packageName on the directory to the trimmed prefix.
  * - Sets sampleType to "Packs".
- * - For each child that carries the full prefix, strips the prefix and prepends
- *   the first segment (the vendor/artist name before the first " - ") so the
- *   source is still identifiable, e.g.:
+ * - For each child that carries the full prefix, strips the prefix, e.g.:
  *   "Sounds by Sunwarper - SP404 Pack - 01 D4.wav"
- *   → "Sounds by Sunwarper - 01 D4.wav"
- *   When the prefix has only one segment (no nested " - "), children are stripped
- *   without any prepend (same as the simple strip behaviour).
+ *   → "01 D4.wav"
+ *   The vendor/artist name is preserved on the directory's packageName, so it
+ *   is not repeated in each child's file name.
  */
 export const createFlatPackPrefixTransformer = (): Transform => _singleton;
