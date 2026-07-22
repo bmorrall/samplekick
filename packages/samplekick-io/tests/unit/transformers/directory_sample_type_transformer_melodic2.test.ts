@@ -100,7 +100,7 @@ describe("createDirectorySampleTypeTransformer", () => {
       expect(entry.setSampleType).toHaveBeenCalledWith("Melodic One Shots");
     });
 
-    it('sets sampleType to "Melodic Loops - Lofi" for a "Lofi" child under "Loops"', () => {
+    it('enables a "Lofi" child under "Loops" as a kept subcategory folder', () => {
       const entry = createTransformEntryInHierarchy(
         [
           { name: "Melodics", sampleType: "Melodic" },
@@ -113,7 +113,8 @@ describe("createDirectorySampleTypeTransformer", () => {
       transformer.transform(singleEntryTransformSource(entry));
       const transformer2 = createDirectorySubcategoryTransformer();
       transformer2.transform(singleEntryTransformSource(entry));
-      expect(entry.setSampleType).toHaveBeenCalledWith("Melodic Loops - Lofi");
+      expect(entry.setEnabled).toHaveBeenCalledWith(true);
+      expect(entry.setSampleType).not.toHaveBeenCalled();
     });
   });
 });

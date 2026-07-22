@@ -12,7 +12,7 @@ const STRIP_MIDI_STEMS_RE = / (?:&|and) (?:midi|stems?)$/iv;
 // sampleType from the ancestor context, avoiding "Melodies - MIDI" → "MIDI - Melodies - MIDI".
 const SUBCATEGORY_EXCLUDED_SUFFIX_RE = /(?:^| )(?:stems?|steps?|midi|kits?)$/iv;
 
-function trySetSubcategory(entry: TransformEntry): boolean {
+function tryEnableSubcategory(entry: TransformEntry): boolean {
   const parent = entry.getParentNode();
   if (parent === undefined) return false;
   const parentSampleType = parent.getSampleType();
@@ -21,7 +21,8 @@ function trySetSubcategory(entry: TransformEntry): boolean {
   const displayName = entry.getName().replace(STRIP_MIDI_STEMS_RE, "");
   if (SUBCATEGORY_EXCLUDED_SUFFIX_RE.test(displayName)) return false;
   if (displayName.includes(" - ")) return false;
-  entry.setSampleType(`${parentSampleType} - ${displayName}`);
+  if (displayName !== entry.getName()) entry.setName(displayName);
+  entry.setEnabled(true);
   return true;
 }
 
@@ -35,16 +36,20 @@ const _singleton: Transform = {
       }
       if (entry.getOwnSampleType() !== undefined) return;
       if (entry.getChildNodes().length === 0) return;
-      trySetSubcategory(entry);
+      tryEnableSubcategory(entry);
     });
   },
 };
 /**
  * DirectorySubcategoryTransformer
  * For directories that have not yet been assigned a sampleType, checks whether
- * their parent directory has a known sampleType and, if so, tags the child as a
- * subcategory using the "ParentType - ChildName" convention.
- * e.g. "Latin" under "Drum Loops" → "Drum Loops - Latin".
+ * their parent directory has a known sampleType and, if so, keeps the child
+ * directory in the organised path (via `setEnabled(true)`) instead of tagging
+ * it with a "ParentType - ChildName" sampleType suffix. If the folder name has
+ * a "& MIDI"/"& Stems" suffix stripped for the eligibility check, the entry is
+ * renamed to that stripped display name (via `setName`).
+ * e.g. "Latin" under "Drum Loops" keeps the "Latin" folder nested under
+ * "Drum Loops" rather than becoming sampleType "Drum Loops - Latin".
  * Must run after createDirectorySampleTypeTransformer.
  */
 export const createDirectorySubcategoryTransformer = (): Transform =>

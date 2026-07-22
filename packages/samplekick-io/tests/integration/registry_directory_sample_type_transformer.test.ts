@@ -37,7 +37,7 @@ describe("DirectorySampleTypeTransformer integration", () => {
     );
   });
 
-  it("applies createDirectorySampleTypeTransformer to tag unrecognised subdirectory names under known-type parents", () => {
+  it("applies createDirectorySampleTypeTransformer to enable unrecognised subdirectories under known-type parents", () => {
     const registry = createRegistry("Pack.zip", [
       createFileEntry({ path: "Drum Loops/Latin/Loop Stems/loop.wav" }),
       createFileEntry({
@@ -51,14 +51,14 @@ describe("DirectorySampleTypeTransformer integration", () => {
       [
         "Pack.zip [skipped]",
         "├── Drum Loops [type:Drum Loops, skipped]",
-        "│   └── Latin [type:Drum Loops - Latin, skipped]",
+        "│   ┗━━ Latin",
         "│       └── Loop Stems [skipped]",
         "│           └── loop.wav [?]",
         "└── Melodies [type:Melodies, skipped]",
-        "    ├── Speed House [type:Melodies - Speed House, skipped]",
-        "    │   └── Loop Stems & MIDI [skipped]",
-        "    │       └── bass.wav [?]",
-        "    └── Sunset [type:Melodies - Sunset, skipped]",
+        "    ┣━━ Speed House",
+        "    ┃   └── Loop Stems & MIDI [skipped]",
+        "    ┃       └── bass.wav [?]",
+        "    ┗━━ Sunset",
         "        └── Loop Stems & MIDI [skipped]",
         "            └── reese.wav [?]",
         "",
@@ -79,14 +79,14 @@ describe("DirectorySampleTypeTransformer integration", () => {
         "├── Drum Loops & MIDI [type:Drum Loops, skipped]",
         "│   └── kick.wav [?]",
         "└── Melodies [type:Melodies, skipped]",
-        "    └── Speed House & MIDI [type:Melodies - Speed House, skipped]",
+        "    ┗━━ Speed House [renamed]",
         "        └── bass.wav [?]",
         "",
       ].join("\n"),
     );
   });
 
-  it("applies compound-tail resolution and subcategory tagging for brand-prefixed packs ending with a known type", () => {
+  it("applies compound-tail resolution and subcategory enabling for brand-prefixed packs ending with a known type", () => {
     const registry = createRegistry("root", [
       createFileEntry({
         path: "Brand - Sci-Fi Horror FX & Foley/Alien Technology/alarm.wav",
@@ -98,7 +98,7 @@ describe("DirectorySampleTypeTransformer integration", () => {
       [
         "root [skipped]",
         "└── Brand - Sci-Fi Horror FX & Foley [type:Foley, skipped]",
-        "    └── Alien Technology [type:Foley - Alien Technology, skipped]",
+        "    ┗━━ Alien Technology",
         "        └── alarm.wav [?]",
         "",
       ].join("\n"),

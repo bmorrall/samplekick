@@ -8,7 +8,7 @@ import {
 
 describe("createDirectorySubcategoryTransformer", () => {
   describe("when a directory has no known sampleType but its parent does", () => {
-    it('sets sampleType to "Drums - 808s" for "808s" under a "Drums" parent', () => {
+    it('enables "808s" under a "Drums" parent as a kept subcategory folder', () => {
       const entry = createTransformEntryInHierarchy(
         [{ name: "Drums", sampleType: "Drums" }],
         { name: "808s", isFile: false },
@@ -16,10 +16,12 @@ describe("createDirectorySubcategoryTransformer", () => {
       );
       const transformer = createDirectorySubcategoryTransformer();
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setSampleType).toHaveBeenCalledWith("Drums - 808s");
+      expect(entry.setEnabled).toHaveBeenCalledWith(true);
+      expect(entry.setName).not.toHaveBeenCalled();
+      expect(entry.setSampleType).not.toHaveBeenCalled();
     });
 
-    it('sets sampleType to "Drum Loops - 808s" for "808s" under a "Drum Loops" parent', () => {
+    it('enables "808s" under a "Drum Loops" parent as a kept subcategory folder', () => {
       const entry = createTransformEntryInHierarchy(
         [{ name: "Drum Loops", sampleType: "Drum Loops" }],
         { name: "808s", isFile: false },
@@ -27,10 +29,12 @@ describe("createDirectorySubcategoryTransformer", () => {
       );
       const transformer = createDirectorySubcategoryTransformer();
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setSampleType).toHaveBeenCalledWith("Drum Loops - 808s");
+      expect(entry.setEnabled).toHaveBeenCalledWith(true);
+      expect(entry.setName).not.toHaveBeenCalled();
+      expect(entry.setSampleType).not.toHaveBeenCalled();
     });
 
-    it('sets sampleType to "Drums - 909s" for "909s" under a "Drums" parent', () => {
+    it('enables "909s" under a "Drums" parent as a kept subcategory folder', () => {
       const entry = createTransformEntryInHierarchy(
         [{ name: "Drums", sampleType: "Drums" }],
         { name: "909s", isFile: false },
@@ -38,10 +42,12 @@ describe("createDirectorySubcategoryTransformer", () => {
       );
       const transformer = createDirectorySubcategoryTransformer();
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setSampleType).toHaveBeenCalledWith("Drums - 909s");
+      expect(entry.setEnabled).toHaveBeenCalledWith(true);
+      expect(entry.setName).not.toHaveBeenCalled();
+      expect(entry.setSampleType).not.toHaveBeenCalled();
     });
 
-    it('sets sampleType to "Drum Loops - 909s" for "909s" under a "Drum Loops" parent', () => {
+    it('enables "909s" under a "Drum Loops" parent as a kept subcategory folder', () => {
       const entry = createTransformEntryInHierarchy(
         [{ name: "Drum Loops", sampleType: "Drum Loops" }],
         { name: "909s", isFile: false },
@@ -49,10 +55,12 @@ describe("createDirectorySubcategoryTransformer", () => {
       );
       const transformer = createDirectorySubcategoryTransformer();
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setSampleType).toHaveBeenCalledWith("Drum Loops - 909s");
+      expect(entry.setEnabled).toHaveBeenCalledWith(true);
+      expect(entry.setName).not.toHaveBeenCalled();
+      expect(entry.setSampleType).not.toHaveBeenCalled();
     });
 
-    it('sets sampleType to "Drum Loops - Latin" for "Latin" under "Drum Loops"', () => {
+    it('enables "Latin" under "Drum Loops" as a kept subcategory folder', () => {
       const entry = createTransformEntryInHierarchy(
         [{ name: "Drum Loops", sampleType: "Drum Loops" }],
         { name: "Latin", isFile: false },
@@ -60,10 +68,12 @@ describe("createDirectorySubcategoryTransformer", () => {
       );
       const transformer = createDirectorySubcategoryTransformer();
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setSampleType).toHaveBeenCalledWith("Drum Loops - Latin");
+      expect(entry.setEnabled).toHaveBeenCalledWith(true);
+      expect(entry.setName).not.toHaveBeenCalled();
+      expect(entry.setSampleType).not.toHaveBeenCalled();
     });
 
-    it('sets sampleType to "Melodies - Speed House" for "Speed House" under "Melodies"', () => {
+    it('enables "Speed House" under "Melodies" as a kept subcategory folder', () => {
       const entry = createTransformEntryInHierarchy(
         [{ name: "Melodies", sampleType: "Melodies" }],
         { name: "Speed House", isFile: false },
@@ -71,12 +81,12 @@ describe("createDirectorySubcategoryTransformer", () => {
       );
       const transformer = createDirectorySubcategoryTransformer();
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setSampleType).toHaveBeenCalledWith(
-        "Melodies - Speed House",
-      );
+      expect(entry.setEnabled).toHaveBeenCalledWith(true);
+      expect(entry.setName).not.toHaveBeenCalled();
+      expect(entry.setSampleType).not.toHaveBeenCalled();
     });
 
-    it("strips & MIDI suffix from the child display name", () => {
+    it("still enables a directory whose name has a '& MIDI' suffix and renames it to the stripped display name", () => {
       const entry = createTransformEntryInHierarchy(
         [{ name: "Melodies", sampleType: "Melodies" }],
         { name: "Speed House & MIDI", isFile: false },
@@ -84,12 +94,12 @@ describe("createDirectorySubcategoryTransformer", () => {
       );
       const transformer = createDirectorySubcategoryTransformer();
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setSampleType).toHaveBeenCalledWith(
-        "Melodies - Speed House",
-      );
+      expect(entry.setEnabled).toHaveBeenCalledWith(true);
+      expect(entry.setName).toHaveBeenCalledWith("Speed House");
+      expect(entry.setSampleType).not.toHaveBeenCalled();
     });
 
-    it("strips & Stems suffix from the child display name", () => {
+    it("still enables a directory whose name has a '& Stems' suffix and renames it to the stripped display name", () => {
       const entry = createTransformEntryInHierarchy(
         [{ name: "Drum Loops", sampleType: "Drum Loops" }],
         { name: "Latin & Stems", isFile: false },
@@ -97,12 +107,14 @@ describe("createDirectorySubcategoryTransformer", () => {
       );
       const transformer = createDirectorySubcategoryTransformer();
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setSampleType).toHaveBeenCalledWith("Drum Loops - Latin");
+      expect(entry.setEnabled).toHaveBeenCalledWith(true);
+      expect(entry.setName).toHaveBeenCalledWith("Latin");
+      expect(entry.setSampleType).not.toHaveBeenCalled();
     });
   });
 
   describe("when the directory already has a sampleType", () => {
-    it("does not overwrite an existing sampleType", () => {
+    it("does not enable or overwrite an existing sampleType", () => {
       const entry = createTransformEntryInHierarchy(
         [{ name: "Drum Loops", sampleType: "Drum Loops" }],
         { name: "Latin", isFile: false, sampleType: "Custom" },
@@ -111,11 +123,12 @@ describe("createDirectorySubcategoryTransformer", () => {
       const transformer = createDirectorySubcategoryTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
+      expect(entry.setEnabled).not.toHaveBeenCalled();
     });
   });
 
   describe("when the directory should not be treated as a subcategory", () => {
-    it("does not set sampleType when the parent has no sampleType", () => {
+    it("does not enable the directory when the parent has no sampleType", () => {
       const entry = createTransformEntryInHierarchy(
         [{ name: "Unknown" }],
         { name: "Latin", isFile: false },
@@ -124,10 +137,11 @@ describe("createDirectorySubcategoryTransformer", () => {
       const transformer = createDirectorySubcategoryTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
+      expect(entry.setEnabled).not.toHaveBeenCalled();
       expect(entry.setReadOnly).not.toHaveBeenCalled();
     });
 
-    it("does not set sampleType when the child name ends with 'Stems'", () => {
+    it("does not enable the directory when the child name ends with 'Stems'", () => {
       const entry = createTransformEntryInHierarchy(
         [{ name: "Drum Loops", sampleType: "Drum Loops" }],
         { name: "Loop Stems", isFile: false },
@@ -136,10 +150,11 @@ describe("createDirectorySubcategoryTransformer", () => {
       const transformer = createDirectorySubcategoryTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
+      expect(entry.setEnabled).not.toHaveBeenCalled();
       expect(entry.setReadOnly).not.toHaveBeenCalled();
     });
 
-    it("does not set sampleType when the child name ends with 'Steps'", () => {
+    it("does not enable the directory when the child name ends with 'Steps'", () => {
       const entry = createTransformEntryInHierarchy(
         [{ name: "Drum Loops", sampleType: "Drum Loops" }],
         { name: "Loop Steps", isFile: false },
@@ -148,10 +163,11 @@ describe("createDirectorySubcategoryTransformer", () => {
       const transformer = createDirectorySubcategoryTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
+      expect(entry.setEnabled).not.toHaveBeenCalled();
       expect(entry.setReadOnly).not.toHaveBeenCalled();
     });
 
-    it("does not set sampleType when the child name is 'MIDI'", () => {
+    it("does not enable the directory when the child name is 'MIDI'", () => {
       const entry = createTransformEntryInHierarchy(
         [{ name: "Melodies", sampleType: "Melodies" }],
         { name: "MIDI", isFile: false },
@@ -160,10 +176,11 @@ describe("createDirectorySubcategoryTransformer", () => {
       const transformer = createDirectorySubcategoryTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
+      expect(entry.setEnabled).not.toHaveBeenCalled();
       expect(entry.setReadOnly).not.toHaveBeenCalled();
     });
 
-    it("does not set sampleType when the child name ends with 'MIDI' (e.g. 'Drum MIDI')", () => {
+    it("does not enable the directory when the child name ends with 'MIDI' (e.g. 'Drum MIDI')", () => {
       const entry = createTransformEntryInHierarchy(
         [{ name: "Melodies", sampleType: "Melodies" }],
         { name: "Drum MIDI", isFile: false },
@@ -172,22 +189,11 @@ describe("createDirectorySubcategoryTransformer", () => {
       const transformer = createDirectorySubcategoryTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
+      expect(entry.setEnabled).not.toHaveBeenCalled();
       expect(entry.setReadOnly).not.toHaveBeenCalled();
     });
 
-    it("does not set sampleType when the child name is 'MIDI'", () => {
-      const entry = createTransformEntryInHierarchy(
-        [{ name: "Melodies", sampleType: "Melodies" }],
-        { name: "MIDI", isFile: false },
-        [{ name: "track.mid" }],
-      );
-      const transformer = createDirectorySubcategoryTransformer();
-      transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setSampleType).not.toHaveBeenCalled();
-      expect(entry.setReadOnly).not.toHaveBeenCalled();
-    });
-
-    it("does not set sampleType when the child name already contains ' - '", () => {
+    it("does not enable the directory when the child name already contains ' - '", () => {
       const entry = createTransformEntryInHierarchy(
         [{ name: "Drum Loops", sampleType: "Drum Loops" }],
         { name: "Drum Loops - Latin", isFile: false },
@@ -196,10 +202,11 @@ describe("createDirectorySubcategoryTransformer", () => {
       const transformer = createDirectorySubcategoryTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
+      expect(entry.setEnabled).not.toHaveBeenCalled();
       expect(entry.setReadOnly).not.toHaveBeenCalled();
     });
 
-    it("does not set sampleType when the parent sampleType is not a known folder name", () => {
+    it("does not enable the directory when the parent sampleType is not a known folder name", () => {
       const entry = createTransformEntryInHierarchy(
         [{ name: "Custom Pack", sampleType: "My Custom Type" }],
         { name: "Latin", isFile: false },
@@ -208,6 +215,7 @@ describe("createDirectorySubcategoryTransformer", () => {
       const transformer = createDirectorySubcategoryTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
+      expect(entry.setEnabled).not.toHaveBeenCalled();
       expect(entry.setReadOnly).not.toHaveBeenCalled();
     });
   });
@@ -257,7 +265,7 @@ describe("createDirectorySubcategoryTransformer", () => {
       expect(entry.setSampleType).not.toHaveBeenCalled();
     });
 
-    it("does not set sampleType when the child name ends with 'Kits'", () => {
+    it("does not enable the directory when the child name ends with 'Kits'", () => {
       const entry = createTransformEntryInHierarchy(
         [{ name: "Loops", sampleType: "Loops" }],
         { name: "Melody Kits", isFile: false },
@@ -266,10 +274,11 @@ describe("createDirectorySubcategoryTransformer", () => {
       const transformer = createDirectorySubcategoryTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
+      expect(entry.setEnabled).not.toHaveBeenCalled();
       expect(entry.setReadOnly).not.toHaveBeenCalled();
     });
 
-    it("does not set sampleType when the child name ends with 'Kit'", () => {
+    it("does not enable the directory when the child name ends with 'Kit'", () => {
       const entry = createTransformEntryInHierarchy(
         [{ name: "Loops", sampleType: "Loops" }],
         { name: "Melody Kit", isFile: false },
@@ -278,6 +287,7 @@ describe("createDirectorySubcategoryTransformer", () => {
       const transformer = createDirectorySubcategoryTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
+      expect(entry.setEnabled).not.toHaveBeenCalled();
       expect(entry.setReadOnly).not.toHaveBeenCalled();
     });
   });

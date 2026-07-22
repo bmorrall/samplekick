@@ -8,7 +8,7 @@ import { describe, expect, it } from "vitest";
 const CLI_PATH = resolve(import.meta.dirname, "../dist/index.mjs");
 
 describe("DirectorySubcategoryTransformer", () => {
-  it('tags "Latin" under "Drum Loops" as "Drum Loops - Latin" in the auto-config', async () => {
+  it('enables "Latin" under "Drum Loops" as a kept subcategory folder in the auto-config', async () => {
     const zipped = zipSync({
       "Drum Loops/Latin/loop.wav": strToU8("loop-data"),
     });
@@ -33,13 +33,13 @@ describe("DirectorySubcategoryTransformer", () => {
       const row = csv
         .split("\n")
         .find((r) => r.startsWith("Drum Loops/Latin,"));
-      expect(row).toBe("Drum Loops/Latin,,,Drum Loops - Latin,false");
+      expect(row).toBe("Drum Loops/Latin,,,,true");
     } finally {
       await rm(tmpDir, { recursive: true });
     }
   });
 
-  it("does not tag a child directory whose parent has no known sampleType", async () => {
+  it("does not enable a child directory whose parent has no known sampleType", async () => {
     const zipped = zipSync({
       "Bonks/Latin/loop.wav": strToU8("loop-data"),
     });
@@ -99,7 +99,7 @@ describe("DirectorySubcategoryTransformer", () => {
     }
   });
 
-  it('tags "Latin" under "Melody One Shots" as "Melodies - Latin"', async () => {
+  it('enables "Latin" under "Melody One Shots" as a kept subcategory folder', async () => {
     const zipped = zipSync({
       "Melody One Shots/Latin/melody.wav": strToU8("data"),
     });
@@ -129,13 +129,13 @@ describe("DirectorySubcategoryTransformer", () => {
       const childRow = csv
         .split("\n")
         .find((r) => r.startsWith("Melody One Shots/Latin,"));
-      expect(childRow).toBe("Melody One Shots/Latin,,,Melodies - Latin,false");
+      expect(childRow).toBe("Melody One Shots/Latin,,,,true");
     } finally {
       await rm(tmpDir, { recursive: true });
     }
   });
 
-  it('tags "Alien Technology" under a brand-prefixed "FX & Foley" pack as "Foley - Alien Technology"', async () => {
+  it('enables "Alien Technology" under a brand-prefixed "FX & Foley" pack as a kept subcategory folder', async () => {
     const zipped = zipSync({
       "Ghosthack x Boom - Sci-Fi Horror FX & Foley/Alien Technology/alarm.wav":
         strToU8("data"),
@@ -166,7 +166,7 @@ describe("DirectorySubcategoryTransformer", () => {
           ),
         );
       expect(row).toBe(
-        "Ghosthack x Boom - Sci-Fi Horror FX & Foley/Alien Technology,,,Foley - Alien Technology,false",
+        "Ghosthack x Boom - Sci-Fi Horror FX & Foley/Alien Technology,,,,true",
       );
     } finally {
       await rm(tmpDir, { recursive: true });
