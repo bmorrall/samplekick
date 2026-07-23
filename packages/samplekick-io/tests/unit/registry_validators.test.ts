@@ -107,6 +107,29 @@ describe("Registry.addValidator", () => {
     expect(onReject).toHaveBeenCalledOnce();
     expect(entry.copyToPath).not.toHaveBeenCalled();
   });
+
+  it("skips validators for a readOnly entry", async () => {
+    const entry = createCopyableEntry("a.wav");
+    const validator = createFailingValidator(
+      "path too long: 256 characters (max 255)",
+    );
+    const registry = new Registry(createFileSource("root", [entry]));
+    registry.addValidator(validator);
+    registry.applyTransform({
+      transform: (source) => {
+        source.eachTransformEntry((transformEntry) => {
+          if (transformEntry.getPath() === "a.wav") {
+            transformEntry.setReadOnly(true);
+          }
+        });
+      },
+    });
+
+    await registry.exportToDirectory("/output", {});
+
+    expect(validator).not.toHaveBeenCalled();
+    expect(entry.copyToPath).toHaveBeenCalledOnce();
+  });
 });
 
 describe("Registry.clearValidators", () => {

@@ -315,6 +315,24 @@ export class Registry implements FileSource, DigestSource {
   }
 
   /**
+   * Runs all registered validators against a readOnly-eligible entry, returning
+   * the first failure reason. ReadOnly entries (e.g. locked Ableton project
+   * files) skip validation entirely, since their structure/paths are preserved
+   * as-is and not meant to be checked against device constraints.
+   */
+  private firstValidationFailure(
+    destRelPath: string,
+    node: EntryNode,
+  ): string | undefined {
+    if (node.isReadOnly() === true) return undefined;
+    for (const validate of this.validators) {
+      const reason = validate(destRelPath, node);
+      if (reason !== undefined) return reason;
+    }
+    return undefined;
+  }
+
+  /**
    * Returns the destination path for a given entry path, using the current path strategy.
    */
   destinationPathFor(path: string): string | undefined {
@@ -361,12 +379,10 @@ export class Registry implements FileSource, DigestSource {
       }
       seenDestPaths.add(destRelPath);
       const write = async (): Promise<void> => {
-        for (const validate of this.validators) {
-          const reason = validate(destRelPath, node);
-          if (reason !== undefined) {
-            options.onReject?.(node, reason);
-            return;
-          }
+        const reason = this.firstValidationFailure(destRelPath, node);
+        if (reason !== undefined) {
+          options.onReject?.(node, reason);
+          return;
         }
         options.onBeforeWrite?.(node, destRelPath);
         if (dirPath !== undefined) {
