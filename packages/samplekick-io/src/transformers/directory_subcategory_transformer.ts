@@ -50,7 +50,10 @@ const _singleton: Transform = {
  * renamed to that stripped display name (via `setName`).
  * e.g. "Latin" under "Drum Loops" keeps the "Latin" folder nested under
  * "Drum Loops" rather than becoming sampleType "Drum Loops - Latin".
- * Must run after createDirectorySampleTypeTransformer.
+ * Must run after createDirectorySampleTypeTransformer. Combine with
+ * createStripCommonPrefixTransformer (which runs generically on every
+ * non-root directory) to also strip redundant file-name prefixes shared by
+ * the files inside these newly enabled subcategory folders.
  */
 export const createDirectorySubcategoryTransformer = (): Transform =>
   _singleton;
