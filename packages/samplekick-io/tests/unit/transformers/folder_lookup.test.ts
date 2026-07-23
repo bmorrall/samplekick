@@ -104,8 +104,8 @@ describe("FOLDER_LOOKUP", () => {
 });
 
 describe("resolveOneShotPrefixType", () => {
-  it('resolves "Melody One Shots" to "Melodies"', () => {
-    expect(resolveOneShotPrefixType("Melody One Shots")).toBe("Melodies");
+  it('resolves "Melody One Shots" to "Melody Loops"', () => {
+    expect(resolveOneShotPrefixType("Melody One Shots")).toBe("Melody Loops");
   });
 
   it('resolves "Drum One Shots" to "Drums"', () => {
@@ -121,7 +121,7 @@ describe("resolveOneShotPrefixType", () => {
   });
 
   it("is case-insensitive", () => {
-    expect(resolveOneShotPrefixType("MELODY ONE SHOTS")).toBe("Melodies");
+    expect(resolveOneShotPrefixType("MELODY ONE SHOTS")).toBe("Melody Loops");
   });
 
   it('returns undefined for a bare standalone like "Melodies"', () => {

@@ -343,7 +343,7 @@ describe("createDirectorySampleTypeTransformer", () => {
       expect(entry.setSampleType).toHaveBeenCalledWith("Melody Loops");
     });
 
-    it('sets sampleType to "Melodies" for standalone "Melody Kits"', () => {
+    it('sets sampleType to "Melody Loops" for standalone "Melody Kits"', () => {
       const entry = createTransformEntryInHierarchy(
         [],
         { name: "Melody Kits", isFile: false },
@@ -351,7 +351,7 @@ describe("createDirectorySampleTypeTransformer", () => {
       );
       const transformer = createDirectorySampleTypeTransformer();
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setSampleType).toHaveBeenCalledWith("Melodies");
+      expect(entry.setSampleType).toHaveBeenCalledWith("Melody Loops");
     });
 
     it("matches case-insensitively", () => {
