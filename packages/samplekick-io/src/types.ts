@@ -6,6 +6,7 @@ export interface DigestEntry {
   getPackageName: () => string | undefined;
   getSampleType: () => string | undefined;
   isEnabled: () => boolean;
+  isReadOnly?: () => boolean | undefined;
 }
 
 export interface DigestSource {

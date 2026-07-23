@@ -222,6 +222,45 @@ describe("AudioConverter", () => {
     });
   });
 
+  describe("read-only files", () => {
+    it("skips conversion for a read-only entry without calling ffmpeg", async () => {
+      const runFfmpeg = vi.fn();
+      const converter = buildConverter(runFfmpeg);
+
+      await converter.processFile("/output/drums/kick.wav", {
+        ...createEntry(),
+        isReadOnly: () => true,
+      });
+
+      expect(runFfmpeg).not.toHaveBeenCalled();
+      expect(mockRename).not.toHaveBeenCalled();
+      expect(mockUnlink).not.toHaveBeenCalled();
+    });
+
+    it("still converts when isReadOnly returns false", async () => {
+      const runFfmpeg = vi.fn().mockResolvedValue(undefined);
+      const converter = buildConverter(runFfmpeg);
+
+      await converter.processFile("/output/drums/kick.mp3", {
+        ...createEntry("drums/kick.mp3"),
+        isReadOnly: () => false,
+      });
+
+      expect(runFfmpeg).toHaveBeenCalled();
+    });
+
+    it("still converts when isReadOnly is not implemented by the entry", async () => {
+      const runFfmpeg = vi.fn().mockResolvedValue(undefined);
+      const converter = buildConverter(runFfmpeg);
+
+      await converter.processFile("/output/drums/kick.mp3", {
+        ...createEntry("drums/kick.mp3"),
+      });
+
+      expect(runFfmpeg).toHaveBeenCalled();
+    });
+  });
+
   describe("onDebug", () => {
     it("calls onDebug with 'Converting <filename> to 16-bit 48 kHz WAV'", async () => {
       const runFfmpeg = vi.fn().mockResolvedValue(undefined);
