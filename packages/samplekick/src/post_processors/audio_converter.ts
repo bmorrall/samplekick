@@ -66,6 +66,12 @@ export const parseMaxVolumedB = (stderr: string): number | null => {
   return parseFloat(match.groups?.peak ?? "");
 };
 
+const sampleFmtFor = (bitDepth: number): string => {
+  if (bitDepth === BIT_DEPTH_24) return "s24";
+  if (bitDepth === BIT_DEPTH_32) return "s32";
+  return "s16";
+};
+
 export class AudioConverter implements PostProcessor {
   private readonly runFfmpeg: FfmpegRunner;
   private readonly runFfmpegProbe: FfmpegProbeRunner | undefined;
@@ -117,21 +123,22 @@ export class AudioConverter implements PostProcessor {
     return undefined;
   }
 
-  async processFile(destPath: string, _entry: DigestEntry): Promise<void> {
+  private shouldSkip(destPath: string, entry: DigestEntry): boolean {
     const ext = extname(destPath).toLowerCase();
-    if (!AUDIO_EXTENSIONS.has(ext)) return;
+    if (!AUDIO_EXTENSIONS.has(ext)) return true;
+    return entry.isReadOnly?.() === true;
+  }
 
+  async processFile(destPath: string, entry: DigestEntry): Promise<void> {
+    if (this.shouldSkip(destPath, entry)) return;
+
+    const ext = extname(destPath).toLowerCase();
     const dir = dirname(destPath);
     const base = basename(destPath, ext);
     const outputPath = join(dir, `${base}.wav`);
     const tempPath = `${destPath}.converting.wav`;
 
-    const sampleFmt =
-      this.targetBitDepth === BIT_DEPTH_24
-        ? "s24"
-        : this.targetBitDepth === BIT_DEPTH_32
-          ? "s32"
-          : "s16";
+    const sampleFmt = sampleFmtFor(this.targetBitDepth);
 
     const gainArg = await this.probeGainArg(destPath);
 
