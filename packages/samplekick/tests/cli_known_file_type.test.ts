@@ -138,7 +138,7 @@ describe("KnownFileTypeTransformer", () => {
     }
   });
 
-  it('tags a .mid file nested inside a MIDI directory under a known type as "MIDI - [type]" (not "MIDI - [type] - MIDI")', async () => {
+  it('tags a .mid file nested inside a MIDI directory under a known type as plain "MIDI" (no subcategory suffix)', async () => {
     const zipped = zipSync({
       "Melodies/MIDI/groove.mid": strToU8("midi-data"),
     });
@@ -161,7 +161,7 @@ describe("KnownFileTypeTransformer", () => {
       const csv = await readFile(join(dataDir, configFile), "utf8");
 
       const midRow = csv.split("\n").find((row) => row.includes("groove.mid"));
-      expect(midRow?.split(",")[3]).toBe("MIDI - Melodies");
+      expect(midRow?.split(",")[3]).toBe("MIDI");
     } finally {
       await rm(tmpDir, { recursive: true });
     }
