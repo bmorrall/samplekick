@@ -86,6 +86,39 @@ describe("createDirectorySegmentSuffixTransformer", () => {
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("Vocal Loops");
     });
+
+    it('tags "Tonal Ambience FX" as "Ambience", ignoring the trailing "FX"', () => {
+      const entry = createTransformEntryInHierarchy(
+        [],
+        { name: "Tonal Ambience FX", isFile: false },
+        [{ name: "drone.wav" }],
+      );
+      const transformer = createDirectorySegmentSuffixTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("Ambience");
+    });
+
+    it('tags "Various Textures FX" as "Textures", ignoring the trailing "FX"', () => {
+      const entry = createTransformEntryInHierarchy(
+        [],
+        { name: "Various Textures FX", isFile: false },
+        [{ name: "texture.wav" }],
+      );
+      const transformer = createDirectorySegmentSuffixTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("Textures");
+    });
+
+    it('still tags "Various Sound FX" as "Sound FX" (multi-word key preferred over single-word)', () => {
+      const entry = createTransformEntryInHierarchy(
+        [],
+        { name: "Various Sound FX", isFile: false },
+        [{ name: "boom.wav" }],
+      );
+      const transformer = createDirectorySegmentSuffixTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("Sound FX");
+    });
   });
 
   describe("when the directory already has a sampleType", () => {
