@@ -119,6 +119,28 @@ describe("createDirectorySampleTypeTransformer", () => {
       expect(entry.setSampleType).toHaveBeenCalledWith("Loops");
     });
 
+    it('sets sampleType to "Vocal Loops" for a brand-prefixed name like "Phoenix Vocal Loops"', () => {
+      const entry = createTransformEntryInHierarchy(
+        [],
+        { name: "Phoenix Vocal Loops", isFile: false },
+        [{ name: "vox.wav" }],
+      );
+      const transformer = createDirectorySampleTypeTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("Vocal Loops");
+    });
+
+    it('sets sampleType to "Hihat Loops" for a brand-prefixed name like "Blitz Hihat Loops"', () => {
+      const entry = createTransformEntryInHierarchy(
+        [],
+        { name: "Blitz Hihat Loops", isFile: false },
+        [{ name: "hihat.wav" }],
+      );
+      const transformer = createDirectorySampleTypeTransformer();
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("Hihat Loops");
+    });
+
     it("does not set sampleType when the base does not match and a parent has a sampleType", () => {
       const entry = createTransformEntryInHierarchy(
         [{ name: "Drums", sampleType: "Drums" }],

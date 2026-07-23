@@ -64,4 +64,20 @@ describe("DirectorySegmentSuffixTransformer integration", () => {
       ].join("\n"),
     );
   });
+
+  it("resolves the specific type for a brand-prefixed name with no dash separator (e.g. after a prior transformer already stripped it)", () => {
+    const registry = createRegistry("Pack.zip", [
+      createFileEntry({ path: "Phoenix Vocal Loops/loop.wav" }),
+    ]);
+    registry.applyTransform(createDirectorySampleTypeTransformer());
+    registry.applyTransform(createDirectorySegmentSuffixTransformer());
+    expect(registry.toString()).toBe(
+      [
+        "Pack.zip [skipped]",
+        "└── Phoenix Vocal Loops [type:Vocal Loops, skipped]",
+        "    └── loop.wav [?]",
+        "",
+      ].join("\n"),
+    );
+  });
 });
