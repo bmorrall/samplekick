@@ -1,5 +1,6 @@
 import type { Transform } from "../types";
 import {
+  FOLDER_LOOKUP,
   lookupPrefix,
   lookupStandalone,
   LOOP_LABELS,
@@ -9,6 +10,8 @@ import {
 
 const DASH_SEP = " - ";
 const MIN_SEGMENT_WORDS = 2;
+// Longest FOLDER_LOOKUP key by word count (e.g. "drum and bass", "drum n bass").
+const MAX_KEY_WORDS = 3;
 
 function resolveStandaloneType(nameLower: string): string | undefined {
   const standalone = lookupStandalone(nameLower);
@@ -44,8 +47,39 @@ function resolveCompoundType(nameLower: string): string | undefined {
   return undefined;
 }
 
+// Finds the leading word(s) of `nameLower` that match a known FOLDER_LOOKUP key,
+// ignoring any unresolved trailing words that follow it (e.g. "ambience fx" →
+// "Ambience", ignoring the trailing "fx" rather than letting it later resolve
+// "fx" alone to "Sound FX"). Prefers the longest key match at the start (e.g.
+// "sound fx" over "fx"), and extends a matched key with an immediately
+// following Loop/One Shot label (e.g. "vocal loops" → "Vocal Loops").
+function resolveLeadingKeyType(nameLower: string): string | undefined {
+  const words = nameLower.split(" ").filter((w) => w.length > 0);
+  for (let len = Math.min(MAX_KEY_WORDS, words.length); len >= 1; len -= 1) {
+    const entry = FOLDER_LOOKUP.get(words.slice(0, len).join(" "));
+    if (entry === undefined) continue;
+    const { prefix, standalone } = entry;
+    const hasNextWord = len < words.length;
+    if (prefix !== undefined && hasNextWord) {
+      const [nextWord] = words.slice(len);
+      if ((LOOP_LABELS as readonly string[]).includes(nextWord)) {
+        return `${prefix} Loops`;
+      }
+      if ((ONE_SHOT_LABELS as readonly string[]).includes(nextWord)) {
+        return `${prefix} One Shots`;
+      }
+    }
+    return standalone;
+  }
+  return undefined;
+}
+
 function resolveAnyType(nameLower: string): string | undefined {
-  return resolveStandaloneType(nameLower) ?? resolveCompoundType(nameLower);
+  return (
+    resolveStandaloneType(nameLower) ??
+    resolveCompoundType(nameLower) ??
+    resolveLeadingKeyType(nameLower)
+  );
 }
 
 // Strips leading words from a segment one at a time and resolves the remainder.
@@ -56,6 +90,7 @@ function resolveAnyType(nameLower: string): string | undefined {
 // e.g. "Phoenix Vocal Loops" → "Vocal Loops".
 // e.g. "Tonal Ambience & Textures" → "Ambience & Textures" → "Ambience and Textures".
 // e.g. "Cyclone Ultimate Bass Collection" → strip noise → "Cyclone Ultimate Bass" → "Bass".
+// e.g. "Tonal Ambience FX" → "Ambience FX" → leading key "Ambience" (trailing "FX" ignored).
 // Returns undefined if no suffix of the segment resolves to a known type.
 const ALPHA_RE = /^[a-z]+$/v;
 function resolveSegmentSuffix(segment: string): string | undefined {
@@ -99,6 +134,13 @@ const _singleton: Transform = {
  * e.g. "Cymatics - Phoenix Vocal Loops" → segment "Phoenix Vocal Loops"
  *      → strip "Phoenix" → "Vocal Loops" → tags as "Vocal Loops".
  * e.g. "Wet Percussion" → strip "Wet" → "Percussion" → tags as "Percussion".
+ * Each remaining window is resolved in this priority order: (1) an exact
+ * standalone/Loop/One-Shot match for the whole window, (2) an "X & Y"/"X and Y"
+ * compound where both sides resolve, (3) a leading-key fallback that matches
+ * just the window's first word(s) against a known FOLDER_LOOKUP key and
+ * ignores unresolved trailing words — e.g. "Tonal Ambience FX" → window
+ * "Ambience FX" → leading key "Ambience" wins instead of overshooting to the
+ * trailing "FX" resolving alone to "Sound FX".
  * Must run after all other directory transformers.
  */
 export const createDirectorySegmentSuffixTransformer = (): Transform =>
