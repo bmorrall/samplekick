@@ -42,6 +42,23 @@ function findAncestorLoopsContext(
   return undefined;
 }
 
+// Progressively strips leading words from a multi-word prefix (e.g. "Phoenix Vocal"
+// → "Vocal", "Blitz Hihat" → "Hihat") until a known prefix key resolves. Mirrors the
+// leading-word-stripping in DirectorySegmentSuffixTransformer, but runs here so a
+// brand/product name ahead of a known prefix (e.g. "Phoenix Vocal Loops") resolves to
+// the specific type immediately, instead of being locked to the generic label fallback
+// below before DirectorySegmentSuffixTransformer gets a chance to refine it.
+function resolvePrefixByStrippingLeadingWords(
+  prefixLower: string,
+): string | undefined {
+  const words = prefixLower.split(" ").filter((w) => w.length > 0);
+  for (let i = 1; i < words.length; i += 1) {
+    const resolved = lookupPrefix(words.slice(i).join(" "));
+    if (resolved !== undefined) return resolved;
+  }
+  return undefined;
+}
+
 function trySetFromLabelSuffix(
   entry: TransformEntry,
   nameLower: string,
@@ -50,7 +67,10 @@ function trySetFromLabelSuffix(
 ): boolean {
   const suffix = labels.map((l) => ` ${l}`).find((s) => nameLower.endsWith(s));
   if (suffix === undefined) return false;
-  const prefix = lookupPrefix(nameLower.slice(0, -suffix.length));
+  const prefixLower = nameLower.slice(0, -suffix.length);
+  const prefix =
+    lookupPrefix(prefixLower) ??
+    resolvePrefixByStrippingLeadingWords(prefixLower);
   if (prefix !== undefined) {
     entry.setSampleType(`${prefix} ${label}`);
     return true;
