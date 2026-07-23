@@ -92,6 +92,26 @@ describe("createDirectorySampleTypeTransformer", () => {
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).not.toHaveBeenCalled();
     });
+
+    it('sets sampleType to "Ambient Loops" for "Ambient Loops"', () => {
+      const entry = createTransformEntryInHierarchy(
+        [],
+        { name: "Ambient Loops", isFile: false },
+        [{ name: "rain.wav" }],
+      );
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("Ambient Loops");
+    });
+
+    it('sets sampleType to "Ambient One Shots" for "Ambient One Shots"', () => {
+      const entry = createTransformEntryInHierarchy(
+        [],
+        { name: "Ambient One Shots", isFile: false },
+        [{ name: "rain.wav" }],
+      );
+      transformer.transform(singleEntryTransformSource(entry));
+      expect(entry.setSampleType).toHaveBeenCalledWith("Ambient One Shots");
+    });
   });
 
   describe('when the directory is named "Bass"', () => {
