@@ -8,6 +8,7 @@ import {
 
 const KITS_RE = /\bkits\b/iv;
 const KIT_RE = /\bkit\b/iv;
+const STEMS_RE = /\bstems?\b/iv;
 const PATH_SEPARATOR = "/";
 const MIN_KIT_FILES = 2;
 const MIN_KIT_SIBLINGS = 2;
@@ -39,13 +40,25 @@ const _singleton: Transform = {
     // contains "kits" (e.g. "Construction Kits"), or when it directly holds
     // 2+ child directories whose names contain "kit" (e.g. numbered kit
     // folders sitting at a pack's top level with no "Kits" wrapper folder).
+    //
+    // A directory whose own name contains "stem"/"stems" (e.g. "Loop Stems",
+    // "Loop Stems & MIDI") is treated as a stems container: unlike kits
+    // containers, every direct child directory is a stem root regardless of
+    // its name, since stems containers exclusively hold per-loop stem groups.
     source.eachTransformEntry((entry) => {
       if (entry.isFile()) return;
 
       const children = entry.getChildNodes();
-      const kitChildren = children.filter(
-        (child) => !child.isFile() && KIT_RE.test(child.getName()),
+      const directoryChildren = children.filter((child) => !child.isFile());
+      const kitChildren = directoryChildren.filter((child) =>
+        KIT_RE.test(child.getName()),
       );
+
+      if (STEMS_RE.test(entry.getName())) {
+        for (const child of directoryChildren) {
+          kitRootPaths.add(child.getPath());
+        }
+      }
 
       const isExplicitKitsContainer = KITS_RE.test(entry.getName());
       const looksLikeKitsContainer =
@@ -195,6 +208,13 @@ const _singleton: Transform = {
  * structure preservation for those roots and all their descendant
  * directories. Descendant directories also have packageName and sampleType
  * cleared.
+ *
+ * Also treats any directory containing "stem"/"stems" (e.g. "Loop Stems",
+ * "Loop Stems & MIDI") as a stems container: every direct child directory is
+ * marked as a stem root and given the same treatment, regardless of the
+ * child's own name, since a stems container exclusively holds per-loop stem
+ * groups (e.g. "Apple Drum Loop - 102bpm" containing Kick.wav, Snare.wav,
+ * Shaker.wav).
  *
  * Additionally strips any common name prefix shared by audio files within
  * each kit subdirectory, provided the prefix ends at a word boundary.
