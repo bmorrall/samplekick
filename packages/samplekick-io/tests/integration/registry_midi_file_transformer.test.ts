@@ -25,7 +25,7 @@ describe("MidiFileTransformer integration", () => {
     );
   });
 
-  it("prefixes the parent directory sampleType with MIDI -", () => {
+  it("does not inherit the parent directory sampleType — sets plain MIDI", () => {
     const registry = createRegistry("Pack.zip", [
       createFileEntry({ path: "Drum Loops/groove.mid" }),
       createFileEntry({ path: "Drum Loops/kick.wav" }),
@@ -36,14 +36,14 @@ describe("MidiFileTransformer integration", () => {
       [
         "Pack.zip [skipped]",
         "└── Drum Loops [type:Drum Loops, skipped]",
-        "    ├── groove.mid [?] [type:MIDI - Drum Loops]",
+        "    ├── groove.mid [?] [type:MIDI]",
         "    └── kick.wav [?]",
         "",
       ].join("\n"),
     );
   });
 
-  it("inherits the ancestor sampleType when nested under a transparent MIDI directory — avoids double-prefix", () => {
+  it("sets plain MIDI when nested under a transparent MIDI directory", () => {
     const registry = createRegistry("Pack.zip", [
       createFileEntry({ path: "Melodies/MIDI/groove.mid" }),
     ]);
@@ -55,7 +55,7 @@ describe("MidiFileTransformer integration", () => {
         "Pack.zip [skipped]",
         "└── Melodies [type:Melodies, skipped]",
         "    └── MIDI [skipped]",
-        "        └── groove.mid [?] [type:MIDI - Melodies]",
+        "        └── groove.mid [?] [type:MIDI]",
         "",
       ].join("\n"),
     );

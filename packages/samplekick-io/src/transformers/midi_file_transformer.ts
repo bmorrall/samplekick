@@ -11,12 +11,7 @@ const _singleton: Transform = {
       const path = entry.getPath().toLowerCase();
 
       if (name.endsWith(".mid") || path.endsWith(".mid")) {
-        const existingType = entry.getSampleType();
-        const sampleType =
-          existingType === undefined
-            ? MIDI_PREFIX
-            : `${MIDI_PREFIX} - ${existingType}`;
-        entry.setSampleType(sampleType);
+        entry.setSampleType(MIDI_PREFIX);
         entry.setReadOnly(true);
       }
     });
@@ -25,8 +20,8 @@ const _singleton: Transform = {
 /**
  * MidiFileTransformer
  * Detects MIDI files by the ".mid" extension and sets sampleType to "MIDI"
- * with keepStructure enabled. If the entry already has an inherited sampleType
- * (e.g. "Drum Loops" from a parent directory), the type is prefixed:
- * "MIDI - Drum Loops". Entries with keepStructure already set are skipped.
+ * with keepStructure enabled, regardless of any inherited sampleType from a
+ * parent directory (e.g. "Drum Loops") — MIDI files never get a subcategory
+ * suffix. Entries with keepStructure already set are skipped.
  */
 export const createMidiFileTransformer = (): Transform => _singleton;

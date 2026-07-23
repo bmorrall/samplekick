@@ -118,6 +118,8 @@ export function applyAnalysisPipeline(
   registry.applyTransform(createNormaliseKeyTagTransformer());
   registry.applyTransform(createReorderBpmKeyTransformer());
 
+  registry.applyTransform(createMidiFileTransformer());
+
   registry.applyTransform(createDrumSubcategoryTransformer());
   registry.applyTransform(createDirectorySampleTypeTransformer());
   registry.applyTransform(createAcapellaTransformer());
@@ -127,8 +129,6 @@ export function applyAnalysisPipeline(
   registry.applyTransform(createConstructionKitTransformer());
   registry.applyTransform(createStripCommonPrefixTransformer());
   registry.applyTransform(createFlatPackPrefixTransformer());
-
-  registry.applyTransform(createMidiFileTransformer());
 
   // Info file transforms: disable documentation files not needed in exports
   registry.applyTransform(createInfoFileTransformer());

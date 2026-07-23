@@ -83,7 +83,7 @@ describe("ConstructionKitTransformer", () => {
     }
   });
 
-  it("does not retain MIDI tags for directories under a matched kit subtree", async () => {
+  it("tags nested .mid files as MIDI even under a matched kit subtree", async () => {
     const zipped = zipSync({
       "Song Kits/Song Kit 01 - 103BPM Gbmaj/MIDI/Lead  --  128BPM  .mid":
         strToU8("midi-data"),
@@ -133,7 +133,7 @@ describe("ConstructionKitTransformer", () => {
         "Song Kits/Song Kit 01 - 103BPM Gbmaj/MIDI,,,,true",
       );
       expect(midiFileRow).toBe(
-        "Song Kits/Song Kit 01 - 103BPM Gbmaj/MIDI/Lead  --  128BPM  .mid,Lead -  - 128bpm .mid,,,true",
+        "Song Kits/Song Kit 01 - 103BPM Gbmaj/MIDI/Lead  --  128BPM  .mid,Lead -  - 128bpm .mid,,MIDI,true",
       );
     } finally {
       await rm(tmpDir, { recursive: true });
