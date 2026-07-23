@@ -36,6 +36,7 @@ import {
   createReorderBpmKeyTransformer,
   createSkipJunkTransformer,
   createSP404Mk2ProjectTransformer,
+  createStripCommonPrefixTransformer,
   createStripCymaticsPrefixTransformer,
   createStripFormatHintsTransformer,
   createStripGhosthackPrefixTransformer,
@@ -124,6 +125,7 @@ export function applyAnalysisPipeline(
   registry.applyTransform(createDirectorySubcategoryTransformer());
   registry.applyTransform(createDirectorySegmentSuffixTransformer());
   registry.applyTransform(createConstructionKitTransformer());
+  registry.applyTransform(createStripCommonPrefixTransformer());
   registry.applyTransform(createFlatPackPrefixTransformer());
 
   registry.applyTransform(createMidiFileTransformer());

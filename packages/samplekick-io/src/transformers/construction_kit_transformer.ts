@@ -1,40 +1,17 @@
 import type { FileNode, Transform } from "../types";
 import { AUDIO_EXTENSIONS } from "../audio_format";
+import {
+  longestCommonPrefix,
+  prefixMatches,
+  trimToWordBoundary,
+} from "./common_prefix";
 
 const KITS_RE = /\bkits\b/iv;
 const KIT_RE = /\bkit\b/iv;
 const PATH_SEPARATOR = "/";
 const MIN_KIT_FILES = 2;
 const MIN_KIT_SIBLINGS = 2;
-const MIN_PREFIX_LENGTH = 2;
 const MIDI_EXTENSION = ".mid";
-
-function longestCommonPrefix(strings: string[]): string {
-  if (strings.length === 0) return "";
-  const [first, ...rest] = strings;
-  let prefix = first;
-  for (const s of rest) {
-    let j = 0;
-    while (j < prefix.length && j < s.length && prefix[j] === s[j]) {
-      j += 1;
-    }
-    prefix = prefix.slice(0, j);
-    if (prefix.length === 0) return "";
-  }
-  return prefix;
-}
-
-function trimToWordBoundary(prefix: string): string | undefined {
-  for (let i = prefix.length - 1; i >= 0; i -= 1) {
-    const { [i]: ch } = prefix;
-    if (ch === " " || ch === "_" || ch === "-") {
-      const trimmed = prefix.slice(0, i + 1);
-      if (trimmed.length >= MIN_PREFIX_LENGTH) return trimmed;
-      return undefined;
-    }
-  }
-  return undefined;
-}
 
 function isKitFileName(name: string): boolean {
   const ext = name.slice(name.lastIndexOf(".")).toLowerCase();
@@ -117,7 +94,7 @@ const _singleton: Transform = {
         if (prefix === undefined) return;
 
         const name = entry.getName();
-        if (name.startsWith(prefix)) {
+        if (prefixMatches(name, prefix)) {
           entry.setName(name.slice(prefix.length));
           prefixStrippedPaths.add(entry.getPath());
         }
@@ -157,7 +134,7 @@ const _singleton: Transform = {
         if (prefix === undefined) return;
 
         const name = entry.getName();
-        if (name.startsWith(prefix)) {
+        if (prefixMatches(name, prefix)) {
           entry.setName(name.slice(prefix.length));
           prefixStrippedPaths.add(entry.getPath());
         }
