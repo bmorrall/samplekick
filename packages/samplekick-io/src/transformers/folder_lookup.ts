@@ -2,7 +2,7 @@ import { SAMPLE_TYPE_LOOPS, SAMPLE_TYPE_ONE_SHOTS } from "../sample_types";
 
 export interface FolderEntry {
   prefix: string | undefined;
-  standalone: string;
+  standalone: string | undefined;
 }
 
 const AMBIENCE_KEYS = ["ambience", "ambiences"] as const;
@@ -44,6 +44,7 @@ export const FOLDER_LOOKUP = new Map<string, FolderEntry>([
     k,
     { prefix: "Ambient", standalone: "Ambience" },
   ]),
+  ["ambient", { prefix: "Ambient", standalone: undefined }],
   ["bass", { prefix: "Bass", standalone: "Bass" }],
   ["basses", { prefix: "Bass", standalone: "Bass" }],
   ["cinematic", { prefix: "Cinematic", standalone: "Cinematic" }],

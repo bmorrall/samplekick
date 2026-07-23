@@ -94,10 +94,12 @@ describe("FOLDER_LOOKUP", () => {
             `prefix for "${key}" should not be empty`,
           ).toBeGreaterThan(0);
         }
-        expect(
-          entry.standalone.length,
-          `standalone for "${key}" should not be empty`,
-        ).toBeGreaterThan(0);
+        if (entry.standalone !== undefined) {
+          expect(
+            entry.standalone.length,
+            `standalone for "${key}" should not be empty`,
+          ).toBeGreaterThan(0);
+        }
       }
     });
   });
