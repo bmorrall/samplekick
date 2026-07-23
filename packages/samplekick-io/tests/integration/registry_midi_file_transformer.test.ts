@@ -53,7 +53,7 @@ describe("MidiFileTransformer integration", () => {
     expect(registry.toString()).toBe(
       [
         "Pack.zip [skipped]",
-        "└── Melodies [type:Melodies, skipped]",
+        "└── Melodies [type:Melody Loops, skipped]",
         "    └── MIDI [skipped]",
         "        └── groove.mid [?] [type:MIDI]",
         "",

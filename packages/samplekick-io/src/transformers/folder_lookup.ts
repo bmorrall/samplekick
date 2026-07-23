@@ -80,8 +80,8 @@ export const FOLDER_LOOKUP = new Map<string, FolderEntry>([
     k,
     { prefix: undefined, standalone: SAMPLE_TYPE_LOOPS },
   ]),
-  ["melody", { prefix: "Melody", standalone: "Melodies" }],
-  ["melodies", { prefix: "Melody", standalone: "Melodies" }],
+  ["melody", { prefix: "Melody", standalone: "Melody Loops" }],
+  ["melodies", { prefix: "Melody", standalone: "Melody Loops" }],
   ["melodic", { prefix: "Melodic", standalone: "Melodic" }],
   ["melodics", { prefix: "Melodic", standalone: "Melodic" }],
   ...ONE_SHOT_LABELS.map((k): [string, FolderEntry] => [

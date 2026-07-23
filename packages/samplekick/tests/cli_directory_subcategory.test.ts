@@ -68,7 +68,7 @@ describe("DirectorySubcategoryTransformer", () => {
     }
   });
 
-  it('normalises "Melody One Shots" directory sampleType to "Melodies"', async () => {
+  it('normalises "Melody One Shots" directory sampleType to "Melody Loops"', async () => {
     const zipped = zipSync({
       "Melody One Shots/melody.wav": strToU8("data"),
     });
@@ -93,7 +93,7 @@ describe("DirectorySubcategoryTransformer", () => {
       const row = csv
         .split("\n")
         .find((r) => r.startsWith("Melody One Shots,"));
-      expect(row).toBe("Melody One Shots,,,Melodies,false");
+      expect(row).toBe("Melody One Shots,,,Melody Loops,false");
     } finally {
       await rm(tmpDir, { recursive: true });
     }
@@ -124,7 +124,7 @@ describe("DirectorySubcategoryTransformer", () => {
       const parentRow = csv
         .split("\n")
         .find((r) => r.startsWith("Melody One Shots,"));
-      expect(parentRow).toBe("Melody One Shots,,,Melodies,false");
+      expect(parentRow).toBe("Melody One Shots,,,Melody Loops,false");
 
       const childRow = csv
         .split("\n")

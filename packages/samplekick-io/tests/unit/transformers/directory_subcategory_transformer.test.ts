@@ -221,7 +221,7 @@ describe("createDirectorySubcategoryTransformer", () => {
   });
 
   describe('when a directory has sampleType set to a "Prefix One Shots" form', () => {
-    it('normalises "Melody One Shots" to "Melodies"', () => {
+    it('normalises "Melody One Shots" to "Melody Loops"', () => {
       const entry = createTransformEntry({
         name: "Melody One Shots",
         sampleType: "Melody One Shots",
@@ -229,7 +229,7 @@ describe("createDirectorySubcategoryTransformer", () => {
       });
       const transformer = createDirectorySubcategoryTransformer();
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setSampleType).toHaveBeenCalledWith("Melodies");
+      expect(entry.setSampleType).toHaveBeenCalledWith("Melody Loops");
     });
 
     it('normalises "Drum One Shots" to "Drums"', () => {

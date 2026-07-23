@@ -9,24 +9,24 @@ const transformer = createDirectorySampleTypeTransformer();
 
 describe("createDirectorySampleTypeTransformer", () => {
   describe('when the directory is named "Melodies"', () => {
-    it('sets sampleType to "Melodies"', () => {
+    it('sets sampleType to "Melody Loops"', () => {
       const entry = createTransformEntryInHierarchy(
         [],
         { name: "Melodies", isFile: false },
         [{ name: "lead.wav" }],
       );
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setSampleType).toHaveBeenCalledWith("Melodies");
+      expect(entry.setSampleType).toHaveBeenCalledWith("Melody Loops");
     });
 
-    it('sets sampleType to "Melodies" for the singular form "Melody"', () => {
+    it('sets sampleType to "Melody Loops" for the singular form "Melody"', () => {
       const entry = createTransformEntryInHierarchy(
         [],
         { name: "Melody", isFile: false },
         [{ name: "lead.wav" }],
       );
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setSampleType).toHaveBeenCalledWith("Melodies");
+      expect(entry.setSampleType).toHaveBeenCalledWith("Melody Loops");
     });
 
     it("matches case-insensitively", () => {
@@ -36,7 +36,7 @@ describe("createDirectorySampleTypeTransformer", () => {
         [{ name: "lead.wav" }],
       );
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setSampleType).toHaveBeenCalledWith("Melodies");
+      expect(entry.setSampleType).toHaveBeenCalledWith("Melody Loops");
     });
   });
 

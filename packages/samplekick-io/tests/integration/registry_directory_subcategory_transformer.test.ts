@@ -20,7 +20,7 @@ describe("DirectorySubcategoryTransformer integration", () => {
         "├── Drum Loops [type:Drum Loops, skipped]",
         "│   ┗━━ Latin",
         "│       └── loop.wav [?]",
-        "├── Melodies [type:Melodies, skipped]",
+        "├── Melodies [type:Melody Loops, skipped]",
         "│   ┗━━ Speed House",
         "│       └── melody.wav [?]",
         "└── Bonks [skipped]",
@@ -44,7 +44,7 @@ describe("DirectorySubcategoryTransformer integration", () => {
         "├── Drum Loops [type:Drum Loops, skipped]",
         "│   ┗━━ Latin [renamed]",
         "│       └── loop.wav [?]",
-        "└── Melodies [type:Melodies, skipped]",
+        "└── Melodies [type:Melody Loops, skipped]",
         "    ┗━━ Speed House [renamed]",
         "        └── melody.wav [?]",
         "",
@@ -81,7 +81,7 @@ describe("DirectorySubcategoryTransformer integration", () => {
     expect(registry.toString()).toBe(
       [
         "Pack.zip [skipped]",
-        "└── Melodies [type:Melodies, skipped]",
+        "└── Melodies [type:Melody Loops, skipped]",
         "    └── MIDI [skipped]",
         "        └── track.mid [?]",
         "",
