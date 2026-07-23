@@ -124,4 +124,39 @@ describe("ConstructionKitTransformer integration", () => {
       ].join("\n"),
     );
   });
+
+  it("enables per-loop directories beneath a 'Loop Stems' container", () => {
+    const registry = createRegistry("Pack.zip", [
+      createFileEntry({
+        path: "Drum Loops/Afrobeats/Loop Stems/Apple Drum Loop - 102bpm/Cymatics - Apple Drum Loop - 102 BPM Kick.wav",
+      }),
+      createFileEntry({
+        path: "Drum Loops/Afrobeats/Loop Stems/Apple Drum Loop - 102bpm/Cymatics - Apple Drum Loop - 102 BPM Shaker.wav",
+      }),
+      createFileEntry({
+        path: "Drum Loops/Afrobeats/Loop Stems/Bruised Drum Loop - 112bpm/Cymatics - Bruised Drum Loop - 112 BPM Kick.wav",
+      }),
+      createFileEntry({
+        path: "Drum Loops/Afrobeats/Loop Stems/Bruised Drum Loop - 112bpm/Cymatics - Bruised Drum Loop - 112 BPM Shaker.wav",
+      }),
+    ]);
+
+    registry.applyTransform(createConstructionKitTransformer());
+
+    expect(registry.toString()).toBe(
+      [
+        "Pack.zip [skipped]",
+        "└── Drum Loops [skipped]",
+        "    └── Afrobeats [skipped]",
+        "        └── Loop Stems [skipped]",
+        "            ┣━━ Apple Drum Loop - 102bpm",
+        "            ┃   ├── Kick.wav [?] [renamed]",
+        "            ┃   └── Shaker.wav [?] [renamed]",
+        "            ┗━━ Bruised Drum Loop - 112bpm",
+        "                ├── Kick.wav [?] [renamed]",
+        "                └── Shaker.wav [?] [renamed]",
+        "",
+      ].join("\n"),
+    );
+  });
 });

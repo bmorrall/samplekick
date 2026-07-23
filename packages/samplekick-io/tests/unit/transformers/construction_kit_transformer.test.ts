@@ -311,4 +311,137 @@ describe("createConstructionKitTransformer", () => {
     expect(otherEntry.setEnabled).not.toHaveBeenCalled();
     expect(otherEntry.setReadOnly).not.toHaveBeenCalled();
   });
+
+  it("enables every direct child directory beneath a stems container regardless of its name", () => {
+    const stemsParent = createDirectoryNode("Loop Stems", "Loop Stems");
+    const loopChild1 = createDirectoryNode(
+      "Apple Drum Loop - 102bpm",
+      "Loop Stems/Apple Drum Loop - 102bpm",
+      stemsParent,
+    );
+    const loopChild2 = createDirectoryNode(
+      "Bruised Drum Loop - 112bpm",
+      "Loop Stems/Bruised Drum Loop - 112bpm",
+      stemsParent,
+    );
+
+    const parentEntry = createEntry({
+      name: "Loop Stems",
+      path: "Loop Stems",
+      isFile: false,
+      children: [loopChild1, loopChild2],
+    });
+    const loopEntry1 = createEntry({
+      name: "Apple Drum Loop - 102bpm",
+      path: "Loop Stems/Apple Drum Loop - 102bpm",
+      isFile: false,
+      parent: stemsParent,
+    });
+    const loopEntry2 = createEntry({
+      name: "Bruised Drum Loop - 112bpm",
+      path: "Loop Stems/Bruised Drum Loop - 112bpm",
+      isFile: false,
+      parent: stemsParent,
+    });
+
+    const source: TransformSource = {
+      eachTransformEntry: (fn) => {
+        fn(parentEntry);
+        fn(loopEntry1);
+        fn(loopEntry2);
+      },
+      eachTransformModification: (fn) => {
+        fn(parentEntry);
+        fn(loopEntry1);
+        fn(loopEntry2);
+      },
+    };
+
+    transformer.transform(source);
+
+    expect(parentEntry.setEnabled).not.toHaveBeenCalled();
+    expect(loopEntry1.setEnabled).toHaveBeenCalledWith(true);
+    expect(loopEntry1.setReadOnly).toHaveBeenCalledWith(true);
+    expect(loopEntry2.setEnabled).toHaveBeenCalledWith(true);
+    expect(loopEntry2.setReadOnly).toHaveBeenCalledWith(true);
+  });
+
+  it("matches singular 'Stem' and a '& MIDI' suffix case-insensitively", () => {
+    const stemsParent = createDirectoryNode(
+      "loop stems & midi",
+      "loop stems & midi",
+    );
+    const loopChild = createDirectoryNode(
+      "Andromeda - 108bpm",
+      "loop stems & midi/Andromeda - 108bpm",
+      stemsParent,
+    );
+
+    const parentEntry = createEntry({
+      name: "loop stems & midi",
+      path: "loop stems & midi",
+      isFile: false,
+      children: [loopChild],
+    });
+    const loopEntry = createEntry({
+      name: "Andromeda - 108bpm",
+      path: "loop stems & midi/Andromeda - 108bpm",
+      isFile: false,
+      parent: stemsParent,
+    });
+
+    const source: TransformSource = {
+      eachTransformEntry: (fn) => {
+        fn(parentEntry);
+        fn(loopEntry);
+      },
+      eachTransformModification: (fn) => {
+        fn(parentEntry);
+        fn(loopEntry);
+      },
+    };
+
+    transformer.transform(source);
+
+    expect(loopEntry.setEnabled).toHaveBeenCalledWith(true);
+    expect(loopEntry.setReadOnly).toHaveBeenCalledWith(true);
+  });
+
+  it("does not treat a plain directory without 'stem'/'stems' in its name as a stems container", () => {
+    const plainParent = createDirectoryNode("Drum Loops", "Drum Loops");
+    const loopChild = createDirectoryNode(
+      "Apple Drum Loop - 102bpm",
+      "Drum Loops/Apple Drum Loop - 102bpm",
+      plainParent,
+    );
+
+    const parentEntry = createEntry({
+      name: "Drum Loops",
+      path: "Drum Loops",
+      isFile: false,
+      children: [loopChild],
+    });
+    const loopEntry = createEntry({
+      name: "Apple Drum Loop - 102bpm",
+      path: "Drum Loops/Apple Drum Loop - 102bpm",
+      isFile: false,
+      parent: plainParent,
+    });
+
+    const source: TransformSource = {
+      eachTransformEntry: (fn) => {
+        fn(parentEntry);
+        fn(loopEntry);
+      },
+      eachTransformModification: (fn) => {
+        fn(parentEntry);
+        fn(loopEntry);
+      },
+    };
+
+    transformer.transform(source);
+
+    expect(loopEntry.setEnabled).not.toHaveBeenCalled();
+    expect(loopEntry.setReadOnly).not.toHaveBeenCalled();
+  });
 });
