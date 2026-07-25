@@ -5,6 +5,7 @@ import {
   prefixMatches,
   trimToWordBoundary,
 } from "./common_prefix";
+import { stripLeadingBracket } from "./strip_leading_bracket_transformer";
 
 const KITS_RE = /\bkits\b/iv;
 const KIT_RE = /\bkit\b/iv;
@@ -175,6 +176,18 @@ const _singleton: Transform = {
       if (newStem.length > 0 && newStem !== stem) {
         entry.setName(newStem + ext);
       }
+    });
+
+    // Pass 6b: strip a leading bracket pair left behind by prefix stripping
+    // (e.g. "Snare (Counter).wav" -> "(Counter).wav" -> "Counter.wav") —
+    // must also run before readOnly is set in Pass 7.
+    source.eachTransformModification((entry) => {
+      if (!entry.isFile()) return;
+      if (!prefixStrippedPaths.has(entry.getPath())) return;
+
+      const name = entry.getName();
+      const stripped = stripLeadingBracket(name);
+      if (stripped !== name) entry.setName(stripped);
     });
 
     // Pass 7: mark kit directories as keep-path roots (readOnly)

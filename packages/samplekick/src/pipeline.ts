@@ -40,6 +40,7 @@ import {
   createStripCymaticsPrefixTransformer,
   createStripFormatHintsTransformer,
   createStripGhosthackPrefixTransformer,
+  createStripLeadingBracketTransformer,
   createTrimNameTransformer,
 } from "samplekick-io";
 import type { Registry } from "samplekick-io";
@@ -129,6 +130,7 @@ export function applyAnalysisPipeline(
   registry.applyTransform(createConstructionKitTransformer());
   registry.applyTransform(createStripCommonPrefixTransformer());
   registry.applyTransform(createFlatPackPrefixTransformer());
+  registry.applyTransform(createStripLeadingBracketTransformer());
 
   // Info file transforms: disable documentation files not needed in exports
   registry.applyTransform(createInfoFileTransformer());

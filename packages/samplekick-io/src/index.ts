@@ -39,6 +39,7 @@ export {
   createTruncateNameTransformer,
   createFlatPackPrefixTransformer,
   createStripCommonPrefixTransformer,
+  createStripLeadingBracketTransformer,
   createCymaticsNameTransformer,
   createGhosthackNameTransformer,
   createStripGhosthackPrefixTransformer,
