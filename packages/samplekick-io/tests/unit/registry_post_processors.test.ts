@@ -1,4 +1,7 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { mkdtemp, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { Registry } from "../../src";
 import type { FileEntry, PostProcessor } from "../../src";
 import { createFileEntry, createFileSource } from "../support";
@@ -12,6 +15,16 @@ const createPostProcessor = (): PostProcessor => ({
   processFile: vi.fn<PostProcessor["processFile"]>(),
 });
 
+let outputDir = "";
+
+beforeEach(async () => {
+  outputDir = await mkdtemp(join(tmpdir(), "samplekick-io-export-"));
+});
+
+afterEach(async () => {
+  await rm(outputDir, { recursive: true });
+});
+
 describe("Registry.addPostProcessor", () => {
   it("calls processFile with the full destination path and entry", async () => {
     const entry = createCopyableEntry("a.wav");
@@ -19,10 +32,10 @@ describe("Registry.addPostProcessor", () => {
     const registry = new Registry(createFileSource("root", [entry]));
     registry.addPostProcessor(processor);
 
-    await registry.exportToDirectory("/output", {});
+    await registry.exportToDirectory(outputDir, {});
 
     expect(processor.processFile).toHaveBeenCalledWith(
-      "/output/a.wav",
+      join(outputDir, "a.wav"),
       expect.objectContaining({ getPath: expect.any(Function) as unknown }),
     );
   });
@@ -33,20 +46,46 @@ describe("Registry.addPostProcessor", () => {
     const processorA: PostProcessor = {
       processFile: vi.fn(() => {
         calls.push("A");
+        return undefined;
       }),
     };
     const processorB: PostProcessor = {
       processFile: vi.fn(() => {
         calls.push("B");
+        return undefined;
       }),
     };
     const registry = new Registry(createFileSource("root", [entry]));
     registry.addPostProcessor(processorA);
     registry.addPostProcessor(processorB);
 
-    await registry.exportToDirectory("/output", {});
+    await registry.exportToDirectory(outputDir, {});
 
     expect(calls).toStrictEqual(["A", "B"]);
+  });
+
+  it("passes the renamed path from one processor on to the next processor", async () => {
+    const entry = createCopyableEntry("a.mp3");
+    const processorA: PostProcessor = {
+      processFile: vi.fn(() => join(outputDir, "a.wav")),
+    };
+    const processorB: PostProcessor = {
+      processFile: vi.fn(),
+    };
+    const registry = new Registry(createFileSource("root", [entry]));
+    registry.addPostProcessor(processorA);
+    registry.addPostProcessor(processorB);
+
+    await registry.exportToDirectory(outputDir, {});
+
+    expect(processorA.processFile).toHaveBeenCalledWith(
+      join(outputDir, "a.mp3"),
+      expect.objectContaining({ getPath: expect.any(Function) as unknown }),
+    );
+    expect(processorB.processFile).toHaveBeenCalledWith(
+      join(outputDir, "a.wav"),
+      expect.objectContaining({ getPath: expect.any(Function) as unknown }),
+    );
   });
 
   it("calls processFile after copyToPath", async () => {
@@ -59,12 +98,13 @@ describe("Registry.addPostProcessor", () => {
     const processor: PostProcessor = {
       processFile: vi.fn(() => {
         callOrder.push("process");
+        return undefined;
       }),
     };
     const registry = new Registry(createFileSource("root", [entry]));
     registry.addPostProcessor(processor);
 
-    await registry.exportToDirectory("/output", {});
+    await registry.exportToDirectory(outputDir, {});
 
     expect(callOrder).toStrictEqual(["copy", "process"]);
   });
@@ -77,7 +117,7 @@ describe("Registry.addPostProcessor", () => {
     const registry = new Registry(createFileSource("root", [entry]));
     registry.addPostProcessor(processor);
 
-    await expect(registry.exportToDirectory("/output", {})).rejects.toThrow(
+    await expect(registry.exportToDirectory(outputDir, {})).rejects.toThrow(
       AggregateError,
     );
   });
@@ -89,7 +129,7 @@ describe("Registry.addPostProcessor", () => {
     registry.setEnabled("a.wav", false);
     registry.addPostProcessor(processor);
 
-    await registry.exportToDirectory("/output", {});
+    await registry.exportToDirectory(outputDir, {});
 
     expect(processor.processFile).not.toHaveBeenCalled();
   });
@@ -103,7 +143,7 @@ describe("Registry.clearPostProcessors", () => {
     registry.addPostProcessor(processor);
     registry.clearPostProcessors();
 
-    await registry.exportToDirectory("/output", {});
+    await registry.exportToDirectory(outputDir, {});
 
     expect(processor.processFile).not.toHaveBeenCalled();
   });
@@ -117,7 +157,7 @@ describe("Registry.clearPostProcessors", () => {
     registry.clearPostProcessors();
     registry.addPostProcessor(processorB);
 
-    await registry.exportToDirectory("/output", {});
+    await registry.exportToDirectory(outputDir, {});
 
     expect(processorA.processFile).not.toHaveBeenCalled();
     expect(processorB.processFile).toHaveBeenCalledOnce();

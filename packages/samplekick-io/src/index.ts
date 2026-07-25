@@ -5,7 +5,7 @@ export {
   CsvDigestWriter,
   CsvDigestReader,
 } from "./digest";
-export { ZipDataSource } from "./io";
+export { ZipDataSource, EXPORT_MANIFEST_DIR } from "./io";
 export {
   createAbletonProjectTransformer,
   createArchiveFileTransformer,

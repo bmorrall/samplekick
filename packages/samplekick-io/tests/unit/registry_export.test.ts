@@ -1,4 +1,7 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { mkdtemp, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { Registry, OrganisedPathStrategy, SkipResult } from "../../src";
 import type { DigestEntry, FileEntry } from "../../src";
 import { createFileEntry, createFileSource } from "../support";
@@ -9,6 +12,16 @@ const createCopyableEntry = (path: string): FileEntry => ({
 });
 
 describe("Registry.exportToDirectory", () => {
+  let outputDir = "";
+
+  beforeEach(async () => {
+    outputDir = await mkdtemp(join(tmpdir(), "samplekick-io-export-"));
+  });
+
+  afterEach(async () => {
+    await rm(outputDir, { recursive: true });
+  });
+
   it("calls copyToPath on each leaf node with the destination path", async () => {
     const entryA = createCopyableEntry("a.wav");
     const entryB = createCopyableEntry("b.wav");
@@ -17,13 +30,13 @@ describe("Registry.exportToDirectory", () => {
     registry.setPackageName("my-pack");
     registry.setSampleType("loops");
 
-    await registry.exportToDirectory("/output", {});
+    await registry.exportToDirectory(outputDir, {});
 
     expect(entryA.copyToPath).toHaveBeenCalledWith(
-      "/output/loops/my-pack/a.wav",
+      join(outputDir, "loops/my-pack/a.wav"),
     );
     expect(entryB.copyToPath).toHaveBeenCalledWith(
-      "/output/loops/my-pack/b.wav",
+      join(outputDir, "loops/my-pack/b.wav"),
     );
   });
 
@@ -35,7 +48,7 @@ describe("Registry.exportToDirectory", () => {
       destinationPathFor: () => new SkipResult("test"),
     });
 
-    await registry.exportToDirectory("/output", {});
+    await registry.exportToDirectory(outputDir, {});
 
     expect(entry.copyToPath).not.toHaveBeenCalled();
   });
@@ -48,7 +61,7 @@ describe("Registry.exportToDirectory", () => {
     });
     const onReject = vi.fn<(entry: DigestEntry, reason: string) => void>();
 
-    await registry.exportToDirectory("/output", { onReject });
+    await registry.exportToDirectory(outputDir, { onReject });
 
     expect(onReject).toHaveBeenCalledOnce();
   });
@@ -60,7 +73,7 @@ describe("Registry.exportToDirectory", () => {
     // no packageName or sampleType set → OrganisedPathStrategy returns undefined
     const onReject = vi.fn<(entry: DigestEntry, reason: string) => void>();
 
-    await registry.exportToDirectory("/output", { onReject });
+    await registry.exportToDirectory(outputDir, { onReject });
 
     expect(onReject).toHaveBeenCalledWith(
       expect.anything(),
@@ -77,7 +90,7 @@ describe("Registry.exportToDirectory", () => {
     registry.setSampleType("loops");
     const onReject = vi.fn<(entry: DigestEntry, reason: string) => void>();
 
-    await registry.exportToDirectory("/output", { onReject });
+    await registry.exportToDirectory(outputDir, { onReject });
 
     expect(onReject).not.toHaveBeenCalled();
   });
@@ -90,7 +103,7 @@ describe("Registry.exportToDirectory", () => {
     registry.setPackageName("my-pack");
     registry.setSampleType("loops");
 
-    await registry.exportToDirectory("/output", {});
+    await registry.exportToDirectory(outputDir, {});
 
     expect(entry.copyToPath).not.toHaveBeenCalled();
   });
@@ -101,7 +114,7 @@ describe("Registry.exportToDirectory", () => {
     registry.setEnabled("a.wav", false);
     const onSkip = vi.fn<(entry: DigestEntry) => void>();
 
-    await registry.exportToDirectory("/output", { onSkip });
+    await registry.exportToDirectory(outputDir, { onSkip });
 
     expect(onSkip).toHaveBeenCalledOnce();
     expect(onSkip.mock.calls[0][0].getPath()).toBe("a.wav");
@@ -117,7 +130,7 @@ describe("Registry.exportToDirectory", () => {
       createFileSource("root", [entryA, entryB, entryC]),
     );
 
-    await expect(registry.exportToDirectory("/output", {})).rejects.toThrow(
+    await expect(registry.exportToDirectory(outputDir, {})).rejects.toThrow(
       AggregateError,
     );
 
@@ -134,13 +147,13 @@ describe("Registry.exportToDirectory", () => {
     registry.setPackageName("my-pack");
     registry.setSampleType("drums");
 
-    await registry.exportToDirectory("/output", {});
+    await registry.exportToDirectory(outputDir, {});
 
     expect(entryA.copyToPath).toHaveBeenCalledWith(
-      "/output/drums/my-pack/kick.wav",
+      join(outputDir, "drums/my-pack/kick.wav"),
     );
     expect(entryB.copyToPath).toHaveBeenCalledWith(
-      "/output/drums/my-pack/snare.wav",
+      join(outputDir, "drums/my-pack/snare.wav"),
     );
   });
 
@@ -152,7 +165,7 @@ describe("Registry.exportToDirectory", () => {
     registry.setPackageName("my-pack");
     registry.setSampleType("drums");
 
-    await registry.exportToDirectory("/output", {});
+    await registry.exportToDirectory(outputDir, {});
 
     const aWritten = vi.mocked(entryA.copyToPath).mock.calls.length > 0;
     const bWritten = vi.mocked(entryB.copyToPath).mock.calls.length > 0;
@@ -168,7 +181,7 @@ describe("Registry.exportToDirectory", () => {
     registry.setSampleType("drums");
     const onReject = vi.fn<(entry: DigestEntry, reason: string) => void>();
 
-    await registry.exportToDirectory("/output", { onReject });
+    await registry.exportToDirectory(outputDir, { onReject });
 
     expect(onReject).toHaveBeenCalledOnce();
     expect(onReject).toHaveBeenCalledWith(

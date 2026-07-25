@@ -194,6 +194,10 @@ describe("index exports", () => {
     expect(api.ZipDataSource).toBeDefined();
   });
 
+  test("exports EXPORT_MANIFEST_DIR", () => {
+    expect(api.EXPORT_MANIFEST_DIR).toBe(".samplekick");
+  });
+
   test("exports SourcePathStrategy", () => {
     expect(api.SourcePathStrategy).toBeDefined();
   });
@@ -230,6 +234,7 @@ describe("index exports", () => {
       "CsvDigestWriter",
       "CsvDigestReader",
       "ZipDataSource",
+      "EXPORT_MANIFEST_DIR",
       "createAbletonProjectTransformer",
       "createArchiveFileTransformer",
       "createDefaultRootPackageNameTransformer",

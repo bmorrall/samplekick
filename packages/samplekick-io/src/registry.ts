@@ -1,8 +1,10 @@
-import { join } from "node:path";
+import { join, relative } from "node:path";
+import { rm } from "node:fs/promises";
 import { EntryNode } from "./registry/entry_node";
 import { prettyPrint } from "./registry/pretty_print";
 import { getPathName, splitPath } from "./path_utils";
 import { SourcePathStrategy } from "./path_strategies/source_path_strategy";
+import { ExportManifest, EXPORT_MANIFEST_DIR } from "./io/export_manifest";
 import { SkipResult } from "./types";
 import type {
   LeafNode,
@@ -344,6 +346,45 @@ export class Registry implements FileSource, DigestSource {
     return result instanceof SkipResult ? undefined : result.path;
   }
 
+  /**
+   * Runs all registered post-processors in order against destPath, threading the
+   * possibly-updated path returned by each processor into the next. Returns the
+   * final path the file actually ended up at.
+   */
+  private async runPostProcessors(
+    destPath: string,
+    node: EntryNode,
+  ): Promise<string> {
+    return await this.postProcessors.reduce<Promise<string>>(
+      async (chain, processor) => {
+        const currentPath = await chain;
+        const result = await processor.processFile(currentPath, node);
+        return typeof result === "string" ? result : currentPath;
+      },
+      Promise.resolve(destPath),
+    );
+  }
+
+  /**
+   * Reconciles a freshly-written entry against a prior export manifest: if this
+   * originalPath was previously exported to a different location, deletes the
+   * stale file so re-exporting doesn't leave duplicates behind, then records the
+   * new location.
+   */
+  private async reconcileManifestEntry(
+    manifest: ExportManifest,
+    dirPath: string,
+    originalPath: string,
+    finalDestRelPath: string,
+  ): Promise<void> {
+    const priorOutputPath = manifest.get(originalPath);
+    if (priorOutputPath !== undefined && priorOutputPath !== finalDestRelPath) {
+      await rm(join(dirPath, priorOutputPath), { force: true });
+    }
+    manifest.delete(originalPath);
+    manifest.set(originalPath, finalDestRelPath);
+  }
+
   async exportToDirectory(
     dirPath: string | undefined,
     options: ExportOptions,
@@ -357,6 +398,15 @@ export class Registry implements FileSource, DigestSource {
         }
       });
     }
+
+    const manifestPath =
+      dirPath === undefined
+        ? undefined
+        : join(dirPath, EXPORT_MANIFEST_DIR, this.fingerprint);
+    const manifest =
+      manifestPath === undefined
+        ? undefined
+        : await ExportManifest.load(manifestPath);
 
     const promises: Array<Promise<void>> = [];
     const seenDestPaths = new Set<string>();
@@ -389,13 +439,15 @@ export class Registry implements FileSource, DigestSource {
           try {
             const destPath = join(dirPath, destRelPath);
             await node.copyToPath(destPath);
-            await this.postProcessors.reduce<Promise<void>>(
-              async (chain, processor) => {
-                await chain;
-                await processor.processFile(destPath, node);
-              },
-              Promise.resolve(),
-            );
+            const finalDestPath = await this.runPostProcessors(destPath, node);
+            if (manifest !== undefined) {
+              await this.reconcileManifestEntry(
+                manifest,
+                dirPath,
+                node.getPath(),
+                relative(dirPath, finalDestPath),
+              );
+            }
           } catch (err) {
             const error = err instanceof Error ? err : new Error(String(err));
             options.onAfterWrite?.(node, destRelPath, error);
@@ -407,6 +459,13 @@ export class Registry implements FileSource, DigestSource {
       promises.push(write());
     });
     const results = await Promise.allSettled(promises);
+    if (
+      manifest !== undefined &&
+      manifestPath !== undefined &&
+      manifest.size > 0
+    ) {
+      await manifest.save(manifestPath);
+    }
     const errors = results
       .filter((r): r is PromiseRejectedResult => r.status === "rejected")
       .map((r) =>

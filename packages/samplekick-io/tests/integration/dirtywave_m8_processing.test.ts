@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { OrganisedPathStrategy, DirtywaveM8Preset } from "../../src";
 import { createDefaultRootPackageNameTransformer } from "../../src/transformers";
+import { EXPORT_MANIFEST_DIR } from "../../src/io/export_manifest";
 import {
   createZipRegistry,
   applyDeviceTransforms,
@@ -51,10 +52,12 @@ describe("Dirtywave M8 end-to-end sample processing", () => {
       async function listFiles(dir: string): Promise<string[]> {
         const entries = await fs.readdir(dir, { withFileTypes: true });
         const files = await Promise.all(
-          entries.map(async (entry) => {
-            const res = path.resolve(dir, entry.name);
-            return entry.isDirectory() ? await listFiles(res) : res;
-          }),
+          entries
+            .filter((entry) => entry.name !== EXPORT_MANIFEST_DIR)
+            .map(async (entry) => {
+              const res = path.resolve(dir, entry.name);
+              return entry.isDirectory() ? await listFiles(res) : res;
+            }),
         );
         return files.flat();
       }
