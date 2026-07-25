@@ -1,5 +1,6 @@
 import type { FileNode, Transform } from "../types";
 import { AUDIO_EXTENSIONS } from "../audio_format";
+import { getPathName } from "../path_utils";
 import {
   longestCommonPrefix,
   prefixMatches,
@@ -202,6 +203,25 @@ const _singleton: Transform = {
           entry.setEnabled(true);
           entry.setReadOnly(true);
           if (isKitDescendant) {
+            // An earlier pass (e.g. DirectorySampleTypeTransformer's dash-
+            // separated split, "Hihats - Open" -> name "Open" + sampleType
+            // "Hihats") may have renamed this directory specifically because
+            // it assigned it a more specific sampleType. Since that
+            // sampleType is about to be cleared below (the whole kit is
+            // tagged uniformly instead), re-join the two halves back into
+            // the name (e.g. "Hihats - Open") rather than dropping the type
+            // context entirely. Rebuilding from the CURRENT sampleType/name
+            // (not the raw pre-pipeline entry name from getPath()) keeps any
+            // earlier cosmetic normalisation already applied to either half
+            // (trimming, dash/quote normalisation, spacing fixes, etc.)
+            // instead of discarding it along with the split.
+            const ownSampleType = entry.getOwnSampleType();
+            const wasSplitRenamed =
+              ownSampleType !== undefined &&
+              entry.getName() !== getPathName(path);
+            if (wasSplitRenamed) {
+              entry.setName(`${ownSampleType} - ${entry.getName()}`);
+            }
             entry.setPackageName(undefined);
             entry.setSampleType(undefined);
           }
@@ -220,7 +240,14 @@ const _singleton: Transform = {
  * matching child directories as keep-path roots and enables readonly
  * structure preservation for those roots and all their descendant
  * directories. Descendant directories also have packageName and sampleType
- * cleared.
+ * cleared, so the whole kit is tagged uniformly by the kit root's own type
+ * instead of fragmenting into per-subfolder sampleTypes. If an earlier pass
+ * had renamed a descendant directory as a side effect of assigning it that
+ * now-cleared sampleType (e.g. DirectorySampleTypeTransformer's dash-
+ * separated split, "Hihats - Open" -> name "Open" + sampleType "Hihats"),
+ * the two halves are re-joined back into the name ("Hihats - Open") instead
+ * of just discarding the type context, since the shortened name only made
+ * sense together with the type it named.
  *
  * Also treats any directory containing "stem"/"stems" (e.g. "Loop Stems",
  * "Loop Stems & MIDI") as a stems container: every direct child directory is
