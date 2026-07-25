@@ -2,10 +2,11 @@ import type { Transform } from "../types";
 
 const expandPackageName = (name: string): string => {
   const withSpaces = name.replaceAll("_", " ");
-  if (!/[a-z][A-Z]/v.test(withSpaces)) return withSpaces;
+  if (!/[a-z\d][A-Z]/v.test(withSpaces)) return withSpaces;
   return withSpaces
     .replaceAll(/(?<upper>[A-Z]+)(?<next>[A-Z][a-z])/gv, "$<upper> $<next>")
     .replaceAll(/(?<lower>[a-z\d])(?<upper>[A-Z])/gv, "$<lower> $<upper>")
+    .replaceAll(/(?<word>[A-Z][a-z]+)(?<digit>\d)/gv, "$<word> $<digit>")
     .replaceAll(/(?<=[a-zA-Z])-/gv, " - ");
 };
 
