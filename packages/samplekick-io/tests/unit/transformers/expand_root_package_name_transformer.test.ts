@@ -77,6 +77,26 @@ describe("createExpandRootPackageNameTransformer", () => {
     expect(entry.setPackageName).toHaveBeenCalledWith("Cool Pack - 8bit");
   });
 
+  it("expands a digit-word-digit token like 8For8", () => {
+    const entry = createTransformEntry({
+      name: "Cymatics-8For8.zip",
+      packageName: "Cymatics-8For8",
+    });
+    const transformer = createExpandRootPackageNameTransformer();
+    transformer.transform(singleEntryTransformSource(entry));
+    expect(entry.setPackageName).toHaveBeenCalledWith("Cymatics - 8 For 8");
+  });
+
+  it("does not split a digit followed directly by lowercase with no preceding CamelCase (8bit stays together)", () => {
+    const entry = createTransformEntry({
+      name: "8bit.zip",
+      packageName: "8bit",
+    });
+    const transformer = createExpandRootPackageNameTransformer();
+    transformer.transform(singleEntryTransformSource(entry));
+    expect(entry.setPackageName).not.toHaveBeenCalled();
+  });
+
   it("does not call setPackageName when packageName is undefined", () => {
     const entry = createTransformEntry({ name: "CoolPack.zip" });
     const transformer = createExpandRootPackageNameTransformer();
