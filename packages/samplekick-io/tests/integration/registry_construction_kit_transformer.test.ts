@@ -125,6 +125,40 @@ describe("ConstructionKitTransformer integration", () => {
     );
   });
 
+  it("strips a leading bracket left behind by kit prefix stripping across sibling kits sharing subfolder names", () => {
+    const registry = createRegistry("Cymatics - 8 For 8.zip", [
+      createFileEntry({
+        path: "Aurora Kit/Snares/Cymatics - Snare (Charged).wav",
+      }),
+      createFileEntry({
+        path: "Aurora Kit/Snares/Cymatics - Snare (Weird).wav",
+      }),
+      createFileEntry({
+        path: "Saturn Kit/Snares/Cymatics - Snare (Counter).wav",
+      }),
+      createFileEntry({
+        path: "Saturn Kit/Snares/Cymatics - Snare (White).wav",
+      }),
+    ]);
+
+    registry.applyTransform(createConstructionKitTransformer());
+
+    expect(registry.toString()).toBe(
+      [
+        "Cymatics - 8 For 8.zip [skipped]",
+        "┣━━ Aurora Kit",
+        "┃   ┗━━ Snares",
+        "┃       ├── Charged.wav [?] [renamed]",
+        "┃       └── Weird.wav [?] [renamed]",
+        "┗━━ Saturn Kit",
+        "    ┗━━ Snares",
+        "        ├── Counter.wav [?] [renamed]",
+        "        └── White.wav [?] [renamed]",
+        "",
+      ].join("\n"),
+    );
+  });
+
   it("enables per-loop directories beneath a 'Loop Stems' container", () => {
     const registry = createRegistry("Pack.zip", [
       createFileEntry({

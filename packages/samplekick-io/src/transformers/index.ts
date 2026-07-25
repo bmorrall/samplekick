@@ -30,6 +30,7 @@ export { createNormaliseQuotesTransformer } from "./normalise_quotes_transformer
 export { createTruncateNameTransformer } from "./truncate_name_transformer";
 export { createFlatPackPrefixTransformer } from "./flat_pack_prefix_transformer";
 export { createStripCommonPrefixTransformer } from "./strip_common_prefix_transformer";
+export { createStripLeadingBracketTransformer } from "./strip_leading_bracket_transformer";
 export { createCymaticsNameTransformer } from "./cymatics_name_transformer";
 export { createGhosthackNameTransformer } from "./ghosthack_name_transformer";
 export { createStripGhosthackPrefixTransformer } from "./strip_ghosthack_prefix_transformer";

@@ -182,6 +182,10 @@ describe("index exports", () => {
     expect(api.createStripCommonPrefixTransformer).toBeDefined();
   });
 
+  test("exports createStripLeadingBracketTransformer", () => {
+    expect(api.createStripLeadingBracketTransformer).toBeDefined();
+  });
+
   test("exports createSkipJunkTransformer", () => {
     expect(api.createSkipJunkTransformer).toBeDefined();
   });
@@ -258,6 +262,7 @@ describe("index exports", () => {
       "createTruncateNameTransformer",
       "createFlatPackPrefixTransformer",
       "createStripCommonPrefixTransformer",
+      "createStripLeadingBracketTransformer",
       "createCymaticsNameTransformer",
       "createGhosthackNameTransformer",
       "createStripGhosthackPrefixTransformer",
