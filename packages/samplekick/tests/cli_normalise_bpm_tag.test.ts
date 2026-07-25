@@ -36,7 +36,7 @@ describe("NormaliseBpmTagTransformer", () => {
       expect(drumsRow).toContain("Drums 120bpm");
 
       const bassRow = rows.find((r) => r.startsWith("Bass - BPM 90,"));
-      expect(bassRow).toContain("Bass - 90bpm");
+      expect(bassRow).toBe("Bass - BPM 90,90bpm,,Bass,true");
     } finally {
       await rm(tmpDir, { recursive: true });
     }

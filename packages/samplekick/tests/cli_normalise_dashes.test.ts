@@ -33,7 +33,7 @@ describe("NormaliseDashesTransformer", () => {
       const rows = csv.split("\n");
 
       const enDashRow = rows.find((r) => r.startsWith("Drums \u2013 Bass,"));
-      expect(enDashRow).toContain("Drums - Bass");
+      expect(enDashRow).toBe("Drums \u2013 Bass,Bass,,Drums,true");
 
       const emDashRow = rows.find((r) => r.startsWith("Hi\u2014Hats,"));
       expect(emDashRow).toContain("Hi-Hats");
