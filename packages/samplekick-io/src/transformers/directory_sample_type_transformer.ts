@@ -199,10 +199,13 @@ function setFromDashSeparatedName(
   const prefixType = resolveStandaloneType(nameLower.slice(0, sepIdx));
   if (prefixType === undefined) return false;
   const suffixLower = nameLower.slice(sepIdx + DASH_SEP.length);
-  const resolvedSuffix = resolveStandaloneType(suffixLower);
   const rawSuffix = entry.getName().slice(sepIdx + DASH_SEP.length);
-  const suffix = resolvedSuffix ?? rawSuffix.slice(0, suffixLower.length);
-  entry.setSampleType(`${prefixType} - ${suffix}`);
+  const suffixName =
+    resolveStandaloneType(suffixLower) ??
+    rawSuffix.slice(0, suffixLower.length);
+  entry.setSampleType(prefixType);
+  entry.setName(suffixName);
+  entry.setEnabled(true);
   return true;
 }
 
@@ -280,5 +283,11 @@ const _singleton: Transform = {
  * Detects directories whose names match a known sampleType keyword
  * (case-insensitive) and sets the sampleType on that directory.
  * Accepts both singular and plural forms (e.g. "Drum" and "Drums" both map to "Drums").
+ * For any dash-separated name "<Type> - <Suffix>" whose prefix resolves to a known type,
+ * sets sampleType to just the prefix type ("Drum Loops") and renames the directory to the
+ * suffix — normalised to its canonical standalone type when the suffix itself is a known
+ * type (e.g. "Drum & Bass" → "Drum and Bass"), otherwise kept verbatim (e.g. "Various").
+ * The suffix is never folded back into a compound sampleType. The directory is also marked
+ * enabled so it stays in the organised output path instead of being collapsed.
  */
 export const createDirectorySampleTypeTransformer = (): Transform => _singleton;

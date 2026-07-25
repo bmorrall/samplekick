@@ -178,7 +178,7 @@ describe("createDirectorySampleTypeTransformer", () => {
       expect(entry.setSampleType).toHaveBeenCalledWith("Drum Loops");
     });
 
-    it('sets "Melody Loops - Trap" for "Melody Loops - Trap Stems and MIDI"', () => {
+    it('sets "Melody Loops" and renames the directory to "Trap" for "Melody Loops - Trap Stems and MIDI"', () => {
       const entry = createTransformEntryInHierarchy(
         [],
         { name: "Melody Loops - Trap Stems and MIDI", isFile: false },
@@ -186,10 +186,12 @@ describe("createDirectorySampleTypeTransformer", () => {
       );
       const transformer = createDirectorySampleTypeTransformer();
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setSampleType).toHaveBeenCalledWith("Melody Loops - Trap");
+      expect(entry.setSampleType).toHaveBeenCalledWith("Melody Loops");
+      expect(entry.setName).toHaveBeenCalledWith("Trap");
+      expect(entry.setEnabled).toHaveBeenCalledWith(true);
     });
 
-    it('sets "Drum Loops - Various" for "Drum Loops - Various Stems"', () => {
+    it('sets "Drum Loops" and renames the directory to "Various" for "Drum Loops - Various Stems"', () => {
       const entry = createTransformEntryInHierarchy(
         [],
         { name: "Drum Loops - Various Stems", isFile: false },
@@ -197,7 +199,9 @@ describe("createDirectorySampleTypeTransformer", () => {
       );
       const transformer = createDirectorySampleTypeTransformer();
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setSampleType).toHaveBeenCalledWith("Drum Loops - Various");
+      expect(entry.setSampleType).toHaveBeenCalledWith("Drum Loops");
+      expect(entry.setName).toHaveBeenCalledWith("Various");
+      expect(entry.setEnabled).toHaveBeenCalledWith(true);
     });
   });
 
@@ -237,7 +241,7 @@ describe("createDirectorySampleTypeTransformer", () => {
   });
 
   describe("when the directory name is a dash-separated type and subcategory", () => {
-    it('sets sampleType to "Drums - 808s" for the standalone folder "Drums - 808s"', () => {
+    it('sets sampleType to "Drums" and renames the directory to "808s" for the standalone folder "Drums - 808s"', () => {
       const entry = createTransformEntryInHierarchy(
         [],
         { name: "Drums - 808s", isFile: false },
@@ -245,10 +249,12 @@ describe("createDirectorySampleTypeTransformer", () => {
       );
       const transformer = createDirectorySampleTypeTransformer();
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setSampleType).toHaveBeenCalledWith("Drums - 808s");
+      expect(entry.setSampleType).toHaveBeenCalledWith("Drums");
+      expect(entry.setName).toHaveBeenCalledWith("808s");
+      expect(entry.setEnabled).toHaveBeenCalledWith(true);
     });
 
-    it('sets sampleType to "Drum Loops - Latin" for the standalone folder "Drum Loops - Latin"', () => {
+    it('sets sampleType to "Drum Loops" and renames the directory to "Latin" for the standalone folder "Drum Loops - Latin"', () => {
       const entry = createTransformEntryInHierarchy(
         [],
         { name: "Drum Loops - Latin", isFile: false },
@@ -256,10 +262,12 @@ describe("createDirectorySampleTypeTransformer", () => {
       );
       const transformer = createDirectorySampleTypeTransformer();
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setSampleType).toHaveBeenCalledWith("Drum Loops - Latin");
+      expect(entry.setSampleType).toHaveBeenCalledWith("Drum Loops");
+      expect(entry.setName).toHaveBeenCalledWith("Latin");
+      expect(entry.setEnabled).toHaveBeenCalledWith(true);
     });
 
-    it('normalises the suffix when it is a known type, e.g. "Kicks - Drum & Bass" → "Kicks - Drum and Bass"', () => {
+    it('normalises the suffix when it is a known type, e.g. "Kicks - Drum & Bass" → sampleType "Kicks", renamed "Drum and Bass"', () => {
       const entry = createTransformEntryInHierarchy(
         [],
         { name: "Kicks - Drum & Bass", isFile: false },
@@ -267,7 +275,9 @@ describe("createDirectorySampleTypeTransformer", () => {
       );
       const transformer = createDirectorySampleTypeTransformer();
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setSampleType).toHaveBeenCalledWith("Kicks - Drum and Bass");
+      expect(entry.setSampleType).toHaveBeenCalledWith("Kicks");
+      expect(entry.setName).toHaveBeenCalledWith("Drum and Bass");
+      expect(entry.setEnabled).toHaveBeenCalledWith(true);
     });
 
     it("matches case-insensitively on the prefix", () => {
@@ -278,7 +288,9 @@ describe("createDirectorySampleTypeTransformer", () => {
       );
       const transformer = createDirectorySampleTypeTransformer();
       transformer.transform(singleEntryTransformSource(entry));
-      expect(entry.setSampleType).toHaveBeenCalledWith("Drums - 808s");
+      expect(entry.setSampleType).toHaveBeenCalledWith("Drums");
+      expect(entry.setName).toHaveBeenCalledWith("808s");
+      expect(entry.setEnabled).toHaveBeenCalledWith(true);
     });
 
     it("sets sampleType from the known-type segment when the prefix is unrecognised", () => {
@@ -290,6 +302,7 @@ describe("createDirectorySampleTypeTransformer", () => {
       const transformer = createDirectorySampleTypeTransformer();
       transformer.transform(singleEntryTransformSource(entry));
       expect(entry.setSampleType).toHaveBeenCalledWith("808s");
+      expect(entry.setEnabled).not.toHaveBeenCalled();
     });
   });
 

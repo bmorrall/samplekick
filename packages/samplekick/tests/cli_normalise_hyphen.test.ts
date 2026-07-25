@@ -31,17 +31,15 @@ describe("NormaliseHyphenTransformer", () => {
       const [configFile] = await readdir(dataDir);
       const csv = await readFile(join(dataDir, configFile), "utf8");
 
-      // "Drums- Bass" folder should be renamed to "Drums - Bass"
+      // "Drums- Bass" folder should be split into sampleType "Drums", renamed "Bass"
       const drumsRow = csv
         .split("\n")
         .find((row) => row.startsWith("Drums- Bass,"));
-      expect(drumsRow).toBe("Drums- Bass,Drums - Bass,,Drums - Bass,false");
+      expect(drumsRow).toBe("Drums- Bass,Bass,,Drums,true");
       const kicksRow = csv
         .split("\n")
         .find((row) => row.startsWith("Kicks -Snares,"));
-      expect(kicksRow).toBe(
-        "Kicks -Snares,Kicks - Snares,,Kicks - Snares,false",
-      );
+      expect(kicksRow).toBe("Kicks -Snares,Snares,,Kicks,true");
     } finally {
       await rm(tmpDir, { recursive: true });
     }
@@ -84,7 +82,7 @@ describe("NormaliseHyphenTransformer", () => {
       const drumsRow = csv
         .split("\n")
         .find((row) => row.startsWith("Drums- Bass,"));
-      expect(drumsRow).toBe("Drums- Bass,Drums - Bass,,Drums - Bass,false");
+      expect(drumsRow).toBe("Drums- Bass,Bass,,Drums,true");
     } finally {
       await rm(tmpDir, { recursive: true });
     }
