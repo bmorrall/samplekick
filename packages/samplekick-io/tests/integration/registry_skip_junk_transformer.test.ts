@@ -1,5 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { createSkipJunkTransformer } from "../../src";
+import {
+  createSkipJunkTransformer,
+  createTrimNameTransformer,
+} from "../../src";
 import { createRegistry, createFileEntry } from "../support";
 
 describe("SkipJunkTransformer integration", () => {
@@ -20,6 +23,25 @@ describe("SkipJunkTransformer integration", () => {
         "└── sub1 [skipped]",
         "    ├── file1.wav [?]",
         "    └── .hidden [?] [skipped]",
+        "",
+      ].join("\n"),
+    );
+  });
+
+  it("leaves junk file names untouched by later rename transforms (readOnly)", () => {
+    const registry = createRegistry("root", [
+      createFileEntry({ path: "__MACOSX/ file1.wav " }),
+      createFileEntry({ path: "sub1/ file2.wav " }),
+    ]);
+    registry.applyTransform(createSkipJunkTransformer());
+    registry.applyTransform(createTrimNameTransformer());
+    expect(registry.toString()).toBe(
+      [
+        "root [skipped]",
+        "├── __MACOSX [skipped]",
+        "│   └── ...",
+        "└── sub1 [skipped]",
+        "    └── file2.wav [?] [renamed]",
         "",
       ].join("\n"),
     );

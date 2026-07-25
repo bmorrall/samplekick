@@ -8,6 +8,7 @@ const _singleton: Transform = {
     source.eachTransformEntry((entry) => {
       if (isJunkName(entry.getName())) {
         entry.setEnabled(false);
+        entry.setReadOnly(true);
         return;
       }
       if (!entry.isFile()) return;
@@ -15,6 +16,7 @@ const _singleton: Transform = {
       while (current !== undefined) {
         if (isJunkName(current.getName())) {
           entry.setEnabled(false);
+          entry.setReadOnly(true);
           break;
         }
         current = current.getParentNode();
@@ -25,6 +27,8 @@ const _singleton: Transform = {
 /**
  * SkipJunkTransformer
  * Disables file entries whose name (or any ancestor directory name) is
- * "__MACOSX" or starts with ".". Disabled files are not exported.
+ * "__MACOSX" or starts with ".". Disabled files are not exported. Also marks
+ * matching entries (and files beneath a junk ancestor) as readOnly so later
+ * rename transforms leave their names untouched.
  */
 export const createSkipJunkTransformer = (): Transform => _singleton;
