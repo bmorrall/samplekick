@@ -85,7 +85,15 @@ export interface DevicePreset {
 // Export
 
 export interface PostProcessor {
-  processFile: (destPath: string, entry: DigestEntry) => Promise<void> | void;
+  /**
+   * Processes the file at destPath. If the file was moved/renamed (e.g. converted
+   * to a different extension), return the new absolute path so callers can track
+   * the true final location; return undefined if the path is unchanged.
+   */
+  processFile: (
+    destPath: string,
+    entry: DigestEntry,
+  ) => Promise<string | undefined> | string | undefined;
 }
 
 export interface ExportOptions {

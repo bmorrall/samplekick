@@ -129,8 +129,11 @@ export class AudioConverter implements PostProcessor {
     return entry.isReadOnly?.() === true;
   }
 
-  async processFile(destPath: string, entry: DigestEntry): Promise<void> {
-    if (this.shouldSkip(destPath, entry)) return;
+  async processFile(
+    destPath: string,
+    entry: DigestEntry,
+  ): Promise<string | undefined> {
+    if (this.shouldSkip(destPath, entry)) return undefined;
 
     const ext = extname(destPath).toLowerCase();
     const dir = dirname(destPath);
@@ -163,12 +166,14 @@ export class AudioConverter implements PostProcessor {
       if (outputPath !== destPath) {
         await unlink(destPath);
       }
+      return outputPath;
     } catch (err) {
       await rm(tempPath, { force: true });
       this.onError(
         destPath,
         err instanceof Error ? err : new Error(String(err)),
       );
+      return undefined;
     }
   }
 }

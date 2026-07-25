@@ -1,4 +1,7 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { mkdtemp, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { Registry } from "../../src";
 import type { DigestEntry, FileEntry, Validate } from "../../src";
 import { createFileEntry, createFileSource } from "../support";
@@ -14,6 +17,16 @@ const createPassingValidator = (): Validate =>
 const createFailingValidator = (reason: string): Validate =>
   vi.fn<Validate>().mockReturnValue(reason);
 
+let outputDir = "";
+
+beforeEach(async () => {
+  outputDir = await mkdtemp(join(tmpdir(), "samplekick-io-export-"));
+});
+
+afterEach(async () => {
+  await rm(outputDir, { recursive: true });
+});
+
 describe("Registry.addValidator", () => {
   it("calls copyToPath when validator passes", async () => {
     const entry = createCopyableEntry("a.wav");
@@ -21,7 +34,7 @@ describe("Registry.addValidator", () => {
     const registry = new Registry(createFileSource("root", [entry]));
     registry.addValidator(validator);
 
-    await registry.exportToDirectory("/output", {});
+    await registry.exportToDirectory(outputDir, {});
 
     expect(entry.copyToPath).toHaveBeenCalledOnce();
   });
@@ -35,7 +48,7 @@ describe("Registry.addValidator", () => {
     const registry = new Registry(createFileSource("root", [entry]));
     registry.addValidator(validator);
 
-    await registry.exportToDirectory("/output", { onReject });
+    await registry.exportToDirectory(outputDir, { onReject });
 
     expect(onReject).toHaveBeenCalledOnce();
     expect(onReject).toHaveBeenCalledWith(
@@ -52,7 +65,7 @@ describe("Registry.addValidator", () => {
     const registry = new Registry(createFileSource("root", [entry]));
     registry.addValidator(validator);
 
-    await registry.exportToDirectory("/output", {});
+    await registry.exportToDirectory(outputDir, {});
 
     expect(entry.copyToPath).not.toHaveBeenCalled();
   });
@@ -68,7 +81,7 @@ describe("Registry.addValidator", () => {
     const registry = new Registry(createFileSource("root", [entry]));
     registry.addValidator(validator);
 
-    await registry.exportToDirectory("/output", {
+    await registry.exportToDirectory(outputDir, {
       onBeforeWrite,
       onAfterWrite,
     });
@@ -86,7 +99,7 @@ describe("Registry.addValidator", () => {
     registry.addValidator(first);
     registry.addValidator(second);
 
-    await registry.exportToDirectory("/output", { onReject });
+    await registry.exportToDirectory(outputDir, { onReject });
 
     expect(onReject).toHaveBeenCalledOnce();
     expect(onReject).toHaveBeenCalledWith(expect.anything(), "first failure");
@@ -125,7 +138,7 @@ describe("Registry.addValidator", () => {
       },
     });
 
-    await registry.exportToDirectory("/output", {});
+    await registry.exportToDirectory(outputDir, {});
 
     expect(validator).not.toHaveBeenCalled();
     expect(entry.copyToPath).toHaveBeenCalledOnce();
@@ -140,7 +153,7 @@ describe("Registry.clearValidators", () => {
     registry.addValidator(validator);
     registry.clearValidators();
 
-    await registry.exportToDirectory("/output", {});
+    await registry.exportToDirectory(outputDir, {});
 
     expect(entry.copyToPath).toHaveBeenCalledOnce();
   });
@@ -155,7 +168,7 @@ describe("Registry.clearValidators", () => {
     registry.clearValidators();
     registry.addValidator(second);
 
-    await registry.exportToDirectory("/output", { onReject });
+    await registry.exportToDirectory(outputDir, { onReject });
 
     expect(first).not.toHaveBeenCalled();
     expect(onReject).toHaveBeenCalledWith(expect.anything(), "second failure");
